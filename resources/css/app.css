@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Light/Dark Theme via CSS Custom Properties
+   Based on "Firebase × Amber" Palette (Tech-modified)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Light Theme ──────────────────────────────────────────────────────────── */
+:root {
+    --vc-bg:             #FAFAF8;
+    --vc-surface:        #FFFFFF;
+    --vc-elevated:       #F3F1ED;
+    --vc-card:           #FFFFFF;
+    --vc-card-hover:     #F3F1ED;
+    --vc-nav:            rgba(250,250,248,0.92);
+    --vc-border:         #E6E3DC;
+    --vc-ring:           #F05000;
+    --vc-text:           #1A1714;
+    --vc-text-secondary: #6B6560;
+    --vc-muted:          #A39A90;
+    --vc-accent:         #F05000;
+    --vc-accent-hover:   #D94700;
+    --vc-accent-subtle:  #FFF0E8;
+    --vc-input:          #FFFFFF;
+    --vc-input-border:   #E6E3DC;
+    --vc-input-focus:    #F05000;
+    --vc-shadow-sm:      0 1px 2px rgba(0,0,0,0.05);
+    --vc-shadow-md:      0 4px 12px rgba(0,0,0,0.08);
+    --vc-shadow-lg:      0 12px 40px rgba(0,0,0,0.12);
+    --vc-success:        #16A34A;
+    --vc-warning:        #D97706;
+    --vc-danger:         #DC2626;
+    --vc-info:           #2563EB;
+    --vc-overlay:        rgba(0,0,0,0.4);
+}
+
+/* ── Dark Theme ───────────────────────────────────────────────────────────── */
+.dark {
+    --vc-bg:             #09090B; /* Neutral tech dark instead of warm brown */
+    --vc-surface:        #18181B; /* Neutral tech dark */
+    --vc-elevated:       #27272A; /* Neutral tech dark */
+    --vc-card:           #18181B;
+    --vc-card-hover:     #27272A;
+    --vc-nav:            rgba(9,9,11,0.92);
+    --vc-border:         #3F3F46;
+    --vc-ring:           #FF6B2B;
+    --vc-text:           #FAFAFA;
+    --vc-text-secondary: #A1A1AA;
+    --vc-muted:          #71717A;
+    --vc-accent:         #FF6B2B;
+    --vc-accent-hover:   #FF8147;
+    --vc-accent-subtle:  #431407;
+    --vc-input:          #18181B;
+    --vc-input-border:   #3F3F46;
+    --vc-input-focus:    #FF6B2B;
+    --vc-shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
+    --vc-shadow-md:      0 4px 16px rgba(0,0,0,0.5);
+    --vc-shadow-lg:      0 12px 48px rgba(0,0,0,0.6);
+    --vc-success:        #22C55E;
+    --vc-warning:        #FBBF24;
+    --vc-danger:         #F87171;
+    --vc-info:           #60A5FA;
+    --vc-overlay:        rgba(0,0,0,0.8);
+}
+
+/* ─── Base Reset ──────────────────────────────────────────────────────────── */
+@layer base {
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        background-color: var(--vc-bg);
+        color: var(--vc-text);
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    ::selection {
+        background: rgba(240, 80, 0, 0.2);
+        color: var(--vc-text);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar              { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track        { background: var(--vc-bg); }
+    ::-webkit-scrollbar-thumb        { background: var(--vc-border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover  { background: var(--vc-accent); }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* ─── Component Library ───────────────────────────────────────────────────── */
+@layer components {
+
+    /* ── Card ──────────────────────────────────────────────────── */
+    .vc-card {
+        background: var(--vc-card);
+        border: 1px solid var(--vc-border);
+        border-radius: 1rem;
+        box-shadow: var(--vc-shadow-sm);
+        transition: all 0.2s ease;
+    }
+    .vc-card:hover {
+        box-shadow: var(--vc-shadow-md);
+        border-color: rgba(240, 80, 0, 0.3);
+    }
+
+    /* ── Button: Primary ──────────────────────────────────────── */
+    .btn-primary {
+        @apply relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+               text-white cursor-pointer
+               transition-all duration-200 ease-out;
+        background: var(--vc-accent);
+        border: 1px solid transparent;
+    }
+    .btn-primary:hover {
+        background: var(--vc-accent-hover);
+        box-shadow: 0 4px 14px rgba(240,80,0,0.3);
+        transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ── Button: Secondary/Ghost ────────────────────────────────────────── */
+    .btn-secondary, .btn-ghost {
+        @apply relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+               cursor-pointer transition-all duration-200 ease-out;
+        background: transparent;
+        color: var(--vc-text-secondary);
+        border: 1px solid var(--vc-border);
+    }
+    .btn-secondary:hover, .btn-ghost:hover {
+        background: var(--vc-elevated);
+        color: var(--vc-text);
+        border-color: var(--vc-accent);
+        transform: translateY(-1px);
+    }
+
+    /* ── CTA glow button ──────────────────────────────────────── */
+    .btn-glow {
+        @apply relative inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
+               text-white cursor-pointer transition-all duration-200 ease-out overflow-hidden;
+        background: linear-gradient(135deg, #F05000, #FF8147);
+        border: 1px solid rgba(240,80,0,0.5);
+    }
+    .btn-glow:hover {
+        box-shadow: 0 0 24px rgba(240,80,0,0.4), 0 0 48px rgba(255,129,71,0.15);
+        transform: translateY(-1px);
+    }
+    .btn-glow:active { transform: translateY(0); }
+
+    /* ── Input field ───────────────────────────────────────────── */
+    .input-dark, .vc-input {
+        @apply w-full rounded-xl px-4 py-3 text-sm transition-all duration-200;
+        background: var(--vc-input);
+        border: 1px solid var(--vc-input-border);
+        color: var(--vc-text);
+    }
+    .input-dark::placeholder, .vc-input::placeholder {
+        color: var(--vc-muted);
+    }
+    .input-dark:focus, .vc-input:focus {
+        outline: none;
+        border-color: var(--vc-input-focus);
+        box-shadow: 0 0 0 3px rgba(240,80,0,0.12);
+    }
+
+    /* ── Gradient text ────────────────────────────────────────── */
+    .text-gradient-violet, .text-gradient-brand {
+        @apply bg-clip-text text-transparent;
+        background-image: linear-gradient(135deg, #F05000 0%, #FF8147 100%);
+    }
+    .text-gradient-cyan {
+        @apply bg-clip-text text-transparent;
+        background-image: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+    }
+
+    /* ── Glass card (for special sections) ─────────────────────── */
+    .glass {
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--vc-border);
+        border-radius: 1rem;
+    }
+    :root .glass { background: rgba(255,255,255,0.7); }
+    .dark .glass { background: rgba(24,24,27,0.6); }
+
+    .glass-hover {
+        @apply glass transition-all duration-300;
+    }
+    .glass-hover:hover {
+        border-color: var(--vc-accent);
+        box-shadow: var(--vc-shadow-md);
+        transform: translateY(-2px);
+    }
+
+    /* ── Badge / pill ──────────────────────────────────────────── */
+    .badge {
+        @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
+        background: rgba(240,80,0,0.08);
+        color: var(--vc-accent);
+        border: 1px solid rgba(240,80,0,0.15);
+    }
+
+    /* ── Skeleton ──────────────────────────────────────────────── */
+    .skeleton {
+        @apply rounded-lg;
+        background: linear-gradient(90deg, var(--vc-elevated) 25%, var(--vc-surface) 50%, var(--vc-elevated) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 2.5s linear infinite;
+    }
+
+    /* ── Animated blob background ──────────────────────────────── */
+    .blob {
+        @apply absolute rounded-full mix-blend-screen filter blur-3xl opacity-20 pointer-events-none;
+        animation: blob 8s infinite ease-in-out;
+    }
+
+    /* ── Nav link ──────────────────────────────────────────────── */
+    .nav-link {
+        @apply text-sm font-medium transition-colors duration-200 cursor-pointer;
+        color: var(--vc-text-secondary);
+    }
+    .nav-link:hover { color: var(--vc-text); }
+
+    /* ── Section title ─────────────────────────────────────────── */
+    .section-title {
+        @apply text-3xl md:text-4xl font-bold;
+        color: var(--vc-text);
+    }
+    .section-subtitle {
+        @apply text-base max-w-xl mx-auto;
+        color: var(--vc-text-secondary);
+    }
+
+    /* ── Stat card ─────────────────────────────────────────────── */
+    .stat-card {
+        @apply relative rounded-2xl p-5 overflow-hidden transition-all duration-300 cursor-default;
+        background: var(--vc-card);
+        border: 1px solid var(--vc-border);
+    }
+    .stat-card:hover {
+        border-color: var(--vc-accent);
+        box-shadow: var(--vc-shadow-md);
+    }
+
+    /* ── Theme toggle button ──────────────────────────────────── */
+    .theme-toggle {
+        @apply relative w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer
+               transition-all duration-200;
+        background: transparent;
+        border: 1px solid var(--vc-border);
+        color: var(--vc-text-secondary);
+    }
+    .theme-toggle:hover {
+        background: var(--vc-elevated);
+        color: var(--vc-text);
+        border-color: var(--vc-accent);
+    }
+}
+
+/* ─── Utilities ───────────────────────────────────────────────────────────── */
+@layer utilities {
+    .perspective-1000 { perspective: 1000px; }
+    .tilt-card { transition: transform 0.15s ease-out; transform-style: preserve-3d; }
+    .opacity-0-init { opacity: 0; }
+    .animate-delay-100 { animation-delay: 0.1s; }
+    .animate-delay-200 { animation-delay: 0.2s; }
+    .animate-delay-300 { animation-delay: 0.3s; }
+    .animate-delay-400 { animation-delay: 0.4s; }
+    .animate-delay-500 { animation-delay: 0.5s; }
+    .text-balance { text-wrap: balance; }
+}
+
+/* ─── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+@keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50%     { transform: translateY(-10px); }
+}
+@keyframes scan-line {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+}
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }

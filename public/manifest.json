@@ -1,0 +1,42 @@
+{
+  "name": "VisionLab",
+  "short_name": "VisionCode",
+  "description": "Collaborative coding & AI-powered learning platform for universities",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#8b5cf6",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "education",
+    "productivity",
+    "developer"
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Open Workspace",
+      "url": "/workspace",
+      "description": "Open the collaborative coding workspace"
+    },
+    {
+      "name": "My Courses",
+      "url": "/courses",
+      "description": "View all enrolled courses"
+    }
+  ]
+}

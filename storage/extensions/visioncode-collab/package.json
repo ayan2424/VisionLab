@@ -1,0 +1,46 @@
+{
+  "name": "visioncode-collab",
+  "displayName": "VisionCode Collab",
+  "description": "Real-time collaboration for VisionLab",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "visioncode.startCollab",
+        "title": "VisionCode: Start Collaboration"
+      },
+      {
+        "command": "visioncode.startImplementation",
+        "title": "VisionCode: Start AI Implementation"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "visioncode-collab-view",
+          "title": "VisionCode Collab",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "visioncode-collab-view": [
+        {
+          "type": "webview",
+          "id": "visioncode.collabWebview",
+          "name": "Collaboration"
+        }
+      ]
+    }
+  }
+}

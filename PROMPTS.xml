@@ -1,0 +1,1355 @@
+<MASTER_PROMPT Phase="1" Name="Foundation_And_Landing" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite Laravel Architect, Security Engineer, and Premium UI/UX Designer.
+    We are building "VisionLab" for Aptech Vision 2026. The product uses:
+    - Laravel 11 + MySQL + Blade + Tailwind CSS (dark default)
+    - Code-server (VS Code in browser) embedded via iframe
+    - Custom VS Code extensions for real-time collab and video
+    - "Continue" open-source extension for AI chat
+    You must write complete, production-ready code. Zero placeholders. Strict RBAC. 
+    Dark theme rivaling Cursor AI and Windsurf.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    Niche: Collaborative coding platform for universities. Replaces Google Classroom + Zoom.
+    Core differentiator: Built-in AI agent (Continue + Claude API) and real-time multiplayer coding inside a full VS Code environment.
+    All server-side logic in Laravel; code-server runs in Docker per workspace.
+  </PROJECT_CONTEXT>
+
+  <CURRENT_OBJECTIVE>
+    Phase 1: Set up the entire foundation — project scaffold, database, authentication, 
+    role-based access, and the stunning public landing page.
+  </CURRENT_OBJECTIVE>
+
+  <STEP_1_PROJECT_INITIALIZATION>
+    Provide EXACT terminal commands to:
+    - Create a Laravel 11 project with Breeze (Blade stack)
+    - Install Laravel Reverb for future WebSocket
+    - Set up Tailwind CSS custom config with dark theme extensions (colors, animations, glassmorphism)
+    - Publish all necessary configs
+  </STEP_1_PROJECT_INITIALIZATION>
+
+  <STEP_2_DATABASE_SCHEMA>
+    Create ALL migration files for these tables (MySQL, InnoDB, foreign keys, indexes):
+    - users (id, name, email, password, role enum: admin|instructor|student, avatar, theme_preference, status, timestamps)
+    - password_reset_tokens
+    - courses (id, instructor_id FK, title, slug, description, cover_image, enrollment_code, is_active, timestamps)
+    - enrollments (id, course_id FK, student_id FK, status, enrolled_at)
+    - announcements (id, course_id FK, author_id FK, title, body_rich, pinned, timestamps)
+    - assignments (id, course_id FK, title, description, max_points, due_date, starter_code_path, auto_workspace, timestamps)
+    - submissions (id, assignment_id FK, student_id FK, workspace_snapshot_path, submitted_at, grade, feedback, graded_by, timestamps)
+    - workspaces (id, owner_id FK, assignment_id FK nullable, container_id, code_server_url, access_token, is_active, timestamps)
+    - workspace_collaborators (id, workspace_id FK, user_id FK, role, joined_at)
+    - collab_sessions (id, workspace_id FK, user_id FK, cursor_position, is_online, last_heartbeat, timestamps)
+    - video_rooms (id, workspace_id FK, jitsi_room_id, jwt_secret, created_by, started_at, ended_at, timestamps)
+    - extensions (id, name, package_identifier, version, description, is_global, is_builtin, is_active, timestamps)
+    - workspace_extensions (id, workspace_id FK, extension_id FK, enabled)
+    - ai_chat_sessions (id, workspace_id FK, user_id FK, title, mode, timestamps)
+    - ai_messages (id, session_id FK, role, content, tool_calls_json, token_count, timestamps)
+    - ai_actions_log (id, workspace_id FK, user_id FK, action_type, file_path, diff_summary, previous_content, new_content, timestamps)
+    - ai_snapshots (id, workspace_id FK, file_path, content, created_by, timestamps)
+    - analytics_events (id, user_id FK, event_type, event_data_json, timestamps)
+
+    Write complete Eloquent models with relationships for every table.
+    Write seeders: Admin, 2 Instructors, 5 Students, 3 demo courses.
+  </STEP_2_DATABASE_SCHEMA>
+
+  <STEP_3_AUTH_AND_RBAC>
+    Build:
+    - Custom login/register Blade views (dark themed, glassmorphism, animated)
+    - Auth controllers (using Breeze + tweaks for roles)
+    - RoleMiddleware and route grouping (web.php, api.php)
+    - Policies: UserPolicy, CoursePolicy, AssignmentPolicy, WorkspacePolicy
+    - AuthServiceProvider registering all policies
+    - Admin, Instructor, Student dashboard routes (placeholders for now, but protect with proper gates)
+    - After login, redirect based on role.
+  </STEP_3_AUTH_AND_RBAC>
+
+  <STEP_4_ULTRA_PREMIUM_LANDING_PAGE>
+    Build `welcome.blade.php` – must rival Cursor AI, Vercel, Stripe.
+    Mandatory details:
+    - 100% dark background (#0a0a0a), glowing violet/cyan accents.
+    - Hero: Large animated text reveal (typing effect via CSS/JS), gradient subheadline, glowing CTA "Start Coding Now" (pulse animation).
+    - Background: subtle animated gradient mesh (CSS only, no heavy libs).
+    - Features section: 3 glassmorphic cards with 3D tilt on hover (CSS transforms + JS), Heroicons, staggered entrance animation (Intersection Observer).
+    - Testimonials: sleek quotes with avatars.
+    - Footer: clean, dark, "© 2026 VisionLab".
+    - Floating navbar (glassmorphism on scroll).
+    - Skeleton loader on page load.
+    - Use JetBrains Mono for code snippets, Inter for UI text (via Google Fonts or self-hosted).
+    Provide the COMPLETE Blade file and any inline JS. No placeholder text, real dummy content.
+  </STEP_4_ULTRA_PREMIUM_LANDING_PAGE>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps 1→2→3→4 sequentially. Ask for approval after each step if output is huge.
+    After Step 4, say: "Phase 1 complete. All foundation ready. Ready for Phase 2 (Code-server IDE integration)?"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+---Phase 2
+
+<MASTER_PROMPT Phase="2" Name="CodeServer_IDE_Integration" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite Laravel + DevOps Engineer and Premium UI Architect.
+    The product "VisionLab" replaces Monaco with a full VS Code experience via code-server.
+    Your task in this phase is to seamlessly embed code-server inside a custom Blade split-pane layout,
+    with a custom file explorer (left), AI placeholder (right), and status bar (bottom).
+    Everything must be ultra-premium dark themed, production-ready, and secure.
+  </SYSTEM_ROLE>
+
+  <PROJECT_STACK>
+    - Backend: Laravel 11 + MySQL 8
+    - Containerization: Docker (code-server per workspace)
+    - Frontend: Blade + Tailwind CSS (custom dark theme) + Vanilla JS
+    - Reverse Proxy: Nginx (already configured)
+  </PROJECT_STACK>
+
+  <CURRENT_OBJECTIVE>
+    Build the Workspace IDE page where:
+    1. Code-server runs as an iframe.
+    2. Left sidebar shows a custom file tree (loaded from workspace file system).
+    3. Right sidebar is placeholder for AI chat (Phase 4).
+    4. Bottom status bar shows connection info, language, and a collapsible terminal area.
+    The backend must spawn/stop containers dynamically and expose file I/O APIs.
+  </CURRENT_OBJECTIVE>
+
+  <STEP_1_DOCKER_SPAWNING_SERVICE>
+    Build the backend logic to manage code-server containers.
+
+    Provide COMPLETE PHP code for:
+    - `app/Services/CodeServerManager.php`:
+        * `startWorkspace(Workspace $workspace)`: Uses Symfony Process to run a Docker container:
+          `docker run -d --name workspace_{id} -v {workspace_path}:/home/coder/project -p {dynamic_port}:8080 -e PASSWORD={token} codercom/code-server:latest --auth password`
+          (Use `--auth none` for demo if simpler, but `password` with generated token is secure).
+        * `stopWorkspace(Workspace $workspace)`: `docker stop` + `docker rm`.
+        * `getStatus(Workspace $workspace)`: check if container is running.
+        * Assign a unique port (e.g., from pool 9000-9999) stored in `workspaces.code_server_port`.
+        * Store the access token in `workspaces.access_token`.
+        * Ensure workspace path exists under `storage/workspaces/{workspace_id}` and mount into container.
+        * Handle edge cases: if Docker isn't available (dev environment), simulate a URL pointing to a shared demo code-server.
+
+    - Update `app/Models/Workspace.php` to include `code_server_port`, `code_server_url`, `access_token`, `container_id`.
+
+    - Update `WorkspaceController`:
+        * `show(Workspace $workspace)`: returns the IDE Blade view. 
+          Must ensure workspace is active; if not, call `startWorkspace()`.
+        * `stop(Workspace $workspace)`: admin/owner can stop.
+        * `fileList(Workspace $workspace)`: returns JSON tree of `storage/workspaces/{id}/project/` (excluding hidden files like `.git`).
+        * `readFile(Workspace $workspace)`: validates path, returns file content.
+        * `writeFile(Workspace $workspace)`: validates path, writes content (sandbox: restrict to workspace root).
+        * `deleteFile(Workspace $workspace)`, `createFile(Workspace $workspace)`, `renameFile(Workspace $workspace)`.
+
+    - Routes in `web.php` and `api.php` with authentication and workspace policy.
+
+    - Security: realpath() validation, prevent traversal outside `workspace_root`. Log all file writes.
+
+    - Provide migration to add columns if not already present from Phase 1.
+  </STEP_1_DOCKER_SPAWNING_SERVICE>
+
+  <STEP_2_WORKSPACE_BLADE_LAYOUT>
+    Provide the COMPLETE `workspace.blade.php` that defines the IDE shell.
+
+    Layout specification (CSS Grid, 100vh, no page scroll):
+    ```
+    +-------------------------------------------------------------+
+    |  Top Bar (h-10, flex, glassmorphic, workspace name, users,  |
+    |           video call button, settings)                      |
+    +----------+------------------------------+-------------------+
+    |          |                              |                   |
+    | File     |   Code-server iframe         | AI Sidebar        |
+    | Explorer |   (flex-1, full height)      | (w-80, dark,      |
+    | (w-72,   |                              | collapsible)      |
+    | dark,    |                              |                   |
+    | custom   |                              | (Phase 4 will     |
+    | scroll)  |                              |  fill this)       |
+    |          |                              |                   |
+    +----------+------------------------------+-------------------+
+    |  Status Bar (h-7, flex, text-xs, glassmorphic)             |
+    +-------------------------------------------------------------+
+    ```
+    - All background: #0a0a0a / #111111 / #161b22.
+    - Glassmorphism: `backdrop-blur-lg bg-white/5 border-white/10`.
+    - Iframe must use `src="{code_server_url}"` with appropriate sandbox `allow-scripts allow-same-origin allow-forms allow-modals allow-popups`.
+    - Custom scrollbars (thin, dark) on sidebars.
+    - File Explorer initially loads via AJAX from Step 3.
+    - AI Sidebar: just a header "AI Assistant" with mode selector placeholder (CHAT/PLAN/AGENT) but non-functional.
+    - Status Bar shows: Connection status (green dot "Connected"), active file name, line:column (if possible), workspace name.
+    - The layout MUST be responsive: on small screens collapse the file explorer and AI sidebar to hamburger menus (still usable).
+  </STEP_2_WORKSPACE_BLADE_LAYOUT>
+
+  <STEP_3_FILE_EXPLORER_AND_FRONTEND_JS>
+    Provide the COMPLETE JavaScript (inside blade or separate file loaded via Vite) to:
+
+    - Fetch file tree via `GET /api/workspace/{id}/files` and render a recursive tree using `<ul>` / `<li>` with file/folder icons (Heroicons inline SVG).
+    - Click on a file: call `GET /api/workspace/{id}/read-file?path=...` and then use the VS Code iframe's `postMessage` API to open the file:
+      ```js
+      iframe.contentWindow.postMessage({
+          command: 'openFile',
+          file: { path: relativePath, content: fileContent }
+      }, '*');
+      ```
+      Note: code-server may require a custom extension to handle postMessage, but we can also simply cause the iframe to navigate to `?folder=/home/coder/project&open=relativePath`. Use the latter for simplicity.
+    - Also provide a fallback: directly set iframe src to `{code_server_url}?folder=/home/coder/project&open={filepath}`.
+    - Implement right-click context menu (custom dark) on files: Rename, Delete, New File, New Folder – each making corresponding API calls.
+    - Auto-refresh file tree after modifications (optimistic UI + refresh).
+    - Implement saving from external changes: listen to file changes? (can skip for now).
+    - Include a "Refresh Explorer" button.
+    - Error handling with premium toast notifications (dark, glassmorphic toasts).
+    - Add minimal keyboard shortcuts (Ctrl+B toggle file explorer, Ctrl+J toggle bottom panel).
+  </STEP_3_FILE_EXPLORER_AND_FRONTEND_JS>
+
+  <STEP_4_FINAL_POLISH_AND_TEST>
+    After above steps, ensure:
+    - The iframe loads code-server without errors.
+    - File tree populates correctly.
+    - Clicking a file opens it in the editor inside iframe.
+    - File operations (create/delete/rename) work.
+    - The layout looks beautiful and premium; no visible glitches.
+    - Provide any additional CSS for animations (e.g., sidebar slide-in).
+    - Ensure all API routes are protected by auth and workspace membership policies.
+
+    If Docker is unavailable in development, simulate code-server by loading a public demo instance or a local static HTML with embedded code-server documentation, but make the architecture ready for production.
+  </STEP_4_FINAL_POLISH_AND_TEST>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4.
+    Wait for "Approved, proceed to Step X" between steps if output is large.
+    After Step 4, announce: "Phase 2 Complete. Workspace IDE with code-server fully operational. Ready for Phase 3 (Real-time Collaboration Extension)?"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+---Phase 3
+
+<MASTER_PROMPT Phase="3" Name="Realtime_Collab_Extension" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite VS Code Extension Developer, WebSocket Architect, and Laravel Backend Engineer.
+    You are building a custom extension for code-server that enables real-time multiplayer coding
+    and communication. The extension must be production-ready, secure, and seamlessly integrated
+    with our Laravel Reverb backend.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    Product: VisionLab(Aptech Vision 2026)
+    Stack: Laravel 11 + MySQL + Blade + Tailwind + code-server (Docker)
+    The extension will be side-loaded into every workspace's code-server container.
+    It handles: cursor sharing, live text chat, and embedded video conferencing (Jitsi).
+    All real-time events flow through Laravel Reverb presence channels.
+  </PROJECT_CONTEXT>
+
+  <CURRENT_OBJECTIVE>
+    Phase 3: Build the "VisionCode Collab" extension and its backend integration.
+    1. Backend: Create Reverb events, channel authorizations, and API endpoints.
+    2. Extension: Cursor sync, document change echo, live chat panel, video call launcher.
+    3. Container setup: Auto-install extension in workspaces.
+    4. Blade UI updates: Show active collaborator avatars and toast notifications.
+  </CURRENT_OBJECTIVE>
+
+  <STEP_1_BACKEND_REVERB_AND_EVENTS>
+    Provide COMPLETE Laravel code for:
+
+    - **Presence Channel Authorization** (`routes/channels.php`):
+      `Broadcast::channel('workspace.{workspaceId}', function ($user, $workspaceId) { ... })`
+      Only allow users who are collaborators in that workspace (check pivot table).
+
+    - **Events** (implement `ShouldBroadcastNow` for zero latency):
+        * `CodeUpdated`: payload = `{ workspaceId, filePath, changes (delta or full content delta), userId, userName }`.
+        * `CursorMoved`: payload = `{ workspaceId, filePath, cursorLine, cursorColumn, userId, userName, color }`.
+        * `ChatMessageSent`: payload = `{ workspaceId, userId, userName, message, timestamp }`.
+        * `UserJoinedRoom`, `UserLeftRoom`: payload = `{ workspaceId, userId, userName }`.
+        * `VideoCallStarted`: payload = `{ workspaceId, jitsiRoomId, starterId }`.
+
+    - **API endpoints** (in `api.php`):
+        * `POST /api/workspace/{id}/chat` — send a chat message (store in `collab_chat_messages` table if needed, then broadcast).
+        * `GET /api/workspace/{id}/users` — list active collaborators with colors.
+        * `POST /api/workspace/{id}/video/start` — create a Jitsi room (generate unique ID, JWT), return URL, broadcast `VideoCallStarted`.
+        * `POST /api/workspace/{id}/video/end` — end call, broadcast.
+
+    - **Database Migrations** (if not already present):
+        * `collab_chat_messages` (id, workspace_id, user_id, message, timestamp).
+        * No need to duplicate; reuse existing ones or just broadcast without persistence for chat (persist optionally).
+
+    - **Service**: `CollaborationService` that assigns a consistent color per user in a workspace (based on user ID hash) and manages join/leave.
+
+    - **CORS configuration** allowing WebSocket connections and API calls from the code-server origin.
+
+    Provide ALL code, policies, routes, and migrations.
+  </STEP_1_BACKEND_REVERB_AND_EVENTS>
+
+  <STEP_2_VSCODE_EXTENSION_DEVELOPMENT>
+    Build a complete VS Code extension named `visioncode-collab` using TypeScript.
+
+    **Extension Manifest (package.json)**:
+    - activationEvents: `onStartupFinished` (always active when workspace opens).
+    - contributes: command (`visioncode.startVideoCall`, `visioncode.toggleChat`), 
+      status bar item (online users count with icon).
+
+    **Extension Architecture**:
+    - `extension.ts` entry point.
+    - `RealtimeManager` class that connects to Laravel Echo (using `laravel-echo` + `pusher-js` via WebSocket). Authenticate with Laravel Sanctum token (passed via environment/config injected into code-server container).
+    - `DocumentSync` module: Listen to `vscode.workspace.onDidChangeTextDocument`, debounce 200ms, send CodeUpdated event with file URI and changes. On receiving remote CodeUpdated, apply edits using `vscode.window.activeTextEditor.edit(editBuilder => ...)` with proper range mappings. Use a simple Operation-based diff or just send full line diffs to avoid complexity — for MVP, send the delta as `{ range, text }` using `vscode.TextDocumentContentChangeEvent`.
+    - `CursorSync` module: On `vscode.window.onDidChangeTextEditorSelection`, throttle 100ms, broadcast CursorMoved. On receiving remote CursorMoved, create `vscode.TextEditorDecorationType` (colored underline + after pseudo element with user name) and apply to the remote user's position. Store decorations per remote user and clear when they leave.
+    - `ChatPanel` (Webview): Provide a sidebar webview (accessible via command or icon in activity bar). The webview will contain a simple chat UI (HTML/CSS/JS inside webview) that communicates with the extension host via `postMessage`. The extension host forwards messages to Laravel Reverb channel `workspace.{id}` (chat event) and listens for incoming `ChatMessageSent` to update the webview. Design the chat to be minimal, dark-themed, with user avatars and timestamps.
+    - `VideoCallIntegration`: Implement command `visioncode.startVideoCall`. It calls backend API to get Jitsi room URL + JWT, then either opens an external browser (not ideal) or creates a new webview panel with an iframe embedding the Jitsi meeting. Use `vscode.window.createWebviewPanel`. The webview must handle Jitsi iframe API to join/leave. Also add a status bar button to quickly join an active call.
+    - **Authentication**: Read a token from `process.env.VISIONCODE_API_TOKEN` (set in container) and pass it in API calls.
+    - **Presence**: Maintain an array of active remote users (from join/leave events). Show their count in status bar and colors consistent with cursors.
+
+    **All code must be complete, no stubs.** Provide the full extension project folder with `package.json`, `tsconfig.json`, `src/extension.ts`, `src/RealtimeManager.ts`, `src/DocumentSync.ts`, `src/CursorSync.ts`, `src/ChatPanel.ts`, `src/VideoPanel.ts`, and any helper files. Include webview HTML/CSS/JS for chat and video.
+  </STEP_2_VSCODE_EXTENSION_DEVELOPMENT>
+
+  <STEP_3_CONTAINER_INTEGRATION_AND_SIDELOADING>
+    Provide code/configuration to automatically install the extension in every workspace code-server container.
+
+    - In the Dockerfile or startup script (that runs in workspace container), add:
+      ```bash
+      # Download the .vsix from a central location (or build from source)
+      wget -O /tmp/visioncode-collab.vsix https://your-domain/extensions/visioncode-collab.vsix
+      code-server --install-extension /tmp/visioncode-collab.vsix
+      ```
+    - Instead of hardcoding token, inject it as environment variable when running container:
+      `-e VISIONCODE_API_TOKEN={user_auth_token}` in `docker run` command (update Phase 2's CodeServerManager).
+    - Ensure the extension activates correctly; verify by checking code-server logs.
+
+    - Update Phase 2's `CodeServerManager` to pass the user's Laravel Sanctum token (or a dedicated workspace JWT) into the container.
+
+    - Provide a static file route in Laravel to serve the .vsix (e.g., `/extensions/visioncode-collab.vsix`).
+
+    - Write a small test script to simulate a collaboration session.
+  </STEP_3_CONTAINER_INTEGRATION_AND_SIDELOADING>
+
+  <STEP_4_BLADE_UI_PRESENCE_AND_TOASTS>
+    Update the `workspace.blade.php` (from Phase 2) to include:
+
+    - **Top bar presence area**: Show glowing circular avatars of currently online users (fetched via API or listened via client-side Reverb). Use Laravel Echo on the frontend (outside iframe) to subscribe to the same presence channel and update avatar list on join/leave.
+    - **Toast notifications**: Listen for `UserJoinedRoom`, `UserLeftRoom`, and `ChatMessageSent` (optional) events to display premium dark toasts.
+    - **Chat button in top bar**: Opens a small chat panel overlay (or triggers the extension's chat via command if possible, but easier: we can also build a separate Blade chat panel outside iframe that syncs via Reverb). Since the extension already has a chat webview inside VS Code, we can keep it there; but to ensure consistency, the Blade UI can optionally mirror the chat via Reverb listening. For now, keep chat entirely inside code-server via extension, and the Blade UI only shows presence and toasts.
+    - **JavaScript**: Initialize Laravel Echo on the Blade page using the same credentials (provided by a meta tag or global JS variable). Listen to `.UserJoinedRoom`, `.UserLeftRoom`, `.ChatMessageSent` (if we want external chat), and update UI accordingly.
+    - Provide the complete updated Blade file and necessary JS.
+
+  </STEP_4_BLADE_UI_PRESENCE_AND_TOASTS>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps in order: 1 → 2 → 3 → 4.
+    Wait for "Approved, proceed to next step" between steps if output is extremely large.
+    After Step 4, announce: "Phase 3 Complete. Real-time collaboration extension fully operational. Ready for Phase 4 (AI Agent via Continue)?"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+---Phase 4
+
+<MASTER_PROMPT Phase="4" Name="AI_Agent_Continue_Integration" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite AI Integration Architect, Laravel Backend Engineer, and VS Code Extension Customizer.
+    You will integrate the open-source "Continue" extension (https://github.com/continuedev/continue) 
+    into our code-server workspaces, BUT with a custom Laravel LLM backend that proxies Claude Opus 4.7.
+    This backend enforces path sandboxing, logs every AI action, provides snapshot/rollback, 
+    and adds a custom patch preview (Diff Viewer) with human approval — all in a premium dark UI.
+    The final result must rival Cursor AI's agent mode and be competition-ready.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    Product: VisionLab. Code-server is embedded in Blade. Real-time collab extension runs inside it.
+    Now we add the AI Agent using Continue, but it will not call Claude directly. 
+    It will communicate with our own Laravel API endpoint (VisionLabBackend) which implements:
+    - Tool-use orchestration (read_file, write_file, list_dir, search_code)
+    - Mandatory sandboxing (only allow writes in app/, resources/views/, routes/, public/; never .env, vendor/)
+    - Snapshot before any write, rollback capability
+    - Patch preview with Diff Viewer webview inside VS Code
+    - CHAT (read-only), PLAN (read+plan), AGENT (read+write with approval) modes.
+  </PROJECT_CONTEXT>
+
+  <OBJECTIVES>
+    1. Build the "VisionLabBackend" in Laravel: AI controller, sandbox service, approval pipeline.
+    2. Configure Continue to use our backend as a custom LLM provider.
+    3. Build a custom VS Code webview extension (or extend Continue's UI) for Diff Viewer and Approval.
+    4. Implement the 3-mode system and streaming chat.
+    5. Inject everything into workspace containers.
+  </OBJECTIVES>
+
+  <STEP_1_LARAVEL_VISIONCODE_AI_BACKEND>
+    Provide COMPLETE Laravel code for the AI backend.
+
+    **AiController** (API routes):
+    - POST `/api/ai/chat` — receives messages array + mode (chat/plan/agent) + workspace_id.
+      Returns SSE (Server-Sent Events) stream.
+    - POST `/api/ai/approve-patch` — approves a pending patch.
+    - POST `/api/ai/reject-patch` — rejects and rolls back.
+    - GET `/api/ai/sessions/{workspace}` — list past chat sessions.
+    - GET `/api/ai/messages/{session}` — get history.
+
+    **AiService** (core logic):
+    - Builds system prompt based on mode:
+        CHAT: "You are a helpful coding assistant. You can read and search the codebase but never modify files."
+        PLAN: "You are a strategic coding planner. Analyze, outline steps, mention files, but do not write."
+        AGENT: "You are an autonomous coding agent. You can read, write, and apply patches, but all writes must be confirmed by the user via a patch preview."
+    - Injects workspace context (file tree summary, active file, selected text) from request.
+    - Sends request to Anthropic Claude API with **streaming enabled**, using the Messages API with tool definitions.
+    - Tool definitions:
+        * `read_file(path)` — calls AiSandbox::read()
+        * `list_directory(path)` — calls AiSandbox::list()
+        * `search_codebase(query)` — executes grep on workspace directory
+        * `propose_patch(file_path, search_block, replace_block)` — This is a special tool that does NOT apply directly; instead it stores a pending patch in database and returns a patch ID + diff preview. The frontend will show the Diff Viewer.
+    - When Claude requests `propose_patch`, the backend generates a unified diff, stores snapshot of original file, creates a pending patch record, and tells Claude that the patch is awaiting approval. Claude should then respond to the user with a message like "I have prepared a patch for file X. Please review it in the Diff Viewer."
+    - All other tools execute immediately (read, list, search) and return results.
+    - The response stream must be proxied back to the client as SSE with `data: {type: "text_delta", content: "..."}` and `data: {type: "tool_call", ...}` etc.
+
+    **AiSandbox** service:
+    - `readFile(workspaceId, relativePath)`: Validates path is within workspace root, returns content.
+    - `listDirectory(workspaceId, path)`: same validation, returns array.
+    - `searchCodebase(workspaceId, query)`: shell exec `grep -rni` within workspace.
+    - `preparePatch(workspaceId, filePath, searchBlock, replaceBlock)`: validates write path is allowed (not .env, vendor, etc.), generates diff, stores snapshot in `ai_snapshots`, stores pending patch in `ai_pending_patches` table with status 'pending'.
+    - `applyPatch(patchId)`: applies the change, logs action.
+    - `rollbackPatch(patchId)`: restores from snapshot, logs.
+
+    **Database Migrations** (if needed):
+    - `ai_pending_patches` (id, workspace_id, session_id, file_path, original_content, patched_content, diff, status, created_by, timestamps)
+
+    Provide all code with complete logic, validation, and erro  <STEP_2_CONTINUE_EXTENSION_CUSTOMIZATION>
+    We will not modify Continue source entirely; instead we will download the pre-compiled `.vsix`, dynamically modify its `package.json` to rebrand it as **VisionLab Agent**, repack it, and sideload it into the container. 
+    Our Laravel backend will expose an OpenAI-compatible chat completions endpoint that wraps our AiService.
+
+    **Rebranding Script (`storage/extensions/rebrand_continue.php`)**:
+    - Download the latest `linux-x64` version of Continue from OpenVSX.
+    - Extract the zip, modify `package.json` to set `name: visionlab-ai`, `displayName: VisionLab Agent`, `publisher: VisionLab`.
+    - Zip it back as `visionlab-ai.vsix`.
+
+    **Laravel OpenAI-compatible route**:
+    - POST `/api/ai/v1/chat/completions` — accepts standard OpenAI request `{ model, messages, stream }`
+    - Internally calls AiService with extracted messages, mode (AGENT/PLAN/CHAT), and workspace from request header `X-Workspace-Id`.
+
+    **Continue config.json** (injected into each workspace via `CodeServerManager`):
+    - Set `"apiBase"` to our Laravel endpoint and `"apiKey"` to the user's workspace token.
+    - Define custom slash commands in `customCommands`:
+      * `/agent` — Propose a patch for a task.
+      * `/plan` — Create a step-by-step implementation plan.
+      * `/ask` — Ask a question about the code.
+
+    **Container setup**:
+    - Mount `visionlab-ai.vsix` into `/mnt/extensions/` and run `code-server --install-extension` inside the container.
+  </STEP_2_CONTINUE_EXTENSION_CUSTOMIZATION>
+
+  <STEP_3_ONE_CLICK_AGENT_IMPLEMENTATION>
+    Enhance the `/plan` mode to feature a seamless transition to the Agent mode via a Markdown command link.
+
+    **Backend Logic (`AiService.php`)**:
+    - When the prompt is a Plan, append exactly: `[🚀 Start Implementation](command:visioncode.startImplementation)`.
+    - Add an `executePlan` method that takes the previously generated plan and autonomously runs an LLM call with the `propose_patch` tool in the background.
+
+    **Custom VS Code Command Integration (`visioncode-collab/extension.js`)**:
+    - Register the command `visioncode.startImplementation`.
+    - When clicked, make an invisible background `POST /api/workspace/{slug}/ai/execute-plan` request to Laravel.
+    - Laravel processes the plan, proposes patches, and broadcasts the `PatchProposed` Reverb event.
+
+    This ensures users can generate a plan and immediately tell the AI to execute it without typing another prompt.
+  </STEP_3_ONE_CLICK_AGENT_IMPLEMENTATION>
+
+  <STEP_4_CUSTOM_DIFF_VIEWER_WEBVIEW>
+    Continue does not have a built-in approval flow for patches. So we will build a small **custom webview extension** (a separate VS Code extension named `visioncode-patch-reviewer`) that listens for a custom command to show a diff viewer. This extension will be side-loaded alongside Continue.
+
+    **Extension functionality**:
+    - Registers a command `visioncode.showPatchPreview` that opens a Webview panel titled "AI Patch Review".
+    - The webview receives a patch object (file_path, diff, original content, new content) via `postMessage`.
+    - It displays a two-pane diff view (red/green) styled dark, with file name and action buttons: "Approve & Apply", "Reject", "Modify".
+    - On approve, it sends message back to extension host, which calls Laravel API `POST /api/ai/approve-patch` with patch ID, then refreshes the editor.
+    - On reject, calls reject API, closes webview.
+    - The webview must be premium dark themed, with monospace fonts for code, subtle animations.
+
+    **Communication flow**:
+    1. Continue AI (through our backend) generates a `propose_patch` tool call.
+    2. Our backend returns a special response to Continue that includes a link/command? Actually, Continue doesn't natively handle our custom tool. Instead, our Laravel backend, upon receiving a `propose_patch` request, will NOT execute it directly but will store the pending patch and return a tool result containing a JSON with `patchId` and a message. Then a client-side script (outside Continue) needs to trigger the diff viewer. 
+       Better: We embed a small script in the container that listens to a WebSocket or polling for new pending patches and then executes the VS Code command to show the patch preview. Or we extend the visioncode-collab extension (Phase 3) to listen for a custom event from Reverb (e.g., `PatchProposed`). When that event arrives, it auto-opens the diff viewer.
+    - So we will update the collab extension to subscribe to a private channel `workspace.{id}.patches` and listen for `PatchProposed` event with patch details. Upon receiving, it calls `vscode.commands.executeCommand('visioncode.showPatchPreview', patchData)`.
+    - The Laravel backend, when a `propose_patch` is triggered (by the AI via Continue), will broadcast this event to the workspace's patch channel.
+
+    Provide the full code for the `visioncode-patch-reviewer` extension (TypeScript + webview HTML/CSS/JS) and the updated collab extension with patch listener.
+  </STEP_4_CUSTOM_DIFF_VIEWER_WEBVIEW>
+
+  <STEP_4_BLADE_UI_AND_FINAL_INTEGRATION>
+    The workspace Blade layout from Phase 2 had a right sidebar placeholder. Now we can either keep it for quick AI session history or remove it, because the primary AI interface is inside Continue in code-server. For a cleaner approach, we will simplify: The right sidebar will be hidden by default, but a small floating button "AI" on top-right opens a panel that shows current AI session info (like active patches, recent messages). Not mandatory for MVP, but we can add a basic integration.
+
+    Provide updated workspace.blade.php if any changes needed (e.g., adding a floating AI button that focuses the Continue sidebar in code-server via postMessage). And ensure the collab extension's presence list and toasts still work.
+
+    Also, add to the top bar a tiny badge showing "AI patches pending" count, fetched via API.
+
+    Ensure all tokens and endpoints are correctly wired.
+  </STEP_4_BLADE_UI_AND_FINAL_INTEGRATION>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps 1 → 2 → 3 → 4 sequentially.
+    After each step, await approval if output is huge.
+    After Step 4, announce: "Phase 4 Complete. AI Agent with Continue and custom Diff Viewer fully operational. Ready for Phase 5 (Classroom System)?"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+---Phase 5
+
+<MASTER_PROMPT Phase="5" Name="Classroom_System" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite Laravel LMS Developer and UI/UX Specialist.
+    You are building a full Google Classroom replacement inside VisionLab.
+    All features must work with our existing RBAC (Admin, Instructor, Student) and 
+    integrate with the workspace/code-server system from previous phases.
+    Every view must use the ultra-premium dark theme: glassmorphism cards, glowing accents, 
+    staggered animations, skeleton loaders, and premium toast notifications.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    VisionLabalready has:
+    - Laravel 11 + MySQL (tables: courses, enrollments, assignments, submissions, announcements)
+    - Blade + Tailwind dark UI
+    - Workspace IDE with code-server
+    We now add the Classroom features:
+    Courses, Enrollments, Assignments (with workspace integration), Grading, Announcements, 
+    and role-specific dashboards.
+  </PROJECT_CONTEXT>
+
+  <OBJECTIVES>
+    1. Build Course management: Create, edit, delete, list, detail pages.
+    2. Build Enrollment system: Join by code, instructor invitation.
+    3. Build Assignment system: Create, submit, grade, feedback.
+    4. Build Announcements with rich text and real-time notifications.
+    5. Build Student & Instructor dashboards with stats and actions.
+  </OBJECTIVES>
+
+  <STEP_1_COURSES_AND_ENROLLMENTS>
+    Provide COMPLETE Laravel code for:
+
+    **CourseController**:
+    - `index()`: Instructor sees only their courses; Student sees enrolled courses; Admin sees all. Use pagination, beautiful card grid.
+    - `create() / store()`: Instructor creates course with title, description, cover image upload (store in `public/covers`), auto-generate 6-char enrollment code. Validate.
+    - `show(Course $course)`: Course detail page with tabs: Stream, Assignments, People. Enforce policy: instructor can view all tabs; student only Stream and Assignments.
+    - `edit() / update() / destroy()`: Only instructor or admin.
+
+    **EnrollmentController**:
+    - `joinByCode(Request $request)`: Student enters code, if valid and course active and not already enrolled, create enrollment. Return success/error.
+    - `inviteStudent(Course $course, Request $request)`: Instructor enters email (must exist), sends invitation notification, creates enrollment with status 'invited'. 
+    - `manageEnrollments(Course $course)`: List enrolled students with status, instructor can remove.
+
+    **Blade Views** (all dark themed, Tailwind):
+    - `courses/index.blade.php`: Grid of glassmorphic course cards (cover image, title, instructor, student count, enrollment code badge for instructor). Staggered fade-in animation. Skeleton loaders while fetching.
+    - `courses/show.blade.php`: Tabs layout. Stream tab shows announcements (from Step 3). Assignments tab shows cards of assignments (from Step 2). People tab shows enrolled students list with avatars.
+    - `courses/create.blade.php`, `edit.blade.php`: Forms with dark input fields, glowing submit buttons.
+    - `enrollments/join.blade.php`: Simple form with code input + join button.
+    - Include navigation links in the app layout.
+
+    **Policies**:
+    - `CoursePolicy`: Instructor can update/delete only own courses; Student can view enrolled courses; Admin all.
+    - `EnrollmentPolicy`: Student can join; Instructor can manage enrollments of own courses.
+
+    Provide ALL files: controllers, form requests, Blade views, policy classes, and route definitions in `web.php` (protected by auth + appropriate role middleware).
+  </STEP_1_COURSES_AND_ENROLLMENTS>
+
+  <STEP_2_ASSIGNMENTS_AND_SUBMISSIONS>
+    Provide COMPLETE Laravel code for:
+
+    **AssignmentController**:
+    - `create(Course $course) / store()`: Instructor creates assignment: title, description (Markdown or rich text), max points, due date (datetime-local), optional starter code (textarea or file upload). If `auto_workspace` checkbox is checked, create a workspace automatically when assignment is created? No — better: on student "Start Assignment" action.
+    - `edit / update / destroy`: Instructor only.
+    - `list(Course $course)`: Show all assignments for course, sorted by due date. Cards with due date countdown.
+
+    **SubmissionController**:
+    - `start(Assignment $assignment)`: Student clicks "Start Assignment". Check if workspace already exists for this student+assignment; if not, create a new workspace (using CodeServerManager from Phase 2), mount starter code if any, store workspace ID in submissions table with status 'in_progress'. Then redirect to workspace IDE page. If already exists, just redirect to same.
+    - `submit(Assignment $assignment)`: Student can submit. Snapshots the workspace files (zip `storage/workspaces/{id}/project/` and store path in `submissions.workspace_snapshot_path`), change status to 'submitted', set submitted_at. Prevent multiple submissions? Allow but mark late if after due date.
+    - `grade(Submission $submission, Request $request)`: Instructor grades: enter grade (0 to max_points), feedback text, status = 'graded'. Update submission.
+    - `view(Assignment $assignment)`: Instructor sees table of submissions with student names, status, submission time, grade input form. Student sees own submission status.
+
+    **Blade Views**:
+    - `assignments/create.blade.php`, `edit.blade.php`: Form with dark inputs, Markdown editor (simple textarea with preview, or integrate EasyMDE for rich text). Due date picker.
+    - `assignments/list.blade.php`: Part of course show page or separate view; card per assignment with title, due, status (submitted/graded/not started).
+    - `submissions/start.blade.php`: Confirmation page "Start Assignment" with details and button.
+    - `submissions/grade.blade.php`: Instructor grading interface; view student's file tree (read-only via API), grade input, feedback textarea.
+    - All styled with dark theme, glassmorphism, and transitions.
+
+    **Additional features**:
+    - Due date countdown: Calculate remaining time via JavaScript and display a live countdown (can be simple refresh on each load).
+    - Late submission: If submitted after due date, show a red "Late" badge.
+    - Grade book: In course show, a table/grid of assignments vs students with grades (like Google Classroom gradebook). Provide a simple Blade view.
+
+    Provide all files with complete logic.
+  </STEP_2_ASSIGNMENTS_AND_SUBMISSIONS>
+
+  <STEP_3_ANNOUNCEMENTS_AND_NOTIFICATIONS>
+    Provide COMPLETE Laravel code for:
+
+    **AnnouncementController**:
+    - `store(Course $course, Request $request)`: Instructor posts announcement with title and body (rich text using Tiptap or similar; we can use a simple WYSIWYG like EasyMDE or just Markdown and render with Parsedown). Broadcast `NewAnnouncement` event on course channel.
+    - `index(Course $course)`: List announcements in descending order; show on Stream tab.
+    - `destroy(Announcement $announcement)`: Instructor can delete.
+
+    **Notification System**:
+    - Create `NewAnnouncement` event that implements `ShouldBroadcast`. Broadcast on presence channel `course.{courseId}` so all enrolled students get a real-time toast.
+    - Optionally, dispatch a queued job to send email notifications (use Laravel Notifications). For MVP, just real-time.
+    - Frontend: Enroll the student's browser to that course's presence channel and show a premium toast when announcement arrives. Include this JS in the course show page.
+    - Navbar notification bell: Show count of unread announcements (store read status? For simplicity, store last seen announcement ID per user per course in a pivot or session; or just show all and mark as read on click).
+
+    **Blade Views**:
+    - `announcements/stream.blade.php`: Partial view included in course show Stream tab. Each announcement: author avatar, name, timestamp, rendered body. Styled as dark cards.
+    - `announcements/create.blade.php`: Modal or separate page with rich editor. Use a simple Markdown editor.
+
+    Provide all code: controller, event, listener (if needed), Blade partials, and JS for real-time toast and notification bell.
+  </STEP_3_ANNOUNCEMENTS_AND_NOTIFICATIONS>
+
+  <STEP_4_DASHBOARDS_AND_FINAL_POLISH>
+    Provide the Blade views for:
+
+    **Student Dashboard** (route `/dashboard` default after login):
+    - Welcome message with student name.
+    - "My Courses" grid (same card design, but only enrolled). Skeleton loading, stagger animation.
+    - "Upcoming Deadlines" section: assignments due in next 7 days with countdown.
+    - "Recent Announcements" list (last 5 across courses).
+    - Quick action: "Join Course" button with code input modal.
+
+    **Instructor Dashboard**:
+    - Stats cards: total active courses, total students, pending submissions count (with links).
+    - "My Courses" with management buttons.
+    - "Recent Activity" feed (new submissions, enrollments).
+    - Quick create course button.
+
+    **Admin Dashboard** (can be placeholder or link to existing admin from Phase 7):
+    - Overview: total users, courses, active workspaces, AI usage.
+
+    Update the main navigation to include links to dashboard, courses, and admin (if role).
+    Ensure all views are consistent with the ultra-premium design language.
+
+    Provide all Blade files and any additional controllers.
+  </STEP_4_DASHBOARDS_AND_FINAL_POLISH>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4.
+    Wait for approval between steps if output is large.
+    After Step 4, announce: "Phase 5 Complete. Classroom system fully operational. Ready for Phase 6 (Video Conferencing)?"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---Phase 6
+
+
+<MASTER_PROMPT Phase="6" Name="Video_Conferencing_Jitsi" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite WebRTC & Jitsi Integration Specialist and Laravel Backend Engineer.
+    You will implement a fully self-hosted (or JaaS‑backed) video conferencing system that feels native to VisionLab.
+    The integration must be seamless: users can start/join a video call directly from within the workspace
+    (either via a button in the IDE’s top bar or via the VisionCode Collab extension).
+    All backend logic uses Laravel, real-time events go through Reverb, and authentication is enforced.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    VisionLabalready has:
+    - Code‑server embedded inside Blade workspace page.
+    - Custom VS Code extension (VisionCode Collab) with a video command stub (Phase 3).
+    - Laravel Reverb for real-time events and presence channels.
+    - Docker infrastructure for workspace containers.
+    We will now add video rooms using Jitsi Meet (self‑hosted via Docker or JaaS for MVP).
+    Every workspace can have an active video room; joining is restricted to collaborators.
+  </PROJECT_CONTEXT>
+
+  <OBJECTIVES>
+    1. Set up Jitsi Meet (self‑hosted or JaaS) and configure the platform.
+    2. Build Laravel backend: VideoRoomController, JWT generation, Reverb events.
+    3. Enhance the VisionCode Collab extension to embed Jitsi in a webview panel.
+    4. Add video join button to Blade workspace top bar with presence indicators.
+    5. Ensure only authorized members can enter, with moderator controls for instructor.
+  </OBJECTIVES>
+
+  <STEP_1_JITSI_INFRASTRUCTURE_AND_CONFIGURATION>
+    Provide exact instructions and configuration:
+
+    **Option A (Self‑hosted, recommended for production):**
+    - Add a `docker-compose.jitsi.yml` service block using the official `docker‑jitsi‑meet` image. Include all required services (web, prosody, jicofo, jvb). Configure environment variables: `PUBLIC_URL`, `JVB_ADVERTISE_IPS`, `JWT_APP_ID`, `JWT_APP_SECRET`, etc.
+    - Set up Nginx reverse proxy to expose Jitsi under a subdomain (e.g., `meet.visioncode.test`) with SSL.
+    - Enable JWT authentication: only tokens generated by our Laravel app can create/join rooms.
+
+    **Option B (JaaS – Jitsi as a Service, faster for MVP):**
+    - Use `api.meet.jaas.net` with API key. 
+    - Implement the same backend logic but using JaaS REST API to create rooms and generate tokens.
+
+    **Laravel .env additions:**
+    - `JITSI_DOMAIN`, `JITSI_APP_ID`, `JITSI_APP_SECRET`, `JITSI_MODE=jaas|selfhosted`
+
+    **Laravel config/service:**
+    - Create a `JitsiService` class that generates a room name (random string + workspace ID), creates a moderator token (instructor) and attendee tokens (students) using the Jitsi JWT library (firebase/php-jwt). If JaaS, use their REST API.
+    - Room names must be unique per workspace and stored in `video_rooms` table.
+
+    Provide the complete service code, migration for `video_rooms` (if not already), and any config files.
+  </STEP_1_JITSI_INFRASTRUCTURE_AND_CONFIGURATION>
+
+  <STEP_2_LARAVEL_BACKEND_VIDEO_ROOMS>
+    Provide COMPLETE Laravel code for:
+
+    **VideoRoomController:**
+    - `start(Workspace $workspace)`: Check user is collaborator. If a room already exists and is active, just return the join details. Otherwise, generate a new Jitsi room via `JitsiService`, store in `video_rooms`, broadcast `VideoCallStarted` event on `workspace.{id}` presence channel, return JSON with `{ roomName, jwt, jitsiDomain }`.
+    - `status(Workspace $workspace)`: Return if a call is active and who started it.
+    - `end(Workspace $workspace)`: Only instructor or admin can end. Broadcast `VideoCallEnded`, mark room ended in DB.
+
+    **Events:**
+    - `VideoCallStarted`: payload `{ workspaceId, roomName, jitsiDomain, starterId, starterName }`
+    - `VideoCallEnded`: payload `{ workspaceId, roomName }`
+
+    **API Routes** (in `api.php`):
+    - `POST /api/workspace/{workspace}/video/start`
+    - `GET /api/workspace/{workspace}/video/status`
+    - `POST /api/workspace/{workspace}/video/end`
+
+    **Authorization:**
+    - Use Laravel Policies/Gates: only workspace collaborators can start/join; only instructor/admin can end.
+
+    Provide all controller code, events, and route definitions. Ensure JitsiService is fully implemented with real JWT generation using the configured secret.
+  </STEP_2_LARAVEL_BACKEND_VIDEO_ROOMS>
+
+  <STEP_3_ENHANCE_VISIONCODE_COLLAB_EXTENSION>
+    We will update the custom VS Code extension from Phase 3 to implement the video call feature.
+
+    **In the extension's `VideoPanel.ts` (or `VideoCallIntegration.ts`):**
+    - Extend the command `visioncode.startVideoCall`:
+      1. Call Laravel API `POST /api/workspace/{workspaceId}/video/start` with the user's token.
+      2. On success, obtain `roomName`, `jwt`, and `jitsiDomain`.
+      3. Open a new Webview Panel (`vscode.window.createWebviewPanel`) with the title "VisionCode Video Call".
+      4. Inside the webview, load an HTML page that embeds the Jitsi meeting using the iframe API.
+      5. Pass the JWT and room name to the Jitsi iframe for authentication.
+      6. Handle the `videoConferenceLeft` event from Jitsi API to automatically close the panel and optionally call the end API.
+      7. Show a status bar item indicating "Call in progress" with a glowing icon when a call is active (based on `VideoCallStarted` event listened via Reverb).
+    - Register the command and status bar item in `extension.ts`.
+
+    **Webview HTML/CSS/JS:**
+    - Create a minimal, dark‑themed HTML page for the Jitsi iframe. It must:
+        * Load the Jitsi Meet External API script from the configured domain.
+        * Initialize the JitsiMeetExternalAPI with the room name, JWT, and custom options (disable prejoin page, hide invite button, custom toolbar colors to match dark theme).
+        * Listen for events and post messages back to the extension host when the call ends.
+        * Style: full‑screen iframe, dark background, no scrollbars.
+    - The webview content must be generated inline or loaded via a data URI string to avoid extra server files.
+
+    **Presence sync:**
+    - The extension should listen on Laravel Reverb channel `workspace.{id}` for `VideoCallStarted` and `VideoCallEnded` events.
+    - When a call starts, show a toast "Instructor started a video call – Join now" and automatically offer to open the webview.
+    - When the call ends, close the webview if open.
+
+    Provide the complete TypeScript code for the updated extension files and the webview HTML/JS.
+  </STEP_3_ENHANCE_VISIONCODE_COLLAB_EXTENSION>
+
+  <STEP_4_BLADE_UI_AND_FINAL_TOUCHES>
+    Update the `workspace.blade.php` (from Phase 2) to include:
+
+    - **Video Call button** in the top bar (next to users list). It should have a camera icon and, when an active call is in progress, pulse with a green glow.
+    - **Join call behavior:** When clicked, it could either trigger the extension command (if possible via postMessage to the code-server iframe) or, easier: open the Jitsi room in a new browser tab. But for a truly integrated feel, we guide the user to use the built‑in extension. So the Blade button will provide a tooltip "Open video call in IDE" and we ensure the extension is active. But to be safe, also provide a fallback link that opens the Jitsi URL directly in a new tab.
+    - **Presence indicator:** Show an icon/badge when a call is active, listening to Laravel Echo on the Blade side.
+    - **Toast notification:** Use the existing Blade toast system to show when a call starts/ends.
+
+    Also, provide an admin setting to toggle video calling per workspace (future Phase 7 will extend this). For now, always enabled.
+
+    Provide the updated Blade snippets (top bar area) and any additional JS for Laravel Echo listeners.
+  </STEP_4_BLADE_UI_AND_FINAL_TOUCHES>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4.
+    Wait for approval between steps if output is large.
+    After Step 4, announce: "Phase 6 Complete. Video conferencing fully integrated. Ready for Phase 7 (Admin Extensions & User Management)?"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---Phase 7
+
+
+<MASTER_PROMPT Phase="7" Name="Admin_Extensions_And_Management" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite Laravel Backend Architect and Enterprise Dashboard Designer.
+    You will build a complete Admin Control Panel for VisionLabthat lets administrators
+    manage extensions (global + per‑workspace), users (roles, suspension), workspaces (health, stop),
+    and view platform‑wide stats. The UI must be ultra‑premium, dark‑themed, with data tables,
+    toggles, modals, and glassmorphism. This is the nerve center of the platform.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    VisionLabnow has: IDE, real‑time collab, AI agent (Continue + custom backend), 
+    classroom (courses/assignments/grading), and video conferencing.
+    Extensions are listed in the `extensions` table (seeded in Phase 1). 
+    A pivot table `workspace_extensions` controls per‑workspace overrides.
+    We need to give admins a beautiful UI to manage all of this, plus user and workspace oversight.
+  </PROJECT_CONTEXT>
+
+  <OBJECTIVES>
+    1. Build Admin Dashboard with real platform stats.
+    2. Build Extension Management: CRUD, global enable/disable, per‑workspace toggle.
+    3. Build User Management: list, search, role change, suspend/activate.
+    4. Build Workspace Management: list, health status, force stop, view files.
+    5. Protect all routes with admin role middleware and policies.
+  </OBJECTIVES>
+
+  <STEP_1_ADMIN_LAYOUT_AND_DASHBOARD>
+    Provide COMPLETE Laravel code for:
+
+    **Admin Layout** (`resources/views/layouts/admin.blade.php`):
+    - A separate admin shell with left sidebar navigation (dark, glassmorphic).
+    - Sidebar links: Dashboard, Users, Workspaces, Extensions, Analytics (placeholder for Phase 8), Back to App.
+    - Active link glowing left border accent.
+    - Top bar with admin avatar, notification bell, logout.
+    - Content area for page views.
+    - Uses the same premium dark theme (#0a0a0a bg, glassmorphism, ultra‑thin scrollbars).
+
+    **AdminController:**
+    - `index()`: Returns admin dashboard with live stats:
+        * Total users (by role: admin, instructor, student)
+        * Total active workspaces
+        * Total courses
+        * AI actions today (from `ai_actions_log`)
+        * Active video calls
+        * Recent user registrations (last 5)
+    - Each stat in a glassmorphic card with icon and number, animated counting effect (JS).
+
+    **Admin Dashboard Blade** (`admin/dashboard.blade.php`):
+    - Staggered grid of stat cards (glassmorphism, glow on hover).
+    - Quick action buttons: "Manage Extensions", "View Users", "View Workspaces".
+    - Recent activity feed (new users, new courses, AI actions).
+    - Styled with skeleton loaders and fade‑in animations.
+
+    **Routes:** Group `Route::prefix('admin')->middleware(['auth', 'role:admin'])` in `web.php`.
+
+    Provide all layout files, controllers, and route definitions.
+  </STEP_1_ADMIN_LAYOUT_AND_DASHBOARD>
+
+  <STEP_2_EXTENSION_MANAGEMENT>
+    Provide COMPLETE Laravel code for:
+
+    **ExtensionController:**
+    - `index()`: List all extensions in a data table. Columns: Name, Version, Type (built‑in/custom), Global Status (toggle switch), Actions (edit, per‑workspace config).
+    - `create() / store()`: Admin can add a new extension (name, package_identifier, version, description, is_global, is_builtin).
+    - `edit() / update()`: Edit extension details.
+    - `toggleGlobal(Extension $extension)`: AJAX toggle to enable/disable globally. This updates `is_active` in `extensions` table.
+    - `workspaceConfig(Extension $extension)`: Shows a modal or page listing all workspaces with a toggle for each — enabling/disabling the extension per workspace via the pivot `workspace_extensions`.
+    - `updateWorkspaceConfig(Extension $extension, Request $request)`: Receives array of workspace IDs + enabled boolean, updates pivot.
+    - `destroy(Extension $extension)`: Delete (only custom, not built‑in).
+
+    **Blade Views:**
+    - `admin/extensions/index.blade.php`: Dark data table (using Tailwind, not a package) with search, pagination, and toggle switches. Each row has a subtle glassmorphic background.
+    - `admin/extensions/create.blade.php` / `edit.blade.php`: Forms with dark inputs.
+    - `admin/extensions/workspace-config.blade.php`: Modal with list of workspaces (name, owner, course) and a toggle switch for each. Save button.
+
+    **JavaScript:**
+    - AJAX toggle for global status: sends PATCH request, shows success toast, updates UI optimistically.
+    - Workspace config modal: loaded via AJAX, toggles send AJAX requests per workspace.
+
+    **Pre‑defined extensions (update seeder if needed)**:
+    Ensure these are seeded:
+    - `visioncode-collab` (built‑in, global)
+    - `visioncode-patch-reviewer` (built‑in, global)
+    - `continue` (built‑in, global)
+    - `gitlens` (built‑in, optional global)
+    - `prettier` (built‑in, optional global)
+    - `sonarlint` (built‑in, optional global)
+    - `code-runner` (built‑in, optional global)
+    - `markdown-preview` (built‑in, optional global)
+    - `docker-explorer` (custom, optional)
+    - `database-client` (custom, optional)
+
+    **Applying extension state to containers:**
+    - When an extension is toggled per workspace, create a queued job `SyncWorkspaceExtensions` that updates the code‑server container: either install/uninstall extension via `code-server --install-extension` / `--uninstall-extension` inside the container. Use Symfony Process to execute commands in the container (`docker exec -u coder {container} code-server --install-extension {vsix}`).
+    - Log success/failure.
+
+    Provide ALL code: controller, blade views, JS, queued job class, and policy.
+  </STEP_2_EXTENSION_MANAGEMENT>
+
+  <STEP_3_USER_MANAGEMENT>
+    Provide COMPLETE Laravel code for:
+
+    **AdminUserController:**
+    - `index()`: List all users in a data table. Columns: Avatar, Name, Email, Role (badge with color: Admin=red, Instructor=violet, Student=cyan), Status (active/suspended), Joined date, Actions (edit, suspend/activate).
+    - `edit(User $user) / update()`: Admin can change user's name, email, role (dropdown), and status (suspend/activate).
+    - `suspend(User $user)`: Set status to 'suspended'. Suspended users cannot log in (add check in login logic — update AuthenticatedSessionController from Phase 1 to reject suspended users).
+    - `activate(User $user)`: Set status to 'active'.
+    - Search and filter by role, status.
+
+    **Blade Views:**
+    - `admin/users/index.blade.php`: Data table with search bar, role filter dropdown. Pagination. Each user row clickable to edit.
+    - `admin/users/edit.blade.php`: Edit form with role dropdown, status toggle, and save button.
+
+    **Update Login Logic:**
+    - Modify `AuthenticatedSessionController` (or LoginController) to check if user status is 'active'. If suspended, log them out with error message "Your account has been suspended. Contact administrator."
+
+    Provide all controller code, blade views, and the updated login check.
+  </STEP_3_USER_MANAGEMENT>
+
+  <STEP_4_WORKSPACE_MANAGEMENT>
+    Provide COMPLETE Laravel code for:
+
+    **AdminWorkspaceController:**
+    - `index()`: List all workspaces. Columns: ID, Owner name, Course (if linked), Assignment (if linked), Collaborators count, Status (active/inactive/error), Created date, Actions (view details, stop).
+    - `show(Workspace $workspace)`: Detailed view with:
+        * Workspace info (owner, course, container ID, port, URL, status).
+        * Collaborators list.
+        * Recent file changes (from `ai_actions_log` or `collab_sessions`).
+        * AI usage stats for this workspace.
+        * "Open in IDE" link.
+        * "Stop Workspace" button.
+    - `stop(Workspace $workspace)`: Calls `CodeServerManager::stopWorkspace()`, marks inactive, broadcasts to collaborators that workspace is stopping.
+    - `status(Workspace $workspace)`: AJAX endpoint returning live status (container running, CPU/memory placeholder).
+    - `destroy(Workspace $workspace)`: Delete workspace record and remove files (soft delete or archive).
+
+    **Blade Views:**
+    - `admin/workspaces/index.blade.php`: Data table with status badges (green dot = active, gray = inactive, red = error).
+    - `admin/workspaces/show.blade.php`: Detailed view with glassmorphic cards.
+
+    **Background Job:**
+    - Create a scheduled command `workspaces:cleanup` that runs daily and stops workspaces inactive for 7+ days (or after assignment due date + grace period). Log cleanups.
+
+    Provide all controller code, blade views, command class, and route definitions.
+  </STEP_4_WORKSPACE_MANAGEMENT>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4.
+    Wait for approval between steps if output is large.
+    After Step 4, announce: "Phase 7 Complete. Admin Control Panel fully operational. Ready for Phase 8 (Analytics, Polish & Demo Script)?"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---Phase 8
+
+
+<MASTER_PROMPT Phase="8" Name="Analytics_Polish_Demo" version="5.0">
+  <SYSTEM_ROLE>
+    You are an Elite Data Visualization Engineer, UI/UX Finisher, and Pitch Coach.
+    This is the FINAL phase of VisionLab.
+    You will build stunning dark‑themed analytics charts, apply final micro‑interactions and polish,
+    implement the AI Artifacts & Memory system, and write the exact 3‑minute Aptech Vision 2026 demo script.
+    After this phase, the product must be ready to present and win.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    All core features are built: IDE, real‑time collab, AI agent, classroom, video, admin.
+    Now we add the "wow" factor:
+    - Analytics that look like a Silicon Valley SaaS.
+    - Skeleton loaders, unified toasts, and entrance animations everywhere.
+    - AI artifacts (like Claude's artifacts) rendered as isolated interactive cards.
+    - Persistent AI memory file (.visioncode_memory.md).
+    - A dedicated demo guide view with step‑by‑step script for judges.
+  </PROJECT_CONTEXT>
+
+  <OBJECTIVES>
+    1. Build the Admin Analytics Dashboard with live charts and stats.
+    2. Apply final UI/UX polish: skeleton loaders, toasts, empty states, error pages, meta tags, favicon.
+    3. Implement AI Artifacts (<vision_artifact>) and memory file system (read/write by AI).
+    4. Write the complete 3‑minute Judge Demo Script embedded in a dedicated /demo route.
+    5. Final review and production readiness notes.
+  </OBJECTIVES>
+
+  <STEP_1_ANALYTICS_CHARTS_AND_DASHBOARD>
+    Provide COMPLETE Laravel and Blade code for the analytics section.
+
+    **AnalyticsController** (in `app/Http/Controllers/Admin/AnalyticsController.php`):
+    - `index()`: aggregate and return data for:
+        * Daily Active Users (last 30 days) — from `analytics_events` or `users` login timestamps (if we don't have login tracking, count distinct users per day from `collab_sessions` heartbeat or `ai_messages` creation date; otherwise simulate with a database query counting `users` created per day as a proxy, but preferably we add a `user_logins` table? For simplicity, we'll count `collab_sessions` with distinct user_id per day; if that's empty, count `users` created per day. Mention to the AI to use whichever data is available and create `analytics_events` if needed).
+        * Code Submissions per day (from `submissions`).
+        * AI Actions per day (from `ai_actions_log`).
+        * Active Workspaces right now (count from `workspaces` where `is_active = true`).
+        * AI Mode Usage (CHAT/PLAN/AGENT) pie chart (from `ai_chat_sessions`).
+        * Total Users, Courses, Assignments.
+    - The controller returns these as JSON for the Chart.js frontend OR passes them to the Blade view as PHP variables. Provide both ways for flexibility; the Blade view will use inline `<script>` to render charts.
+
+    **Analytics Blade View** (`admin/analytics/index.blade.php`):
+    - Full dark‑themed dashboard with a grid of stat cards (glassmorphism, animated count‑up effect).
+    - Include Chart.js CDN and write custom initialization scripts for:
+        * Line chart: Daily active users (glowing violet line, gradient fill, dark grid lines).
+        * Bar chart: Code submissions per day (cyan bars with glow).
+        * Doughnut chart: AI mode distribution (violet/cyan/amber segments).
+        * (Optional) Heatmap of activity hours (not required, but cool).
+    - Charts must be animated on load (Chart.js animation config).
+    - Below the charts: a data table "Recent AI Actions" showing last 10 actions from `ai_actions_log` with file path and action type.
+    - Provide all necessary JS and ensure Tailwind classes match the premium theme.
+    - Add a `analytics.blade.php` that extends the admin layout.
+  </STEP_1_ANALYTICS_CHARTS_AND_DASHBOARD>
+
+  <STEP_2_FINAL_UI_UX_POLISH>
+    Provide code additions/modifications to unify the entire app's experience:
+
+    **Skeleton Loaders:**
+    - Create a Blade component `<x-skeleton-loader />` that renders an animated shimmer placeholder (dark grey gradient). Use this component everywhere: course cards, user lists, file tree, chat messages loading.
+    - Replace any "Loading..." text with skeleton loaders in all relevant views.
+
+    **Unified Toast System:**
+    - Create a Blade component `<x-toast-container />` and a global JavaScript `VisionCode.toast(message, type)` function that shows premium dark toasts (sliding from top‑right, glassmorphic background, icons for success/error/warning/info).
+    - Replace all `alert()` calls and basic notifications with this toast system across the entire codebase (the AI should scan existing views/JS and provide updates). Provide the global JS file and the Blade include.
+
+    **Empty States:**
+    - Create a Blade component `<x-empty-state icon="..." title="..." description="..." />` for when lists are empty. Use beautiful icons (Heroicons) and a subtle illustration style.
+    - Update empty states in: courses list ("No courses yet — join or create one!"), assignments, announcements, workspace file tree, admin user list, etc.
+
+    **Error Pages:**
+    - Customize `resources/views/errors/404.blade.php`, `500.blade.php`, `403.blade.php`, `419.blade.php` with the premium dark theme. Show a glowing "404" number, a message, and a back‑to‑home button. No default Laravel error page.
+
+    **Meta Tags & Favicon:**
+    - Update `resources/views/layouts/app.blade.php` head section: include proper `<title>`, meta description, Open Graph tags for social sharing (`og:title`, `og:description`, `og:image` placeholder), and dark‑theme favicon links. Provide placeholder paths.
+
+    **Staggered Entrance Animations:**
+    - Add a small JavaScript utility (Intersection Observer) that adds a CSS class `animate-fade-in-up` when elements enter the viewport. Use this on all card grids (courses, assignments, admin stat cards) by adding a `data-animate` attribute. Provide the JS and Tailwind animation classes.
+
+    Provide all these Blade components, JS utilities, and update instructions for existing views.
+  </STEP_2_FINAL_UI_UX_POLISH>
+
+  <STEP_3_AI_ARTIFACTS_AND_MEMORY_SYSTEM>
+    Enhance the AI agent backend (from Phase 4) and frontend to support:
+
+    **Artifacts:**
+    - Update the AiService's system prompt to include: "If you generate standalone code (HTML, CSS, JS), a UI component, or a diagram, wrap it in `<vision_artifact title="Component Name" language="html">...</vision_artifact>` tags."
+    - Update the streaming response parser in the chat frontend (inside Continue or our custom chat panel) to detect these tags:
+        * When a `vision_artifact` tag is encountered, do not render raw markdown. Instead, render a beautiful **Artifact Card** (dark glassmorphic card, glowing border, title bar with language badge).
+        * The card contains three interactive buttons:
+            - **Preview**: Renders the artifact content in a sandboxed iframe (using `srcdoc` with the content, ensuring scripts run safely).
+            - **Copy Code**: Copies the content to clipboard and shows toast.
+            - **Apply to Workspace**: Saves the artifact content as a file in the workspace (prompt for file path or use a default). Calls the Laravel file write API.
+        * The artifact card should have a subtle entrance animation.
+    - Since we integrated Continue, implementing custom artifact cards there is tricky. Instead, we will build a standalone **VisionCode Artifacts Panel** as a webview in the VisionCode Collab extension (or as a separate Blade panel in the workspace page), where all artifacts for the current session are displayed. The Continue chat will remain but the collab extension (or Blade) will listen for `artifact_generated` events from the backend via Reverb, and display them.
+    - In Laravel, when the AiService outputs an artifact, it will broadcast an `ArtifactGenerated` event with the artifact data (title, language, content) to the workspace's Reverb channel.
+    - The frontend (Blade or extension) will render the Artifact Card.
+    - Provide the updated AiService prompt, the broadcast event class, the frontend JavaScript for listening and rendering, and the CSS for the artifact card.
+
+    **Memory File:**
+    - The AI must maintain a `.visioncode_memory.md` file in the workspace root.
+    - In the AiService system prompt, add: "At the beginning of each conversation, read `.visioncode_memory.md` if it exists. When you learn new user preferences, tech stack details, or project rules, update the memory file via the write_file tool (or propose_patch). Keep it concise."
+    - The AiController (or AiService) will, before sending messages to Claude, check if `.visioncode_memory.md` exists; if so, read its content and prepend it to the system prompt as `User's Memory: ...`.
+    - Provide the updated read logic and prompt modifications.
+    - Also, show a small "Memory" indicator in the AI chat sidebar (or Blade panel) with a tooltip showing last modified date and a link to view the file.
+  </STEP_3_AI_ARTIFACTS_AND_MEMORY_SYSTEM>
+
+  <STEP_4_THREE_MINUTE_JUDGE_DEMO_SCRIPT>
+    Create a dedicated route `/demo-script` accessible only to authenticated instructors and admins, and a view `demo.blade.php` that presents the full step‑by‑step demo script.
+
+    **The script must include:**
+    - Title: "VisionLab— Aptech Vision 2026 — 3‑Minute Judge Demo"
+    - Each segment with a timestamp, description, and specific actions/quotes.
+    - The script must showcase every major feature in this order:
+
+    **[0:00‑0:30] Grand Opening & Landing**
+    - Display the landing page with animations.
+    - Login as Student (demo account).
+    - Show Student Dashboard with enrolled courses and upcoming deadlines.
+    - Physical cue: "[Make eye contact with judges, smile]"
+
+    **[0:30‑1:15] The Collaborative IDE**
+    - Open a course, enter a workspace.
+    - Show the code‑server IDE embedded with file explorer and terminal.
+    - Write a simple Python function, run it, see output.
+    - Switch to Instructor (second browser window).
+    - Join the same workspace — show real‑time cursor tracking and live editing.
+    - Physical cue: "[Pause for effect — this is live multiplayer coding]"
+
+    **[1:15‑2:00] The AI Agent (Star Feature)**
+    - Open the AI chat inside code‑server (Continue).
+    - Show CHAT mode: "Explain this function."
+    - Show PLAN mode: "Plan how to add error handling."
+    - Show AGENT mode: "Add input validation to this route" — AI proposes patch, Diff Viewer appears, approve and apply, file updates live.
+    - Briefly show the AI Artifacts panel if any artifact is generated.
+    - Physical cue: "[Emphasize — this is not just chat, it's an autonomous coding agent with sandboxed approval]"
+
+    **[2:00‑2:45] Classroom & Ecosystem**
+    - Switch to Instructor view: Show course management, assignment creation, grading interface.
+    - Show Admin Dashboard: Extension management, analytics charts.
+    - Start a video call from within the IDE (show Jitsi embedded), demonstrate that collaboration includes video.
+    - Physical cue: "[One platform — replaces Classroom, Zoom, and Copilot]"
+
+    **[2:45‑3:00] Powerful Close**
+    - "VisionLabis more than a code editor — it's a complete education ecosystem."
+    - "It empowers students to learn together, instructors to teach effectively, and AI to assist responsibly."
+    - "Thank you, judges. We're ready for your questions."
+    - Show the VisionLablogo with tagline: "Code. Collaborate. Learn."
+
+    **The view must:**
+    - Be beautifully formatted (dark theme, timeline design).
+    - Include a print‑friendly version.
+    - Have a "Presenter Mode" button that shows large text with a timer running.
+    - Provide all HTML/CSS/JS for this demo view.
+
+    Additionally, write a script for setting up the demo environment (pre‑seeded data, open two browser windows, log in as student and instructor).
+  </STEP_4_THREE_MINUTE_JUDGE_DEMO_SCRIPT>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4.
+    Wait for approval between steps if output is large.
+    After Step 4, announce: "🎉 ALL 8 PHASES COMPLETE! VisionLabis fully built, polished, and ready to win Aptech Vision 2026. 🎉"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---Phase 9
+
+
+<MASTER_PROMPT Phase="9" Name="Production_Deployment_And_Security_Hardening" version="1.0">
+  <SYSTEM_ROLE>
+    You are an Elite DevOps Architect, Security Auditor (OWASP), and Infrastructure Engineer.
+    VisionLabis built. Now we must make it unbreakable, performant, and live.
+    Your task: production Docker deployment, Nginx reverse proxy, HTTPS, database optimization,
+    security audit & hardening, automated testing, CI/CD pipeline, and final performance tuning.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    All 8 phases are complete: IDE, Collab, AI Agent, Classroom, Video, Admin, Analytics, Demo Script.
+    Now we need to ship it. The platform uses Laravel 11, MySQL, code-server Docker containers,
+    Laravel Reverb, Jitsi (optional), and a custom VS Code extension inside code-server.
+    We must ensure it can survive a live demo and handle multiple simultaneous users.
+  </PROJECT_CONTEXT>
+
+  <OBJECTIVES>
+    1. Production Docker Compose setup (all services) with proper networking.
+    2. Nginx reverse proxy configuration for SSL, WebSocket proxying (Reverb, code-server).
+    3. Security Hardening: OWASP top 10 mitigation, rate limiting, CSP headers, file upload scanning.
+    4. Database Optimization: query indexes, caching (Redis), connection pooling.
+    5. Automated Testing Suite: feature tests for all critical workflows + Browser automation (Laravel Dusk).
+    6. CI/CD Pipeline: GitHub Actions script for testing & deployment.
+    7. Production Environment Checklist & Monitoring setup (basic health checks, log aggregation).
+  </OBJECTIVES>
+
+  <STEP_1_PRODUCTION_DOCKER_INFRASTRUCTURE>
+    Provide COMPLETE files:
+
+    - `docker-compose.prod.yml` with services:
+        * `app` (Laravel PHP 8.3 FPM)
+        * `webserver` (Nginx, serving Laravel and proxying WebSocket)
+        * `mysql` (MySQL 8 with persistent volume)
+        * `redis` (for cache, sessions, queues)
+        * `reverb` (Laravel Reverb server)
+        * `code-server` (template service, dynamically spawned but we can have a base image)
+        * `jitsi` (optional, commented)
+        * `mongodb` (if still needed, otherwise remove)
+    - All necessary environment variables via `.env.prod` file (template).
+    - Network configuration to allow inter-container communication securely.
+
+    - `Dockerfile` for the Laravel app (multi-stage build).
+    - `Dockerfile` for code-server with our custom extensions pre-installed.
+
+    Provide all Docker-related files with proper instructions.
+  </STEP_1_PRODUCTION_DOCKER_INFRASTRUCTURE>
+
+  <STEP_2_NGINX_REVERSE_PROXY_AND_HTTPS>
+    Provide:
+
+    - `nginx.conf` (or `default.conf`) with:
+        * Server block for main domain (SSL via Let's Encrypt certbot, configuration commented for initial setup).
+        * Location `/` → Laravel app.
+        * Location `/ws/` → proxy to Laravel Reverb WebSocket.
+        * Location `/collab/` → proxy to collab-server (if present).
+        * Location `/workspace/{id}/codeserver/` → proxy to dynamic code-server container (with resolver).
+        * Location `/jitsi/` → proxy to Jitsi services (if self-hosted).
+        * Security headers: X-Frame-Options, Content-Security-Policy, X-Content-Type-Options, Strict-Transport-Security, etc.
+        * Rate limiting zones for API endpoints, auth.
+    - SSL certificate automation script (certbot) and cron job for renewal.
+    - Updated `.env` for `APP_URL=https://...`, `SANCTUM_STATEFUL_DOMAINS`, `SESSION_DOMAIN`.
+
+    Provide the full Nginx config file and SSL setup instructions.
+  </STEP_2_NGINX_REVERSE_PROXY_AND_HTTPS>
+
+  <STEP_3_SECURITY_HARDENING>
+    Provide a Laravel‑integrated security audit and fixes:
+
+    - Middleware: `app/Http/Middleware/SecurityHeaders.php` adding CSP, HSTS, etc.
+    - Ensure all file uploads are validated (MIME type, extension, size).
+    - AI file access sandbox: review and strengthen `AiSandboxService`. Add a **hard deny list** for dangerous PHP functions (prevent AI from writing `exec()`, `system()` calls in code). Minify risk.
+    - Add rate limiting to all API routes: `throttle:60,1` for AI, `throttle:30,1` for auth.
+    - Sanitize all user inputs; ensure view outputs escape using Blade's `{{ }}`.
+    - Disable debug mode and verbose errors in production (`APP_DEBUG=false`, `APP_ENV=production`).
+    - Use Laravel's `trustProxies()` and configure trusted proxies.
+    - Review `.env` permissions and ensure `.env` is NOT accessible via web (already by Nginx, but verify).
+    - Provide a script `security-check.sh` that runs basic tests (SQL injection attempt, XSS in course title, CSRF without token, etc.) using curl commands.
+
+    Provide the middleware, updated service files, configuration changes, and the bash script.
+  </STEP_3_SECURITY_HARDENING>
+
+  <STEP_4_DATABASE_OPTIMIZATION_AND_CACHING>
+    Provide:
+
+    - Migration for adding missing indexes (if any). Check all foreign keys already indexed; suggest additional indexes on `workspaces.status`, `submissions.status`, `ai_actions_log.created_at`, `users.role`.
+    - Implement Redis cache for heavy queries: course listing (especially student dashboard), AI session listing, analytics.
+    - Cache configuration: `config/cache.php` set to Redis, `CACHE_DRIVER=redis` in production.
+    - Queue driver set to Redis; configure queue worker as a separate container or process.
+    - Update relevant controllers to use `Cache::remember()` for expensive queries with appropriate TTL and cache invalidation on model events (using Laravel's `ModelEvents` or manual `Cache::forget`).
+
+    Provide the code changes and configuration.
+  </STEP_4_DATABASE_OPTIMIZATION_AND_CACHING>
+
+  <STEP_5_AUTOMATED_TESTING_SUITE>
+    Provide complete PHPUnit feature tests that cover:
+
+    **Authentication & RBAC:**
+    - Student can register and login, redirected to dashboard.
+    - Instructor can login, admin can login.
+    - Suspended user cannot login.
+    - Unauthorized access returns 403.
+
+    **Course & Enrollment:**
+    - Instructor creates course, student joins via code, duplicate enrollment prevented.
+    - Student cannot access course management routes.
+
+    **Assignment & Submission:**
+    - Instructor creates assignment, student starts assignment (workspace created), submits, instructor grades.
+    - Late submission badge check.
+
+    **Workspace:**
+    - Workspace start/stop endpoints work, file listing API returns correct files, write API restricted.
+
+    **AI Agent:**
+    - AI chat endpoint returns stream, tool call read_file works within sandbox, write_file blocked for forbidden paths, patch approval applies changes.
+
+    **Extensions (Admin):**
+    - Admin toggles extension globally, per-workspace override works.
+
+    Also, provide a minimal **Laravel Dusk** test script that automates the exact 3-minute demo flow (login, open workspace, type code, AI chat). Provide setup instructions for Dusk (ChromeDriver).
+
+    Provide all test files and instructions to run them.
+  </STEP_5_AUTOMATED_TESTING_SUITE>
+
+  <STEP_6_CI_CD_PIPELINE>
+    Provide a `.github/workflows/deploy.yml` (GitHub Actions) that:
+    - Triggers on push to `main` branch.
+    - Sets up PHP 8.3, Node, Docker.
+    - Runs `composer install`, `npm ci`, builds assets.
+    - Runs all PHPUnit tests and Dusk tests (using service containers for MySQL, Redis).
+    - If tests pass, builds Docker images and pushes to a container registry (Docker Hub or GitHub Container Registry).
+    - Then deploys via SSH to a VPS (using `appleboy/ssh-action`) and runs `docker compose up -d` with the new images.
+    - Include environment secrets variables in the workflow.
+
+    Provide the complete YAML file and any helper scripts (like `deploy.sh`).
+  </STEP_6_CI_CD_PIPELINE>
+
+  <STEP_7_PRODUCTION_CHECKLIST_AND_MONITORING>
+    Provide:
+
+    - A `PRODUCTION.md` document with a checklist:
+        * SSL active & auto-renew
+        * DB backups scheduled (cron + mysqldump)
+        * Horizon (or queue worker) active
+        * Reverb running & reachable
+        * Code-server instances successfully spawned
+        * Logging: configure Monolog to stream to stderr (for Docker logs) or use ELK stack.
+        * Monitoring: basic health check endpoint `/api/health` that pings DB, Redis, Reverb, and returns status.
+        * Uptime monitoring suggestion (external service like UptimeRobot).
+    - Provide the health check controller code.
+    - Provide a sample `docker-compose logs` command to tail all services.
+
+  </STEP_7_PRODUCTION_CHECKLIST_AND_MONITORING>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps 1 → 2 → 3 → 4 → 5 → 6 → 7 sequentially.
+    After Step 7, announce: "🚀 Phase 9 Complete. VisionLabis production-ready, secure, and deployed. The competition can be conquered. 🚀"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---Phase 10
+
+
+<MASTER_PROMPT Phase="10" Name="PWA_Integration" version="1.0">
+  <SYSTEM_ROLE>
+    You are an Elite PWA Architect, Frontend Performance Specialist, and Laravel Web-Push Engineer.
+    VisionLabis built and deployed. Now we must turn it into a Progressive Web App that feels like a native application.
+    It must be installable on mobile/desktop, work offline for key sections (dashboard, course pages, assignments), support push notifications,
+    and provide an immersive standalone experience with splash screen and app icon.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    VisionLabuses Laravel 11, Blade, Tailwind CSS, and code-server iframe for the IDE.
+    The PWA will primarily enhance the non-IDE parts (landing, dashboards, classroom, admin) with offline capabilities, 
+    while the IDE remains online-only (since it requires live code-server). However, we'll provide an offline indicator in the IDE.
+    Backend already has real-time notifications via Reverb; we'll add web-push for native push notifications.
+  </PROJECT_CONTEXT>
+
+  <OBJECTIVES>
+    1. Create manifest.json for installability with proper icons and theme colors matching the dark brand.
+    2. Implement a Service Worker with Workbox (or custom) for offline caching strategies.
+    3. Add a custom "Install PWA" prompt UI that respects browser behavior.
+    4. Implement Web Push Notifications using Laravel's web-push package for assignment deadlines and announcements.
+    5. Offline fallback pages and online/offline status indicator.
+    6. Ensure all static assets, fonts, and external CDN resources are pre-cached for fast loading.
+    7. Configure meta tags for iOS Safari (apple-mobile-web-app-capable, splash screens).
+  </OBJECTIVES>
+
+  <STEP_1_PWA_MANIFEST_AND_ICONS>
+    Provide:
+    - `public/manifest.json` containing:
+      * name: "VisionLab"
+      * short_name: "VisionCode"
+      * description: "Collaborative coding & learning platform"
+      * start_url: "/dashboard" (student dashboard as default)
+      * display: "standalone"
+      * background_color: "#0a0a0a"
+      * theme_color: "#8b5cf6" (glowing violet brand accent)
+      * orientation: "any"
+      * icons array with sizes: 192x192, 512x512 (and maskable icon purpose)
+    - Instructions to generate the actual icon PNGs (placeholder paths, but provide a script or directory structure). 
+      Since we can't generate actual images, the AI should create a simple SVG-based icon (or instruct to use a favicon generator later) and save it as a placeholder.
+    - Update `<head>` in the main layout (`layouts/app.blade.php`) to include: `<link rel="manifest" href="/manifest.json">`, `<meta name="theme-color" content="#8b5cf6">`, 
+      Apple meta tags: `<meta name="apple-mobile-web-app-capable" content="yes">`, `<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`, 
+      `<link rel="apple-touch-icon" href="/icons/icon-192.png">`.
+    - Provide a proper `serviceworker.js` registration script in the layout.
+  </STEP_1_PWA_MANIFEST_AND_ICONS>
+
+  <STEP_2_SERVICE_WORKER_AND_CACHING>
+    Provide a complete service worker file (`public/serviceworker.js`) that uses Workbox (via CDN) for efficient caching.
+    The AI may choose to use `workbox-window` for registration and `workbox.precaching` with a generated manifest. But since Laravel mix/vite can generate a service worker with Workbox, we can implement a simple custom version for now.
+
+    The service worker must:
+    - Pre-cache all static assets (CSS, JS, fonts, icons) on install using a manual array OR use Workbox's `precacheAndRoute` after adding a precache manifest (AI can generate a basic list of Laravel's public assets).
+    - Cache strategy:
+      * **Navigation routes** (Blade pages like /dashboard, /courses/*, /assignments/*): Network first, falling back to an offline fallback page (`offline.blade.php`).
+      * **API requests** (JSON): Network only (no caching), but show an offline toast when network fails.
+      * **Static assets** (images, fonts): Cache first.
+      * **External CDNs** (Monaco, Chart.js, Heroicons): Stale-while-revalidate.
+    - Implement `fetch` listener with these strategies using simple if/else logic (or import Workbox modules from CDN inside the service worker).
+    - Provide the offline fallback Blade view (`resources/views/offline.blade.php`) styled with the dark theme, with a message "You are offline. Please check your connection." and a retry button.
+    - On activation, clean up old caches.
+
+    Additionally, provide the frontend JavaScript (`resources/js/pwa.js`) that:
+    - Registers the service worker.
+    - Listens for online/offline events and shows a toast/banner (dark themed) at the top of the page: "You are offline" / "Back online".
+    - Contains an "install" prompt UI: using the `beforeinstallprompt` event, show a glowing button/banner "Install VisionCode" that triggers the native prompt. The button should appear after a few seconds or when user clicks a specific icon in the footer.
+    - Show a toast "App installed successfully!" after `appinstalled` event.
+
+    Provide all Blade/JS code for these features.
+  </STEP_2_SERVICE_WORKER_AND_CACHING>
+
+  <STEP_3_WEB_PUSH_NOTIFICATIONS>
+    Implement push notifications so students receive alerts even when browser is closed.
+
+    - Install Laravel's `laravel-notification-channels/webpush` package and configure it.
+    - Create a migration for `push_subscriptions` table (fields: id, user_id, endpoint, public_key, auth_token, content_encoding, timestamps).
+    - Create a `PushSubscriptionController` with methods:
+      * `subscribe(Request $request)`: validate and store push subscription for authenticated user.
+      * `unsubscribe(Request $request)`: delete subscription.
+    - Generate VAPID keys using `webpush:vapid` artisan command and store in `.env` (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT=mailto:admin@visioncode.test`).
+    - Create a notification class `AssignmentDueNotification` that extends `WebPushNotification` (or uses `WebPushMessage`). It should have title "Assignment Due Tomorrow", body with assignment name, and icon URL.
+    - Update the Assignment creation logic (or a scheduled command) to send push notifications 24 hours before due date (if due date is in future and student hasn't submitted). Use a queued job or Laravel's scheduler with a command `notify:due-assignments`.
+    - Similarly, create an `AnnouncementPushNotification` that sends when an instructor posts a new announcement in a course; broadcast via Event + Listener that sends push to all enrolled students with subscriptions.
+    - Frontend JS: after service worker registration, subscribe to push using `PushManager`. Send the subscription to the backend via POST `/api/push/subscribe`. Handle push events in the service worker: show notification with `self.registration.showNotification()`. On notification click, open the relevant URL (e.g., `/courses/{courseId}`).
+    - Include permission prompt: when user first logs in, show a subtle toast "Enable notifications to stay updated" that triggers `Notification.requestPermission()`. Only subscribe if granted.
+
+    Provide all PHP/Laravel code (controller, migration, notification, command, event listener), service worker update for push event, and frontend JS.
+  </STEP_3_WEB_PUSH_NOTIFICATIONS>
+
+  <STEP_4_OFFLINE_IDE_EXPERIENCE>
+    The IDE (workspace page) is heavy and relies on code-server iframe, which can't work offline. But we can improve the offline experience.
+
+    - In the workspace Blade page, add a banner at the top that appears when offline: "You are offline — code editing is unavailable. Please check your connection." This banner should use the same `online`/`offline` listener from PWA JS.
+    - When offline, the iframe won't load; we can display a placeholder with the workspace name and a "Reconnect" button that reloads the page. 
+    - Provide a small component `<x-offline-banner />` that is included in the workspace layout.
+    - Update the service worker to not cache the IDE page (or use network-only for that route) so it never shows stale content.
+
+    Additionally, ensure all non-IDE pages (dashboard, classroom, admin) function smoothly offline with cached data (where possible). Stress that the Blade views should rely on cached content when APIs are unreachable, but for simplicity, we'll just show the offline fallback page.
+
+  </STEP_4_OFFLINE_IDE_EXPERIENCE>
+
+  <STEP_5_FINAL_TESTING_AND_DOCUMENTATION>
+    Provide:
+    - Instructions to test PWA: using Chrome DevTools (Lighthouse PWA audit, Application panel). Aim for a 90+ PWA score.
+    - A small checklist in markdown for verify: manifest loads, service worker registers, offline page works, push notification test, install prompt appears.
+    - Update the README.md (previously generated in Phase 8/9) to include "PWA Features" section.
+
+    Also, create a `pwa-test.html` (optional) that simulates offline/online to verify service worker behavior.
+
+  </STEP_5_FINAL_TESTING_AND_DOCUMENTATION>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4 → 5.
+    Wait for approval between steps if output is large.
+    After Step 5, announce: "Phase 10 Complete. VisionLabis now a fully functional Progressive Web App — installable, offline-ready, with push notifications. 🚀"
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---All Phases Completed
