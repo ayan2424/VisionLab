@@ -1,25 +1,17 @@
-@props(['class' => '', 'width' => '100%', 'height' => '16px', 'rounded' => '8px', 'count' => 1])
-
-@for($i = 0; $i < $count; $i++)
-<div
-    class="{{ $class }}"
-    style="
-        width: {{ $width }};
-        height: {{ $height }};
-        border-radius: {{ $rounded }};
-        background: linear-gradient(90deg, #161b22 25%, #21262d 50%, #161b22 75%);
-        background-size: 200% 100%;
-        animation: shimmer 2.5s linear infinite;
-        {{ $i > 0 ? 'margin-top: 8px;' : '' }}
-    "
-></div>
-@endfor
-
-@once
-<style>
-@keyframes shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-</style>
-@endonce
+<div {{ $attributes->merge(['class' => 'animate-pulse bg-white/5 border border-white/10 rounded-lg overflow-hidden']) }}>
+    @if(isset($type) && $type === 'card')
+        <div class="h-40 bg-white/5 w-full"></div>
+        <div class="p-4 space-y-3">
+            <div class="h-4 bg-white/10 rounded w-3/4"></div>
+            <div class="h-3 bg-white/10 rounded w-1/2"></div>
+            <div class="h-3 bg-white/10 rounded w-5/6"></div>
+        </div>
+    @elseif(isset($type) && $type === 'text')
+        <div class="h-4 bg-white/10 rounded w-full"></div>
+    @elseif(isset($type) && $type === 'avatar')
+        <div class="h-10 w-10 bg-white/10 rounded-full"></div>
+    @else
+        <!-- Generic block -->
+        <div class="h-full w-full bg-white/10"></div>
+    @endif
+</div>

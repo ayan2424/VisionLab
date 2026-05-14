@@ -71,7 +71,7 @@ class CodeServerManager
             '-e', "VISIONCODE_USER_ID=" . (auth()->id() ?? '0'),
             '-e', "VISIONCODE_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
             '-e', "VISIONCODE_API_URL=" . url('/api'),
-            '-v', storage_path('extensions/visionlab-ai.vsix') . ":/mnt/extensions/visionlab-ai.vsix",
+            '-v', storage_path('extensions/visionlab.visionlab-ai-1.0.0') . ":/home/coder/.local/share/code-server/extensions/visionlab.visionlab-ai-1.0.0",
             '--restart', 'unless-stopped',
             '--memory', '512m',
             '--cpus', '0.5',
@@ -520,7 +520,7 @@ class CodeServerManager
 
         $json = json_encode($config, JSON_UNESCAPED_SLASHES);
         
-        $script = "mkdir -p /home/coder/.continue && echo '" . addslashes($json) . "' > /home/coder/.continue/config.json && code-server --install-extension /mnt/extensions/visionlab-ai.vsix";
+        $script = "mkdir -p /home/coder/.continue && echo '" . addslashes($json) . "' > /home/coder/.continue/config.json";
         
         $process = new Process(['docker', 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();

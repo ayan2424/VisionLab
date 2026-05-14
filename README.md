@@ -78,15 +78,12 @@ VITE_REVERB_PORT="${REVERB_PORT}"
 VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 ```
 
-### 3. Database Migration & AI Agent Rebranding
-VisionLab programmatically rebrands the open-source Continue AI extension into the **VisionLab Agent**.
+### 3. Database Migration
+VisionLab ships with the pre-packaged, rebranded **VisionLab Agent** integrated directly into the codebase. No external downloading or building is required!
 
 ```bash
 # Ensure MySQL Server is running, then migrate and seed the database
 php artisan migrate:fresh --seed
-
-# Rebrand and compile the AI Extension (Required for workspaces)
-php storage/extensions/rebrand_continue.php
 ```
 
 ### 4. Build Frontend Assets
