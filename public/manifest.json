@@ -1,6 +1,6 @@
 {
   "name": "VisionLab",
-  "short_name": "VisionCode",
+  "short_name": "VisionLab",
   "description": "Collaborative coding & AI-powered learning platform for universities",
   "start_url": "/dashboard",
   "display": "standalone",

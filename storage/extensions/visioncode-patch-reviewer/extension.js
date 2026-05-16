@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 
 function activate(context) {
-    let disposable = vscode.commands.registerCommand('visioncode.showPatchPreview', function (patchData) {
+    let disposable = vscode.commands.registerCommand('VisionLab.showPatchPreview', function (patchData) {
         if (!patchData) {
             patchData = { file_path: 'Demo', diff: '+ Demo addition\n- Demo subtraction' };
         }
@@ -17,9 +17,9 @@ function activate(context) {
 
         panel.webview.onDidReceiveMessage(
             async message => {
-                const apiToken = process.env.VISIONCODE_API_TOKEN || '';
-                const apiUrl = process.env.VISIONCODE_API_URL || 'http://localhost/api';
-                
+                const apiToken = process.env.VisionLab_API_TOKEN || '';
+                const apiUrl = process.env.VisionLab_API_URL || 'http://localhost/api';
+
                 switch (message.command) {
                     case 'approve':
                         try {
@@ -46,7 +46,7 @@ function activate(context) {
                                 });
                             }
                             vscode.window.showInformationMessage('Patch Rejected!');
-                        } catch (e) {}
+                        } catch (e) { }
                         panel.dispose();
                         break;
                 }

@@ -39,7 +39,7 @@ RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
 
 # PHP production config
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zzz-visioncode.conf
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zzz-VisionLab.conf
 
 WORKDIR /var/www/html
 

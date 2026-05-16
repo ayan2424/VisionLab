@@ -44,13 +44,14 @@ class AiController extends Controller
         $messages = $request->input('messages', []);
         $stream = $request->input('stream', true);
         $mode = $request->header('X-Ai-Mode', 'AGENT'); // CHAT, PLAN, AGENT
+        $model = $request->input('model', 'claude-3-5-sonnet-20241022');
 
         if ($stream) {
-            $response = new StreamedResponse(function () use ($room, $messages, $mode) {
+            $response = new StreamedResponse(function () use ($room, $messages, $mode, $model) {
                 // Keep output buffer clear
                 if (ob_get_level() > 0) ob_end_clean();
 
-                foreach ($this->aiService->handleChatCompletion($room, $messages, $mode, true) as $chunk) {
+                foreach ($this->aiService->handleChatCompletion($room, $messages, $mode, $model) as $chunk) {
                     echo $chunk;
                     flush();
                 }

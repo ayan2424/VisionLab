@@ -11,18 +11,21 @@ class RolesAndUsersSeeder extends Seeder
     public function run(): void
     {
         $users = [
+            // ── Admins ──
             [
                 'name'             => 'Admin User',
-                'email'            => 'admin@visioncode.ai',
+                'email'            => 'admin@VisionLab.ai',
                 'password'         => Hash::make('Admin@12345'),
                 'role'             => 'admin',
                 'status'           => 'active',
                 'theme_preference' => 'dark',
                 'email_verified_at'=> now(),
             ],
+
+            // ── Instructors ──
             [
                 'name'             => 'Instructor Jane',
-                'email'            => 'instructor@visioncode.ai',
+                'email'            => 'instructor@VisionLab.ai',
                 'password'         => Hash::make('Instructor@12345'),
                 'role'             => 'instructor',
                 'status'           => 'active',
@@ -30,8 +33,55 @@ class RolesAndUsersSeeder extends Seeder
                 'email_verified_at'=> now(),
             ],
             [
+                'name'             => 'Professor Khan',
+                'email'            => 'khan@VisionLab.ai',
+                'password'         => Hash::make('Instructor@12345'),
+                'role'             => 'instructor',
+                'status'           => 'active',
+                'theme_preference' => 'dark',
+                'email_verified_at'=> now(),
+            ],
+
+            // ── Students ──
+            [
                 'name'             => 'Student Alex',
-                'email'            => 'student@visioncode.ai',
+                'email'            => 'student@VisionLab.ai',
+                'password'         => Hash::make('Student@12345'),
+                'role'             => 'student',
+                'status'           => 'active',
+                'theme_preference' => 'dark',
+                'email_verified_at'=> now(),
+            ],
+            [
+                'name'             => 'Sarah Miller',
+                'email'            => 'sarah@VisionLab.ai',
+                'password'         => Hash::make('Student@12345'),
+                'role'             => 'student',
+                'status'           => 'active',
+                'theme_preference' => 'dark',
+                'email_verified_at'=> now(),
+            ],
+            [
+                'name'             => 'Ahmed Raza',
+                'email'            => 'ahmed@VisionLab.ai',
+                'password'         => Hash::make('Student@12345'),
+                'role'             => 'student',
+                'status'           => 'active',
+                'theme_preference' => 'dark',
+                'email_verified_at'=> now(),
+            ],
+            [
+                'name'             => 'Emma Chen',
+                'email'            => 'emma@VisionLab.ai',
+                'password'         => Hash::make('Student@12345'),
+                'role'             => 'student',
+                'status'           => 'active',
+                'theme_preference' => 'dark',
+                'email_verified_at'=> now(),
+            ],
+            [
+                'name'             => 'David Park',
+                'email'            => 'david@VisionLab.ai',
                 'password'         => Hash::make('Student@12345'),
                 'role'             => 'student',
                 'status'           => 'active',
@@ -44,7 +94,9 @@ class RolesAndUsersSeeder extends Seeder
             User::updateOrCreate(['email' => $userData['email']], $userData);
         }
 
-        $this->command->info('✅ Seeded: admin@visioncode.ai | instructor@visioncode.ai | student@visioncode.ai');
-        $this->command->info('   Passwords follow the pattern Role@12345 (e.g. Admin@12345)');
+        $this->command->info('✅ Seeded 8 users: 1 admin, 2 instructors, 5 students');
+        $this->command->info('   Logins: admin@VisionLab.ai / Admin@12345');
+        $this->command->info('   Logins: instructor@VisionLab.ai / Instructor@12345');
+        $this->command->info('   Logins: student@VisionLab.ai / Student@12345');
     }
 }

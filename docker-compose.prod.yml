@@ -13,7 +13,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: visioncode-app
+    container_name: VisionLab-app
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
@@ -26,8 +26,8 @@ services:
       - DB_CONNECTION=mysql
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_DATABASE=${DB_DATABASE:-visioncode}
-      - DB_USERNAME=${DB_USERNAME:-visioncode}
+      - DB_DATABASE=${DB_DATABASE:-VisionLab}
+      - DB_USERNAME=${DB_USERNAME:-VisionLab}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - REDIS_HOST=redis
       - CACHE_DRIVER=redis
@@ -37,12 +37,12 @@ services:
       - mysql
       - redis
     networks:
-      - visioncode
+      - VisionLab
 
   # ── Nginx Web Server ───────────────────────────────────────────
   webserver:
     image: nginx:alpine
-    container_name: visioncode-nginx
+    container_name: VisionLab-nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -54,16 +54,16 @@ services:
     depends_on:
       - app
     networks:
-      - visioncode
+      - VisionLab
 
   # ── MySQL Database ─────────────────────────────────────────────
   mysql:
     image: mysql:8.0
-    container_name: visioncode-mysql
+    container_name: VisionLab-mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-visioncode}
-      MYSQL_USER: ${DB_USERNAME:-visioncode}
+      MYSQL_DATABASE: ${DB_DATABASE:-VisionLab}
+      MYSQL_USER: ${DB_USERNAME:-VisionLab}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
     volumes:
@@ -71,26 +71,26 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - visioncode
+      - VisionLab
 
   # ── Redis Cache & Queue ────────────────────────────────────────
   redis:
     image: redis:7-alpine
-    container_name: visioncode-redis
+    container_name: VisionLab-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - visioncode
+      - VisionLab
 
   # ── Laravel Reverb (WebSocket Server) ──────────────────────────
   reverb:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: visioncode-reverb
+    container_name: VisionLab-reverb
     restart: unless-stopped
     working_dir: /var/www/html
     command: php artisan reverb:start --host=0.0.0.0 --port=8080
@@ -104,14 +104,14 @@ services:
       - mysql
       - redis
     networks:
-      - visioncode
+      - VisionLab
 
   # ── Queue Worker ────────────────────────────────────────────────
   queue:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: visioncode-queue
+    container_name: VisionLab-queue
     restart: unless-stopped
     working_dir: /var/www/html
     command: php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
@@ -124,14 +124,14 @@ services:
       - mysql
       - redis
     networks:
-      - visioncode
+      - VisionLab
 
   # ── Scheduler (Cron) ───────────────────────────────────────────
   scheduler:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: visioncode-scheduler
+    container_name: VisionLab-scheduler
     restart: unless-stopped
     working_dir: /var/www/html
     command: sh -c "while true; do php artisan schedule:run --no-ansi; sleep 60; done"
@@ -143,23 +143,23 @@ services:
       - mysql
       - redis
     networks:
-      - visioncode
+      - VisionLab
 
   # ── Jitsi Meet (Optional — uncomment to self-host) ─────────────
   # jitsi:
   #   image: jitsi/web:latest
-  #   container_name: visioncode-jitsi
+  #   container_name: VisionLab-jitsi
   #   restart: unless-stopped
   #   ports:
   #     - "8443:443"
   #   environment:
-  #     - PUBLIC_URL=https://meet.visioncode.test
+  #     - PUBLIC_URL=https://meet.VisionLab.test
   #     - ENABLE_AUTH=1
   #     - AUTH_TYPE=jwt
   #     - JWT_APP_ID=${JITSI_APP_ID}
   #     - JWT_APP_SECRET=${JITSI_APP_SECRET}
   #   networks:
-  #     - visioncode
+  #     - VisionLab
 
 volumes:
   mysql_data:
@@ -168,5 +168,5 @@ volumes:
     driver: local
 
 networks:
-  visioncode:
+  VisionLab:
     driver: bridge

@@ -53,6 +53,59 @@
         {{-- ── Left: Courses + Announcements (3 cols) ── --}}
         <div class="lg:col-span-3 space-y-5">
 
+            {{-- ══ Gamification: Contribution Graph & Badges ══ --}}
+            <div class="vc-card p-5" style="opacity:0;animation:fadeSlideUp .4s .20s ease forwards">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style="color:var(--vc-text);">
+                        <span class="w-1 h-4 rounded-full" style="background:linear-gradient(135deg, #a855f7, #ec4899);"></span> Activity & Streaks
+                    </h3>
+                    <div class="text-[10px] font-bold px-2 py-1 rounded-full" style="background:rgba(168,85,247,0.1);color:#c084fc;">
+                        🔥 {{ $currentStreak ?? 0 }} Day Streak
+                    </div>
+                </div>
+
+                {{-- Heatmap --}}
+                <div class="overflow-x-auto pb-2 mb-4 scrollbar-hide">
+                    <div class="flex gap-1" style="min-width: 600px;">
+                        @foreach(array_chunk($heatmap ?? [], 7) as $week)
+                        <div class="flex flex-col gap-1">
+                            @foreach($week as $day)
+                            @php
+                                $colors = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'];
+                                $color = $colors[$day['level'] ?? 0] ?? $colors[0];
+                            @endphp
+                            <div class="w-3 h-3 rounded-[2px]" style="background-color:{{ $color }};" title="{{ $day['date'] }}: {{ $day['count'] }} commits"></div>
+                            @endforeach
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="flex items-center justify-end gap-2 mt-2 text-[9px] font-semibold" style="color:var(--vc-muted);">
+                        <span>Less</span>
+                        <div class="w-2.5 h-2.5 rounded-[2px]" style="background-color:#161b22;"></div>
+                        <div class="w-2.5 h-2.5 rounded-[2px]" style="background-color:#0e4429;"></div>
+                        <div class="w-2.5 h-2.5 rounded-[2px]" style="background-color:#006d32;"></div>
+                        <div class="w-2.5 h-2.5 rounded-[2px]" style="background-color:#26a641;"></div>
+                        <div class="w-2.5 h-2.5 rounded-[2px]" style="background-color:#39d353;"></div>
+                        <span>More</span>
+                    </div>
+                </div>
+
+                {{-- Badges --}}
+                @if(isset($badges) && $badges->isNotEmpty())
+                <div class="pt-4 border-t border-gray-800">
+                    <div class="flex flex-wrap gap-3">
+                        @foreach($badges as $badge)
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border tooltip-trigger" 
+                             style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);box-shadow: 0 0 10px rgba(168,85,247,0.1);" title="{{ $badge->description }}">
+                            <span class="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">{{ $badge->icon }}</span>
+                            <span class="text-[10px] font-bold" style="color:var(--vc-text);">{{ $badge->badge_name }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
+
             {{-- Courses --}}
             <div style="opacity:0;animation:fadeSlideUp .4s .25s ease forwards">
                 <div class="flex items-center justify-between mb-3">

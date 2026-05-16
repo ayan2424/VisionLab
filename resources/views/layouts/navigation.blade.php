@@ -75,6 +75,10 @@
                             : 'color:var(--vc-text-secondary);' }}">
                         Demo
                     </a>
+
+                    <button id="pwa-install-btn" style="display: none; background:var(--vc-accent); color:#fff;" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 shadow-md hover:scale-105">
+                        Install App
+                    </button>
                 </div>
             </div>
 

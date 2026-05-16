@@ -138,9 +138,9 @@
                     <p class="text-xs font-medium mb-3" style="color:var(--vc-muted);">Quick login with demo accounts:</p>
                     <div class="space-y-2">
                         @foreach([
-                            ['label' => 'Admin Account', 'email' => 'admin@visioncode.ai', 'pass' => 'Admin@12345', 'color' => '#DC2626'],
-                            ['label' => 'Instructor Account', 'email' => 'instructor@visioncode.ai', 'pass' => 'Instructor@12345', 'color' => '#F05000'],
-                            ['label' => 'Student Account', 'email' => 'student@visioncode.ai', 'pass' => 'Student@12345', 'color' => '#059669'],
+                            ['label' => 'Admin Account', 'email' => 'admin@VisionLab.ai', 'pass' => 'Admin@12345', 'color' => '#DC2626'],
+                            ['label' => 'Instructor Account', 'email' => 'instructor@VisionLab.ai', 'pass' => 'Instructor@12345', 'color' => '#F05000'],
+                            ['label' => 'Student Account', 'email' => 'student@VisionLab.ai', 'pass' => 'Student@12345', 'color' => '#059669'],
                         ] as $demo)
                         <button type="button"
                                 onclick="document.getElementById('email').value='{{ $demo['email'] }}';document.getElementById('password').value='{{ $demo['pass'] }}';"

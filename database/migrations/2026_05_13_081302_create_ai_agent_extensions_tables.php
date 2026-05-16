@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('ai_snapshots', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('workspace_id')->constrained('rooms')->cascadeOnDelete();
             $table->string('file_path');
             $table->longText('content');
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
@@ -21,7 +21,7 @@ return new class extends Migration
 
         Schema::create('ai_pending_patches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('workspace_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('workspace_id')->constrained('rooms')->cascadeOnDelete();
             $table->foreignId('session_id')->nullable()->constrained('ai_chat_sessions')->nullOnDelete();
             $table->string('file_path');
             $table->longText('original_content');

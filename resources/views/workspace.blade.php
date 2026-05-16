@@ -18,133 +18,15 @@
         }
 
         /* ── VS Code iframe fills remaining height ── */
+        .workspace-container { display:flex; height:calc(100vh - 44px); width:100%; overflow:hidden; }
+        .center-pane { flex:1; min-width:0; position:relative; display:flex; flex-direction:column; }
         #vscode-frame{width:100%;height:100%;border:none;display:block;}
-.workspace-container { display:flex; height:calc(100vh - 44px); width:100%; overflow:hidden; }
-.file-explorer { width:250px; flex-shrink:0; background:#0d1117; border-right:1px solid #21262d; display:flex; flex-direction:column; }
-.resizer { width:4px; background:#21262d; cursor:col-resize; flex-shrink:0; transition:background 0.2s; z-index:10; }
-.resizer:hover, .resizer.dragging { background:#F05000; }
-.center-pane { flex:1; min-width:0; position:relative; display:flex; flex-direction:column; }
-#ai-panel { position:relative; right:auto; top:auto; height:100%; max-height:none; border-radius:0; border:none; border-left:1px solid #21262d; box-shadow:none; display:none; flex-shrink:0; }
-#ai-panel:not(.hidden-panel) { display:flex; }
-
-        /* ── Floating AI Panel ── */
-        #ai-panel{
-            position:fixed;right:20px;top:56px;
-            width:360px;height:calc(100vh - 76px);max-height:700px;
-            background:#111111;border:1px solid #21262d;
-            border-radius:16px;display:flex;flex-direction:column;
-            box-shadow:0 24px 64px rgba(0,0,0,.8),0 0 0 1px rgba(124,58,237,.15);
-            z-index:9000;overflow:hidden;
-            transition:transform .3s cubic-bezier(.16,1,.3,1),opacity .3s;
-        }
-        #ai-panel.hidden-panel{
-            transform:translateX(380px);opacity:0;pointer-events:none;
-        }
-
-        /* AI Panel header */
-        #ai-panel-header{
-            display:flex;align-items:center;justify-content:space-between;
-            padding:12px 14px;border-bottom:1px solid #21262d;flex-shrink:0;
-            cursor:move;user-select:none;
-        }
-
-        /* Mode tabs */
-        .mode-tab{
-            flex:1;text-align:center;padding:5px 0;
-            font-size:10px;font-weight:700;letter-spacing:.06em;
-            border-radius:6px;cursor:pointer;transition:all .2s;
-            color:#64748b;border:none;background:transparent;
-        }
-        .mode-tab.active{background:#7c3aed;color:#fff;box-shadow:0 0 12px rgba(124,58,237,.45);}
-
-        /* Chat messages */
-        #ai-messages{
-            flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;
-        }
-        #ai-messages::-webkit-scrollbar{width:4px;}
-        #ai-messages::-webkit-scrollbar-track{background:transparent;}
-        #ai-messages::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:2px;}
-
-        .msg-user{
-            align-self:flex-end;background:rgba(124,58,237,.18);
-            border:1px solid rgba(124,58,237,.3);border-radius:12px 12px 2px 12px;
-            padding:8px 12px;font-size:12px;color:#c4b5fd;max-width:90%;word-break:break-word;
-        }
-        .msg-ai{
-            align-self:flex-start;background:#161b22;
-            border:1px solid #21262d;border-radius:12px 12px 12px 2px;
-            padding:8px 12px;font-size:12px;color:#94a3b8;max-width:95%;word-break:break-word;
-        }
-        .msg-ai code{
-            background:#0a0a0a;border:1px solid #21262d;border-radius:4px;
-            padding:1px 4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a78bfa;
-        }
-        .msg-ai pre{
-            background:#0a0a0a;border:1px solid #21262d;border-radius:8px;
-            padding:10px;margin:6px 0;overflow-x:auto;
-            font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8;
-            white-space:pre-wrap;word-break:break-all;
-        }
-        .msg-thinking{
-            align-self:flex-start;padding:8px 12px;
-            font-size:11px;color:#64748b;
-            display:flex;align-items:center;gap:6px;
-        }
-        .thinking-dot{
-            width:5px;height:5px;border-radius:50%;background:#7c3aed;
-            animation:thinkDot 1.4s ease-in-out infinite;
-        }
-        .thinking-dot:nth-child(2){animation-delay:.2s;}
-        .thinking-dot:nth-child(3){animation-delay:.4s;}
-        @keyframes thinkDot{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1.1);opacity:1}}
-
-        /* AI input area */
-        #ai-input-area{
-            padding:10px 12px;border-top:1px solid #21262d;flex-shrink:0;
-        }
-        #ai-textarea{
-            width:100%;resize:none;background:#0a0a0a;
-            border:1px solid #21262d;border-radius:10px;
-            padding:8px 10px;font-size:12px;color:#f1f5f9;
-            font-family:sans-serif;line-height:1.5;outline:none;
-            transition:border-color .2s;
-        }
-        #ai-textarea:focus{border-color:rgba(124,58,237,.5);}
-        #ai-textarea::placeholder{color:#64748b;}
-
-        /* Diff overlay */
-        #diff-overlay{
-            display:none;position:fixed;inset:0;z-index:9999;
-            background:rgba(0,0,0,.87);backdrop-filter:blur(8px);
-            align-items:center;justify-content:center;
-        }
-        #diff-overlay.open{display:flex;}
-        .diff-removed{background:rgba(255,0,0,.1);border-left:2px solid #ef4444;color:#fca5a5;}
-        .diff-added{background:rgba(0,255,0,.08);border-left:2px solid #22c55e;color:#86efac;}
-        .diff-context{color:#475569;}
 
         /* Presence avatars */
         .presence-avatar{
             width:24px;height:24px;border-radius:9999px;border:2px solid #0d1117;
             display:flex;align-items:center;justify-content:center;
             font-size:9px;font-weight:700;cursor:default;
-        }
-
-        /* Toggle AI button */
-        #ai-toggle{
-            display:flex;align-items:center;gap:6px;
-            padding:5px 12px;border-radius:8px;border:none;cursor:pointer;
-            font-size:11px;font-weight:700;letter-spacing:.04em;
-            transition:all .2s;
-        }
-        #ai-toggle.panel-visible{
-            background:rgba(124,58,237,.2);color:#a78bfa;
-            border:1px solid rgba(124,58,237,.35);
-        }
-        #ai-toggle.panel-hidden{
-            background:#7c3aed;color:#fff;
-            border:1px solid rgba(124,58,237,.5);
-            box-shadow:0 0 12px rgba(124,58,237,.4);
         }
 
         /* Collab modal */
@@ -166,36 +48,96 @@
             transition:all .3s cubic-bezier(.16,1,.3,1);pointer-events:none;
             display:flex;align-items:center;gap:8px;
         }
-        #vc-toast.show{opacity:1;transform:translateY(0);}
+        /* ── Preloader (Firebase Studio Style) ── */
+        #vc-preloader {
+            position: fixed; inset: 0; z-index: 999999;
+            background: #151515;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+            font-family: 'Inter', sans-serif;
+        }
+        #vc-preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        
+        .p-box {
+            display: flex; align-items: center; gap: 16px;
+            width: 340px; padding: 14px 16px;
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .p-icon {
+            width: 32px; height: 32px; border-radius: 6px;
+            background: #F05000; /* Firebase orange vibe */
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(240,80,0,0.2);
+        }
+        .p-icon svg { width: 18px; height: 18px; color: #fff; }
+        .p-info { display: flex; flex-direction: column; gap: 2px; }
+        .p-title { font-size: 13px; font-weight: 600; color: #8ab4f8; }
+        .p-id { font-size: 11px; color: #9aa0a6; font-family: monospace; }
+
+        .p-steps { display: flex; flex-direction: column; gap: 12px; width: 340px; padding: 0 4px; }
+        .p-step { display: flex; align-items: center; gap: 14px; transition: all 0.3s ease; }
+        .p-step-text { font-size: 12px; font-weight: 500; }
+        .p-step-icon { width: 14px; height: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+        /* States */
+        .p-step.pending .p-step-text { color: #5f6368; }
+        .p-step.active .p-step-text { color: #e8eaed; }
+        .p-step.completed .p-step-text { color: #5f6368; }
+
+        .p-step.completed .p-step-icon svg { width: 12px; height: 12px; color: #5f6368; }
+
+        .p-spinner {
+            width: 14px; height: 14px; flex-shrink: 0;
+            border: 2px solid transparent;
+            border-top-color: #8ab4f8; /* Google blue */
+            border-left-color: #8ab4f8;
+            border-radius: 50%;
+            animation: p-spin 0.8s linear infinite;
+            display: none;
+        }
+        .p-step.active .p-spinner { display: block; }
+        .p-step.active .p-step-icon { display: none; }
+
+        @keyframes p-spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="h-full">
 
-{{-- ══════════════════════ DIFF OVERLAY ══════════════════════ --}}
-<div id="diff-overlay">
-    <div style="width:100%;max-width:680px;margin:16px;background:#111111;border:1px solid #21262d;border-radius:20px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 40px 80px rgba(0,0,0,.9);">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #21262d;flex-shrink:0;">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);display:flex;align-items:center;justify-content:center;">
-                    <svg style="width:14px;height:14px;color:#a78bfa;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                </div>
-                <div>
-                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">AI Patch Preview</div>
-                    <div id="diff-subtitle" style="font-size:11px;color:#64748b;">Review changes before applying</div>
-                </div>
-            </div>
-            <button onclick="closeDiff()" style="background:none;border:none;cursor:pointer;color:#64748b;padding:4px;">
-                <svg style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+{{-- ══════════════════════ PRELOADER ══════════════════════ --}}
+<div id="vc-preloader">
+    <div class="p-box">
+        <div class="p-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
         </div>
-        <div id="diff-content" style="flex:1;overflow-y:auto;padding:8px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;"></div>
-        <div style="display:flex;gap:10px;padding:16px 20px;border-top:1px solid #21262d;background:#0d1117;flex-shrink:0;">
-            <button onclick="approvePatch()" style="flex:1;padding:10px;border-radius:10px;background:#7c3aed;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;box-shadow:0 0 16px rgba(124,58,237,.4);">
-                ✓ Approve &amp; Apply
-            </button>
-            <button onclick="closeDiff()" style="padding:10px 20px;border-radius:10px;background:transparent;color:#64748b;font-size:13px;font-weight:700;border:1px solid #21262d;cursor:pointer;">
-                Reject
-            </button>
+        <div class="p-info">
+            <div class="p-title">{{ $workspaceName ?? 'VisionLab Workspace' }}</div>
+            <div class="p-id">{{ $roomSlug ?? 'workspace-id' }}</div>
+        </div>
+    </div>
+    
+    <div class="p-steps">
+        <div class="p-step active" id="p-step-1">
+            <div class="p-spinner"></div>
+            <div class="p-step-icon"></div>
+            <div class="p-step-text">Setting up workspace</div>
+        </div>
+        <div class="p-step pending" id="p-step-2">
+            <div class="p-spinner"></div>
+            <div class="p-step-icon"></div>
+            <div class="p-step-text">Initializing environment</div>
+        </div>
+        <div class="p-step pending" id="p-step-3">
+            <div class="p-spinner"></div>
+            <div class="p-step-icon"></div>
+            <div class="p-step-text">Building environment</div>
+        </div>
+        <div class="p-step pending" id="p-step-4">
+            <div class="p-spinner"></div>
+            <div class="p-step-icon"></div>
+            <div class="p-step-text">Finalizing</div>
         </div>
     </div>
 </div>
@@ -287,6 +229,13 @@
             <span id="reverb-label" style="font-size:10px;color:#64748b;">Reverb</span>
         </div>
 
+        {{-- Deploy to Live --}}
+        <button onclick="deployWorkspace()"
+            style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;background:linear-gradient(135deg, #a855f7 0%, #ec4899 100%);color:#fff;border:none;box-shadow:0 0 10px rgba(168,85,247,.4);transition:all .2s;">
+            <svg style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Deploy
+        </button>
+
         {{-- Collaborate --}}
         <button onclick="document.getElementById('collab-modal').classList.add('open')"
             style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(34,211,238,.07);color:#22d3ee;border:1px solid rgba(34,211,238,.25);transition:all .2s;">
@@ -299,12 +248,6 @@
             style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(16,185,129,.07);color:#4ade80;border:1px solid rgba(16,185,129,.25);transition:all .2s;">
             <svg style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
             Video
-        </button>
-
-        {{-- AI Toggle --}}
-        <button id="ai-toggle" onclick="toggleAiPanel()" class="panel-hidden">
-            <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            AI Agent
         </button>
 
         {{-- User menu --}}
@@ -328,10 +271,6 @@
                     <svg style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     Analytics
                 </a>
-                <a href="{{ route('demo') }}" style="display:flex;align-items:center;gap:7px;padding:9px 14px;color:#94a3b8;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'">
-                    <svg style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
-                    Demo Script
-                </a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" style="border-top:1px solid #21262d;">
                     @csrf
@@ -346,29 +285,14 @@
 </div>
 
 {{-- ══════════════════════ VS CODE IFRAME ══════════════════════ --}}
-{{-- Use the vscodeUrl provided by the CodeServerManager --}}
-
 <div class="workspace-container">
-    <!-- File Explorer -->
-    <div id="file-explorer" class="file-explorer">
-        <div style="padding:12px 14px; border-bottom:1px solid #21262d; font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; display:flex; justify-content:space-between; align-items:center;">
-            <span>Explorer</span>
-            <button onclick="fetchFiles()" style="background:none;border:none;color:#64748b;cursor:pointer;" title="Refresh">↻</button>
-        </div>
-        <div id="file-tree" style="flex:1; overflow-y:auto; padding:8px 0; font-family:'JetBrains Mono',monospace; font-size:12px;">
-            <div style="padding:10px; text-align:center; color:#64748b;">Loading files...</div>
-        </div>
-    </div>
-    <div class="resizer" id="resizer-left"></div>
-    <!-- Center Pane -->
     <div class="center-pane">
         <iframe id="vscode-frame"
-        src="{{ $vscodeUrl }}"
-        allow="clipboard-read; clipboard-write"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox"
-        onload="onVsCodeLoad()"
-        onerror="onVsCodeError()">
-</iframe>
+            allow="clipboard-read; clipboard-write; microphone; camera"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-downloads"
+            onload="onVsCodeLoad()"
+            onerror="onVsCodeError()">
+        </iframe>
         <div id="vscode-fallback" style="display:none;position:absolute;inset:0;background:#0a0a0a;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:50;">
             <div style="width:56px;height:56px;border-radius:16px;background:#F05000;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(240,80,0,.5);">
                 <svg style="width:28px;height:28px;color:#fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
@@ -382,97 +306,34 @@
             </button>
         </div>
     </div>
-    <div class="resizer" id="resizer-right" style="display:none;"></div>
-
-
-    <button onclick="reloadVsCode()" style="padding:9px 20px;border-radius:10px;background:#7c3aed;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;box-shadow:0 0 12px rgba(124,58,237,.4);">
-        Reload VS Code
-    </button>
 </div>
-
-{{-- ══════════════════════ FLOATING AI PANEL ══════════════════════ --}}
-<!-- AI Panel (Right Sidebar) -->
-<div id="ai-panel" class="hidden-panel">
-
-    {{-- Header --}}
-    <div id="ai-panel-header">
-        <div style="display:flex;align-items:center;gap:8px;">
-            <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.35);display:flex;align-items:center;justify-content:center;">
-                <svg style="width:14px;height:14px;color:#a78bfa;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            </div>
-            <div>
-                <div style="font-size:13px;font-weight:700;color:#f1f5f9;">AI Agent</div>
-                <div id="ai-model-label" style="font-size:10px;color:#64748b;">Gemini 2.0 Flash</div>
-            </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-            <button onclick="clearChat()" title="Clear chat" style="background:none;border:none;cursor:pointer;color:#64748b;padding:3px;" title="Clear">
-                <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-            <button onclick="toggleAiPanel()" style="background:none;border:none;cursor:pointer;color:#64748b;padding:3px;">
-                <svg style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    </div>
-
-    {{-- Mode tabs --}}
-    <div style="display:flex;gap:4px;padding:8px 12px;border-bottom:1px solid #21262d;flex-shrink:0;background:#0d1117;">
-        <button class="mode-tab active" id="tab-CHAT" onclick="setMode('CHAT')">CHAT</button>
-        <button class="mode-tab" id="tab-PLAN" onclick="setMode('PLAN')">PLAN</button>
-        <button class="mode-tab" id="tab-AGENT" onclick="setMode('AGENT')">AGENT</button>
-    </div>
-
-    {{-- Mode description --}}
-    <div id="mode-desc" style="padding:6px 12px;font-size:10px;color:#64748b;border-bottom:1px solid #1a1f26;background:#0a0a0a;flex-shrink:0;">
-        Ask questions, explain code, get suggestions
-    </div>
-
-    {{-- Messages --}}
-    <div id="ai-messages">
-        <div class="msg-ai">
-            <strong style="color:#a78bfa;">VisionLab</strong> ready!<br>
-            Paste or describe code and I'll help. Switch to <strong>AGENT</strong> mode for auto-patching.
-        </div>
-    </div>
-
-    {{-- Input area --}}
-    <div id="ai-input-area">
-        <textarea id="ai-textarea" rows="3"
-            placeholder="Ask anything about code…  (Enter to send, Shift+Enter for newline)"
-            onkeydown="handleAiKey(event)"></textarea>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
-            <span id="ai-context-label" style="font-size:10px;color:#64748b;">No file context</span>
-            <button onclick="sendMessage()" style="padding:5px 14px;border-radius:8px;background:#7c3aed;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;box-shadow:0 0 8px rgba(124,58,237,.3);">Send ↑</button>
-        </div>
-    </div>
-</div>
-
-</div><!-- End workspace-container -->
 
 {{-- ══════════════════════ VIDEO CALL MODAL ══════════════════════ --}}
 <div id="video-modal" style="display:none;position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);flex-direction:column;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #21262d;flex-shrink:0;background:#0d1117;">
         <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s ease-in-out infinite;"></div>
-            <span id="video-title" style="font-size:13px;font-weight:700;color:#f1f5f9;">Video Call Active</span>
-            <span id="video-participants" style="font-size:11px;color:#64748b;">0 participants</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-            <button onclick="minimizeVideo()" style="display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.05);color:#94a3b8;border:1px solid #21262d;">
-                <svg style="width:12px;height:12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
-                Minimize
-            </button>
-            <button onclick="endVideoCall()" style="display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.3);">
-                <svg style="width:12px;height:12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                End Call
-            </button>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s ease-in-out infinite;"></div>
+                <span id="video-title" style="font-size:13px;font-weight:700;color:#f1f5f9;">Video Call Active</span>
+                <span id="video-participants" style="font-size:11px;color:#64748b;">0 participants</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button onclick="minimizeVideo()" style="display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.05);color:#94a3b8;border:1px solid #21262d;">
+                    <svg style="width:12px;height:12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                    Minimize
+                </button>
+                <button onclick="endVideoCall()" style="display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(239,68,68,.12);color:#f87171;border:1px solid #21262d;">
+                    <svg style="width:12px;height:12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    End Call
+                </button>
+            </div>
         </div>
     </div>
     <div id="jitsi-container" style="flex:1;background:#000;"></div>
 </div>
 
 {{-- Minimised video pill --}}
-<div id="video-pill" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9996;padding:8px 20px;border-radius:20px;background:#161b22;border:1px solid rgba(16,185,129,.3);box-shadow:0 8px 32px rgba(0,0,0,.6);cursor:pointer;display:flex;align-items:center;gap:8px;" onclick="maximizeVideo()">
+<div id="video-pill" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9996;padding:8px 20px;border-radius:20px;background:#161b22;border:1px solid rgba(16,185,129,.3);box-shadow:0 8px 32px rgba(0,0,0,.6);cursor:pointer;align-items:center;gap:8px;" onclick="maximizeVideo()">
     <span style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s ease-in-out infinite;"></span>
     <span style="font-size:12px;font-weight:700;color:#f1f5f9;">Video Call Active</span>
     <span style="font-size:11px;color:#64748b;">Click to expand</span>
@@ -493,6 +354,7 @@ const VC = {
     user:         { name:'{{ $user->name }}', role:'{{ $user->role }}', initials:'{{ $user->avatar_initials }}' },
     roomSlug:     '{{ $roomSlug ?? "personal-" . $user->id }}',
     isCollab:     {{ ($isCollaborative ?? false) ? 'true' : 'false' }},
+    vscodeUrl:    '{!! $vscodeUrl !!}',
     reverb: {
         key:    '{{ $reverbConfig["key"] }}',
         host:   '{{ $reverbConfig["host"] }}',
@@ -501,197 +363,126 @@ const VC = {
     },
 };
 
+// ─── Preloader Logic ──────────────────────────────────────────────
+const pSteps = ['p-step-1', 'p-step-2', 'p-step-3', 'p-step-4'];
+let currentPStep = 0;
+
+function advancePStep() {
+    if (vscLoaded || currentPStep >= pSteps.length) return;
+    
+    const current = document.getElementById(pSteps[currentPStep]);
+    if (current) {
+        current.classList.remove('active');
+        current.classList.add('completed');
+        current.querySelector('.p-step-icon').innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+    }
+
+    currentPStep++;
+    if(currentPStep < pSteps.length){
+        const next = document.getElementById(pSteps[currentPStep]);
+        if (next) {
+            next.classList.remove('pending');
+            next.classList.add('active');
+        }
+    }
+}
+
+// Staggered realistic loading timeline
+setTimeout(advancePStep, 1500); // 1.5s -> Initializing
+setTimeout(advancePStep, 3500); // 3.5s -> Building
+setTimeout(advancePStep, 6000); // 6.0s -> Finalizing
+
 // ─── VS Code iframe lifecycle ─────────────────────────────────────
 let vscLoaded = false;
+let iframeStarted = false;
+
 function onVsCodeLoad(){
+    if (!iframeStarted) return; // Prevent initial about:blank onload from triggering
     vscLoaded = true;
     document.getElementById('vscode-fallback').style.display = 'none';
     document.getElementById('vsc-dot').style.background = '#4ade80';
     document.getElementById('vsc-label').textContent = 'VS Code ready';
     document.getElementById('vsc-label').style.color = '#4ade80';
+    
+    // Rapidly complete remaining steps for UX
+    pSteps.forEach(id => {
+        const el = document.getElementById(id);
+        if(el && !el.classList.contains('completed')){
+            el.classList.remove('active', 'pending');
+            el.classList.add('completed');
+            el.querySelector('.p-step-icon').innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        }
+    });
+
+    setTimeout(() => {
+        document.getElementById('vc-preloader').classList.add('hidden');
+    }, 400); // Brief pause to see all green checkmarks
 }
+
 function onVsCodeError(){
+    if (!iframeStarted) return;
     document.getElementById('vscode-fallback').style.display = 'flex';
     document.getElementById('vsc-dot').style.background = '#f87171';
     document.getElementById('vsc-label').textContent = 'VS Code offline';
     document.getElementById('vsc-label').style.color  = '#f87171';
 }
+
 function reloadVsCode(){
-    const frame = document.getElementById('vscode-frame');
-    frame.src = frame.src;
+    document.getElementById('vscode-fallback').style.display = 'none';
     document.getElementById('vsc-dot').style.background = '#fbbf24';
     document.getElementById('vsc-label').textContent = 'Reloading…';
     document.getElementById('vsc-label').style.color  = '#fbbf24';
+    iframeStarted = false;
+    pollForVsCode(); // Start polling again
 }
 
-// Auto-check if iframe loaded (fallback for onerror not always firing)
+// Polling mechanism to wait until container is actually ready
+let pollAttempts = 0;
+function pollForVsCode() {
+    fetch(VC.vscodeUrl, { mode: 'no-cors' })
+        .then(() => {
+            // Container is responding
+            iframeStarted = true;
+            document.getElementById('vscode-frame').src = VC.vscodeUrl;
+        })
+        .catch(() => {
+            pollAttempts++;
+            if (pollAttempts < 25) { // Try for ~25 seconds
+                setTimeout(pollForVsCode, 1000);
+            } else {
+                // Timeout reached
+                onVsCodeError();
+                document.getElementById('vc-preloader').classList.add('hidden');
+            }
+        });
+}
+
+// Start polling immediately
+pollForVsCode();
+
+// Auto-check fallback safety just in case
 setTimeout(()=>{
-    if (!vscLoaded){
+    if (!vscLoaded && iframeStarted){
         document.getElementById('vscode-fallback').style.display = 'flex';
         document.getElementById('vsc-dot').style.background = '#fbbf24';
         document.getElementById('vsc-label').textContent = 'Starting…';
     }
-}, 5000);
-setTimeout(()=>{
-    if (!vscLoaded){
-        document.getElementById('vsc-dot').style.background = '#f87171';
-        document.getElementById('vsc-label').textContent = 'Check VS Code workflow';
-    }
-}, 20000);
-
-// ─── AI Panel ─────────────────────────────────────────────────────
-let panelVisible = false;
-let aiMode = 'CHAT';
-let pendingPatch = null;
-
-function toggleAiPanel(){
-    panelVisible = !panelVisible;
-    const panel  = document.getElementById('ai-panel');
-    const toggle = document.getElementById('ai-toggle');
-    panel.classList.toggle('hidden-panel', !panelVisible);
-    toggle.classList.toggle('panel-visible', panelVisible);
-    toggle.classList.toggle('panel-hidden',  !panelVisible);
-    if (panelVisible) document.getElementById('ai-textarea').focus();
-}
-
-function setMode(m){
-    aiMode = m;
-    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-'+m).classList.add('active');
-    const descs = {
-        CHAT:  'Ask questions, explain code, get suggestions',
-        PLAN:  'Generate a structured implementation plan with steps & estimates',
-        AGENT: 'Auto-generate a patch diff — review & apply with one click',
-    };
-    document.getElementById('mode-desc').textContent = descs[m];
-}
-
-function clearChat(){
-    const msgs = document.getElementById('ai-messages');
-    msgs.innerHTML = '<div class="msg-ai"><strong style="color:#a78bfa;">VisionLab</strong> ready! Paste or describe code and I\'ll help.</div>';
-    pendingPatch = null;
-}
-
-function handleAiKey(e){
-    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
-}
-
-async function sendMessage(){
-    const ta  = document.getElementById('ai-textarea');
-    const msg = ta.value.trim();
-    if(!msg) return;
-    ta.value = '';
-
-    appendMsg('user', msg);
-    const thinkId = appendThinking();
-
-    try {
-        const res = await fetch(`${VC.apiBase}/ai/chat`, {
-            method: 'POST',
-            headers: {'Content-Type':'application/json','X-CSRF-TOKEN':VC.csrf,'Accept':'application/json'},
-            body: JSON.stringify({ message: msg, mode: aiMode, context: { filename:'', language:'', code:'' } }),
-            credentials: 'same-origin',
-        });
-        removeThinking(thinkId);
-
-        if(!res.ok){ appendMsg('ai', `⚠️ Error ${res.status} — make sure you're logged in.`); return; }
-        const data = await res.json();
-
-        if(data.patch && aiMode === 'AGENT'){
-            pendingPatch = data.patch;
-            appendMsg('ai', (data.explanation || 'Patch ready.') + '\n\n<em style="color:#a78bfa;font-size:11px;">↓ Patch preview below</em>');
-            showDiff(data.patch);
-        } else {
-            appendMsg('ai', data.reply || data.message || 'Done.');
+    
+    // Force complete steps and hide preloader as fallback safety
+    pSteps.forEach(id => {
+        const el = document.getElementById(id);
+        if(el && !el.classList.contains('completed')){
+            el.classList.remove('active', 'pending');
+            el.classList.add('completed');
+            el.querySelector('.p-step-icon').innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
         }
-    } catch(err){
-        removeThinking(thinkId);
-        appendMsg('ai', '⚠️ Network error — check connection.');
-    }
-}
+    });
 
-function appendMsg(role, text){
-    const msgs = document.getElementById('ai-messages');
-    const div  = document.createElement('div');
-    div.className = role === 'user' ? 'msg-user' : 'msg-ai';
+    setTimeout(() => {
+        document.getElementById('vc-preloader').classList.add('hidden');
+    }, 400);
 
-    // Basic markdown-ish rendering
-    let html = esc(text)
-        .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#c4b5fd;">$1</strong>')
-        .replace(/\n/g, '<br>');
-
-    // Allow <em> and <strong> passthrough (from our own code above)
-    div.innerHTML = html;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-    return div;
-}
-
-function appendThinking(){
-    const msgs = document.getElementById('ai-messages');
-    const id   = 'think-' + Date.now();
-    const div  = document.createElement('div');
-    div.id = id; div.className = 'msg-thinking';
-    div.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span><span style="margin-left:4px;font-size:11px;color:#64748b;">Thinking…</span>';
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-    return id;
-}
-function removeThinking(id){ document.getElementById(id)?.remove(); }
-
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-// ─── Diff overlay ──────────────────────────────────────────────────
-function showDiff(patch){
-    const overlay = document.getElementById('diff-overlay');
-    const content = document.getElementById('diff-content');
-    if(!patch){ return; }
-
-    const orig    = (patch.original||'').split('\n');
-    const patched = (patch.patched||'').split('\n');
-
-    let html = '';
-    const maxLines = Math.max(orig.length, patched.length);
-    for(let i=0; i<maxLines; i++){
-        const o = orig[i]??'';
-        const p = patched[i]??'';
-        if(o===p){
-            html += `<div class="diff-context" style="padding:1px 16px;">${esc(o)||'&nbsp;'}</div>`;
-        } else {
-            if(o) html += `<div class="diff-removed" style="padding:1px 16px;">- ${esc(o)}</div>`;
-            if(p) html += `<div class="diff-added"   style="padding:1px 16px;">+ ${esc(p)}</div>`;
-        }
-    }
-    content.innerHTML = html;
-    document.getElementById('diff-subtitle').textContent = `${patch.filename||'file'} · ${patched.length} lines`;
-    overlay.classList.add('open');
-}
-
-function closeDiff(){
-    document.getElementById('diff-overlay').classList.remove('open');
-}
-
-async function approvePatch(){
-    if(!pendingPatch){ closeDiff(); return; }
-    try {
-        const res = await fetch(`${VC.apiBase}/ai/apply-patch`, {
-            method:'POST',
-            headers:{'Content-Type':'application/json','X-CSRF-TOKEN':VC.csrf,'Accept':'application/json'},
-            body: JSON.stringify({ patch: pendingPatch }),
-            credentials:'same-origin',
-        });
-        if(res.ok){
-            toast('Patch applied! Saved to project.', 'success');
-            appendMsg('ai', '✅ Patch applied successfully.');
-        } else {
-            toast('Patch apply failed.', 'error');
-        }
-    } catch(_){ toast('Network error.','error'); }
-    closeDiff();
-    pendingPatch = null;
-}
+}, 15000);
 
 // ─── Reverb / Echo ────────────────────────────────────────────────
 let echoChannel = null;
@@ -717,17 +508,17 @@ function updatePresence(users, action, u){
     const bar = document.getElementById('presence-bar');
     const colors = ['#7c3aed','#0891b2','#16a34a','#d97706','#dc2626','#db2777'];
     bar.innerHTML = presenceUsers.map((u,i)=>
-        `<div class="presence-avatar" title="${esc(u.name)}" style="background:${colors[i%colors.length]};color:#fff;border:2px solid #0d1117;${i?'margin-left:-6px':''}">${esc((u.initials||u.name||'?').slice(0,2).toUpperCase())}</div>`
+        `<div class="presence-avatar" title="${escapeHtml(u.name)}" style="background:${colors[i%colors.length]};color:#fff;border:2px solid #0d1117;${i?'margin-left:-6px':''}">${escapeHtml((u.initials||u.name||'?').slice(0,2).toUpperCase())}</div>`
     ).join('');
 
     // Collab modal member list
     const list = document.getElementById('collab-member-list');
     list.innerHTML = presenceUsers.map((u,i)=>`
         <div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:#0a0a0a;border:1px solid #21262d;">
-            <div class="presence-avatar" style="background:${colors[i%colors.length]};color:#fff;flex-shrink:0;">${esc((u.initials||u.name||'?').slice(0,2).toUpperCase())}</div>
+            <div class="presence-avatar" style="background:${colors[i%colors.length]};color:#fff;flex-shrink:0;">${escapeHtml((u.initials||u.name||'?').slice(0,2).toUpperCase())}</div>
             <div>
-                <div style="font-size:12px;color:#f1f5f9;font-weight:600;">${esc(u.name)}</div>
-                <div style="font-size:10px;color:#64748b;">${esc(u.role||'')}</div>
+                <div style="font-size:12px;color:#f1f5f9;font-weight:600;">${escapeHtml(u.name)}</div>
+                <div style="font-size:10px;color:#64748b;">${escapeHtml(u.role||'')}</div>
             </div>
             <span style="margin-left:auto;font-size:10px;color:#4ade80;font-weight:700;">● Online</span>
         </div>
@@ -752,9 +543,13 @@ function copyRoomLink(){
 function toast(msg, type='info'){
     const el = document.getElementById('vc-toast');
     const c  = {success:'#4ade80',error:'#f87171',warn:'#fbbf24',info:'#a78bfa'};
-    el.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${c[type]||c.info};flex-shrink:0;"></span>${esc(msg)}`;
+    el.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${c[type]||c.info};flex-shrink:0;"></span>${escapeHtml(msg)}`;
     el.classList.add('show');
     setTimeout(()=>el.classList.remove('show'), 3000);
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────
@@ -781,11 +576,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     document.head.appendChild(scriptP);
 
-    // Keyboard shortcut: Ctrl+Shift+A = toggle AI panel, Ctrl+Shift+V = video
     document.addEventListener('keydown', e => {
-        if(e.ctrlKey && e.shiftKey && e.key === 'A'){ e.preventDefault(); toggleAiPanel(); }
         if(e.ctrlKey && e.shiftKey && e.key === 'V'){ e.preventDefault(); startVideoCall(); }
-        if(e.key === 'Escape'){ closeDiff(); }
     });
 });
 
@@ -907,141 +699,6 @@ function resetVideoBtn(){
     btn.style.borderColor = 'rgba(16,185,129,.25)';
     btn.innerHTML = '<svg style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg> Video';
 }
-
-// ─── Workspace Resizer & File Explorer ───────────────────────────
-function initResizers() {
-    const leftResizer = document.getElementById('resizer-left');
-    const rightResizer = document.getElementById('resizer-right');
-    const fileExplorer = document.getElementById('file-explorer');
-    const aiPanel = document.getElementById('ai-panel');
-    const centerPane = document.querySelector('.center-pane');
-
-    let isResizingLeft = false;
-    let isResizingRight = false;
-
-    leftResizer.addEventListener('mousedown', (e) => {
-        isResizingLeft = true;
-        leftResizer.classList.add('dragging');
-        document.body.style.cursor = 'col-resize';
-        // Add a temporary overlay to iframe to prevent pointer events stealing
-        let overlay = document.createElement('div');
-        overlay.id = 'iframe-blocker';
-        overlay.style.position = 'absolute';
-        overlay.style.inset = '0';
-        overlay.style.zIndex = '9999';
-        centerPane.appendChild(overlay);
-    });
-
-    rightResizer.addEventListener('mousedown', (e) => {
-        isResizingRight = true;
-        rightResizer.classList.add('dragging');
-        document.body.style.cursor = 'col-resize';
-        let overlay = document.createElement('div');
-        overlay.id = 'iframe-blocker';
-        overlay.style.position = 'absolute';
-        overlay.style.inset = '0';
-        overlay.style.zIndex = '9999';
-        centerPane.appendChild(overlay);
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!isResizingLeft && !isResizingRight) return;
-        
-        if (isResizingLeft) {
-            let newWidth = e.clientX;
-            if (newWidth < 150) newWidth = 150;
-            if (newWidth > 400) newWidth = 400;
-            fileExplorer.style.width = `${newWidth}px`;
-        }
-        
-        if (isResizingRight) {
-            let newWidth = window.innerWidth - e.clientX;
-            if (newWidth < 250) newWidth = 250;
-            if (newWidth > 600) newWidth = 600;
-            aiPanel.style.width = `${newWidth}px`;
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        if (isResizingLeft) {
-            isResizingLeft = false;
-            leftResizer.classList.remove('dragging');
-        }
-        if (isResizingRight) {
-            isResizingRight = false;
-            rightResizer.classList.remove('dragging');
-        }
-        document.body.style.cursor = 'default';
-        const blocker = document.getElementById('iframe-blocker');
-        if (blocker) blocker.remove();
-    });
-}
-
-async function fetchFiles() {
-    const treeDiv = document.getElementById('file-tree');
-    try {
-        const res = await fetch(`${VC.apiBase}/workspace/${VC.roomSlug}/files`, {
-            headers: {'Accept':'application/json'}
-        });
-        if (!res.ok) throw new Error('Failed to load');
-        const data = await res.json();
-        
-        if (!data.files || data.files.length === 0) {
-            treeDiv.innerHTML = '<div style="padding:10px; color:#64748b; text-align:center;">No files found</div>';
-            return;
-        }
-        
-        treeDiv.innerHTML = renderTree(data.files);
-    } catch(e) {
-        treeDiv.innerHTML = '<div style="padding:10px; color:#f87171; text-align:center;">Failed to load files</div>';
-    }
-}
-
-function renderTree(files, padding = 12) {
-    let html = '';
-    for (const f of files) {
-        if (f.type === 'directory') {
-            html += `<div style="padding: 4px 12px 4px ${padding}px; display:flex; align-items:center; gap:6px; color:#94a3b8; cursor:pointer;" onmouseover="this.style.background='#161b22'" onmouseout="this.style.background='transparent'">
-                <span style="color:#F05000">📁</span> ${f.name}
-            </div>`;
-            if (f.children && f.children.length > 0) {
-                html += renderTree(f.children, padding + 16);
-            }
-        } else {
-            let icon = '📄';
-            if (f.name.endsWith('.py')) icon = '🐍';
-            else if (f.name.endsWith('.js') || f.name.endsWith('.ts')) icon = '📜';
-            else if (f.name.endsWith('.php')) icon = '🐘';
-            else if (f.name.endsWith('.md')) icon = '📝';
-            else if (f.name.endsWith('.json')) icon = '⚙️';
-            
-            html += `<div style="padding: 4px 12px 4px ${padding}px; display:flex; align-items:center; gap:6px; color:#f1f5f9; cursor:pointer;" onmouseover="this.style.background='#161b22'" onmouseout="this.style.background='transparent'">
-                <span>${icon}</span> ${f.name}
-            </div>`;
-        }
-    }
-    return html;
-}
-
-// Hook into DOMContentLoaded to init
-document.addEventListener('DOMContentLoaded', () => {
-    initResizers();
-    fetchFiles();
-    
-    // Patch toggleAiPanel to also show/hide right resizer
-    const origToggle = toggleAiPanel;
-    toggleAiPanel = function() {
-        origToggle();
-        const resizer = document.getElementById('resizer-right');
-        if (panelVisible) {
-            resizer.style.display = 'block';
-        } else {
-            resizer.style.display = 'none';
-        }
-    };
-});
 </script>
-
-
 </body>
 </html>

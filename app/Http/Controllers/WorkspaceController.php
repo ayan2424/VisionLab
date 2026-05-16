@@ -52,7 +52,7 @@ class WorkspaceController extends Controller
                 'name'     => 'README.md',
                 'type'     => 'file',
                 'language' => 'markdown',
-                'content'  => "# My VisionCode Workspace\n\n> Powered by **VisionLab** — Aptech Vision 2026\n\n## Getting Started\n\n1. Select a file from the explorer on the left\n2. Edit in the Monaco editor\n3. Press `Ctrl + Enter` to execute\n4. Use the **AI Sidebar** for instant help\n\n## AI Agent Modes\n\n| Mode  | Capability |\n|-------|------------|\n| CHAT  | Ask questions, get explanations |\n| PLAN  | Step-by-step execution plan |\n| AGENT | Autonomous read/write with diff preview |\n",
+                'content'  => "# My VisionLab Workspace\n\n> Powered by **VisionLab** — Aptech Vision 2026\n\n## Getting Started\n\n1. Select a file from the explorer on the left\n2. Edit in the Monaco editor\n3. Press `Ctrl + Enter` to execute\n4. Use the **AI Sidebar** for instant help\n\n## AI Agent Modes\n\n| Mode  | Capability |\n|-------|------------|\n| CHAT  | Ask questions, get explanations |\n| PLAN  | Step-by-step execution plan |\n| AGENT | Autonomous read/write with diff preview |\n",
             ],
         ];
     }
@@ -143,7 +143,7 @@ class WorkspaceController extends Controller
             $scheme = 'https';
         }
 
-        $key = env('REVERB_APP_KEY', 'visioncode-key');
+        $key = env('REVERB_APP_KEY', 'VisionLab-key');
 
         return compact('key', 'host', 'port', 'scheme');
     }

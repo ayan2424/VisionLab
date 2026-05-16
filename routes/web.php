@@ -10,8 +10,10 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminWorkspaceController;
 use App\Http\Controllers\Admin\ExtensionController;
 use App\Http\Controllers\Admin\AdminAnalyticsController;
+use App\Http\Controllers\Admin\AiSettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn () => view('welcome'))->name('home');
 Route::get('/demo', fn () => view('demo'))->name('demo');
 Route::get('/offline', fn () => view('offline'))->name('offline');
+Route::get('/demo-script', fn () => view('demo'))->name('demo-script')->middleware(['auth', 'role:admin,instructor']);
 
 /*
 |--------------------------------------------------------------------------
@@ -44,14 +47,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
     Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
-    Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
-    Route::get('/courses/{slug}/edit', [CourseController::class, 'edit'])->name('courses.edit');
-    Route::put('/courses/{slug}', [CourseController::class, 'update'])->name('courses.update');
-    Route::delete('/courses/{slug}', [CourseController::class, 'destroy'])->name('courses.destroy');
+    Route::get('/courses/{course:slug}', [CourseController::class, 'show'])->name('courses.show');
+    Route::get('/courses/{course:slug}/edit', [CourseController::class, 'edit'])->name('courses.edit');
+    Route::put('/courses/{course:slug}', [CourseController::class, 'update'])->name('courses.update');
+    Route::delete('/courses/{course:slug}', [CourseController::class, 'destroy'])->name('courses.destroy');
 
     // ── Enrollments ────────────────────────────────────────────────────
     Route::get('/join', [EnrollmentController::class, 'joinForm'])->name('enrollments.join');
     Route::post('/join', [EnrollmentController::class, 'joinByCode'])->name('enrollments.join.post');
+    Route::post('/courses/{course:slug}/invite', [EnrollmentController::class, 'inviteStudent'])->name('enrollments.invite');
     Route::delete('/courses/{course:slug}/students/{studentId}', [EnrollmentController::class, 'remove'])->name('enrollments.remove');
 
     // ── Assignments ────────────────────────────────────────────────────
@@ -104,9 +108,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/extensions/{extension}/toggle', [ExtensionController::class, 'toggleGlobal'])->name('extensions.toggle');
         Route::delete('/extensions/{extension}', [ExtensionController::class, 'destroy'])->name('extensions.destroy');
 
+        // AI Settings
+        Route::get('/ai-settings', [AiSettingsController::class, 'index'])->name('ai-settings.index');
+        Route::post('/ai-settings/keys', [AiSettingsController::class, 'updateKeys'])->name('ai-settings.keys');
+        Route::post('/ai-settings/features', [AiSettingsController::class, 'updateFeatures'])->name('ai-settings.features');
+        Route::post('/ai-settings/models', [AiSettingsController::class, 'storeModel'])->name('ai-settings.models.store');
+        Route::patch('/ai-settings/models/{model}/toggle', [AiSettingsController::class, 'toggleModel'])->name('ai-settings.models.toggle');
+        Route::patch('/ai-settings/models/{model}/default', [AiSettingsController::class, 'setDefault'])->name('ai-settings.models.default');
+        Route::delete('/ai-settings/models/{model}', [AiSettingsController::class, 'destroyModel'])->name('ai-settings.models.destroy');
+        Route::post('/ai-settings/test-connection', [AiSettingsController::class, 'testConnection'])->name('ai-settings.test');
+
         // Analytics
         Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics');
+
+        // Workspaces
+        Route::get('/workspaces', [AdminWorkspaceController::class, 'index'])->name('workspaces.index');
+        Route::get('/workspaces/{workspace}', [AdminWorkspaceController::class, 'show'])->name('workspaces.show');
+        Route::post('/workspaces/{workspace}/stop', [AdminWorkspaceController::class, 'stop'])->name('workspaces.stop');
+        Route::delete('/workspaces/{workspace}', [AdminWorkspaceController::class, 'destroy'])->name('workspaces.destroy');
     });
 });
+
+
 
 require __DIR__.'/auth.php';

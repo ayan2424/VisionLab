@@ -22,12 +22,25 @@ class AnnouncementController extends Controller
             'pinned' => 'sometimes|boolean',
         ]);
 
-        $course->announcements()->create([
+        $announcement = $course->announcements()->create([
             'author_id' => $user->id,
             'title'     => $validated['title'],
             'body'      => $validated['body'],
             'pinned'    => $request->boolean('pinned'),
         ]);
+
+        // Broadcast to enrolled students
+        try {
+            broadcast(new \App\Events\NewAnnouncement(
+                $course->id,
+                $course->title,
+                $validated['title'],
+                $user->name,
+                \Illuminate\Support\Str::limit(strip_tags($validated['body']), 100),
+            ))->toOthers();
+        } catch (\Throwable $e) {
+            // Reverb may not be running
+        }
 
         return back()->with('success', 'Announcement posted!');
     }

@@ -1,6 +1,6 @@
 {
-  "name": "visioncode-collab",
-  "displayName": "VisionCode Collab",
+  "name": "VisionLab-collab",
+  "displayName": "VisionLab Collab",
   "description": "Real-time collaboration for VisionLab",
   "version": "1.0.0",
   "engines": {
@@ -16,28 +16,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "visioncode.startCollab",
-        "title": "VisionCode: Start Collaboration"
+        "command": "VisionLab.startCollab",
+        "title": "VisionLab: Start Collaboration"
       },
       {
-        "command": "visioncode.startImplementation",
-        "title": "VisionCode: Start AI Implementation"
+        "command": "VisionLab.startImplementation",
+        "title": "VisionLab: Start AI Implementation"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "visioncode-collab-view",
-          "title": "VisionCode Collab",
+          "id": "VisionLab-collab-view",
+          "title": "VisionLab Collab",
           "icon": "media/icon.svg"
         }
       ]
     },
     "views": {
-      "visioncode-collab-view": [
+      "VisionLab-collab-view": [
         {
           "type": "webview",
-          "id": "visioncode.collabWebview",
+          "id": "VisionLab.collabWebview",
           "name": "Collaboration"
         }
       ]

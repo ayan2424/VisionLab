@@ -1,3 +1,5 @@
+---Phase 1(Starting)--- 
+
 <MASTER_PROMPT Phase="1" Name="Foundation_And_Landing" version="5.0">
   <SYSTEM_ROLE>
     You are an Elite Laravel Architect, Security Engineer, and Premium UI/UX Designer.
@@ -86,7 +88,9 @@
   </EXECUTION_PROTOCOL>
 </MASTER_PROMPT>
 
----Phase 2
+
+---Phase 2---
+
 
 <MASTER_PROMPT Phase="2" Name="CodeServer_IDE_Integration" version="5.0">
   <SYSTEM_ROLE>
@@ -218,7 +222,9 @@
   </EXECUTION_PROTOCOL>
 </MASTER_PROMPT>
 
----Phase 3
+
+---Phase 3---
+
 
 <MASTER_PROMPT Phase="3" Name="Realtime_Collab_Extension" version="5.0">
   <SYSTEM_ROLE>
@@ -237,7 +243,7 @@
   </PROJECT_CONTEXT>
 
   <CURRENT_OBJECTIVE>
-    Phase 3: Build the "VisionCode Collab" extension and its backend integration.
+    Phase 3: Build the "VisionLab Collab" extension and its backend integration.
     1. Backend: Create Reverb events, channel authorizations, and API endpoints.
     2. Extension: Cursor sync, document change echo, live chat panel, video call launcher.
     3. Container setup: Auto-install extension in workspaces.
@@ -276,11 +282,11 @@
   </STEP_1_BACKEND_REVERB_AND_EVENTS>
 
   <STEP_2_VSCODE_EXTENSION_DEVELOPMENT>
-    Build a complete VS Code extension named `visioncode-collab` using TypeScript.
+    Build a complete VS Code extension named `VisionLab-collab` using TypeScript.
 
     **Extension Manifest (package.json)**:
     - activationEvents: `onStartupFinished` (always active when workspace opens).
-    - contributes: command (`visioncode.startVideoCall`, `visioncode.toggleChat`), 
+    - contributes: command (`VisionLab.startVideoCall`, `VisionLab.toggleChat`), 
       status bar item (online users count with icon).
 
     **Extension Architecture**:
@@ -289,8 +295,8 @@
     - `DocumentSync` module: Listen to `vscode.workspace.onDidChangeTextDocument`, debounce 200ms, send CodeUpdated event with file URI and changes. On receiving remote CodeUpdated, apply edits using `vscode.window.activeTextEditor.edit(editBuilder => ...)` with proper range mappings. Use a simple Operation-based diff or just send full line diffs to avoid complexity — for MVP, send the delta as `{ range, text }` using `vscode.TextDocumentContentChangeEvent`.
     - `CursorSync` module: On `vscode.window.onDidChangeTextEditorSelection`, throttle 100ms, broadcast CursorMoved. On receiving remote CursorMoved, create `vscode.TextEditorDecorationType` (colored underline + after pseudo element with user name) and apply to the remote user's position. Store decorations per remote user and clear when they leave.
     - `ChatPanel` (Webview): Provide a sidebar webview (accessible via command or icon in activity bar). The webview will contain a simple chat UI (HTML/CSS/JS inside webview) that communicates with the extension host via `postMessage`. The extension host forwards messages to Laravel Reverb channel `workspace.{id}` (chat event) and listens for incoming `ChatMessageSent` to update the webview. Design the chat to be minimal, dark-themed, with user avatars and timestamps.
-    - `VideoCallIntegration`: Implement command `visioncode.startVideoCall`. It calls backend API to get Jitsi room URL + JWT, then either opens an external browser (not ideal) or creates a new webview panel with an iframe embedding the Jitsi meeting. Use `vscode.window.createWebviewPanel`. The webview must handle Jitsi iframe API to join/leave. Also add a status bar button to quickly join an active call.
-    - **Authentication**: Read a token from `process.env.VISIONCODE_API_TOKEN` (set in container) and pass it in API calls.
+    - `VideoCallIntegration`: Implement command `VisionLab.startVideoCall`. It calls backend API to get Jitsi room URL + JWT, then either opens an external browser (not ideal) or creates a new webview panel with an iframe embedding the Jitsi meeting. Use `vscode.window.createWebviewPanel`. The webview must handle Jitsi iframe API to join/leave. Also add a status bar button to quickly join an active call.
+    - **Authentication**: Read a token from `process.env.VisionLab_API_TOKEN` (set in container) and pass it in API calls.
     - **Presence**: Maintain an array of active remote users (from join/leave events). Show their count in status bar and colors consistent with cursors.
 
     **All code must be complete, no stubs.** Provide the full extension project folder with `package.json`, `tsconfig.json`, `src/extension.ts`, `src/RealtimeManager.ts`, `src/DocumentSync.ts`, `src/CursorSync.ts`, `src/ChatPanel.ts`, `src/VideoPanel.ts`, and any helper files. Include webview HTML/CSS/JS for chat and video.
@@ -302,16 +308,16 @@
     - In the Dockerfile or startup script (that runs in workspace container), add:
       ```bash
       # Download the .vsix from a central location (or build from source)
-      wget -O /tmp/visioncode-collab.vsix https://your-domain/extensions/visioncode-collab.vsix
-      code-server --install-extension /tmp/visioncode-collab.vsix
+      wget -O /tmp/VisionLab-collab.vsix https://your-domain/extensions/VisionLab-collab.vsix
+      code-server --install-extension /tmp/VisionLab-collab.vsix
       ```
     - Instead of hardcoding token, inject it as environment variable when running container:
-      `-e VISIONCODE_API_TOKEN={user_auth_token}` in `docker run` command (update Phase 2's CodeServerManager).
+      `-e VisionLab_API_TOKEN={user_auth_token}` in `docker run` command (update Phase 2's CodeServerManager).
     - Ensure the extension activates correctly; verify by checking code-server logs.
 
     - Update Phase 2's `CodeServerManager` to pass the user's Laravel Sanctum token (or a dedicated workspace JWT) into the container.
 
-    - Provide a static file route in Laravel to serve the .vsix (e.g., `/extensions/visioncode-collab.vsix`).
+    - Provide a static file route in Laravel to serve the .vsix (e.g., `/extensions/VisionLab-collab.vsix`).
 
     - Write a small test script to simulate a collaboration session.
   </STEP_3_CONTAINER_INTEGRATION_AND_SIDELOADING>
@@ -334,7 +340,9 @@
   </EXECUTION_PROTOCOL>
 </MASTER_PROMPT>
 
----Phase 4
+
+---Phase 4---
+
 
 <MASTER_PROMPT Phase="4" Name="AI_Agent_Continue_Integration" version="5.0">
   <SYSTEM_ROLE>
@@ -365,7 +373,7 @@
     5. Inject everything into workspace containers.
   </OBJECTIVES>
 
-  <STEP_1_LARAVEL_VISIONCODE_AI_BACKEND>
+  <STEP_1_LARAVEL_VisionLab_AI_BACKEND>
     Provide COMPLETE Laravel code for the AI backend.
 
     **AiController** (API routes):
@@ -403,14 +411,23 @@
     **Database Migrations** (if needed):
     - `ai_pending_patches` (id, workspace_id, session_id, file_path, original_content, patched_content, diff, status, created_by, timestamps)
 
-    Provide all code with complete logic, validation, and erro  <STEP_2_CONTINUE_EXTENSION_CUSTOMIZATION>
-    We will not modify Continue source entirely; instead we will download the pre-compiled `.vsix`, dynamically modify its `package.json` to rebrand it as **VisionLab Agent**, repack it, and sideload it into the container. 
-    Our Laravel backend will expose an OpenAI-compatible chat completions endpoint that wraps our AiService.
+    Provide all code with complete logic, validation, and error
 
-    **Rebranding Script (`storage/extensions/rebrand_continue.php`)**:
-    - Download the latest `linux-x64` version of Continue from OpenVSX.
-    - Extract the zip, modify `package.json` to set `name: visionlab-ai`, `displayName: VisionLab Agent`, `publisher: VisionLab`.
-    - Zip it back as `visionlab-ai.vsix`.
+  </STEP_1_LARAVEL_VisionLab_AI_BACKEND>
+    
+
+  <STEP_2_CONTINUE_EXTENSION_CUSTOMIZATION_AND_BUILD_RULES>
+    **CRITICAL RULE FOR ALL EXTENSIONS:**
+    Never use the "hacky" method of unzipping a pre-compiled `.vsix`, modifying `package.json`, and re-zipping. All custom or rebranded extensions (including VisionLab-collab and VisionLab-patch-reviewer) MUST be built from their actual source code using `npm install` and the official `vsce package` command.
+
+    **VisionLab Agent (Continue Rebranding) Script (`storage/extensions/build_visionlab_agent.sh`)**:
+    Write a complete, executable bash script that does the following:
+    - Git clone the official Continue repository: `git clone https://github.com/continuedev/continue.git`
+    - Navigate into the cloned directory.
+    - Modify the `package.json` at the source level to set `name: visionlab-ai`, `displayName: VisionLab Agent`, `publisher: VisionLab`.
+    - Modify any core UI text or hardcoded links if necessary to reflect the VisionLab brand instead of "Continue".
+    - Run `npm install` to install all dependencies.
+    - Run `npx vsce package -o ../../visionlab-ai.vsix` to properly compile, bundle, and package the extension.
 
     **Laravel OpenAI-compatible route**:
     - POST `/api/ai/v1/chat/completions` — accepts standard OpenAI request `{ model, messages, stream }`
@@ -424,18 +441,18 @@
       * `/ask` — Ask a question about the code.
 
     **Container setup**:
-    - Mount `visionlab-ai.vsix` into `/mnt/extensions/` and run `code-server --install-extension` inside the container.
-  </STEP_2_CONTINUE_EXTENSION_CUSTOMIZATION>
+    - Mount the properly compiled `visionlab-ai.vsix` into `/mnt/extensions/` and run `code-server --install-extension` inside the container.
+  </STEP_2_CONTINUE_EXTENSION_CUSTOMIZATION_AND_BUILD_RULES>
 
   <STEP_3_ONE_CLICK_AGENT_IMPLEMENTATION>
     Enhance the `/plan` mode to feature a seamless transition to the Agent mode via a Markdown command link.
 
     **Backend Logic (`AiService.php`)**:
-    - When the prompt is a Plan, append exactly: `[🚀 Start Implementation](command:visioncode.startImplementation)`.
+    - When the prompt is a Plan, append exactly: `[🚀 Start Implementation](command:VisionLab.startImplementation)`.
     - Add an `executePlan` method that takes the previously generated plan and autonomously runs an LLM call with the `propose_patch` tool in the background.
 
-    **Custom VS Code Command Integration (`visioncode-collab/extension.js`)**:
-    - Register the command `visioncode.startImplementation`.
+    **Custom VS Code Command Integration (`VisionLab-collab/extension.js`)**:
+    - Register the command `VisionLab.startImplementation`.
     - When clicked, make an invisible background `POST /api/workspace/{slug}/ai/execute-plan` request to Laravel.
     - Laravel processes the plan, proposes patches, and broadcasts the `PatchProposed` Reverb event.
 
@@ -443,10 +460,10 @@
   </STEP_3_ONE_CLICK_AGENT_IMPLEMENTATION>
 
   <STEP_4_CUSTOM_DIFF_VIEWER_WEBVIEW>
-    Continue does not have a built-in approval flow for patches. So we will build a small **custom webview extension** (a separate VS Code extension named `visioncode-patch-reviewer`) that listens for a custom command to show a diff viewer. This extension will be side-loaded alongside Continue.
+    Continue does not have a built-in approval flow for patches. So we will build a small **custom webview extension** (a separate VS Code extension named `VisionLab-patch-reviewer`) that listens for a custom command to show a diff viewer. This extension will be side-loaded alongside Continue.
 
     **Extension functionality**:
-    - Registers a command `visioncode.showPatchPreview` that opens a Webview panel titled "AI Patch Review".
+    - Registers a command `VisionLab.showPatchPreview` that opens a Webview panel titled "AI Patch Review".
     - The webview receives a patch object (file_path, diff, original content, new content) via `postMessage`.
     - It displays a two-pane diff view (red/green) styled dark, with file name and action buttons: "Approve & Apply", "Reject", "Modify".
     - On approve, it sends message back to extension host, which calls Laravel API `POST /api/ai/approve-patch` with patch ID, then refreshes the editor.
@@ -456,11 +473,11 @@
     **Communication flow**:
     1. Continue AI (through our backend) generates a `propose_patch` tool call.
     2. Our backend returns a special response to Continue that includes a link/command? Actually, Continue doesn't natively handle our custom tool. Instead, our Laravel backend, upon receiving a `propose_patch` request, will NOT execute it directly but will store the pending patch and return a tool result containing a JSON with `patchId` and a message. Then a client-side script (outside Continue) needs to trigger the diff viewer. 
-       Better: We embed a small script in the container that listens to a WebSocket or polling for new pending patches and then executes the VS Code command to show the patch preview. Or we extend the visioncode-collab extension (Phase 3) to listen for a custom event from Reverb (e.g., `PatchProposed`). When that event arrives, it auto-opens the diff viewer.
-    - So we will update the collab extension to subscribe to a private channel `workspace.{id}.patches` and listen for `PatchProposed` event with patch details. Upon receiving, it calls `vscode.commands.executeCommand('visioncode.showPatchPreview', patchData)`.
+       Better: We embed a small script in the container that listens to a WebSocket or polling for new pending patches and then executes the VS Code command to show the patch preview. Or we extend the VisionLab-collab extension (Phase 3) to listen for a custom event from Reverb (e.g., `PatchProposed`). When that event arrives, it auto-opens the diff viewer.
+    - So we will update the collab extension to subscribe to a private channel `workspace.{id}.patches` and listen for `PatchProposed` event with patch details. Upon receiving, it calls `vscode.commands.executeCommand('VisionLab.showPatchPreview', patchData)`.
     - The Laravel backend, when a `propose_patch` is triggered (by the AI via Continue), will broadcast this event to the workspace's patch channel.
 
-    Provide the full code for the `visioncode-patch-reviewer` extension (TypeScript + webview HTML/CSS/JS) and the updated collab extension with patch listener.
+    Provide the full code for the `VisionLab-patch-reviewer` extension (TypeScript + webview HTML/CSS/JS) and the updated collab extension with patch listener.
   </STEP_4_CUSTOM_DIFF_VIEWER_WEBVIEW>
 
   <STEP_4_BLADE_UI_AND_FINAL_INTEGRATION>
@@ -480,7 +497,9 @@
   </EXECUTION_PROTOCOL>
 </MASTER_PROMPT>
 
----Phase 5
+
+---Phase 5---
+
 
 <MASTER_PROMPT Phase="5" Name="Classroom_System" version="5.0">
   <SYSTEM_ROLE>
@@ -621,7 +640,7 @@
 </MASTER_PROMPT>
 
 
----Phase 6
+---Phase 6---
 
 
 <MASTER_PROMPT Phase="6" Name="Video_Conferencing_Jitsi" version="5.0">
@@ -629,14 +648,14 @@
     You are an Elite WebRTC & Jitsi Integration Specialist and Laravel Backend Engineer.
     You will implement a fully self-hosted (or JaaS‑backed) video conferencing system that feels native to VisionLab.
     The integration must be seamless: users can start/join a video call directly from within the workspace
-    (either via a button in the IDE’s top bar or via the VisionCode Collab extension).
+    (either via a button in the IDE’s top bar or via the VisionLab Collab extension).
     All backend logic uses Laravel, real-time events go through Reverb, and authentication is enforced.
   </SYSTEM_ROLE>
 
   <PROJECT_CONTEXT>
     VisionLabalready has:
     - Code‑server embedded inside Blade workspace page.
-    - Custom VS Code extension (VisionCode Collab) with a video command stub (Phase 3).
+    - Custom VS Code extension (VisionLab Collab) with a video command stub (Phase 3).
     - Laravel Reverb for real-time events and presence channels.
     - Docker infrastructure for workspace containers.
     We will now add video rooms using Jitsi Meet (self‑hosted via Docker or JaaS for MVP).
@@ -646,7 +665,7 @@
   <OBJECTIVES>
     1. Set up Jitsi Meet (self‑hosted or JaaS) and configure the platform.
     2. Build Laravel backend: VideoRoomController, JWT generation, Reverb events.
-    3. Enhance the VisionCode Collab extension to embed Jitsi in a webview panel.
+    3. Enhance the VisionLab Collab extension to embed Jitsi in a webview panel.
     4. Add video join button to Blade workspace top bar with presence indicators.
     5. Ensure only authorized members can enter, with moderator controls for instructor.
   </OBJECTIVES>
@@ -656,7 +675,7 @@
 
     **Option A (Self‑hosted, recommended for production):**
     - Add a `docker-compose.jitsi.yml` service block using the official `docker‑jitsi‑meet` image. Include all required services (web, prosody, jicofo, jvb). Configure environment variables: `PUBLIC_URL`, `JVB_ADVERTISE_IPS`, `JWT_APP_ID`, `JWT_APP_SECRET`, etc.
-    - Set up Nginx reverse proxy to expose Jitsi under a subdomain (e.g., `meet.visioncode.test`) with SSL.
+    - Set up Nginx reverse proxy to expose Jitsi under a subdomain (e.g., `meet.VisionLab.test`) with SSL.
     - Enable JWT authentication: only tokens generated by our Laravel app can create/join rooms.
 
     **Option B (JaaS – Jitsi as a Service, faster for MVP):**
@@ -696,14 +715,14 @@
     Provide all controller code, events, and route definitions. Ensure JitsiService is fully implemented with real JWT generation using the configured secret.
   </STEP_2_LARAVEL_BACKEND_VIDEO_ROOMS>
 
-  <STEP_3_ENHANCE_VISIONCODE_COLLAB_EXTENSION>
+  <STEP_3_ENHANCE_VisionLab_COLLAB_EXTENSION>
     We will update the custom VS Code extension from Phase 3 to implement the video call feature.
 
     **In the extension's `VideoPanel.ts` (or `VideoCallIntegration.ts`):**
-    - Extend the command `visioncode.startVideoCall`:
+    - Extend the command `VisionLab.startVideoCall`:
       1. Call Laravel API `POST /api/workspace/{workspaceId}/video/start` with the user's token.
       2. On success, obtain `roomName`, `jwt`, and `jitsiDomain`.
-      3. Open a new Webview Panel (`vscode.window.createWebviewPanel`) with the title "VisionCode Video Call".
+      3. Open a new Webview Panel (`vscode.window.createWebviewPanel`) with the title "VisionLab Video Call".
       4. Inside the webview, load an HTML page that embeds the Jitsi meeting using the iframe API.
       5. Pass the JWT and room name to the Jitsi iframe for authentication.
       6. Handle the `videoConferenceLeft` event from Jitsi API to automatically close the panel and optionally call the end API.
@@ -724,7 +743,7 @@
     - When the call ends, close the webview if open.
 
     Provide the complete TypeScript code for the updated extension files and the webview HTML/JS.
-  </STEP_3_ENHANCE_VISIONCODE_COLLAB_EXTENSION>
+  </STEP_3_ENHANCE_VisionLab_COLLAB_EXTENSION>
 
   <STEP_4_BLADE_UI_AND_FINAL_TOUCHES>
     Update the `workspace.blade.php` (from Phase 2) to include:
@@ -747,7 +766,7 @@
 </MASTER_PROMPT>
 
 
----Phase 7
+---Phase 7---
 
 
 <MASTER_PROMPT Phase="7" Name="Admin_Extensions_And_Management" version="5.0">
@@ -830,8 +849,8 @@
 
     **Pre‑defined extensions (update seeder if needed)**:
     Ensure these are seeded:
-    - `visioncode-collab` (built‑in, global)
-    - `visioncode-patch-reviewer` (built‑in, global)
+    - `VisionLab-collab` (built‑in, global)
+    - `VisionLab-patch-reviewer` (built‑in, global)
     - `continue` (built‑in, global)
     - `gitlens` (built‑in, optional global)
     - `prettier` (built‑in, optional global)
@@ -902,7 +921,7 @@
 </MASTER_PROMPT>
 
 
----Phase 8
+---Phase 8---
 
 
 <MASTER_PROMPT Phase="8" Name="Analytics_Polish_Demo" version="5.0">
@@ -920,7 +939,7 @@
     - Analytics that look like a Silicon Valley SaaS.
     - Skeleton loaders, unified toasts, and entrance animations everywhere.
     - AI artifacts (like Claude's artifacts) rendered as isolated interactive cards.
-    - Persistent AI memory file (.visioncode_memory.md).
+    - Persistent AI memory file (.VisionLab_memory.md).
     - A dedicated demo guide view with step‑by‑step script for judges.
   </PROJECT_CONTEXT>
 
@@ -966,7 +985,7 @@
     - Replace any "Loading..." text with skeleton loaders in all relevant views.
 
     **Unified Toast System:**
-    - Create a Blade component `<x-toast-container />` and a global JavaScript `VisionCode.toast(message, type)` function that shows premium dark toasts (sliding from top‑right, glassmorphic background, icons for success/error/warning/info).
+    - Create a Blade component `<x-toast-container />` and a global JavaScript `VisionLab.toast(message, type)` function that shows premium dark toasts (sliding from top‑right, glassmorphic background, icons for success/error/warning/info).
     - Replace all `alert()` calls and basic notifications with this toast system across the entire codebase (the AI should scan existing views/JS and provide updates). Provide the global JS file and the Blade include.
 
     **Empty States:**
@@ -997,15 +1016,15 @@
             - **Copy Code**: Copies the content to clipboard and shows toast.
             - **Apply to Workspace**: Saves the artifact content as a file in the workspace (prompt for file path or use a default). Calls the Laravel file write API.
         * The artifact card should have a subtle entrance animation.
-    - Since we integrated Continue, implementing custom artifact cards there is tricky. Instead, we will build a standalone **VisionCode Artifacts Panel** as a webview in the VisionCode Collab extension (or as a separate Blade panel in the workspace page), where all artifacts for the current session are displayed. The Continue chat will remain but the collab extension (or Blade) will listen for `artifact_generated` events from the backend via Reverb, and display them.
+    - Since we integrated Continue, implementing custom artifact cards there is tricky. Instead, we will build a standalone **VisionLab Artifacts Panel** as a webview in the VisionLab Collab extension (or as a separate Blade panel in the workspace page), where all artifacts for the current session are displayed. The Continue chat will remain but the collab extension (or Blade) will listen for `artifact_generated` events from the backend via Reverb, and display them.
     - In Laravel, when the AiService outputs an artifact, it will broadcast an `ArtifactGenerated` event with the artifact data (title, language, content) to the workspace's Reverb channel.
     - The frontend (Blade or extension) will render the Artifact Card.
     - Provide the updated AiService prompt, the broadcast event class, the frontend JavaScript for listening and rendering, and the CSS for the artifact card.
 
     **Memory File:**
-    - The AI must maintain a `.visioncode_memory.md` file in the workspace root.
-    - In the AiService system prompt, add: "At the beginning of each conversation, read `.visioncode_memory.md` if it exists. When you learn new user preferences, tech stack details, or project rules, update the memory file via the write_file tool (or propose_patch). Keep it concise."
-    - The AiController (or AiService) will, before sending messages to Claude, check if `.visioncode_memory.md` exists; if so, read its content and prepend it to the system prompt as `User's Memory: ...`.
+    - The AI must maintain a `.VisionLab_memory.md` file in the workspace root.
+    - In the AiService system prompt, add: "At the beginning of each conversation, read `.VisionLab_memory.md` if it exists. When you learn new user preferences, tech stack details, or project rules, update the memory file via the write_file tool (or propose_patch). Keep it concise."
+    - The AiController (or AiService) will, before sending messages to Claude, check if `.VisionLab_memory.md` exists; if so, read its content and prepend it to the system prompt as `User's Memory: ...`.
     - Provide the updated read logic and prompt modifications.
     - Also, show a small "Memory" indicator in the AI chat sidebar (or Blade panel) with a tooltip showing last modified date and a link to view the file.
   </STEP_3_AI_ARTIFACTS_AND_MEMORY_SYSTEM>
@@ -1069,7 +1088,7 @@
 </MASTER_PROMPT>
 
 
----Phase 9
+---Phase 9---
 
 
 <MASTER_PROMPT Phase="9" Name="Production_Deployment_And_Security_Hardening" version="1.0">
@@ -1232,7 +1251,7 @@
 </MASTER_PROMPT>
 
 
----Phase 10
+---Phase 10---
 
 
 <MASTER_PROMPT Phase="10" Name="PWA_Integration" version="1.0">
@@ -1264,7 +1283,7 @@
     Provide:
     - `public/manifest.json` containing:
       * name: "VisionLab"
-      * short_name: "VisionCode"
+      * short_name: "VisionLab"
       * description: "Collaborative coding & learning platform"
       * start_url: "/dashboard" (student dashboard as default)
       * display: "standalone"
@@ -1298,7 +1317,7 @@
     Additionally, provide the frontend JavaScript (`resources/js/pwa.js`) that:
     - Registers the service worker.
     - Listens for online/offline events and shows a toast/banner (dark themed) at the top of the page: "You are offline" / "Back online".
-    - Contains an "install" prompt UI: using the `beforeinstallprompt` event, show a glowing button/banner "Install VisionCode" that triggers the native prompt. The button should appear after a few seconds or when user clicks a specific icon in the footer.
+    - Contains an "install" prompt UI: using the `beforeinstallprompt` event, show a glowing button/banner "Install VisionLab" that triggers the native prompt. The button should appear after a few seconds or when user clicks a specific icon in the footer.
     - Show a toast "App installed successfully!" after `appinstalled` event.
 
     Provide all Blade/JS code for these features.
@@ -1312,7 +1331,7 @@
     - Create a `PushSubscriptionController` with methods:
       * `subscribe(Request $request)`: validate and store push subscription for authenticated user.
       * `unsubscribe(Request $request)`: delete subscription.
-    - Generate VAPID keys using `webpush:vapid` artisan command and store in `.env` (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT=mailto:admin@visioncode.test`).
+    - Generate VAPID keys using `webpush:vapid` artisan command and store in `.env` (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT=mailto:admin@VisionLab.test`).
     - Create a notification class `AssignmentDueNotification` that extends `WebPushNotification` (or uses `WebPushMessage`). It should have title "Assignment Due Tomorrow", body with assignment name, and icon URL.
     - Update the Assignment creation logic (or a scheduled command) to send push notifications 24 hours before due date (if due date is in future and student hasn't submitted). Use a queued job or Laravel's scheduler with a command `notify:due-assignments`.
     - Similarly, create an `AnnouncementPushNotification` that sends when an instructor posts a new announcement in a course; broadcast via Event + Listener that sends push to all enrolled students with subscriptions.
@@ -1352,4 +1371,126 @@
 </MASTER_PROMPT>
 
 
----All Phases Completed
+---Phase 11---
+
+
+<MASTER_PROMPT Phase="11" Name="Extension_Ecosystem_And_Workspace_Lockdown" version="6.0">
+  <SYSTEM_ROLE>
+    You are an Elite Infrastructure Architect, Cyber Security Engineer, and VS Code Extension Specialist.
+    Your task is to implement the ultimate "Hybrid Extension Ecosystem" and "Workspace Lockdown" for VisionLab.
+    You must execute a dual-strategy for extension rebranding, enforce absolute teacher-controlled environments via Docker, and integrate custom extensions designed from scratch.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    Product: VisionLab (Aptech Vision 2026).
+    The workspace environment uses `code-server`. We need to provide standard tools (IntelliSense, Prettier, GitLens), our custom real-time tools, and an AI Agent.
+    However, the student environment must be strictly locked down. Students cannot uninstall built-in extensions, and Teachers/Admins have absolute authority to block the marketplace or specific tools.
+  </PROJECT_CONTEXT>
+
+  <CURRENT_OBJECTIVE>
+    Execute Phase 11: Implement the Hybrid Rebranding pipeline, deploy custom extensions, and enforce dynamic container-level marketplace and extension access controls.
+  </CURRENT_OBJECTIVE>
+
+  <STEP_1_HYBRID_EXTENSION_REBRANDING_PIPELINE>
+    Provide bash/PHP scripts to implement a dual-strategy rebranding system to save deployment time while maintaining custom branding:
+
+    **Strategy A: Source-Level Rebuild (STRICTLY for Core AI Agent)**
+    - Write a script `storage/extensions/build_agent.sh`.
+    - It must `git clone https://github.com/continuedev/continue.git`.
+    - It must programmatically modify the source `package.json` to set `name: visionlab-ai`, `displayName: VisionLab Agent`, `publisher: VisionLab`.
+    - It must run `npm install` and compile natively using `npx vsce package -o ../../visionlab-ai.vsix`.
+    - Do NOT use compiled zips for the AI agent.
+
+    **Strategy B: Compiled-Level Rapid Rebranding (For Standard Tools)**
+    - Write a PHP script `storage/extensions/rebrand_compiled.php`.
+    - This script targets heavy, standard pre-compiled extensions: GitLens, Prettier, and Language IntelliSense servers (PHP, HTML, CSS, JavaScript).
+    - It must programmatically unzip the `.vsix` files, overwrite metadata fields in their internal `package.json` (`name: visionlab-[tool]`, `displayName: VisionLab [Tool]`, `publisher: VisionLab`), and re-zip them instantly without running `npm install` or full rebuilds.
+  </STEP_1_HYBRID_EXTENSION_REBRANDING_PIPELINE>
+
+  <STEP_2_CUSTOM_EXTENSIONS_DEPLOYMENT>
+    Ensure deployment logic handles extensions built completely from scratch:
+    - **VisionLab-collab:** For real-time cursor sync, chat, and Jitsi video calls.
+    - **VisionLab-patch-reviewer:** A custom multi-file diff viewer.
+    *Justification:* Continue's built-in diff viewer only handles inline text diffs triggered manually by the user. It cannot handle autonomous, multi-file background patches generated by Laravel's automated queue during the `/plan` execution. This custom patch reviewer will listen to Reverb WebSockets (`workspace.{id}.patches`) and automatically pop up a dual-pane Webview for manual approval.
+  </STEP_2_CUSTOM_EXTENSIONS_DEPLOYMENT>
+
+  <STEP_3_CONTAINER_LOCKDOWN_AND_IMMUTABLE_MOUNTS>
+    Update `app/Services/CodeServerManager.php` and Docker configuration to enforce:
+    - **Immutable Built-ins:** All extensions (Source-built, Compiled-rebranded, and Custom) must be installed by the `root` user into the container's global read-only extension directory (`/usr/lib/code-server/extensions`).
+    - The student user (`coder`) must have ZERO write/delete privileges for this directory, rendering the extensions completely un-uninstallable.
+  </STEP_3_CONTAINER_LOCKDOWN_AND_IMMUTABLE_MOUNTS>
+
+  <STEP_4_DYNAMIC_MARKETPLACE_AND_ACCESS_CONTROL>
+    Update `app/Services/CodeServerManager.php` to enforce dynamic Teacher/Admin controls based on database configurations:
+    - Before spanning a workspace container, check the active database configuration for that specific course/student.
+    - **Marketplace Blockade:** If the Teacher has disabled marketplace access (`allow_marketplace = false`), the `CodeServerManager` MUST dynamically append the `--disable-marketplace` flag to the `docker run` command. This will completely vaporize the marketplace tab inside the IDE.
+    - **Extension Toggling:** Students can only enable/disable extensions if permitted by the teacher. If a teacher globally or locally disables a specific extension, it must not be mounted or must be strictly disabled at the runtime level, ensuring the student cannot access it under any circumstances.
+  </STEP_4_DYNAMIC_MARKETPLACE_AND_ACCESS_CONTROL>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4.
+    Ensure absolute code completeness with zero stubs. Provide exact scripts, Docker run command updates, and Laravel service code.
+    After Step 4, announce: "Phase 11 Complete. Hybrid Extension Ecosystem and Absolute Workspace Lockdown fully operational."
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---Phase 12---
+
+
+<MASTER_PROMPT Phase="12" Name="Startup_Features_And_Forensics" version="7.0">
+  <SYSTEM_ROLE>
+    You are an Elite Product Architect, AI Forensics Expert, and Cloud Deployment Engineer.
+    Your task is to elevate VisionLab from a student project to a Silicon Valley Startup level product for Aptech Vision 2026.
+    You will integrate AI Forensics (VisionGuard), Docker Resource Quotas, One-Click Cloud Deployment, and Developer Gamification.
+  </SYSTEM_ROLE>
+
+  <PROJECT_CONTEXT>
+    VisionLab is fully operational with a custom Hybrid Extension Ecosystem and strict container lockdown.
+    The AI Agent uses the cutting-edge Claude 4.5 Sonnet model via our Laravel proxy.
+    We now need to add enterprise-grade monitoring, anti-cheat mechanisms, cloud deployment integrations, and user engagement features.
+  </PROJECT_CONTEXT>
+
+  <CURRENT_OBJECTIVE>
+    Execute Phase 12: Implement VisionGuard Anti-Cheat, Docker Resource Limits, Vercel/Railway Deployment, and GitHub-style Gamification.
+  </CURRENT_OBJECTIVE>
+
+  <STEP_1_VISIONGUARD_AI_FORENSICS>
+    Provide COMPLETE Laravel and JavaScript code to implement an Anti-Cheat & Forensics system:
+    - **Concept:** Track how much code was typed manually by the student vs. how much was injected/approved via the AI Agent.
+    - **Frontend Tracker:** In the custom VS Code extension (`VisionLab-collab`), listen to `vscode.workspace.onDidChangeTextDocument`. If the change is a manual keystroke, log it as 'human'. If it comes from an automated patch apply, log it as 'ai'.
+    - **Backend API:** Create a lightweight API endpoint to periodically sync keystroke/source stats to the database (`submission_forensics` table).
+    - **Instructor Dashboard:** Add a "Forensics" tab in the submission grading view showing a pie chart (e.g., "78% Human Typed, 22% AI Assisted") to prove the student's authentic effort.
+  </STEP_1_VISIONGUARD_AI_FORENSICS>
+
+  <STEP_2_DOCKER_RESOURCE_QUOTAS>
+    Update `app/Services/CodeServerManager.php` to enforce hardware limits to prevent server crashes:
+    - **Resource Limits:** Inject `--memory="512m"` and `--cpus="0.5"` flags into the `docker run` command for student workspaces.
+    - **Admin Control:** Create a database configuration table `workspace_quotas` so the Admin can increase resources (e.g., 1GB RAM) for specific heavy courses or VIP students.
+    - Ensure graceful failure and premium error toasts if a container hits out-of-memory (OOM) limits.
+  </STEP_2_DOCKER_RESOURCE_QUOTAS>
+
+  <STEP_3_ONE_CLICK_CLOUD_DEPLOYMENT>
+    Provide COMPLETE Laravel code to allow students to deploy their work to the live internet:
+    - **Vercel/Railway API Integration:** Add a `DeploymentController` that connects to the Vercel or Railway API.
+    - **Deploy Action:** Add a "Deploy to Live" button in the Workspace IDE top bar.
+    - **Execution:** When clicked, the backend zips the workspace `project` folder, sends it to the cloud provider's deployment API, and returns a live production URL (e.g., `https://student-project.vercel.app`).
+    - Store deployment history and URLs in a `deployments` table and display them on the Student Dashboard.
+  </STEP_3_ONE_CLICK_CLOUD_DEPLOYMENT>
+
+  <STEP_4_DEVELOPER_GAMIFICATION_STREAKS>
+    Provide COMPLETE code to make the platform addictive and engaging:
+    - **GitHub-Style Contribution Graph:** On the Student Dashboard, render a 365-day heat map matrix showing daily coding activity (commits/saves/time spent).
+    - **Streaks & Badges:** Track consecutive daily logins and coding sessions. Award visual Badges (e.g., "7-Day Streak", "Bug Hunter", "AI Master") stored in a `user_badges` table.
+    - Style the contribution graph and badges using the premium dark theme, glassmorphism, and neon glowing accents.
+  </STEP_4_DEVELOPER_GAMIFICATION_STREAKS>
+
+  <EXECUTION_PROTOCOL>
+    Execute steps sequentially: 1 → 2 → 3 → 4.
+    Ensure absolute code completeness with zero stubs. Provide exact UI Blade files, Laravel controllers, and Docker modifications.
+    After Step 4, announce: "Phase 12 Complete. VisionLab is now a Silicon Valley grade Startup Product. Total Domination Achieved."
+  </EXECUTION_PROTOCOL>
+</MASTER_PROMPT>
+
+
+---All Phases Completed(Ending)---

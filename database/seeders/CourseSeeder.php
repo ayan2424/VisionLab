@@ -16,18 +16,18 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         // Create extra instructors and students
-        $instructor2 = User::updateOrCreate(['email' => 'instructor2@visioncode.ai'], [
+        $instructor2 = User::updateOrCreate(['email' => 'instructor2@VisionLab.ai'], [
             'name' => 'Instructor Mark', 'password' => Hash::make('Instructor@12345'),
             'role' => 'instructor', 'theme_preference' => 'dark', 'email_verified_at' => now(), 'status' => 'active',
         ]);
 
         $students = [];
         $studentData = [
-            ['name' => 'Student Alex',    'email' => 'student@visioncode.ai'],
-            ['name' => 'Student Sara',    'email' => 'student2@visioncode.ai'],
-            ['name' => 'Student Jordan',  'email' => 'student3@visioncode.ai'],
-            ['name' => 'Student Priya',   'email' => 'student4@visioncode.ai'],
-            ['name' => 'Student Liam',    'email' => 'student5@visioncode.ai'],
+            ['name' => 'Student Alex',    'email' => 'student@VisionLab.ai'],
+            ['name' => 'Student Sara',    'email' => 'student2@VisionLab.ai'],
+            ['name' => 'Student Jordan',  'email' => 'student3@VisionLab.ai'],
+            ['name' => 'Student Priya',   'email' => 'student4@VisionLab.ai'],
+            ['name' => 'Student Liam',    'email' => 'student5@VisionLab.ai'],
         ];
         foreach ($studentData as $s) {
             $students[] = User::updateOrCreate(['email' => $s['email']], [
@@ -36,7 +36,7 @@ class CourseSeeder extends Seeder
             ]);
         }
 
-        $instructor1 = User::where('email', 'instructor@visioncode.ai')->first();
+        $instructor1 = User::where('email', 'instructor@VisionLab.ai')->first();
 
         // Course 1 - Python & AI Fundamentals
         $course1 = Course::updateOrCreate(['enrollment_code' => 'PYAI26'], [

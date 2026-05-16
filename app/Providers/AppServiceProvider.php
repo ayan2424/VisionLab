@@ -3,10 +3,19 @@
 namespace App\Providers;
 
 use App\Models\Course;
+use App\Models\Assignment;
+use App\Models\Room;
+use App\Models\Submission;
 use App\Policies\CoursePolicy;
+use App\Policies\AssignmentPolicy;
+use App\Policies\WorkspacePolicy;
+use App\Policies\SubmissionPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,5 +47,16 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Gate::policy(Course::class, CoursePolicy::class);
+        Gate::policy(Assignment::class, AssignmentPolicy::class);
+        Gate::policy(Room::class, WorkspacePolicy::class);
+        Gate::policy(Submission::class, SubmissionPolicy::class);
+
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('ai', function (Request $request) {
+            return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

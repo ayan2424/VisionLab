@@ -1,10 +1,10 @@
 # VisionLab — Ultimate AI-Powered Collaborative Learning Platform
 
-**Competition-grade ecosystem for Aptech Vision 2026**
+**Competition-grade enterprise ecosystem for Aptech Vision 2026**
 
-VisionLab is a revolutionary platform that replaces Google Classroom, Zoom, and GitHub Copilot with a single, unified, dark-themed ecosystem. It spawns real **VS Code (code-server) Docker containers** for every workspace, featuring real-time multiplayer collaboration, integrated video conferencing, and an autonomous AI agent directly inside the IDE.
+VisionLab is a revolutionary platform that replaces Google Classroom, Zoom, and GitHub Copilot with a single, unified, dark-themed enterprise ecosystem. It spawns real **VS Code (code-server) Docker containers** for every workspace, featuring real-time multiplayer collaboration, integrated video conferencing, and an autonomous AI agent directly inside the IDE.
 
-**Tech Stack:** Laravel 11 · MySQL 8 · Blade & Tailwind CSS (Custom Dark Theme) · Docker (code-server) · Laravel Reverb (WebSockets) · Anthropic Claude Opus · Jitsi Meet · PWA
+**Tech Stack:** Laravel 11 · MySQL 8 · Blade & Tailwind CSS (Custom Dark Theme) · Docker (code-server) · Laravel Reverb (WebSockets) · Anthropic Claude & Gemini · Jitsi Meet · PWA
 
 ---
 
@@ -20,14 +20,16 @@ VisionLab is a revolutionary platform that replaces Google Classroom, Zoom, and 
 5. **Video Conferencing:** Integrated Jitsi Meet white-label video calls embedded directly within the workspace.
 6. **Admin & Instructor Control:** Toggle IDE extensions globally or per-workspace, monitor real-time analytics, and manage user roles.
 7. **PWA Ready:** Installable Progressive Web App with offline fallback pages, precached assets, and web-push notifications.
+8. **VisionGuard AI Forensics:** Keeps track of pasted AI-generated code versus real student keystroke telemetry, visualising effort statistics for instructors via Chart.js.
+9. **Visual Gamification:** Dynamic streaks tracker, contribution heatmap, and modern unlocked glassmorphic badges.
 
 ---
 
-## 📋 Prerequisites
+## 📋 General Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| **PHP** | 8.3+ | Backend framework (Laravel 11) |
+| **PHP** | 8.2+ (Recommended 8.3+) | Backend framework (Laravel 11) |
 | **Composer** | 2.x | PHP dependency management |
 | **Node.js & npm** | 20+ | Frontend asset building (Vite) |
 | **MySQL** | 8.0+ | Relational database |
@@ -35,143 +37,218 @@ VisionLab is a revolutionary platform that replaces Google Classroom, Zoom, and 
 
 ---
 
-## 🚀 Quick Start (Copy-Paste)
+## 🖥️ Operating System Specific Setup Guide
 
-### 1. Install Dependencies
+Follow the custom-tailored steps for your OS to avoid permission, server, and networking blockers:
+
+### 🐧 1. Linux (Ubuntu / Debian / Fedora)
+
+#### **Step A: Start & Verify MySQL Database**
+Ensure your local database service is active:
+```bash
+# Check status
+sudo systemctl status mysql
+
+# If stopped, start it
+sudo systemctl start mysql
+
+# Enable it to start on boot
+sudo systemctl enable mysql
+```
+
+#### **Step B: Docker Socket Permissions (CRITICAL)**
+By default, Docker requires root (`sudo`) permissions, which will block Laravel from spawning containers. Grant access to your system user:
+```bash
+# Create the docker group if it doesn't exist
+sudo groupadd docker
+
+# Add your current user to the docker group
+sudo usermod -aG docker $USER
+
+# Apply group changes instantly without restarting
+newgrp docker
+
+# Fix the socket file permission directly (Bulletproof fallback)
+sudo chmod 666 /var/run/docker.sock
+```
+
+---
+
+### 🍎 2. macOS (Intel / Apple Silicon M1/M2/M3)
+
+#### **Step A: Start & Verify MySQL Database**
+If using Homebrew:
+```bash
+# Check running Homebrew services
+brew services list
+
+# Start MySQL service
+brew services start mysql
+```
+*(If using DBngin or MAMP, open the desktop GUI app and ensure the MySQL server is green/running on port `3306`)*
+
+#### **Step B: Docker Desktop Advanced Configuration (CRITICAL)**
+For Laravel to communicate with Docker Desktop on macOS, you must authorize socket sharing:
+1. Open **Docker Desktop**.
+2. Click the ⚙️ **Settings** (Gear Icon) in the top-right corner.
+3. Navigate to **Advanced** tab.
+4. Locate the option **"Allow the default Docker socket to be used"** (or *System / User socket path sharing*) and check the box.
+5. Click **Apply & Restart**.
+6. Verify access in Terminal:
+   ```bash
+   ls -la /var/run/docker.sock
+   # Should display a valid socket reference link without permission issues
+   ```
+
+---
+
+### 🪟 3. Windows (WSL2 / Native Git Bash)
+
+We **strongly recommend** running this project inside **WSL2 (Windows Subsystem for Linux)** with an Ubuntu distribution for production stability.
+
+#### **Option A: If using WSL2 (Recommended)**
+1. Ensure your **Docker Desktop for Windows** has **WSL2 integration** enabled (Settings -> Resources -> WSL Integration -> toggle your Ubuntu distro).
+2. Inside your WSL terminal, start MySQL:
+   ```bash
+   sudo service mysql start
+   ```
+3. Run the project commands directly inside the WSL terminal just like a native Linux machine.
+
+#### **Option B: If using Native Windows (Git Bash / Command Prompt)**
+1. **Start MySQL Server:**
+   - If using **XAMPP**: Open XAMPP Control Panel and click "Start" next to MySQL.
+   - If using **WampServer**: Launch WampServer and ensure the icon turns green (MySQL service active).
+   - If using native MySQL: Open Command Prompt as Administrator and run:
+     ```cmd
+     net start mysql
+     ```
+2. **Start Docker Desktop:** Ensure Docker Desktop is running in the background.
+
+---
+
+## 🚀 Step-by-Step Installation
+
+### Step 1: Clone the Repository & Install Dependencies
+Clone the repository to your local directory:
 ```bash
 git clone <your-repo-url> visionlab
 cd visionlab
 
+# Install Laravel Backend Packages
 composer install
+
+# Install Frontend Node Packages
 npm install
 ```
 
-### 2. Environment Setup
+### Step 2: Environment Configuration
+Copy the sample environment file:
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-Edit your `.env` file to configure your MySQL connection and API Keys:
+Open `.env` in your code editor and configure your database and third-party details:
 ```dotenv
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=visionlab
-DB_USERNAME=root
-DB_PASSWORD=
+DB_USERNAME=root       # Change to your MySQL username
+DB_PASSWORD=           # Change to your MySQL password
 
-# Required for the VisionLab Agent
+# Required for the VisionLab AI Agent Chat
 ANTHROPIC_API_KEY=sk-ant-api03-... 
+GEMINI_API_KEY=your-gemini-key-here
+AI_PROVIDER=gemini # 'gemini' or 'anthropic'
 
-# Real-time WebSocket (Reverb)
+# Real-time WebSocket (Laravel Reverb)
 REVERB_APP_ID=181307
-REVERB_APP_KEY=visionlab_key
-REVERB_APP_SECRET=visionlab_secret
-REVERB_HOST=localhost
+REVERB_APP_KEY=pzs37btwtka3rhlyi13s
+REVERB_APP_SECRET=a6mepstuprpdqc85pxgs
+REVERB_HOST="localhost"
 REVERB_PORT=8080
 REVERB_SCHEME=http
 
 VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
 VITE_REVERB_HOST="${REVERB_HOST}"
 VITE_REVERB_PORT="${REVERB_PORT}"
-VITE_REVERB_SCHEME="${REVERB_SCHEME}"
+VITE_REVERB_SCHEME="${VITE_REVERB_SCHEME}"
 ```
 
-### 3. Database Migration
-VisionLab ships with the pre-packaged, rebranded **VisionLab Agent** integrated directly into the codebase. No external downloading or building is required!
-
+### Step 3: Database Seeding & Migration
+To avoid landing on an empty database (which triggers the `"These credentials do not match our records"` login failure), run the migration along with our predefined seeders:
 ```bash
-# Ensure MySQL Server is running, then migrate and seed the database
+# Wipes previous tables (if any) and migrates fresh schemas with test users
 php artisan migrate:fresh --seed
 ```
 
-### 4. Build Frontend Assets
+### Step 4: Build Frontend Assets (Heap OOM Fix)
+Because our codebase includes full customized extensions and heavy GUI builds, default node environments might run out of memory. **Use this specific command to compile:**
 ```bash
-npm run build
+# Sets standard Node heap space to 4GB before compiling with Vite
+export NODE_OPTIONS=--max-old-space-size=4096 && npm run build
 ```
+*(On Windows cmd/powershell use: `$env:NODE_OPTIONS="--max-old-space-size=4096"` followed by `npm run build`)*
 
-### 5. Start the Services
-You need **three terminals** open to run the full ecosystem:
+### Step 5: Start the Platform Services
+Open **three separate terminal tabs** to run the three engines in parallel:
 
-**Terminal 1: Laravel Web Server**
-```bash
-php artisan serve
-```
+*   **Terminal 1: Laravel Web Server**
+    ```bash
+    php artisan serve
+    ```
+*   **Terminal 2: WebSocket Server (For Collaborative Coding & Cursors)**
+    ```bash
+    php artisan reverb:start --debug
+    ```
+*   **Terminal 3: Horizon Queue Worker (For Async AI processing & forensics)**
+    ```bash
+    php artisan queue:work
+    ```
 
-**Terminal 2: Reverb WebSocket Server (For Collab & Live Sync)**
-```bash
-php artisan reverb:start --debug
-```
-
-**Terminal 3: Horizon / Queue Worker (For background AI processing)**
-```bash
-php artisan queue:work
-```
-
-*(Ensure Docker Desktop / Docker Daemon is running in the background!)*
+*(Make sure your Docker engine is fully active in the background!)*
 
 ---
 
-## 🔑 Demo Credentials
+## 🔑 Demo Login Credentials
 
-| Role | Email | Password | Access |
-|------|-------|----------|--------|
-| **Admin** | admin@visionlab.test | password | Analytics, Global Extension Controls, Demo Script |
-| **Instructor** | instructor@visionlab.test | password | Course Creation, Assignments, IDE + Collab |
-| **Student** | student@visionlab.test | password | Course Enrollment, Submissions, IDE + Collab |
+Use the following logins to test different perspectives of the platform:
 
----
-
-## 🧠 AI Agent Modes & One-Click Execution
-
-Open any Workspace IDE. The VisionLab Agent is pre-installed. Type the following slash commands in the AI chat:
-
-1. Type `/plan Create a new profile settings view`.
-2. The AI will generate a detailed architectural plan.
-3. At the bottom of the plan, a **`[🚀 Start Implementation]`** button will appear.
-4. Click the button. The backend autonomously takes over, reads the plan, and triggers the `propose_patch` pipeline.
-5. The **Diff Viewer** automatically pops up in your IDE, allowing you to Approve & Apply the generated code.
+| Role | Email | Password | Access Level |
+|------|-------|----------|--------------|
+| **Admin** | `admin@VisionLab.ai` | `Admin@12345` | Global extension toggles, System statistics, user suspend/activate controls |
+| **Instructor** | `instructor@VisionLab.ai` | `Instructor@12345` | Create courses & classroom assignments, View student keystroke AI Forensics |
+| **Student** | `student@VisionLab.ai` | `Student@12345` | Solve coding assignments inside code-server, View Streaks & Badge progress |
 
 ---
 
-## 🛠️ Project Architecture
+## 🛑 Essential Troubleshooting & Fixes
 
-```
-visionlab/
-├── app/
-│   ├── Http/Controllers/     ← Classroom, Workspaces, Video, Admin
-│   ├── Services/
-│   │   ├── AiService.php         ← Core AI logic, Anthropic API streaming
-│   │   ├── AiSandbox.php         ← Restricts AI writes to specific folders
-│   │   └── CodeServerManager.php ← Docker orchestration for workspaces
-├── resources/
-│   ├── views/                ← Blade Templates (Dark Theme, Glassmorphism)
-│   └── js/                   ← Alpine.js, Echo listeners, PWA registration
-├── storage/
-│   └── extensions/           
-│       ├── rebrand_continue.php        ← Script to build visionlab-ai.vsix
-│       ├── visioncode-collab/          ← Custom VS Code Collab extension
-│       └── visioncode-patch-reviewer/  ← Custom Diff Viewer extension
-└── public/
-    └── serviceworker.js      ← PWA Offline fallback and caching
-```
+### 1. ❌ Empty DB / Login Error: "These credentials do not match our records"
+If you get this error on trying to log in using the demo credentials, it means your database was successfully migrated but **never seeded**. 
+- **The Quick Fix:** Run the seeder directly in your host terminal:
+  ```bash
+  php artisan db:seed --class=RolesAndUsersSeeder
+  ```
+- **Verify MySQL Connection:** If this fails with `Connection refused`, your local MySQL server is stopped. Refer to the **OS Specific Setup Guide** above to start your MySQL database service.
 
----
+### 2. 🐳 Docker Spawning / Socket Access Permission Denied
+If workspaces fail to load, check `storage/logs/laravel.log`. If you see errors related to `Permission Denied` when executing Docker commands:
+- **Solution:** Laravel is running under your local user account, but your user doesn't have privileges to read/write to `/var/run/docker.sock`.
+- **The Linux Command:**
+  ```bash
+  sudo chmod 666 /var/run/docker.sock
+  ```
+  *(Note: You will need to rerun this command if you restart your Linux host, or configure the docker user group permanently as detailed in the OS Specific section).*
 
-## 🛑 Troubleshooting
-
-### Docker Containers Failing to Start
-- Ensure Docker is running (`docker info`).
-- Ensure port 9000-9100 are free (VisionLab dynamically assigns ports to `code-server` containers).
-
-### Real-Time Sync Not Working
-- Ensure `php artisan reverb:start` is actively running.
-- Check browser console for WebSocket connection refused errors (verify `.env` Reverb host/port match the frontend).
-
-### AI Agent Not Responding
-- Verify `ANTHROPIC_API_KEY` is set in `.env`.
-- Ensure the `php storage/extensions/rebrand_continue.php` script ran successfully and generated `visionlab-ai.vsix`.
+### 3. 🧠 Frontend Fails to Build / Memory Limit Out of Memory
+If running `npm run build` crashes during asset bundling with `FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`:
+- **Solution:** Vite is bundling the React and extension source files, which requires more memory than the default node limit allows.
+- **The Fix:**
+  ```bash
+  NODE_OPTIONS=--max-old-space-size=4096 npm run build
+  ```
 
 ---
 

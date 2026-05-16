@@ -1,4 +1,4 @@
-<div id="visioncode-toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none">
+<div id="VisionLab-toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none">
     <!-- Toasts will be injected here by JS -->
 </div>
 
@@ -19,10 +19,10 @@
 </style>
 
 <script>
-    window.VisionCode = window.VisionCode || {};
+    window.VisionLab = window.VisionLab || {};
     
-    window.VisionCode.toast = function(message, type = 'success') {
-        const container = document.getElementById('visioncode-toast-container');
+    window.VisionLab.toast = function(message, type = 'success') {
+        const container = document.getElementById('VisionLab-toast-container');
         if (!container) return;
 
         const toast = document.createElement('div');

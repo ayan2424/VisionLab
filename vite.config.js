@@ -19,7 +19,7 @@ export default defineConfig({
         {
             // Auto-delete stale "hot" file when doing `npm run build`
             // This is the #1 cause of "CSS missing" when moving between machines
-            name: 'visioncode-cleanup',
+            name: 'VisionLab-cleanup',
             buildStart() {
                 const hotFile = path.resolve(__dirname, 'public/hot');
                 if (fs.existsSync(hotFile)) {

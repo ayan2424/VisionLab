@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\Log;
 class AiAgentController extends Controller
 {
     private string $geminiKey;
-    private string $geminiModel    = 'gemini-2.0-flash';
-    private string $geminiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models';
+    private string $geminiModel;
+    private string $geminiEndpoint;
 
     public function __construct()
     {
-        $this->geminiKey = env('GEMINI_API_KEY', '');
+        $this->geminiKey      = config('ai.gemini.api_key', '');
+        $this->geminiModel    = config('ai.gemini.model', 'gemini-2.0-flash');
+        $this->geminiEndpoint = config('ai.gemini.endpoint', 'https://generativelanguage.googleapis.com/v1beta/models');
     }
 
     // ── POST /api/ai/chat ─────────────────────────────────────────
@@ -190,7 +192,11 @@ class AiAgentController extends Controller
             ? "Current file: `{$filename}` ({$language})\n```{$language}\n{$code}\n```\n\n"
             : '';
 
-        $base = match ($mode) {
+        $base = "You are VisionLab, an elite coding assistant built into the IDE.\n";
+        $base .= "At the beginning of each conversation, check your `User's Memory`. When you learn new user preferences, tech stack details, or project rules, update the `.VisionLab_memory.md` file via the `propose_patch` tool. Keep it concise.\n";
+        $base .= "If you generate standalone code (HTML, CSS, JS), a UI component, or a diagram, wrap the code EXACTLY in `<vision_artifact title=\"Component Name\" language=\"html\">...</vision_artifact>` tags so it can be previewed.\n\n";
+
+        $base .= match ($mode) {
             'CHAT'  => "You are a senior software engineer assistant in a collaborative IDE called VisionLab. Answer code questions clearly and concisely. Format code with backtick blocks.",
             'PLAN'  => "You are an expert software architect in VisionLab. Analyze the code and produce a numbered, step-by-step implementation plan with headings and bullet points.",
             'AGENT' => "You are an autonomous code-editing agent in VisionLab. Respond with: 1) A brief explanation, 2) The COMPLETE rewritten file in a single ```{$language} code block. Never omit code or use placeholders.",
@@ -249,6 +255,9 @@ class AiAgentController extends Controller
 
             str_contains($msg, 'complex') || str_contains($msg, 'big o') || str_contains($msg, 'o(n')
                 => [$this->complexityAnalysis(), null],
+
+            str_contains($msg, 'artifact') || str_contains($msg, 'component') || str_contains($msg, 'design') || str_contains($msg, 'ui')
+                => ["Here is the requested component:\n\n<vision_artifact title=\"Login Form\" language=\"html\">\n<div class=\"p-8 bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 max-w-sm mx-auto mt-10\">\n  <h2 class=\"text-2xl font-bold text-white mb-6 text-center\">Welcome Back</h2>\n  <form>\n    <div class=\"mb-4\">\n      <label class=\"block text-xs font-bold text-slate-400 mb-2\">EMAIL</label>\n      <input type=\"email\" class=\"w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-violet-500 transition-colors\" placeholder=\"you@example.com\">\n    </div>\n    <div class=\"mb-6\">\n      <label class=\"block text-xs font-bold text-slate-400 mb-2\">PASSWORD</label>\n      <input type=\"password\" class=\"w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-violet-500 transition-colors\" placeholder=\"••••••••\">\n    </div>\n    <button type=\"button\" class=\"w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 px-4 rounded-lg transition-colors\">\n      Sign In\n    </button>\n  </form>\n</div>\n</vision_artifact>", null],
 
             str_contains($msg, 'refactor') || str_contains($msg, 'clean') || str_contains($msg, 'improve')
                 => ["Here are <strong>3 refactoring opportunities</strong> in <strong>{$filename}</strong>:\n\n" . $this->refactorSuggestions(), null],

@@ -22,7 +22,7 @@ class CodeServerManager
     private const PORT_MAX = 9999;
 
     /** Docker image for code-server */
-    private const DOCKER_IMAGE = 'codercom/code-server:latest';
+    private const DOCKER_IMAGE = 'codercom/code-server:4.19.1';
 
     /**
      * Start a workspace container.
@@ -53,32 +53,41 @@ class CodeServerManager
 
         $port  = $this->allocatePort();
         $token = Str::random(32);
-        $name  = 'visioncode_ws_' . $room->slug;
+        $name  = 'VisionLab_ws_' . $room->slug;
+
+        // Check database configuration for marketplace access
+        $allowMarketplace = \App\Models\AiSetting::getValue('allow_marketplace', 'true') === 'true';
 
         // Remove any stale container with the same name
         $this->removeContainer($name);
+
+        // Fetch Resource Quotas
+        $quota = \App\Models\WorkspaceQuota::resolveForRoom($room);
 
         $cmd = [
             'docker', 'run', '-d',
             '--name', $name,
             '-v', "{$workspacePath}:/home/coder/project",
-            '-v', storage_path('extensions/visioncode-patch-reviewer') . ":/home/coder/.local/share/code-server/extensions/visioncode-patch-reviewer",
-            '-v', storage_path('extensions/visioncode-collab') . ":/home/coder/.local/share/code-server/extensions/visioncode-collab",
+            '-v', storage_path('extensions') . ":/usr/lib/code-server/extensions:ro", // Immutable mount
             '-p', "{$port}:8080",
-            '-e', "PASSWORD={$token}",
-            '-e', "VISIONCODE_API_TOKEN=" . ($room->owner?->createToken('workspace')->plainTextToken ?? ''),
-            '-e', "VISIONCODE_ROOM_SLUG={$room->slug}",
-            '-e', "VISIONCODE_USER_ID=" . (auth()->id() ?? '0'),
-            '-e', "VISIONCODE_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
-            '-e', "VISIONCODE_API_URL=" . url('/api'),
-            '-v', storage_path('extensions/visionlab.visionlab-ai-1.0.0') . ":/home/coder/.local/share/code-server/extensions/visionlab.visionlab-ai-1.0.0",
+            '-e', "VisionLab_API_TOKEN=" . ($room->owner?->createToken('workspace')->plainTextToken ?? ''),
+            '-e', "VisionLab_ROOM_SLUG={$room->slug}",
+            '-e', "VisionLab_USER_ID=" . (auth()->id() ?? '0'),
+            '-e', "VisionLab_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
+            '-e', "VisionLab_API_URL=" . url('/api'),
             '--restart', 'unless-stopped',
-            '--memory', '512m',
-            '--cpus', '0.5',
+            '--memory', $quota->memory_limit,
+            '--cpus', $quota->cpu_limit,
             self::DOCKER_IMAGE,
-            '--auth', 'password',
+            '--auth', 'none',
             '--bind-addr', '0.0.0.0:8080',
+            '--extensions-dir', '/usr/lib/code-server/extensions',
         ];
+
+        // Disable marketplace completely if teacher/admin blocked it
+        if (!$allowMarketplace) {
+            $cmd[] = '--disable-marketplace';
+        }
 
         $process = new Process($cmd);
         $process->setTimeout(60);
@@ -118,7 +127,7 @@ class CodeServerManager
      */
     public function stopWorkspace(Room $room): bool
     {
-        $name = 'visioncode_ws_' . $room->slug;
+        $name = 'VisionLab_ws_' . $room->slug;
 
         if (!$this->isDockerAvailable()) {
             return true;
@@ -134,7 +143,7 @@ class CodeServerManager
      */
     public function getStatus(Room $room): array
     {
-        $name = 'visioncode_ws_' . $room->slug;
+        $name = 'VisionLab_ws_' . $room->slug;
 
         if (!$this->isDockerAvailable()) {
             return ['running' => false, 'url' => null, 'port' => null, 'token' => null, 'container_id' => null];
@@ -200,7 +209,7 @@ class CodeServerManager
         foreach ($items as $item) {
             if ($item === '.' || $item === '..') continue;
             // Skip hidden files/directories
-            if (str_starts_with($item, '.') && $item !== '.visioncode_memory.md') continue;
+            if (str_starts_with($item, '.') && $item !== '.VisionLab_memory.md') continue;
 
             $itemPath = $realFull . DIRECTORY_SEPARATOR . $item;
             $relPath  = ltrim(str_replace($realBase, '', $itemPath), DIRECTORY_SEPARATOR);
@@ -482,21 +491,43 @@ class CodeServerManager
      */
     private function setupContinueExtension(string $containerName, Room $room): void
     {
-        // 1. We assume the Continue extension (Continue.continue) is already installed in the image 
-        //    or we can install it via code-server CLI. For MVP we'll just write the config 
-        //    so if the user installs it, it works instantly.
-        
         $token = $room->owner?->createToken('workspace')->plainTextToken ?? '';
-        
+        $hostBaseUrl = env('AI_PROXY_URL', 'http://host.docker.internal:8000/api/ai/v1');
+
+        // Fetch active chat/agent models
+        $activeModels = \App\Models\AiModel::getActiveChatModels();
+        $modelsConfig = [];
+
+        foreach ($activeModels as $m) {
+            $modelsConfig[] = [
+                'title' => $m->display_name,
+                'model' => $m->model_id,
+                'provider' => 'openai', // We masquerade all as openai to funnel through our proxy
+                'apiBase' => $hostBaseUrl,
+                'apiKey' => $token,
+                'contextLength' => $m->context_length,
+            ];
+        }
+
+        // Fetch autocomplete model (Gemini 2.5 Flash by default)
+        $autocompleteModel = \App\Models\AiModel::getAutocompleteModel();
+        $tabAutocompleteModel = null;
+        if ($autocompleteModel) {
+            $tabAutocompleteModel = [
+                'title' => $autocompleteModel->display_name,
+                'model' => $autocompleteModel->model_id,
+                'provider' => 'openai',
+                'apiBase' => $hostBaseUrl,
+                'apiKey' => $token,
+            ];
+        }
+
         $config = [
-            "models" => [
-                [
-                    "title" => "VisionCode Agent",
-                    "model" => "claude-3-opus-20240229",
-                    "provider" => "openai",
-                    "apiBase" => "http://host.docker.internal:8000/api/ai/v1",
-                    "apiKey" => $token
-                ]
+            "models" => $modelsConfig,
+            "tabAutocompleteModel" => $tabAutocompleteModel,
+            "tabAutocompleteOptions" => [
+                "useCopyBuffer" => false,
+                "maxPromptTokens" => 1024,
             ],
             "customCommands" => [
                 [
@@ -515,15 +546,92 @@ class CodeServerManager
                     "description" => "Ask a question about the code"
                 ]
             ],
-            "allowAnonymousTelemetry" => false
+            "allowAnonymousTelemetry" => \App\Models\AiSetting::getValue('telemetry_enabled', 'false') === 'true',
+            "disableIndexing" => \App\Models\AiSetting::getValue('indexing_enabled', 'false') !== 'true',
         ];
 
-        $json = json_encode($config, JSON_UNESCAPED_SLASHES);
+        $json = json_encode($config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         
-        $script = "mkdir -p /home/coder/.continue && echo '" . addslashes($json) . "' > /home/coder/.continue/config.json";
+        $vscodeSettings = [
+            "workbench.colorTheme" => "Default Dark Modern",
+            "window.title" => "VisionLab Workspace",
+            "workbench.startupEditor" => "none",
+            "workbench.welcomePage.walkthroughs.openOnInstall" => false,
+            "editor.fontFamily" => "'JetBrains Mono', 'Fira Code', 'Inter', monospace",
+            "editor.fontSize" => 14,
+            "editor.fontLigatures" => true,
+            "editor.smoothScrolling" => true,
+            "editor.cursorBlinking" => "smooth",
+            "editor.cursorSmoothCaretAnimation" => "on",
+            "editor.formatOnSave" => true,
+            "workbench.colorCustomizations" => [
+                "[Default Dark Modern]" => [
+                    "titleBar.activeBackground" => "#151515",
+                    "titleBar.inactiveBackground" => "#151515",
+                    "titleBar.activeForeground" => "#f1f5f9",
+                    "editor.background" => "#151515",
+                    "sideBar.background" => "#1a1a1a",
+                    "activityBar.background" => "#151515",
+                    "statusBar.background" => "#1a1a1a",
+                    "tab.activeBackground" => "#222222",
+                    "tab.inactiveBackground" => "#151515",
+                    "tab.border" => "#333333",
+                    "panel.background" => "#151515",
+                    "focusBorder" => "#F05000",
+                    "button.background" => "#F05000",
+                    "button.hoverBackground" => "#d04000",
+                    "textLink.foreground" => "#F05000",
+                    "textLink.activeForeground" => "#ff732e"
+                ]
+            ]
+        ];
+        $settingsJson = json_encode($vscodeSettings, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+
+        $script = "mkdir -p /home/coder/.continue /home/coder/.local/share/code-server/User && " .
+                  "cat << 'EOF' > /home/coder/.continue/config.json\n" . $json . "\nEOF\n" .
+                  "cat << 'EOF' > /home/coder/.local/share/code-server/User/settings.json\n" . $settingsJson . "\nEOF";
         
         $process = new Process(['docker', 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
+
+        // ── DEEP REBRANDING (Run as root) ──
+        $patchScript = <<< 'EOF'
+node -e "
+const fs = require('fs');
+const pPath = '/usr/lib/code-server/lib/vscode/product.json';
+if (fs.existsSync(pPath)) {
+    let p = JSON.parse(fs.readFileSync(pPath, 'utf8'));
+    p.nameShort = 'VisionLab';
+    p.nameLong = 'VisionLab IDE';
+    p.applicationName = 'visionlab';
+    p.dataFolderName = '.visionlab';
+    fs.writeFileSync(pPath, JSON.stringify(p, null, 2));
+}
+
+const wPath = '/usr/lib/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html';
+if (fs.existsSync(wPath)) {
+    let w = fs.readFileSync(wPath, 'utf8');
+    if (!w.includes('VisionLab Deep Rebranding')) {
+        const css = \`<style>
+        /* VisionLab Deep Rebranding CSS */
+        .monaco-workbench .part.titlebar { background: #0a0a0a !important; border-bottom: 1px solid #21262d !important; }
+        .titlebar-left .window-appicon { display: none !important; }
+        .titlebar-center .window-title::before { content: 'VisionLab Workspace' !important; color: #f1f5f9 !important; font-weight: 800 !important; font-size: 13px !important; letter-spacing: 0.5px !important; }
+        .monaco-workbench .part.editor { border-radius: 12px !important; margin: 8px !important; overflow: hidden !important; border: 1px solid #21262d !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+        .monaco-workbench .part.activitybar { background: transparent !important; }
+        .monaco-workbench .part.sidebar { border-radius: 12px !important; margin: 8px 0 8px 8px !important; border: 1px solid #21262d !important; overflow: hidden !important; }
+        .monaco-workbench .part.panel { border-radius: 12px !important; margin: 0 8px 8px 8px !important; border: 1px solid #21262d !important; overflow: hidden !important; }
+        .monaco-workbench .part.statusbar { border-top: 1px solid #21262d !important; background: #0d1117 !important; }
+        .monaco-workbench .part > .content { border-radius: inherit !important; }
+        </style>\`;
+        w = w.replace('</head>', css + '</head>');
+        fs.writeFileSync(wPath, w);
+    }
+}
+"
+EOF;
+        $patchProcess = new Process(['docker', 'exec', '-u', 'root', $containerName, 'bash', '-c', $patchScript]);
+        $patchProcess->run();
     }
 
     /**

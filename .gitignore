@@ -1,5 +1,6 @@
 /.phpunit.cache
 /node_modules
+**/node_modules
 /public/hot
 /public/storage
 /storage/*.key
@@ -20,3 +21,15 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Build artifacts & caches
+.eslintcache
+.parcel-cache
+.tsbuildinfo
+dist/
+build/
+out/
+*.vsix
+.agent-src/gui/dist
+.agent-src/extensions/vscode/out
+.agent-src/extensions/vscode/bin

@@ -3,7 +3,7 @@
 # ──────────────────────────────────────────────────────────────────────
 # Based on codercom/code-server, pre-loaded with:
 #   - Python 3, Node.js 18, PHP 8.3
-#   - VisionCode Collab extension (side-loaded)
+#   - VisionLab Collab extension (side-loaded)
 #   - Dark theme defaults
 # ──────────────────────────────────────────────────────────────────────
 

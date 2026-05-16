@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,6 +56,41 @@ class EnrollmentController extends Controller
 
         return redirect()->route('courses.show', $course->slug)
                          ->with('success', "Welcome to {$course->title}!");
+    }
+
+    public function inviteStudent(Request $request, Course $course)
+    {
+        $this->authorize('update', $course);
+
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $student = User::where('email', $request->email)->first();
+
+        if (!$student->isStudent()) {
+            return back()->withErrors(['email' => 'Only student accounts can be enrolled.']);
+        }
+
+        $existing = Enrollment::where('course_id', $course->id)
+                               ->where('student_id', $student->id)
+                               ->first();
+
+        if ($existing) {
+            if ($existing->status === 'active') {
+                return back()->with('info', "{$student->name} is already enrolled.");
+            }
+            $existing->update(['status' => 'active']);
+        } else {
+            Enrollment::create([
+                'course_id'  => $course->id,
+                'student_id' => $student->id,
+                'status'     => 'active',
+                'enrolled_at'=> now(),
+            ]);
+        }
+
+        return back()->with('success', "{$student->name} has been enrolled!");
     }
 
     public function remove(Course $course, int $studentId)

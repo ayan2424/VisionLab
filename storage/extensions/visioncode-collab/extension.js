@@ -4,14 +4,14 @@ class CollabViewProvider {
     constructor(extensionUri) {
         this._extensionUri = extensionUri;
         this._view = undefined;
-        this._userId = process.env.VISIONCODE_USER_ID || 'user-' + Math.floor(Math.random() * 1000);
-        this._userName = process.env.VISIONCODE_USER_NAME || 'Developer';
-        this._roomSlug = process.env.VISIONCODE_ROOM_SLUG || 'personal';
-        this._apiUrl = process.env.VISIONCODE_API_URL || 'http://localhost/api';
-        this._apiToken = process.env.VISIONCODE_API_TOKEN || '';
+        this._userId = process.env.VisionLab_USER_ID || 'user-' + Math.floor(Math.random() * 1000);
+        this._userName = process.env.VisionLab_USER_NAME || 'Developer';
+        this._roomSlug = process.env.VisionLab_ROOM_SLUG || 'personal';
+        this._apiUrl = process.env.VisionLab_API_URL || 'http://localhost/api';
+        this._apiToken = process.env.VisionLab_API_TOKEN || '';
         this._decorations = {};
         this._isApplyingRemoteChange = false;
-        
+
         // Colors for remote cursors
         this._colors = ['#7c3aed', '#2563eb', '#0891b2', '#16a34a', '#dc2626', '#d97706', '#db2777'];
     }
@@ -36,7 +36,7 @@ class CollabViewProvider {
                     this._handleRemoteCode(data.payload);
                     break;
                 case 'patch_proposed':
-                    vscode.commands.executeCommand('visioncode.showPatchPreview', data.payload);
+                    vscode.commands.executeCommand('VisionLab.showPatchPreview', data.payload);
                     break;
                 case 'info':
                     vscode.window.showInformationMessage('Collab: ' + data.message);
@@ -48,10 +48,10 @@ class CollabViewProvider {
         vscode.window.onDidChangeTextEditorSelection(e => {
             if (e.kind === vscode.TextEditorSelectionChangeKind.Command) return; // ignore auto changes
             if (!this._view) return;
-            
+
             const position = e.selections[0].active;
             const file = e.textEditor.document.fileName.split('/').pop();
-            
+
             this._view.webview.postMessage({
                 type: 'local_cursor',
                 payload: {
@@ -68,7 +68,7 @@ class CollabViewProvider {
 
             const file = e.document.fileName.split('/').pop();
             const content = e.document.getText();
-            
+
             this._view.webview.postMessage({
                 type: 'local_code',
                 payload: {
@@ -81,7 +81,7 @@ class CollabViewProvider {
 
     _handleRemoteCursor(payload) {
         if (!payload || !payload.userId || payload.userId === this._userId) return;
-        
+
         const editor = vscode.window.activeTextEditor;
         if (!editor) return;
 
@@ -108,7 +108,7 @@ class CollabViewProvider {
 
         const position = new vscode.Position(payload.line - 1, payload.column - 1);
         const range = new vscode.Range(position, position);
-        
+
         editor.setDecorations(this._decorations[payload.userId], [range]);
 
         // Clear after 3 seconds of inactivity
@@ -130,17 +130,17 @@ class CollabViewProvider {
         if (currentText === payload.content) return; // already in sync
 
         this._isApplyingRemoteChange = true;
-        
+
         const fullRange = new vscode.Range(
             editor.document.positionAt(0),
             editor.document.positionAt(currentText.length)
         );
-        
+
         const edit = new vscode.WorkspaceEdit();
         edit.replace(editor.document.uri, fullRange, payload.content);
-        
+
         await vscode.workspace.applyEdit(edit);
-        
+
         this._isApplyingRemoteChange = false;
     }
 
@@ -150,7 +150,7 @@ class CollabViewProvider {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionCode Collab</title>
+    <title>VisionLab Collab</title>
     <style>
         body { font-family: sans-serif; padding: 15px; color: #fff; background: #0a0a0a; }
         h3 { color: #f1f5f9; font-size: 14px; margin-top: 0; margin-bottom: 15px; }
@@ -305,21 +305,21 @@ function activate(context) {
     const provider = new CollabViewProvider(context.extensionUri);
 
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider("visioncode.collabWebview", provider)
+        vscode.window.registerWebviewViewProvider("VisionLab.collabWebview", provider)
     );
 
-    let disposable = vscode.commands.registerCommand('visioncode.startCollab', function () {
-        vscode.commands.executeCommand('workbench.view.extension.visioncode-collab-view');
+    let disposable = vscode.commands.registerCommand('VisionLab.startCollab', function () {
+        vscode.commands.executeCommand('workbench.view.extension.VisionLab-collab-view');
     });
 
-    let disposableImpl = vscode.commands.registerCommand('visioncode.startImplementation', async function () {
+    let disposableImpl = vscode.commands.registerCommand('VisionLab.startImplementation', async function () {
         vscode.window.showInformationMessage('VisionLab Agent is now implementing your plan...', 'View Status');
-        
+
         try {
             const fetch = require('node-fetch');
-            const ROOM_SLUG = process.env.VISIONCODE_ROOM_SLUG;
-            const API_URL = process.env.VISIONCODE_API_URL || 'http://localhost/api';
-            const API_TOKEN = process.env.VISIONCODE_API_TOKEN;
+            const ROOM_SLUG = process.env.VisionLab_ROOM_SLUG;
+            const API_URL = process.env.VisionLab_API_URL || 'http://localhost/api';
+            const API_TOKEN = process.env.VisionLab_API_TOKEN;
 
             await fetch(API_URL + '/workspace/' + ROOM_SLUG + '/ai/execute-plan', {
                 method: 'POST',
@@ -335,10 +335,10 @@ function activate(context) {
 
     context.subscriptions.push(disposable);
     context.subscriptions.push(disposableImpl);
-    
+
     // Auto-start on load
     setTimeout(() => {
-        vscode.commands.executeCommand('workbench.view.extension.visioncode-collab-view');
+        vscode.commands.executeCommand('workbench.view.extension.VisionLab-collab-view');
     }, 2000);
 }
 

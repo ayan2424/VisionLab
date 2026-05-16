@@ -101,6 +101,17 @@ class AiSandbox
             return ['error' => "Could not find the exact search block in the file. Context might have changed."];
         }
 
+        // Extremely strict sandboxing: prevent dangerous PHP functions
+        if (str_ends_with(strtolower($relativePath), '.php')) {
+            $denied = config('ai.sandbox.denied_functions', []);
+            foreach ($denied as $func) {
+                // simple check for function calls
+                if (preg_match("/\b{$func}\s*\(/i", $patchedContent)) {
+                    return ['error' => "Sandbox violation: The function '{$func}' is not allowed for security reasons."];
+                }
+            }
+        }
+
         // Generate a unified diff preview using diff command
         $tmpOriginal = tempnam(sys_get_temp_dir(), 'orig_');
         $tmpPatched = tempnam(sys_get_temp_dir(), 'patch_');

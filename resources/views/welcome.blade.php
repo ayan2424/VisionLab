@@ -225,7 +225,7 @@
                                 <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
                             </div>
                             <div class="flex-1">
-                                <div><span class="text-orange-400">from</span> <span class="text-amber-400">visioncode</span> <span class="text-orange-400">import</span> <span class="text-slate-300">AIAgent, Workspace</span></div>
+                                <div><span class="text-orange-400">from</span> <span class="text-amber-400">VisionLab</span> <span class="text-orange-400">import</span> <span class="text-slate-300">AIAgent, Workspace</span></div>
                                 <div><span class="text-orange-400">import</span> <span class="text-amber-400">asyncio</span></div>
                                 <div>&nbsp;</div>
                                 <div><span class="text-muted"># Initialize the AI-powered workspace</span></div>

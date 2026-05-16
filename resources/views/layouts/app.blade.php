@@ -55,9 +55,30 @@
 
     {{-- PWA + Echo --}}
     <script>
+    let deferredPrompt;
+    
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => navigator.serviceWorker.register('/serviceworker.js').catch(()=>{}));
     }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        
+        // Show an install button in the UI if it exists
+        const installBtn = document.getElementById('pwa-install-btn');
+        if (installBtn) {
+            installBtn.style.display = 'flex';
+            installBtn.addEventListener('click', async () => {
+                installBtn.style.display = 'none';
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            });
+        }
+    });
 
     @if(Auth::check())
     (function initGlobalEcho() {
@@ -83,7 +104,7 @@
         window.Echo.private(`user.${userId}`)
             .listen('.submission.graded', (data) => {
                 const pct = data.max_points > 0 ? Math.round(data.grade / data.max_points * 100) : 0;
-                window.VisionCode.toast(
+                window.VisionLab.toast(
                     `"${data.assignment_title}" graded: ${data.grade}/${data.max_points} (${pct}%)`,
                     pct >= 80 ? 'success' : pct >= 60 ? 'warning' : 'error'
                 );

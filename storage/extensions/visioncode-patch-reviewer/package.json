@@ -1,20 +1,20 @@
 {
-  "name": "visioncode-patch-reviewer",
-  "displayName": "VisionCode Patch Reviewer",
+  "name": "VisionLab-patch-reviewer",
+  "displayName": "VisionLab Patch Reviewer",
   "version": "1.0.0",
-  "publisher": "visioncode",
+  "publisher": "VisionLab",
   "engines": {
     "vscode": "^1.70.0"
   },
   "activationEvents": [
-    "onCommand:visioncode.showPatchPreview"
+    "onCommand:VisionLab.showPatchPreview"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "visioncode.showPatchPreview",
-        "title": "VisionCode: Review AI Patch"
+        "command": "VisionLab.showPatchPreview",
+        "title": "VisionLab: Review AI Patch"
       }
     ]
   }

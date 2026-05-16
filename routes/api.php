@@ -40,7 +40,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
 | Workspace File I/O API (Phase 2)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
+Route::middleware(['web', 'auth', 'throttle:60,1'])
     ->prefix('workspace/{slug}')->name('api.workspace.')->group(function () {
     Route::get('/files',       [\App\Http\Controllers\WorkspaceFileController::class, 'list'])
         ->name('files');
@@ -61,7 +61,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
 | Video Conferencing API (Phase 6)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:30,1'])
+Route::middleware(['web', 'auth', 'throttle:30,1'])
     ->prefix('workspace/{slug}/video')->name('api.video.')->group(function () {
     Route::post('/start',  [\App\Http\Controllers\VideoRoomController::class, 'start'])
         ->name('start');
@@ -97,7 +97,7 @@ Route::middleware(['auth:sanctum'])
 | AI Agent API (Phase 5 - Legacy UI Panel)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:10,1'])
+Route::middleware(['web', 'auth', 'throttle:10,1'])
     ->prefix('ai')->name('api.ai.legacy.')->group(function () {
     Route::post('/chat',          [\App\Http\Controllers\AiAgentController::class, 'chat'])
         ->name('chat');
@@ -129,3 +129,11 @@ Route::get('/health', function () {
         'version'   => '1.0.0',
     ], $db ? 200 : 503);
 });
+
+// ── Push Notifications ──────────────────────────────────────────
+Route::middleware('auth:sanctum')->prefix('push')->name('push.')->group(function () {
+    Route::post('/subscribe', [\App\Http\Controllers\Api\PushSubscriptionController::class, 'subscribe'])->name('subscribe');
+    Route::post('/unsubscribe', [\App\Http\Controllers\Api\PushSubscriptionController::class, 'unsubscribe'])->name('unsubscribe');
+});
+
+Route::get('/push/vapid-public-key', [\App\Http\Controllers\Api\PushSubscriptionController::class, 'vapidPublicKey'])->name('push.vapid');

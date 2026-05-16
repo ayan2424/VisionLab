@@ -94,6 +94,56 @@
                 </div>
             </div>
 
+            {{-- VisionGuard Forensics --}}
+            @if($submission->forensic)
+            <div class="vc-card p-5 border-l-4" style="border-left-color:var(--vc-info);">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold flex items-center" style="color:var(--vc-text);">
+                        <svg class="w-5 h-5 mr-2 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        VisionGuard AI Forensics
+                    </h3>
+                    <span class="text-xs font-semibold" style="color:var(--vc-muted);">Total Time: {{ gmdate("H:i:s", $submission->forensic->time_spent_seconds) }}</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="w-32 h-32 relative">
+                        <canvas id="forensicsChart"></canvas>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span class="text-lg font-black" style="color:var(--vc-text);">{{ $submission->forensic->human_percentage }}%</span>
+                        </div>
+                    </div>
+                    <div class="space-y-3 flex-1">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span style="color:var(--vc-success);">Human Typed</span>
+                                <span style="color:var(--vc-text-secondary);">{{ number_format($submission->forensic->human_keystrokes) }} chars</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $submission->forensic->human_percentage }}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span style="color:var(--vc-accent);">AI Assisted</span>
+                                <span style="color:var(--vc-text-secondary);">{{ number_format($submission->forensic->ai_injected_chars) }} chars</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-1.5">
+                                <div class="bg-violet-500 h-1.5 rounded-full" style="width: {{ 100 - $submission->forensic->human_percentage }}%"></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-2 uppercase tracking-wide">
+                            @if($submission->forensic->human_percentage >= 80)
+                                Authenticity: High (Manual Effort)
+                            @elseif($submission->forensic->human_percentage >= 40)
+                                Authenticity: Moderate (AI Assisted)
+                            @else
+                                Authenticity: Low (AI Generated)
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Code viewer --}}
             <div class="vc-card overflow-hidden">
                 <div class="flex items-center justify-between px-4 py-3 border-b" style="background:var(--vc-elevated);border-color:var(--vc-border);">
@@ -281,7 +331,8 @@
     </div>
 </div>
 
-{{-- Load Monaco script --}}
+{{-- Load Chart.js and Monaco script --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
 <script>
 const SUBMISSION = {
@@ -374,5 +425,38 @@ function copyCode() {
         });
     }
 }
+
+// ── Forensics Chart ────────────────────────────────────────────────
+@if($submission->forensic)
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('forensicsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Human Typed', 'AI Injected'],
+            datasets: [{
+                data: [{{ $submission->forensic->human_keystrokes }}, {{ $submission->forensic->ai_injected_chars }}],
+                backgroundColor: ['#10b981', '#8b5cf6'], // Success Green, Accent Violet
+                borderWidth: 0,
+                cutout: '80%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.raw + ' chars';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+@endif
 </script>
 @endsection

@@ -1,84 +1,118 @@
-const CACHE_NAME = 'visioncode-v1';
-const OFFLINE_URL = '/offline';
-
-const PRECACHE_ASSETS = [
-    '/',
+var staticCacheName = "pwa-v1-" + new Date().getTime();
+var filesToCache = [
     '/offline',
-    '/manifest.json',
+    '/build/assets/app.css',
+    '/build/assets/app.js',
+    '/manifest.json'
 ];
 
-const NAVIGATION_ROUTES = [
-    '/dashboard', '/courses', '/workspace', '/admin'
-];
-
-self.addEventListener('install', event => {
+// Cache on install
+self.addEventListener("install", event => {
+    this.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(PRECACHE_ASSETS).catch(() => {});
-        }).then(() => self.skipWaiting())
-    );
+        caches.open(staticCacheName)
+            .then(cache => {
+                return cache.addAll(filesToCache);
+            })
+    )
 });
 
+// Clear cache on activate
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-        ).then(() => self.clients.claim())
-    );
-});
-
-self.addEventListener('fetch', event => {
-    const { request } = event;
-    const url = new URL(request.url);
-
-    // Skip non-GET, cross-origin, WebSocket
-    if (request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) {
-        return;
-    }
-
-    // Workspace: network only
-    if (url.pathname.startsWith('/workspace')) {
-        return;
-    }
-
-    // Static assets: cache first
-    if (url.pathname.match(/\.(css|js|png|jpg|jpeg|svg|ico|woff2?|ttf)$/)) {
-        event.respondWith(
-            caches.match(request).then(cached => cached || fetch(request).then(res => {
-                const clone = res.clone();
-                caches.open(CACHE_NAME).then(c => c.put(request, clone));
-                return res;
-            }))
-        );
-        return;
-    }
-
-    // Navigation: network first, fallback offline
-    if (request.mode === 'navigate') {
-        event.respondWith(
-            fetch(request).catch(() => caches.match('/offline') || new Response('Offline', { status: 503 }))
-        );
-        return;
-    }
-});
-
-// Push notifications
-self.addEventListener('push', event => {
-    const data = event.data ? event.data.json() : {};
-    event.waitUntil(
-        self.registration.showNotification(data.title || 'VisionLab', {
-            body: data.body || 'You have a new notification.',
-            icon: '/icons/icon-192.png',
-            badge: '/icons/icon-192.png',
-            data: { url: data.url || '/dashboard' },
-            vibrate: [100, 50, 100]
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames
+                    .filter(cacheName => (cacheName.startsWith("pwa-")))
+                    .filter(cacheName => (cacheName !== staticCacheName))
+                    .map(cacheName => caches.delete(cacheName))
+            );
         })
     );
 });
 
-self.addEventListener('notificationclick', event => {
+// Serve from Cache or Network
+self.addEventListener("fetch", event => {
+    // Only intercept GET requests
+    if (event.request.method !== 'GET') return;
+
+    // Ignore requests to external domains
+    if (!event.request.url.startsWith(self.location.origin)) return;
+
+    // Ignore API, Livewire, Reverb/Websockets, and Telescope
+    if (event.request.url.includes('/api/') || 
+        event.request.url.includes('/livewire/') || 
+        event.request.url.includes('/app/') || 
+        event.request.url.includes('/telescope')) {
+        return;
+    }
+
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                return response || fetch(event.request)
+                    .then(fetchResponse => {
+                        return fetchResponse;
+                    })
+                    .catch(() => {
+                        // Return the offline page if network fails and it's a navigation request
+                        if (event.request.mode === 'navigate') {
+                            return caches.match('/offline');
+                        }
+                    });
+            })
+    );
+});
+
+// Push Notifications Listener
+self.addEventListener('push', function(event) {
+    if (event.data) {
+        const data = event.data.json();
+        const options = {
+            body: data.body || 'You have a new notification',
+            icon: data.icon || '/icons/icon-192.png',
+            badge: '/icons/icon-192.png',
+            vibrate: [100, 50, 100],
+            tag: data.tag || 'visionlab-notification',
+            renotify: true,
+            data: {
+                url: data.url || '/dashboard',
+                dateOfArrival: Date.now(),
+            },
+            actions: data.actions || [
+                { action: 'open', title: 'Open' },
+                { action: 'dismiss', title: 'Dismiss' },
+            ],
+        };
+        event.waitUntil(
+            self.registration.showNotification(data.title || 'VisionLab', options)
+        );
+    }
+});
+
+// Notification Click Handler
+self.addEventListener('notificationclick', function(event) {
     event.notification.close();
+
+    if (event.action === 'dismiss') return;
+
+    const urlToOpen = event.notification.data?.url || '/dashboard';
+
     event.waitUntil(
-        clients.openWindow(event.notification.data.url || '/dashboard')
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then(function(clientList) {
+                // If a VisionLab window is already open, focus it and navigate
+                for (const client of clientList) {
+                    if (client.url.includes(self.location.origin) && 'focus' in client) {
+                        client.focus();
+                        client.navigate(urlToOpen);
+                        return;
+                    }
+                }
+                // Otherwise open a new window
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen);
+                }
+            })
     );
 });

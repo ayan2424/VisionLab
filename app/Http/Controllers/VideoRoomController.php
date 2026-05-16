@@ -41,7 +41,7 @@ class VideoRoomController extends Controller
         }
 
         // Create a new video room
-        $roomName    = 'visioncode-' . $slug . '-' . Str::random(6);
+        $roomName    = 'VisionLab-' . $slug . '-' . Str::random(6);
         $jitsiDomain = env('JITSI_DOMAIN', 'meet.jit.si');
 
         $callData = [

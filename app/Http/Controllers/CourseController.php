@@ -60,11 +60,9 @@ class CourseController extends Controller
                          ->with('success', 'Course created successfully!');
     }
 
-    public function show(string $slug)
+    public function show(Course $course)
     {
-        $course = Course::where('slug', $slug)
-                        ->with(['instructor', 'announcements.author', 'assignments'])
-                        ->firstOrFail();
+        $course->load(['instructor', 'announcements.author', 'assignments']);
 
         $user = Auth::user();
         $isInstructor = $user->id === $course->instructor_id || $user->isAdmin();

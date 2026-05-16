@@ -124,9 +124,9 @@
         <div class="space-y-2">
             @php
             $creds = [
-                ['role'=>'Admin',      'email'=>'admin@visioncode.ai',      'pass'=>'Admin@12345',      'color'=>'#a78bfa','bg'=>'rgba(124,58,237,.12)'],
-                ['role'=>'Instructor', 'email'=>'instructor@visioncode.ai', 'pass'=>'Instructor@12345', 'color'=>'#22d3ee','bg'=>'rgba(34,211,238,.1)'],
-                ['role'=>'Student',    'email'=>'student@visioncode.ai',    'pass'=>'Student@12345',    'color'=>'#4ade80','bg'=>'rgba(74,222,128,.1)'],
+                ['role'=>'Admin',      'email'=>'admin@VisionLab.ai',      'pass'=>'Admin@12345',      'color'=>'#a78bfa','bg'=>'rgba(124,58,237,.12)'],
+                ['role'=>'Instructor', 'email'=>'instructor@VisionLab.ai', 'pass'=>'Instructor@12345', 'color'=>'#22d3ee','bg'=>'rgba(34,211,238,.1)'],
+                ['role'=>'Student',    'email'=>'student@VisionLab.ai',    'pass'=>'Student@12345',    'color'=>'#4ade80','bg'=>'rgba(74,222,128,.1)'],
             ];
             @endphp
             @foreach($creds as $c)
@@ -169,9 +169,9 @@
                 'tags'  => ['Auth','RBAC','Security'],
                 'script'=> "Demonstrate the three user roles. Each role has different access: <strong>Admin</strong> → Analytics + all features; <strong>Instructor</strong> → Workspace + student management; <strong>Student</strong> → Personal workspace only.",
                 'actions'=> [
-                    'Login as <strong>Admin</strong> (<code>admin@visioncode.ai</code> / <kbd>Admin@12345</kbd>)',
+                    'Login as <strong>Admin</strong> (<code>admin@VisionLab.ai</code> / <kbd>Admin@12345</kbd>)',
                     'Show redirect → Analytics Dashboard',
-                    'Logout, login as <strong>Student</strong> (<code>student@visioncode.ai</code> / <kbd>Student@12345</kbd>)',
+                    'Logout, login as <strong>Student</strong> (<code>student@VisionLab.ai</code> / <kbd>Student@12345</kbd>)',
                     'Show redirect → Workspace (no admin access)',
                 ],
                 'tip' => 'RBAC is enforced by a custom <code>RoleMiddleware</code> + <code>hasRole()</code> on the User model. Roles: admin, instructor, student.',
@@ -244,7 +244,7 @@
                 'tags'  => ['Admin','Analytics','ApexCharts'],
                 'script'=> "Log in as Admin and open the Analytics Dashboard. Walk through the KPI cards, activity line chart, language donut, heatmap, and recent sessions table.",
                 'actions'=> [
-                    'Login as <strong>Admin</strong> (<code>admin@visioncode.ai</code>)',
+                    'Login as <strong>Admin</strong> (<code>admin@VisionLab.ai</code>)',
                     'Show the 4 KPI cards with delta indicators',
                     'Point out the 14-day activity chart (Executions · AI · Collabs)',
                     'Show the language distribution donut',

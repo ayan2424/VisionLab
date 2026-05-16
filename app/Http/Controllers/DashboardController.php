@@ -48,8 +48,24 @@ class DashboardController extends Controller
                                         ->whereIn('status', ['in_progress', 'not_started'])
                                         ->count();
 
+        $gamification = app(\App\Services\GamificationService::class);
+        $heatmap = $gamification->getHeatmapData($user);
+        
+        // Calculate basic streak (for display)
+        $currentStreak = \App\Models\CodingSession::where('user_id', $user->id)
+            ->where('date', '>=', now()->subDays(30))
+            ->count(); // Mock streak for MVP
+
+        $badges = \App\Models\UserBadge::where('user_id', $user->id)->get();
+
         return view('dashboard.student', compact(
-            'courses', 'upcomingAssignments', 'recentAnnouncements', 'pendingSubmissions'
+            'courses',
+            'recentAnnouncements',
+            'upcomingAssignments',
+            'pendingSubmissions',
+            'heatmap',
+            'badges',
+            'currentStreak'
         ));
     }
 

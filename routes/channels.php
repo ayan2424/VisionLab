@@ -48,3 +48,25 @@ Broadcast::channel('workspace.{roomId}', function ($user, $roomId) {
         'role'     => $user->role,
     ];
 });
+
+/*
+|--------------------------------------------------------------------------
+| Presence Channel — Course (for real-time announcements)
+|--------------------------------------------------------------------------
+| Used to push NewAnnouncement events to enrolled students.
+*/
+Broadcast::channel('course.{courseId}', function ($user, $courseId) {
+    $course = \App\Models\Course::find($courseId);
+    if (!$course) return false;
+
+    // Allow instructor, admin, or enrolled students
+    if ($user->isAdmin() || $user->id === $course->instructor_id || $course->isEnrolled($user)) {
+        return [
+            'id'   => $user->id,
+            'name' => $user->name,
+            'role' => $user->role,
+        ];
+    }
+
+    return false;
+});
