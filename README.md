@@ -25,144 +25,250 @@ VisionLab is a revolutionary platform that replaces Google Classroom, Zoom, and 
 
 ---
 
-## 📋 General Prerequisites
+## 📋 General Prerequisites & Platform Matrix
+
+To run the complete multiplayer IDE environment, the host machine must run a robust stack of development tools.
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| **PHP** | 8.2+ (Recommended 8.3+) | Backend framework (Laravel 11) |
-| **Composer** | 2.x | PHP dependency management |
-| **Node.js & npm** | 20+ | Frontend asset building (Vite) |
-| **MySQL** | 8.0+ | Relational database |
-| **Docker** | Latest | **MANDATORY** for spawning workspace IDEs |
+| **PHP** | 8.2+ (Recommended 8.3+) | Core backend engine (Laravel 11) |
+| **Composer** | 2.x | PHP backend dependency manager |
+| **Node.js & NPM** | 20+ | Frontend compiler & asset bundling (Vite) |
+| **MySQL** | 8.0+ | Core relational database |
+| **Docker** | Latest | **MANDATORY** for spawning isolated student workspaces |
+| **Docker Image** | `codercom/code-server:4.19.1` | **MANDATORY** VS Code in browser image |
 
 ---
 
-## 🖥️ Operating System Specific Setup Guide
+## 🐳 0. Core Docker Workspace Configuration (EVERY OS)
 
-Follow the custom-tailored steps for your OS to avoid permission, server, and networking blockers:
+VisionLab dynamically orchestrates VS Code instances using Docker containers. The backend spawns workspaces based on the official, stable **`codercom/code-server:4.19.1`** image.
 
-### 🐧 1. Linux (Ubuntu / Debian / Fedora)
-
-#### **Step A: Start & Verify MySQL Database**
-Ensure your local database service is active:
+### **Mandatory Pre-Pull Action:**
+To ensure zero delays when a student opens their first workspace (as container initialization will timeout if the host has to download the 1GB image on the fly), **you MUST pre-pull the image on your host machine before starting the platform:**
 ```bash
-# Check status
-sudo systemctl status mysql
-
-# If stopped, start it
-sudo systemctl start mysql
-
-# Enable it to start on boot
-sudo systemctl enable mysql
+# Pull the exact VS Code workspace image to your host
+docker pull codercom/code-server:4.19.1
 ```
 
-#### **Step B: Docker Socket Permissions (CRITICAL)**
-By default, Docker requires root (`sudo`) permissions, which will block Laravel from spawning containers. Grant access to your system user:
-```bash
-# Create the docker group if it doesn't exist
-sudo groupadd docker
+---
 
-# Add your current user to the docker group
+## 🖥️ OS-Specific Complete Installation Handbook
+
+Choose your target development platform below and follow the complete, copypasta-ready instructions to install the entire stack:
+
+---
+
+### 🐧 1. Linux Setup (Ubuntu / Debian / Mint)
+
+Use the terminal to install native dependencies. Run these command groups sequentially:
+
+#### **Step A: Update System & Install PHP 8.3 & Extensions**
+Laravel 11 requires a set of PHP extensions for database, curl, and zip management:
+```bash
+# Update repository index
+sudo apt update && sudo apt upgrade -y
+
+# Add Ondrej PHP repository for PHP 8.3 compatibility
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+
+# Install PHP 8.3 CLI and essential extensions
+sudo apt install -y php8.3-cli php8.3-common php8.3-mysql php8.3-xml php8.3-curl php8.3-mbstring php8.3-zip php8.3-sqlite3 php8.3-bcmath php8.3-intl
+```
+
+#### **Step B: Install Composer**
+Composer manages PHP packages:
+```bash
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+
+# Verify installation
+composer --version
+```
+
+#### **Step C: Install Node.js 20 & NPM**
+Installs Node.js via the official NodeSource binaries:
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Verify installation
+node -v
+npm -v
+```
+
+#### **Step D: Install & Configure MySQL Database**
+Install the database server and start the service:
+```bash
+sudo apt install -y mysql-server
+
+# Enable and start the system service
+sudo systemctl enable mysql
+sudo systemctl start mysql
+
+# Run secure installation (optional, set root password here if needed)
+# sudo mysql_secure_installation
+```
+
+#### **Step E: Install Docker Engine & Fix Socket Permissions (CRITICAL)**
+Install Docker and add your user to the docker group so Laravel can communicate with `/var/run/docker.sock` without password prompts:
+```bash
+# Install Docker
+sudo apt install -y docker.io
+
+# Start and enable Docker service
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# Add your user to the docker group
 sudo usermod -aG docker $USER
 
-# Apply group changes instantly without restarting
+# Apply group changes instantly
 newgrp docker
 
-# Fix the socket file permission directly (Bulletproof fallback)
+# Grant direct permission to the socket file (Ensures zero permission denied errors)
 sudo chmod 666 /var/run/docker.sock
 ```
 
 ---
 
-### 🍎 2. macOS (Intel / Apple Silicon M1/M2/M3)
+### 🍎 2. macOS Setup (Intel & Apple Silicon M1/M2/M3)
 
-#### **Step A: Start & Verify MySQL Database**
-If using Homebrew:
+Use **Homebrew** (the macOS package manager) for a clean, stable development setup.
+
+#### **Step A: Install Homebrew (If not already installed)**
 ```bash
-# Check running Homebrew services
-brew services list
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
-# Start MySQL service
+#### **Step B: Install PHP 8.3, Composer, Node.js & MySQL**
+Install the entire development stack with Homebrew in one go:
+```bash
+# Install PHP 8.3
+brew install php@8.3
+
+# Link PHP 8.3 to your system path
+brew link php@8.3 --force --overwrite
+
+# Install Composer
+brew install composer
+
+# Install Node.js (version 20+)
+brew install node
+
+# Install MySQL Server
+brew install mysql
+```
+
+#### **Step C: Start Services**
+Start your background database server:
+```bash
+# Start MySQL background service
 brew services start mysql
 ```
-*(If using DBngin or MAMP, open the desktop GUI app and ensure the MySQL server is green/running on port `3306`)*
 
-#### **Step B: Docker Desktop Advanced Configuration (CRITICAL)**
-For Laravel to communicate with Docker Desktop on macOS, you must authorize socket sharing:
-1. Open **Docker Desktop**.
-2. Click the ⚙️ **Settings** (Gear Icon) in the top-right corner.
-3. Navigate to **Advanced** tab.
-4. Locate the option **"Allow the default Docker socket to be used"** (or *System / User socket path sharing*) and check the box.
+#### **Step D: Install Docker Desktop & Share Socket (CRITICAL)**
+1. **Install Docker:**
+   Download the installer dmg directly from [Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/) (Choose Intel or Apple Silicon chip version) OR install via brew cask:
+   ```bash
+   brew install --cask docker
+   ```
+2. **Authorize Socket Sharing (Crucial macOS step):**
+   - Open the **Docker Desktop** application from your Applications folder.
+   - Click the ⚙️ **Settings** (Gear Icon) in the top-right toolbar.
+   - Go to **Advanced** (or *System/Resources* depending on version).
+   - Check the box **"Allow the default Docker socket to be used"** (this symlinks `/var/run/docker.sock` into the Mac user space).
+   - Click **Apply & Restart**.
+
+---
+
+### 🪟 3. Windows Setup (WSL2 / Linux distro)
+
+For running VisionLab on Windows, **WSL2 (Windows Subsystem for Linux)** is **strictly mandatory** for reliable Docker mount paths and permissions. Attempting native Windows development for Docker containerization leads to file mount path collisions.
+
+#### **Step A: Install WSL2 and Ubuntu**
+1. Open PowerShell or Command Prompt as **Administrator** and run:
+   ```cmd
+   wsl --install -d Ubuntu
+   ```
+2. Restart your computer when prompted.
+3. Once restarted, a console window will pop up to initialize your Ubuntu environment. Set your username and password.
+
+#### **Step B: Install Docker Desktop on Windows**
+1. Download and run the installer: [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/).
+2. **Ensure "Use the WSL 2 based engine"** is checked during installation.
+3. Open Docker Desktop, go to **Settings (Gear Icon) -> Resources -> WSL Integration**.
+4. Check the box next to **"Enable integration with my default WSL distro (Ubuntu)"**.
 5. Click **Apply & Restart**.
-6. Verify access in Terminal:
-   ```bash
-   ls -la /var/run/docker.sock
-   # Should display a valid socket reference link without permission issues
-   ```
+
+#### **Step C: Set Up Stack inside WSL2 Ubuntu Terminal**
+Open your **WSL Ubuntu terminal** and install the development stack exactly as you would on a native Linux machine:
+```bash
+# Update Ubuntu package index
+sudo apt update && sudo apt upgrade -y
+
+# Add PHP 8.3 Repo
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+
+# Install PHP 8.3 & Extensions
+sudo apt install -y php8.3-cli php8.3-common php8.3-mysql php8.3-xml php8.3-curl php8.3-mbstring php8.3-zip php8.3-sqlite3 php8.3-bcmath php8.3-intl
+
+# Install Composer
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+
+# Install Node.js 20 & NPM
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Install & Start MySQL inside WSL
+sudo apt install -y mysql-server
+sudo service mysql start
+```
 
 ---
 
-### 🪟 3. Windows (WSL2 / Native Git Bash)
+## 🚀 Step-by-Step Project Initialization
 
-We **strongly recommend** running this project inside **WSL2 (Windows Subsystem for Linux)** with an Ubuntu distribution for production stability.
+Once your operating system stack is completely installed and Docker is running, set up VisionLab:
 
-#### **Option A: If using WSL2 (Recommended)**
-1. Ensure your **Docker Desktop for Windows** has **WSL2 integration** enabled (Settings -> Resources -> WSL Integration -> toggle your Ubuntu distro).
-2. Inside your WSL terminal, start MySQL:
-   ```bash
-   sudo service mysql start
-   ```
-3. Run the project commands directly inside the WSL terminal just like a native Linux machine.
-
-#### **Option B: If using Native Windows (Git Bash / Command Prompt)**
-1. **Start MySQL Server:**
-   - If using **XAMPP**: Open XAMPP Control Panel and click "Start" next to MySQL.
-   - If using **WampServer**: Launch WampServer and ensure the icon turns green (MySQL service active).
-   - If using native MySQL: Open Command Prompt as Administrator and run:
-     ```cmd
-     net start mysql
-     ```
-2. **Start Docker Desktop:** Ensure Docker Desktop is running in the background.
-
----
-
-## 🚀 Step-by-Step Installation
-
-### Step 1: Clone the Repository & Install Dependencies
-Clone the repository to your local directory:
+### 1. Clone & Fetch dependencies
 ```bash
 git clone <your-repo-url> visionlab
 cd visionlab
 
-# Install Laravel Backend Packages
+# Install Laravel libraries
 composer install
 
-# Install Frontend Node Packages
+# Install Frontend compilers
 npm install
 ```
 
-### Step 2: Environment Configuration
-Copy the sample environment file:
+### 2. Configure Environment `.env`
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-Open `.env` in your code editor and configure your database and third-party details:
+Open `.env` and fill out your local database username/password and API keys:
 ```dotenv
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=visionlab
-DB_USERNAME=root       # Change to your MySQL username
-DB_PASSWORD=           # Change to your MySQL password
+DB_USERNAME=root       # Your MySQL username (e.g. 'root')
+DB_PASSWORD=           # Your MySQL password
 
-# Required for the VisionLab AI Agent Chat
-ANTHROPIC_API_KEY=sk-ant-api03-... 
-GEMINI_API_KEY=your-gemini-key-here
-AI_PROVIDER=gemini # 'gemini' or 'anthropic'
+# LLM Providers Configuration
+GEMINI_API_KEY=your-gemini-api-key-here
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
+AI_PROVIDER=gemini # Toggle 'gemini' or 'anthropic'
 
-# Real-time WebSocket (Laravel Reverb)
+# Real-Time WebSocket (Laravel Reverb)
 REVERB_APP_ID=181307
 REVERB_APP_KEY=pzs37btwtka3rhlyi13s
 REVERB_APP_SECRET=a6mepstuprpdqc85pxgs
@@ -176,44 +282,41 @@ VITE_REVERB_PORT="${REVERB_PORT}"
 VITE_REVERB_SCHEME="${VITE_REVERB_SCHEME}"
 ```
 
-### Step 3: Database Seeding & Migration
-To avoid landing on an empty database (which triggers the `"These credentials do not match our records"` login failure), run the migration along with our predefined seeders:
+### 3. Setup Tables & Seed Demo Accounts
+**CRITICAL:** To prevent login screens from rejecting your login with `"These credentials do not match our records"`, you MUST populate the database with our preset roles and users:
 ```bash
-# Wipes previous tables (if any) and migrates fresh schemas with test users
 php artisan migrate:fresh --seed
 ```
 
-### Step 4: Build Frontend Assets (Heap OOM Fix)
-Because our codebase includes full customized extensions and heavy GUI builds, default node environments might run out of memory. **Use this specific command to compile:**
+### 4. Compile Frontend Assets (High-Memory Build)
+Because the project compiles heavy customized extensions and advanced React assets inside Vite, increase the default Node memory limit:
 ```bash
-# Sets standard Node heap space to 4GB before compiling with Vite
+# On Linux / macOS / WSL2
 export NODE_OPTIONS=--max-old-space-size=4096 && npm run build
-```
-*(On Windows cmd/powershell use: `$env:NODE_OPTIONS="--max-old-space-size=4096"` followed by `npm run build`)*
 
-### Step 5: Start the Platform Services
-Open **three separate terminal tabs** to run the three engines in parallel:
+# On Native Windows Powershell (if not using WSL2)
+$env:NODE_OPTIONS="--max-old-space-size=4096" ; npm run build
+```
+
+### 5. Running the Platforms
+Open **three separate terminal screens** to run the services in parallel:
 
 *   **Terminal 1: Laravel Web Server**
     ```bash
     php artisan serve
     ```
-*   **Terminal 2: WebSocket Server (For Collaborative Coding & Cursors)**
+*   **Terminal 2: Reverb WebSockets (Real-Time Multiplayer Collab & Cursors)**
     ```bash
     php artisan reverb:start --debug
     ```
-*   **Terminal 3: Horizon Queue Worker (For Async AI processing & forensics)**
+*   **Terminal 3: Horizon Queue Worker (Background AI agent tools processing)**
     ```bash
     php artisan queue:work
     ```
 
-*(Make sure your Docker engine is fully active in the background!)*
-
 ---
 
-## 🔑 Demo Login Credentials
-
-Use the following logins to test different perspectives of the platform:
+## 🔑 Demo Access Passwords
 
 | Role | Email | Password | Access Level |
 |------|-------|----------|--------------|
@@ -223,32 +326,27 @@ Use the following logins to test different perspectives of the platform:
 
 ---
 
-## 🛑 Essential Troubleshooting & Fixes
+## 🛑 Critical Troubleshooting & Bulletproof Solutions
 
-### 1. ❌ Empty DB / Login Error: "These credentials do not match our records"
-If you get this error on trying to log in using the demo credentials, it means your database was successfully migrated but **never seeded**. 
-- **The Quick Fix:** Run the seeder directly in your host terminal:
+### **A. "These credentials do not match our records" Login Error**
+- **Cause:** Your `users` table is empty.
+- **Solution:** Run the seeder directly:
   ```bash
   php artisan db:seed --class=RolesAndUsersSeeder
   ```
-- **Verify MySQL Connection:** If this fails with `Connection refused`, your local MySQL server is stopped. Refer to the **OS Specific Setup Guide** above to start your MySQL database service.
+  *(If it fails with `Connection Refused`, verify your local MySQL server is actually running via the OS-Specific commands above).*
 
-### 2. 🐳 Docker Spawning / Socket Access Permission Denied
-If workspaces fail to load, check `storage/logs/laravel.log`. If you see errors related to `Permission Denied` when executing Docker commands:
-- **Solution:** Laravel is running under your local user account, but your user doesn't have privileges to read/write to `/var/run/docker.sock`.
-- **The Linux Command:**
+### **B. Workspace fails to load / Docker Permission Denied**
+- **Cause:** Laravel web server is running under your local account but doesn't have system privileges to execute commands on `/var/run/docker.sock`.
+- **Solution:** Grant read-write permissions to the Docker socket:
   ```bash
   sudo chmod 666 /var/run/docker.sock
   ```
-  *(Note: You will need to rerun this command if you restart your Linux host, or configure the docker user group permanently as detailed in the OS Specific section).*
+  *(You must rerun this if you restart your Linux host, or set up the permanent docker user group configuration detailed in Linux step).*
 
-### 3. 🧠 Frontend Fails to Build / Memory Limit Out of Memory
-If running `npm run build` crashes during asset bundling with `FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`:
-- **Solution:** Vite is bundling the React and extension source files, which requires more memory than the default node limit allows.
-- **The Fix:**
-  ```bash
-  NODE_OPTIONS=--max-old-space-size=4096 npm run build
-  ```
+### **C. Docker Image Pull issues**
+- **Cause:** Starting a workspace IDE triggers a dynamic container spawn. If `codercom/code-server:4.19.1` isn't pulled, it downloads in the background, timing out your Laravel HTTP request.
+- **Solution:** Always run `docker pull codercom/code-server:4.19.1` before starting the server.
 
 ---
 
