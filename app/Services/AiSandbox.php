@@ -9,6 +9,7 @@ use App\Models\AiActionsLog;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ExecutableFinder;
 
 class AiSandbox
 {
@@ -48,7 +49,14 @@ class AiSandbox
 
         // Use ripgrep or grep recursively
         // -r = recursive, -n = line numbers, -i = ignore case, -I = ignore binaries
-        $process = new Process(['grep', '-rniI', $query, $basePath]);
+        $finder = new ExecutableFinder();
+        $rgPath = $finder->find('rg');
+
+        if ($rgPath) {
+            $process = new Process([$rgPath, '-ni', '--no-heading', $query, $basePath]);
+        } else {
+            $process = new Process(['grep', '-rniI', $query, $basePath]);
+        }
         $process->setTimeout(10);
         $process->run();
 
