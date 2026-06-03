@@ -28,7 +28,10 @@ class SubmissionForensic extends Model
     public function getHumanPercentageAttribute(): float
     {
         $total = $this->human_keystrokes + $this->ai_injected_chars;
-        if ($total === 0) return 100.0;
+        if ($total === 0) {
+            return 100.0;
+        }
+
         return round(($this->human_keystrokes / $total) * 100, 1);
     }
 }

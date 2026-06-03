@@ -9,10 +9,15 @@ class SubmissionPolicy
 {
     public function view(User $user, Submission $submission): bool
     {
-        if ($user->isAdmin()) return true;
-        if ($user->id === $submission->student_id) return true;
+        if ($user->isAdmin()) {
+            return true;
+        }
+        if ($user->id === $submission->student_id) {
+            return true;
+        }
 
         $course = $submission->assignment->course;
+
         return $user->id === $course->instructor_id;
     }
 
@@ -23,7 +28,10 @@ class SubmissionPolicy
 
     public function grade(User $user, Submission $submission): bool
     {
-        if ($user->isAdmin()) return true;
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         return $user->id === $submission->assignment->course->instructor_id;
     }
 

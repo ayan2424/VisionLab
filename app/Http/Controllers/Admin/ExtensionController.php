@@ -14,7 +14,7 @@ class ExtensionController extends Controller
 
         if ($search = $request->get('search')) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('package_identifier', 'like', "%{$search}%");
+                ->orWhere('package_identifier', 'like', "%{$search}%");
         }
 
         $extensions = $query->latest()->paginate(20)->withQueryString();
@@ -30,11 +30,11 @@ class ExtensionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'               => 'required|string|max:100',
+            'name' => 'required|string|max:100',
             'package_identifier' => 'required|string|max:150|unique:extensions',
-            'version'            => 'required|string|max:20',
-            'description'        => 'nullable|string|max:500',
-            'is_global'          => 'sometimes|boolean',
+            'version' => 'required|string|max:20',
+            'description' => 'nullable|string|max:500',
+            'is_global' => 'sometimes|boolean',
         ]);
 
         Extension::create(array_merge($validated, ['is_builtin' => false, 'is_active' => true]));
@@ -50,10 +50,10 @@ class ExtensionController extends Controller
     public function update(Request $request, Extension $extension)
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:100',
-            'version'     => 'required|string|max:20',
+            'name' => 'required|string|max:100',
+            'version' => 'required|string|max:20',
             'description' => 'nullable|string|max:500',
-            'is_global'   => 'sometimes|boolean',
+            'is_global' => 'sometimes|boolean',
         ]);
 
         $validated['is_global'] = $request->boolean('is_global');
@@ -64,12 +64,12 @@ class ExtensionController extends Controller
 
     public function toggleGlobal(Extension $extension)
     {
-        $extension->update(['is_active' => !$extension->is_active]);
+        $extension->update(['is_active' => ! $extension->is_active]);
 
         return response()->json([
-            'success'   => true,
+            'success' => true,
             'is_active' => $extension->is_active,
-            'message'   => $extension->is_active ? 'Extension enabled globally.' : 'Extension disabled.',
+            'message' => $extension->is_active ? 'Extension enabled globally.' : 'Extension disabled.',
         ]);
     }
 
@@ -79,6 +79,7 @@ class ExtensionController extends Controller
             return back()->withErrors(['error' => 'Cannot delete built-in extensions.']);
         }
         $extension->delete();
+
         return redirect()->route('admin.extensions.index')->with('success', 'Extension deleted.');
     }
 }

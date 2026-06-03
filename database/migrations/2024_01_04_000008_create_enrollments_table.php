@@ -10,7 +10,7 @@ return new class extends Migration
     {
         // enrollments table is already created by 2024_01_04_000002_create_courses_table
         // This migration is a no-op kept for migration history integrity
-        if (!Schema::hasColumn('enrollments', 'enrolled_at')) {
+        if (! Schema::hasColumn('enrollments', 'enrolled_at')) {
             Schema::table('enrollments', function (Blueprint $table) {
                 $table->timestamp('enrolled_at')->nullable()->after('status');
             });

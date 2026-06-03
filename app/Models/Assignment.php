@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class Assignment extends Model
 {
@@ -15,9 +14,9 @@ class Assignment extends Model
     ];
 
     protected $casts = [
-        'due_date'      => 'datetime',
+        'due_date' => 'datetime',
         'auto_workspace' => 'boolean',
-        'max_points'    => 'integer',
+        'max_points' => 'integer',
     ];
 
     public function course(): BelongsTo
@@ -42,14 +41,22 @@ class Assignment extends Model
 
     public function getDueSoonAttribute(): bool
     {
-        if (!$this->due_date) return false;
+        if (! $this->due_date) {
+            return false;
+        }
+
         return $this->due_date->isFuture() && $this->due_date->diffInHours(now()) <= 48;
     }
 
     public function getTimeRemainingAttribute(): string
     {
-        if (!$this->due_date) return 'No due date';
-        if ($this->due_date->isPast()) return 'Past due';
+        if (! $this->due_date) {
+            return 'No due date';
+        }
+        if ($this->due_date->isPast()) {
+            return 'Past due';
+        }
+
         return $this->due_date->diffForHumans(['parts' => 2]);
     }
 

@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
@@ -34,7 +34,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
@@ -58,6 +58,7 @@ class User extends Authenticatable
     public function hasRole(string|array $roles): bool
     {
         $roles = is_array($roles) ? $roles : [$roles];
+
         return in_array($this->role, $roles, true);
     }
 
@@ -77,8 +78,8 @@ class User extends Authenticatable
     public function enrolledCourses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'enrollments', 'student_id', 'course_id')
-                    ->withPivot('status', 'enrolled_at')
-                    ->wherePivot('status', 'active');
+            ->withPivot('status', 'enrolled_at')
+            ->wherePivot('status', 'active');
     }
 
     /**
@@ -133,21 +134,22 @@ class User extends Authenticatable
 
     public function getAvatarInitialsAttribute(): string
     {
-        $parts   = explode(' ', trim($this->name));
+        $parts = explode(' ', trim($this->name));
         $initials = strtoupper($parts[0][0] ?? '?');
         if (isset($parts[1][0])) {
             $initials .= strtoupper($parts[1][0]);
         }
+
         return $initials;
     }
 
     public function getRoleBadgeColorAttribute(): string
     {
         return match ($this->role) {
-            'admin'      => 'text-red-400 bg-red-400/10 border-red-400/20',
+            'admin' => 'text-red-400 bg-red-400/10 border-red-400/20',
             'instructor' => 'text-violet-400 bg-violet-400/10 border-violet-400/20',
-            'student'    => 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20',
-            default      => 'text-slate-400 bg-slate-400/10 border-slate-400/20',
+            'student' => 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20',
+            default => 'text-slate-400 bg-slate-400/10 border-slate-400/20',
         };
     }
 }

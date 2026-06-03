@@ -19,8 +19,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'gemini' => [
-        'api_key'  => env('GEMINI_API_KEY', ''),
-        'model'    => env('GEMINI_MODEL', 'gemini-2.0-flash'),
+        'api_key' => env('GEMINI_API_KEY', ''),
+        'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
         'endpoint' => 'https://generativelanguage.googleapis.com/v1beta/models',
     ],
 
@@ -30,8 +30,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'anthropic' => [
-        'api_key'  => env('ANTHROPIC_API_KEY', ''),
-        'model'    => env('ANTHROPIC_MODEL', 'claude-sonnet-4-20250514'),
+        'api_key' => env('ANTHROPIC_API_KEY', ''),
+        'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-4-20250514'),
         'endpoint' => 'https://api.anthropic.com/v1',
     ],
 

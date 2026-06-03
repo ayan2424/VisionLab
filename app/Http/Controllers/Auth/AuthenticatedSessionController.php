@@ -31,6 +31,7 @@ class AuthenticatedSessionController extends Controller
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
             return redirect()->route('login')
                 ->withErrors(['email' => 'Your account has been suspended. Please contact your administrator.']);
         }

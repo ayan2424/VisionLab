@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -14,21 +13,25 @@ class CodeUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $roomId;
-    public int    $userId;
+
+    public int $userId;
+
     public string $fileId;
+
     public string $content;
-    public int    $version;
+
+    public int $version;
 
     public function __construct(
         string $roomId,
-        int    $userId,
+        int $userId,
         string $fileId,
         string $content,
-        int    $version = 1
+        int $version = 1
     ) {
-        $this->roomId  = $roomId;
-        $this->userId  = $userId;
-        $this->fileId  = $fileId;
+        $this->roomId = $roomId;
+        $this->userId = $userId;
+        $this->fileId = $fileId;
         $this->content = $content;
         $this->version = $version;
     }
@@ -36,7 +39,7 @@ class CodeUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('workspace.' . $this->roomId),
+            new PresenceChannel('workspace.'.$this->roomId),
         ];
     }
 

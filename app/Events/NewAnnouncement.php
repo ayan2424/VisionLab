@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -36,11 +35,11 @@ class NewAnnouncement implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'course_id'    => $this->courseId,
+            'course_id' => $this->courseId,
             'course_title' => $this->courseTitle,
-            'title'        => $this->title,
-            'author_name'  => $this->authorName,
-            'preview'      => $this->preview,
+            'title' => $this->title,
+            'author_name' => $this->authorName,
+            'preview' => $this->preview,
         ];
     }
 }
