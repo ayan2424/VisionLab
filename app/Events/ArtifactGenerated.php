@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -36,10 +35,10 @@ class ArtifactGenerated implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'title'    => $this->title,
+            'title' => $this->title,
             'language' => $this->language,
-            'content'  => $this->content,
-            'user_id'  => $this->userId,
+            'content' => $this->content,
+            'user_id' => $this->userId,
         ];
     }
 }

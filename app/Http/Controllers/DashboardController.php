@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Assignment;
-use App\Models\Course;
 use App\Models\Announcement;
+use App\Models\Assignment;
+use App\Models\CodingSession;
+use App\Models\Course;
 use App\Models\Submission;
+use App\Models\UserBadge;
+use App\Services\GamificationService;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -34,29 +37,29 @@ class DashboardController extends Controller
         $upcomingAssignments = Assignment::whereHas('course.enrollments', function ($q) use ($user) {
             $q->where('student_id', $user->id)->where('status', 'active');
         })
-        ->where('due_date', '>', now())
-        ->orderBy('due_date')
-        ->take(5)
-        ->with('course')
-        ->get();
+            ->where('due_date', '>', now())
+            ->orderBy('due_date')
+            ->take(5)
+            ->with('course')
+            ->get();
 
         $recentAnnouncements = Announcement::whereHas('course.enrollments', function ($q) use ($user) {
             $q->where('student_id', $user->id)->where('status', 'active');
         })->with(['course', 'author'])->latest()->take(5)->get();
 
         $pendingSubmissions = Submission::where('student_id', $user->id)
-                                        ->whereIn('status', ['in_progress', 'not_started'])
-                                        ->count();
+            ->whereIn('status', ['in_progress', 'not_started'])
+            ->count();
 
-        $gamification = app(\App\Services\GamificationService::class);
+        $gamification = app(GamificationService::class);
         $heatmap = $gamification->getHeatmapData($user);
-        
+
         // Calculate basic streak (for display)
-        $currentStreak = \App\Models\CodingSession::where('user_id', $user->id)
+        $currentStreak = CodingSession::where('user_id', $user->id)
             ->where('date', '>=', now()->subDays(30))
             ->count(); // Mock streak for MVP
 
-        $badges = \App\Models\UserBadge::where('user_id', $user->id)->get();
+        $badges = UserBadge::where('user_id', $user->id)->get();
 
         return view('dashboard.student', compact(
             'courses',
@@ -72,9 +75,9 @@ class DashboardController extends Controller
     private function instructorDashboard($user)
     {
         $courses = Course::where('instructor_id', $user->id)
-                         ->withCount('students')
-                         ->latest()
-                         ->get();
+            ->withCount('students')
+            ->latest()
+            ->get();
 
         $pendingGrading = Submission::whereHas('assignment.course', function ($q) use ($user) {
             $q->where('instructor_id', $user->id);

@@ -13,17 +13,18 @@ class UserJoinedRoom implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $roomId;
-    public array  $userInfo;
+
+    public array $userInfo;
 
     public function __construct(string $roomId, array $userInfo)
     {
-        $this->roomId   = $roomId;
+        $this->roomId = $roomId;
         $this->userInfo = $userInfo;
     }
 
     public function broadcastOn(): array
     {
-        return [new PresenceChannel('workspace.' . $this->roomId)];
+        return [new PresenceChannel('workspace.'.$this->roomId)];
     }
 
     public function broadcastAs(): string

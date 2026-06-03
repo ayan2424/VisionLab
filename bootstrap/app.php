@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,12 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Global web middleware — security headers on all responses
         $middleware->web(append: [
-            \App\Http\Middleware\SecurityHeaders::class,
+            SecurityHeaders::class,
         ]);
 
         $middleware->alias([
-            'role'     => \App\Http\Middleware\RoleMiddleware::class,
-            'security' => \App\Http\Middleware\SecurityHeaders::class,
+            'role' => RoleMiddleware::class,
+            'security' => SecurityHeaders::class,
         ]);
 
         $middleware->throttleApi();

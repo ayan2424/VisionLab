@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Room;
 use App\Services\CodeServerManager;
-use Illuminate\Http\Request;
 
 class AdminWorkspaceController extends Controller
 {
@@ -64,6 +63,6 @@ class AdminWorkspaceController extends Controller
         $workspace->delete();
 
         return redirect()->route('admin.workspaces.index')
-                         ->with('success', "Workspace \"{$workspace->name}\" deleted permanently.");
+            ->with('success', "Workspace \"{$workspace->name}\" deleted permanently.");
     }
 }

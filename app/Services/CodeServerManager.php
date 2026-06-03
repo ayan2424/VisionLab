@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\AiModel;
+use App\Models\AiSetting;
 use App\Models\Room;
+use App\Models\WorkspaceQuota;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
@@ -19,6 +22,7 @@ class CodeServerManager
 {
     /** Port range for dynamically allocated code-server instances */
     private const PORT_MIN = 9000;
+
     private const PORT_MAX = 9999;
 
     /** Docker image for code-server */
@@ -27,7 +31,7 @@ class CodeServerManager
     /**
      * Start a workspace container.
      *
-     * @param Room $room  The workspace/room to start
+     * @param  Room  $room  The workspace/room to start
      * @return array{url: string, port: int, token: string, container_id: string|null}
      */
     public function startWorkspace(Room $room): array
@@ -35,8 +39,9 @@ class CodeServerManager
         $workspacePath = $this->ensureWorkspaceDirectory($room);
 
         // Development mode — Docker not available
-        if (!$this->isDockerAvailable()) {
+        if (! $this->isDockerAvailable()) {
             Log::info("CodeServerManager: Docker unavailable, using dev fallback for room {$room->slug}");
+
             return $this->devFallback($room);
         }
 
@@ -44,37 +49,37 @@ class CodeServerManager
         $existingStatus = $this->getStatus($room);
         if ($existingStatus['running']) {
             return [
-                'url'          => $existingStatus['url'],
-                'port'         => $existingStatus['port'],
-                'token'        => $existingStatus['token'],
+                'url' => $existingStatus['url'],
+                'port' => $existingStatus['port'],
+                'token' => $existingStatus['token'],
                 'container_id' => $existingStatus['container_id'],
             ];
         }
 
-        $port  = $this->allocatePort();
+        $port = $this->allocatePort();
         $token = Str::random(32);
-        $name  = 'VisionLab_ws_' . $room->slug;
+        $name = 'VisionLab_ws_'.$room->slug;
 
         // Check database configuration for marketplace access
-        $allowMarketplace = \App\Models\AiSetting::getValue('allow_marketplace', 'true') === 'true';
+        $allowMarketplace = AiSetting::getValue('allow_marketplace', 'true') === 'true';
 
         // Remove any stale container with the same name
         $this->removeContainer($name);
 
         // Fetch Resource Quotas
-        $quota = \App\Models\WorkspaceQuota::resolveForRoom($room);
+        $quota = WorkspaceQuota::resolveForRoom($room);
 
         $cmd = [
             'docker', 'run', '-d',
             '--name', $name,
             '-v', "{$workspacePath}:/home/coder/project",
-            '-v', storage_path('extensions') . ":/usr/lib/code-server/extensions:ro", // Immutable mount
+            '-v', storage_path('extensions').':/usr/lib/code-server/extensions:ro', // Immutable mount
             '-p', "{$port}:8080",
-            '-e', "VisionLab_API_TOKEN=" . ($room->owner?->createToken('workspace')->plainTextToken ?? ''),
+            '-e', 'VisionLab_API_TOKEN='.($room->owner?->createToken('workspace')->plainTextToken ?? ''),
             '-e', "VisionLab_ROOM_SLUG={$room->slug}",
-            '-e', "VisionLab_USER_ID=" . (auth()->id() ?? '0'),
-            '-e', "VisionLab_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
-            '-e', "VisionLab_API_URL=" . url('/api'),
+            '-e', 'VisionLab_USER_ID='.(auth()->id() ?? '0'),
+            '-e', 'VisionLab_USER_NAME='.(auth()->user()?->name ?? 'Guest'),
+            '-e', 'VisionLab_API_URL='.url('/api'),
             '--restart', 'unless-stopped',
             '--memory', $quota->memory_limit,
             '--cpus', $quota->cpu_limit,
@@ -85,7 +90,7 @@ class CodeServerManager
         ];
 
         // Disable marketplace completely if teacher/admin blocked it
-        if (!$allowMarketplace) {
+        if (! $allowMarketplace) {
             $cmd[] = '--disable-marketplace';
         }
 
@@ -93,10 +98,10 @@ class CodeServerManager
         $process->setTimeout(60);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            Log::error("CodeServerManager: Failed to start container", [
-                'room'   => $room->slug,
-                'error'  => $process->getErrorOutput(),
+        if (! $process->isSuccessful()) {
+            Log::error('CodeServerManager: Failed to start container', [
+                'room' => $room->slug,
+                'error' => $process->getErrorOutput(),
                 'output' => $process->getOutput(),
             ]);
 
@@ -105,19 +110,19 @@ class CodeServerManager
 
         $containerId = trim($process->getOutput());
 
-        Log::info("CodeServerManager: Started container", [
-            'room'         => $room->slug,
+        Log::info('CodeServerManager: Started container', [
+            'room' => $room->slug,
             'container_id' => substr($containerId, 0, 12),
-            'port'         => $port,
+            'port' => $port,
         ]);
 
         // Inject Continue config
         $this->setupContinueExtension($name, $room);
 
         return [
-            'url'          => "http://localhost:{$port}/?folder=/home/coder/project",
-            'port'         => $port,
-            'token'        => $token,
+            'url' => "http://localhost:{$port}/?folder=/home/coder/project",
+            'port' => $port,
+            'token' => $token,
             'container_id' => $containerId,
         ];
     }
@@ -127,9 +132,9 @@ class CodeServerManager
      */
     public function stopWorkspace(Room $room): bool
     {
-        $name = 'VisionLab_ws_' . $room->slug;
+        $name = 'VisionLab_ws_'.$room->slug;
 
-        if (!$this->isDockerAvailable()) {
+        if (! $this->isDockerAvailable()) {
             return true;
         }
 
@@ -143,9 +148,9 @@ class CodeServerManager
      */
     public function getStatus(Room $room): array
     {
-        $name = 'VisionLab_ws_' . $room->slug;
+        $name = 'VisionLab_ws_'.$room->slug;
 
-        if (!$this->isDockerAvailable()) {
+        if (! $this->isDockerAvailable()) {
             return ['running' => false, 'url' => null, 'port' => null, 'token' => null, 'container_id' => null];
         }
 
@@ -153,7 +158,7 @@ class CodeServerManager
         $process->setTimeout(10);
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             return ['running' => false, 'url' => null, 'port' => null, 'token' => null, 'container_id' => null];
         }
 
@@ -170,13 +175,13 @@ class CodeServerManager
         $portProcess->run();
         $portOutput = trim($portProcess->getOutput());
         preg_match('/:(\d+)$/', $portOutput, $portMatch);
-        $port = isset($portMatch[1]) ? (int)$portMatch[1] : null;
+        $port = isset($portMatch[1]) ? (int) $portMatch[1] : null;
 
         return [
-            'running'      => true,
-            'url'          => $port ? "http://localhost:{$port}/?folder=/home/coder/project" : null,
-            'port'         => $port,
-            'token'        => null, // Token is set at creation, cannot retrieve from running container
+            'running' => true,
+            'url' => $port ? "http://localhost:{$port}/?folder=/home/coder/project" : null,
+            'port' => $port,
+            'token' => null, // Token is set at creation, cannot retrieve from running container
             'container_id' => $id,
         ];
     }
@@ -189,17 +194,17 @@ class CodeServerManager
     public function listFiles(Room $room, string $relativePath = ''): array
     {
         $basePath = $this->workspacePath($room);
-        $fullPath = $basePath . ($relativePath ? DIRECTORY_SEPARATOR . ltrim($relativePath, '/\\') : '');
+        $fullPath = $basePath.($relativePath ? DIRECTORY_SEPARATOR.ltrim($relativePath, '/\\') : '');
 
         // Security: prevent path traversal
         $realBase = realpath($basePath);
         $realFull = realpath($fullPath);
 
-        if ($realBase === false || $realFull === false || !str_starts_with($realFull, $realBase)) {
+        if ($realBase === false || $realFull === false || ! str_starts_with($realFull, $realBase)) {
             return [];
         }
 
-        if (!is_dir($realFull)) {
+        if (! is_dir($realFull)) {
             return [];
         }
 
@@ -207,12 +212,16 @@ class CodeServerManager
         $items = scandir($realFull);
 
         foreach ($items as $item) {
-            if ($item === '.' || $item === '..') continue;
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
             // Skip hidden files/directories
-            if (str_starts_with($item, '.') && $item !== '.VisionLab_memory.md') continue;
+            if (str_starts_with($item, '.') && $item !== '.VisionLab_memory.md') {
+                continue;
+            }
 
-            $itemPath = $realFull . DIRECTORY_SEPARATOR . $item;
-            $relPath  = ltrim(str_replace($realBase, '', $itemPath), DIRECTORY_SEPARATOR);
+            $itemPath = $realFull.DIRECTORY_SEPARATOR.$item;
+            $relPath = ltrim(str_replace($realBase, '', $itemPath), DIRECTORY_SEPARATOR);
 
             $entry = [
                 'name' => $item,
@@ -232,6 +241,7 @@ class CodeServerManager
             if ($a['type'] !== $b['type']) {
                 return $a['type'] === 'directory' ? -1 : 1;
             }
+
             return strcasecmp($a['name'], $b['name']);
         });
 
@@ -244,7 +254,7 @@ class CodeServerManager
     public function readFile(Room $room, string $relativePath): ?string
     {
         $fullPath = $this->resolveSecurePath($room, $relativePath);
-        if ($fullPath === null || !is_file($fullPath)) {
+        if ($fullPath === null || ! is_file($fullPath)) {
             return null;
         }
 
@@ -257,25 +267,26 @@ class CodeServerManager
     public function writeFile(Room $room, string $relativePath, string $content): bool
     {
         $basePath = $this->workspacePath($room);
-        $fullPath = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        $fullPath = $basePath.DIRECTORY_SEPARATOR.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
 
         // Security: ensure the resolved path stays within workspace
         $realBase = realpath($basePath);
         $dir = dirname($fullPath);
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 
         $realDir = realpath($dir);
-        if ($realDir === false || !str_starts_with($realDir, $realBase)) {
-            Log::warning("CodeServerManager: Path traversal attempt", ['path' => $relativePath]);
+        if ($realDir === false || ! str_starts_with($realDir, $realBase)) {
+            Log::warning('CodeServerManager: Path traversal attempt', ['path' => $relativePath]);
+
             return false;
         }
 
         file_put_contents($fullPath, $content);
 
-        Log::info("CodeServerManager: File written", [
+        Log::info('CodeServerManager: File written', [
             'room' => $room->slug,
             'path' => $relativePath,
             'size' => strlen($content),
@@ -290,11 +301,14 @@ class CodeServerManager
     public function deleteFile(Room $room, string $relativePath): bool
     {
         $fullPath = $this->resolveSecurePath($room, $relativePath);
-        if ($fullPath === null) return false;
+        if ($fullPath === null) {
+            return false;
+        }
 
         if (is_dir($fullPath)) {
             // Recursively delete directory
             $this->deleteDirectory($fullPath);
+
             return true;
         }
 
@@ -311,21 +325,23 @@ class CodeServerManager
     public function createFile(Room $room, string $relativePath, bool $isDirectory = false): bool
     {
         $basePath = $this->workspacePath($room);
-        $fullPath = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        $fullPath = $basePath.DIRECTORY_SEPARATOR.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
 
         $realBase = realpath($basePath);
         $parentDir = dirname($fullPath);
 
-        if (!is_dir($parentDir)) {
+        if (! is_dir($parentDir)) {
             mkdir($parentDir, 0755, true);
         }
 
         $realParent = realpath($parentDir);
-        if ($realParent === false || !str_starts_with($realParent, $realBase)) {
+        if ($realParent === false || ! str_starts_with($realParent, $realBase)) {
             return false;
         }
 
-        if (file_exists($fullPath)) return false;
+        if (file_exists($fullPath)) {
+            return false;
+        }
 
         if ($isDirectory) {
             return mkdir($fullPath, 0755, true);
@@ -340,20 +356,22 @@ class CodeServerManager
     public function renameFile(Room $room, string $oldPath, string $newPath): bool
     {
         $oldFull = $this->resolveSecurePath($room, $oldPath);
-        if ($oldFull === null) return false;
+        if ($oldFull === null) {
+            return false;
+        }
 
         $basePath = $this->workspacePath($room);
-        $newFull  = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $newPath), DIRECTORY_SEPARATOR);
+        $newFull = $basePath.DIRECTORY_SEPARATOR.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $newPath), DIRECTORY_SEPARATOR);
 
         $realBase = realpath($basePath);
-        $newDir   = dirname($newFull);
+        $newDir = dirname($newFull);
 
-        if (!is_dir($newDir)) {
+        if (! is_dir($newDir)) {
             mkdir($newDir, 0755, true);
         }
 
         $realNewDir = realpath($newDir);
-        if ($realNewDir === false || !str_starts_with($realNewDir, $realBase)) {
+        if ($realNewDir === false || ! str_starts_with($realNewDir, $realBase)) {
             return false;
         }
 
@@ -366,7 +384,7 @@ class CodeServerManager
     {
         $path = $this->workspacePath($room);
 
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             mkdir($path, 0755, true);
 
             // Create default files for new workspaces
@@ -378,19 +396,20 @@ class CodeServerManager
 
     private function workspacePath(Room $room): string
     {
-        return storage_path('workspaces' . DIRECTORY_SEPARATOR . $room->slug);
+        return storage_path('workspaces'.DIRECTORY_SEPARATOR.$room->slug);
     }
 
     private function resolveSecurePath(Room $room, string $relativePath): ?string
     {
         $basePath = $this->workspacePath($room);
-        $fullPath = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        $fullPath = $basePath.DIRECTORY_SEPARATOR.ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
 
         $realBase = realpath($basePath);
         $realFull = realpath($fullPath);
 
-        if ($realBase === false || $realFull === false || !str_starts_with($realFull, $realBase)) {
-            Log::warning("CodeServerManager: Path traversal blocked", ['path' => $relativePath]);
+        if ($realBase === false || $realFull === false || ! str_starts_with($realFull, $realBase)) {
+            Log::warning('CodeServerManager: Path traversal blocked', ['path' => $relativePath]);
+
             return null;
         }
 
@@ -403,28 +422,28 @@ class CodeServerManager
 
         $files = [
             'README.md' => "# {$room->name}\n\n> Powered by **VisionLab** — Aptech Vision 2026\n\n## Getting Started\n\n1. Write your code in the editor\n2. Use the integrated terminal to run it\n3. Open the AI sidebar for assistance\n",
-            'main.' . $this->fileExtension($lang) => $this->starterCode($lang),
+            'main.'.$this->fileExtension($lang) => $this->starterCode($lang),
         ];
 
         foreach ($files as $name => $content) {
-            file_put_contents($path . DIRECTORY_SEPARATOR . $name, $content);
+            file_put_contents($path.DIRECTORY_SEPARATOR.$name, $content);
         }
     }
 
     private function fileExtension(string $lang): string
     {
         return match ($lang) {
-            'python'     => 'py',
+            'python' => 'py',
             'javascript' => 'js',
             'typescript' => 'ts',
-            'php'        => 'php',
-            'java'       => 'java',
-            'c'          => 'c',
+            'php' => 'php',
+            'java' => 'java',
+            'c' => 'c',
             'cpp', 'c++' => 'cpp',
-            'rust'       => 'rs',
-            'go'         => 'go',
-            'ruby'       => 'rb',
-            default      => 'py',
+            'rust' => 'rs',
+            'go' => 'go',
+            'ruby' => 'rb',
+            default => 'py',
         };
     }
 
@@ -479,8 +498,10 @@ class CodeServerManager
     {
         $items = scandir($dir);
         foreach ($items as $item) {
-            if ($item === '.' || $item === '..') continue;
-            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            $path = $dir.DIRECTORY_SEPARATOR.$item;
             is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
         }
         rmdir($dir);
@@ -495,7 +516,7 @@ class CodeServerManager
         $hostBaseUrl = env('AI_PROXY_URL', 'http://host.docker.internal:8000/api/ai/v1');
 
         // Fetch active chat/agent models
-        $activeModels = \App\Models\AiModel::getActiveChatModels();
+        $activeModels = AiModel::getActiveChatModels();
         $modelsConfig = [];
 
         foreach ($activeModels as $m) {
@@ -510,7 +531,7 @@ class CodeServerManager
         }
 
         // Fetch autocomplete model (Gemini 2.5 Flash by default)
-        $autocompleteModel = \App\Models\AiModel::getAutocompleteModel();
+        $autocompleteModel = AiModel::getAutocompleteModel();
         $tabAutocompleteModel = null;
         if ($autocompleteModel) {
             $tabAutocompleteModel = [
@@ -523,74 +544,74 @@ class CodeServerManager
         }
 
         $config = [
-            "models" => $modelsConfig,
-            "tabAutocompleteModel" => $tabAutocompleteModel,
-            "tabAutocompleteOptions" => [
-                "useCopyBuffer" => false,
-                "maxPromptTokens" => 1024,
+            'models' => $modelsConfig,
+            'tabAutocompleteModel' => $tabAutocompleteModel,
+            'tabAutocompleteOptions' => [
+                'useCopyBuffer' => false,
+                'maxPromptTokens' => 1024,
             ],
-            "customCommands" => [
+            'customCommands' => [
                 [
-                    "name" => "agent",
-                    "prompt" => "You are an autonomous agent. Propose a patch for the following request using your tools.",
-                    "description" => "Propose a patch for a task"
+                    'name' => 'agent',
+                    'prompt' => 'You are an autonomous agent. Propose a patch for the following request using your tools.',
+                    'description' => 'Propose a patch for a task',
                 ],
                 [
-                    "name" => "plan",
-                    "prompt" => "Create a step-by-step implementation plan for the following feature. Do not propose any patches yet.",
-                    "description" => "Plan a feature implementation"
+                    'name' => 'plan',
+                    'prompt' => 'Create a step-by-step implementation plan for the following feature. Do not propose any patches yet.',
+                    'description' => 'Plan a feature implementation',
                 ],
                 [
-                    "name" => "ask",
-                    "prompt" => "Answer the following question or explain the code. Do not propose any patches.",
-                    "description" => "Ask a question about the code"
-                ]
+                    'name' => 'ask',
+                    'prompt' => 'Answer the following question or explain the code. Do not propose any patches.',
+                    'description' => 'Ask a question about the code',
+                ],
             ],
-            "allowAnonymousTelemetry" => \App\Models\AiSetting::getValue('telemetry_enabled', 'false') === 'true',
-            "disableIndexing" => \App\Models\AiSetting::getValue('indexing_enabled', 'false') !== 'true',
+            'allowAnonymousTelemetry' => AiSetting::getValue('telemetry_enabled', 'false') === 'true',
+            'disableIndexing' => AiSetting::getValue('indexing_enabled', 'false') !== 'true',
         ];
 
         $json = json_encode($config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-        
+
         $vscodeSettings = [
-            "workbench.colorTheme" => "Default Dark Modern",
-            "window.title" => "VisionLab Workspace",
-            "workbench.startupEditor" => "none",
-            "workbench.welcomePage.walkthroughs.openOnInstall" => false,
-            "editor.fontFamily" => "'JetBrains Mono', 'Fira Code', 'Inter', monospace",
-            "editor.fontSize" => 14,
-            "editor.fontLigatures" => true,
-            "editor.smoothScrolling" => true,
-            "editor.cursorBlinking" => "smooth",
-            "editor.cursorSmoothCaretAnimation" => "on",
-            "editor.formatOnSave" => true,
-            "workbench.colorCustomizations" => [
-                "[Default Dark Modern]" => [
-                    "titleBar.activeBackground" => "#151515",
-                    "titleBar.inactiveBackground" => "#151515",
-                    "titleBar.activeForeground" => "#f1f5f9",
-                    "editor.background" => "#151515",
-                    "sideBar.background" => "#1a1a1a",
-                    "activityBar.background" => "#151515",
-                    "statusBar.background" => "#1a1a1a",
-                    "tab.activeBackground" => "#222222",
-                    "tab.inactiveBackground" => "#151515",
-                    "tab.border" => "#333333",
-                    "panel.background" => "#151515",
-                    "focusBorder" => "#F05000",
-                    "button.background" => "#F05000",
-                    "button.hoverBackground" => "#d04000",
-                    "textLink.foreground" => "#F05000",
-                    "textLink.activeForeground" => "#ff732e"
-                ]
-            ]
+            'workbench.colorTheme' => 'Default Dark Modern',
+            'window.title' => 'VisionLab Workspace',
+            'workbench.startupEditor' => 'none',
+            'workbench.welcomePage.walkthroughs.openOnInstall' => false,
+            'editor.fontFamily' => "'JetBrains Mono', 'Fira Code', 'Inter', monospace",
+            'editor.fontSize' => 14,
+            'editor.fontLigatures' => true,
+            'editor.smoothScrolling' => true,
+            'editor.cursorBlinking' => 'smooth',
+            'editor.cursorSmoothCaretAnimation' => 'on',
+            'editor.formatOnSave' => true,
+            'workbench.colorCustomizations' => [
+                '[Default Dark Modern]' => [
+                    'titleBar.activeBackground' => '#151515',
+                    'titleBar.inactiveBackground' => '#151515',
+                    'titleBar.activeForeground' => '#f1f5f9',
+                    'editor.background' => '#151515',
+                    'sideBar.background' => '#1a1a1a',
+                    'activityBar.background' => '#151515',
+                    'statusBar.background' => '#1a1a1a',
+                    'tab.activeBackground' => '#222222',
+                    'tab.inactiveBackground' => '#151515',
+                    'tab.border' => '#333333',
+                    'panel.background' => '#151515',
+                    'focusBorder' => '#F05000',
+                    'button.background' => '#F05000',
+                    'button.hoverBackground' => '#d04000',
+                    'textLink.foreground' => '#F05000',
+                    'textLink.activeForeground' => '#ff732e',
+                ],
+            ],
         ];
         $settingsJson = json_encode($vscodeSettings, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
-        $script = "mkdir -p /home/coder/.continue /home/coder/.local/share/code-server/User && " .
-                  "cat << 'EOF' > /home/coder/.continue/config.json\n" . $json . "\nEOF\n" .
-                  "cat << 'EOF' > /home/coder/.local/share/code-server/User/settings.json\n" . $settingsJson . "\nEOF";
-        
+        $script = 'mkdir -p /home/coder/.continue /home/coder/.local/share/code-server/User && '.
+                  "cat << 'EOF' > /home/coder/.continue/config.json\n".$json."\nEOF\n".
+                  "cat << 'EOF' > /home/coder/.local/share/code-server/User/settings.json\n".$settingsJson."\nEOF";
+
         $process = new Process(['docker', 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
 
@@ -641,12 +662,12 @@ EOF;
     {
         // Try OpenVSCode Server on standard ports
         $devPort = (int) env('VSCODE_SERVER_PORT', 8099);
-        $devUrl  = env('VSCODE_SERVER_URL', "http://localhost:{$devPort}/");
+        $devUrl = env('VSCODE_SERVER_URL', "http://localhost:{$devPort}/");
 
         return [
-            'url'          => $devUrl,
-            'port'         => $devPort,
-            'token'        => 'dev-mode',
+            'url' => $devUrl,
+            'port' => $devPort,
+            'token' => 'dev-mode',
             'container_id' => null,
         ];
     }

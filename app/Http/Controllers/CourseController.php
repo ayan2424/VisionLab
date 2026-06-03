@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\Enrollment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CourseController extends Controller
 {
@@ -31,6 +29,7 @@ class CourseController extends Controller
     public function create()
     {
         $this->authorize('create', Course::class);
+
         return view('courses.create');
     }
 
@@ -39,7 +38,7 @@ class CourseController extends Controller
         $this->authorize('create', Course::class);
 
         $validated = $request->validate([
-            'title'       => 'required|string|max:120',
+            'title' => 'required|string|max:120',
             'description' => 'nullable|string|max:2000',
             'cover_image' => 'nullable|image|max:2048',
         ]);
@@ -51,13 +50,13 @@ class CourseController extends Controller
 
         $course = Course::create([
             'instructor_id' => Auth::id(),
-            'title'         => $validated['title'],
-            'description'   => $validated['description'] ?? null,
-            'cover_image'   => $coverPath,
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'cover_image' => $coverPath,
         ]);
 
         return redirect()->route('courses.show', $course->slug)
-                         ->with('success', 'Course created successfully!');
+            ->with('success', 'Course created successfully!');
     }
 
     public function show(Course $course)
@@ -66,13 +65,13 @@ class CourseController extends Controller
 
         $user = Auth::user();
         $isInstructor = $user->id === $course->instructor_id || $user->isAdmin();
-        $isEnrolled   = $course->isEnrolled($user);
+        $isEnrolled = $course->isEnrolled($user);
 
-        if (!$isInstructor && !$isEnrolled) {
+        if (! $isInstructor && ! $isEnrolled) {
             abort(403, 'You are not enrolled in this course.');
         }
 
-        $students  = $course->students()->get();
+        $students = $course->students()->get();
         $userSubmissions = [];
         if ($user->isStudent()) {
             foreach ($course->assignments as $assignment) {
@@ -91,6 +90,7 @@ class CourseController extends Controller
     public function edit(Course $course)
     {
         $this->authorize('update', $course);
+
         return view('courses.edit', compact('course'));
     }
 
@@ -99,28 +99,32 @@ class CourseController extends Controller
         $this->authorize('update', $course);
 
         $validated = $request->validate([
-            'title'       => 'required|string|max:120',
+            'title' => 'required|string|max:120',
             'description' => 'nullable|string|max:2000',
             'cover_image' => 'nullable|image|max:2048',
-            'is_active'   => 'sometimes|boolean',
+            'is_active' => 'sometimes|boolean',
         ]);
 
         if ($request->hasFile('cover_image')) {
-            if ($course->cover_image) Storage::disk('public')->delete($course->cover_image);
+            if ($course->cover_image) {
+                Storage::disk('public')->delete($course->cover_image);
+            }
             $validated['cover_image'] = $request->file('cover_image')->store('covers', 'public');
         }
 
         $course->update($validated);
 
         return redirect()->route('courses.show', $course->slug)
-                         ->with('success', 'Course updated successfully!');
+            ->with('success', 'Course updated successfully!');
     }
 
     public function destroy(Course $course)
     {
         $this->authorize('delete', $course);
 
-        if ($course->cover_image) Storage::disk('public')->delete($course->cover_image);
+        if ($course->cover_image) {
+            Storage::disk('public')->delete($course->cover_image);
+        }
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Course deleted.');

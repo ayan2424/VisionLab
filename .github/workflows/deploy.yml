@@ -74,8 +74,8 @@ jobs:
           sed -i 's/# DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
           sed -i 's/# DB_PORT=3306/DB_PORT=3306/' .env
           sed -i 's/# DB_DATABASE=laravel/DB_DATABASE=VisionLab_test/' .env
-          sed -i 's/# DB_USERNAME=root/DB_USERNAME=VisionLab/' .env
-          sed -i 's/# DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/# DB_USERNAME=root/DB_USERNAME=root/' .env
+          sed -i 's/# DB_PASSWORD=/DB_PASSWORD=rootpassword/' .env
 
       - name: Run migrations
         run: php artisan migrate --force
@@ -84,7 +84,7 @@ jobs:
         run: php artisan db:seed --force
 
       - name: Run PHPUnit tests
-        run: php artisan test --parallel
+        run: php artisan test
 
       - name: Run Pint (code style)
         run: vendor/bin/pint --test

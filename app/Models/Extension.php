@@ -13,9 +13,9 @@ class Extension extends Model
     ];
 
     protected $casts = [
-        'is_global'  => 'boolean',
+        'is_global' => 'boolean',
         'is_builtin' => 'boolean',
-        'is_active'  => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -24,8 +24,8 @@ class Extension extends Model
     public function workspaces(): BelongsToMany
     {
         return $this->belongsToMany(Room::class, 'workspace_extensions', 'extension_id', 'room_id')
-                    ->withPivot('is_enabled')
-                    ->withTimestamps();
+            ->withPivot('is_enabled')
+            ->withTimestamps();
     }
 
     /**
@@ -33,9 +33,12 @@ class Extension extends Model
      */
     public function isEnabledFor(Room $room): bool
     {
-        if ($this->is_global) return true;
+        if ($this->is_global) {
+            return true;
+        }
 
         $pivot = $this->workspaces()->where('room_id', $room->id)->first();
+
         return $pivot ? $pivot->pivot->is_enabled : false;
     }
 }

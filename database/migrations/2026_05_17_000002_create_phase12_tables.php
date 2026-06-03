@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('memory_limit', 20)->default('512m');
             $table->string('cpu_limit', 10)->default('0.5');
             $table->timestamps();
-            
+
             // Should be either user-specific or course-specific
             $table->unique(['user_id', 'course_id']);
         });
@@ -53,7 +53,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->timestamp('earned_at');
             $table->timestamps();
-            
+
             $table->unique(['user_id', 'badge_name']);
         });
 
@@ -65,7 +65,7 @@ return new class extends Migration
             $table->unsignedInteger('duration_minutes')->default(0);
             $table->unsignedInteger('commits_count')->default(0);
             $table->timestamps();
-            
+
             $table->unique(['user_id', 'date']);
         });
     }

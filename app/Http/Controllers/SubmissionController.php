@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\SubmissionGraded;
 use App\Models\Assignment;
+use App\Models\Course;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,7 @@ class SubmissionController extends Controller
     public function start(Assignment $assignment)
     {
         $user = Auth::user();
-        if (!$user->isStudent()) {
+        if (! $user->isStudent()) {
             abort(403, 'Only students can start assignments.');
         }
 
@@ -32,38 +33,42 @@ class SubmissionController extends Controller
     public function submit(Request $request, Assignment $assignment)
     {
         $user = Auth::user();
-        if (!$user->isStudent()) abort(403);
+        if (! $user->isStudent()) {
+            abort(403);
+        }
 
         $request->validate([
             'code_snapshot' => 'nullable|string|max:50000',
         ]);
 
         $submission = Submission::where('assignment_id', $assignment->id)
-                                ->where('student_id', $user->id)
-                                ->firstOrFail();
+            ->where('student_id', $user->id)
+            ->firstOrFail();
 
         $isLate = $assignment->due_date && now()->gt($assignment->due_date);
 
         $submission->update([
             'code_snapshot' => $request->code_snapshot ?? $submission->code_snapshot,
-            'status'        => $isLate ? 'late' : 'submitted',
-            'submitted_at'  => now(),
+            'status' => $isLate ? 'late' : 'submitted',
+            'submitted_at' => now(),
         ]);
 
         return redirect()->route('assignments.show', $assignment)
-                         ->with('success', $isLate ? 'Submitted (late).' : 'Assignment submitted successfully!');
+            ->with('success', $isLate ? 'Submitted (late).' : 'Assignment submitted successfully!');
     }
 
     public function saveSnapshot(Request $request, Assignment $assignment)
     {
         $user = Auth::user();
-        if (!$user->isStudent()) abort(403);
+        if (! $user->isStudent()) {
+            abort(403);
+        }
 
         $request->validate(['code_snapshot' => 'nullable|string|max:65535']);
 
         Submission::where('assignment_id', $assignment->id)
-                  ->where('student_id', $user->id)
-                  ->update(['code_snapshot' => $request->code_snapshot ?? '']);
+            ->where('student_id', $user->id)
+            ->update(['code_snapshot' => $request->code_snapshot ?? '']);
 
         return response()->json(['success' => true]);
     }
@@ -71,11 +76,13 @@ class SubmissionController extends Controller
     public function ide(Assignment $assignment)
     {
         $user = Auth::user();
-        if (!$user->isStudent()) abort(403, 'Students only.');
+        if (! $user->isStudent()) {
+            abort(403, 'Students only.');
+        }
 
         $submission = Submission::where('assignment_id', $assignment->id)
-                                ->where('student_id', $user->id)
-                                ->firstOrFail();
+            ->where('student_id', $user->id)
+            ->firstOrFail();
 
         $course = $assignment->course;
 
@@ -93,7 +100,7 @@ class SubmissionController extends Controller
 
         // Instructors can only see submissions from their courses; admin sees all
         $assignment = $submission->assignment()->with('course')->firstOrFail();
-        $course     = $assignment->course;
+        $course = $assignment->course;
 
         if ($user->isInstructor() && $course->instructor_id !== $user->id) {
             abort(403);
@@ -103,14 +110,14 @@ class SubmissionController extends Controller
                     && in_array($submission->status, ['submitted', 'late', 'graded']);
 
         // Previous / next submission for the same assignment (for instructor navigation)
-        $siblings        = Submission::where('assignment_id', $assignment->id)
-                                     ->whereIn('status', ['submitted', 'late', 'graded'])
-                                     ->orderBy('submitted_at')
-                                     ->pluck('id');
+        $siblings = Submission::where('assignment_id', $assignment->id)
+            ->whereIn('status', ['submitted', 'late', 'graded'])
+            ->orderBy('submitted_at')
+            ->pluck('id');
 
-        $currentIndex    = $siblings->search($submission->id);
-        $prevSubmission  = $currentIndex > 0 ? Submission::with('student')->find($siblings[$currentIndex - 1]) : null;
-        $nextSubmission  = ($currentIndex !== false && $currentIndex < $siblings->count() - 1)
+        $currentIndex = $siblings->search($submission->id);
+        $prevSubmission = $currentIndex > 0 ? Submission::with('student')->find($siblings[$currentIndex - 1]) : null;
+        $nextSubmission = ($currentIndex !== false && $currentIndex < $siblings->count() - 1)
                             ? Submission::with('student')->find($siblings[$currentIndex + 1])
                             : null;
 
@@ -122,22 +129,22 @@ class SubmissionController extends Controller
 
     public function grade(Request $request, Submission $submission)
     {
-        $user   = Auth::user();
+        $user = Auth::user();
         $course = $submission->assignment->course;
 
-        if ($user->id !== $course->instructor_id && !$user->isAdmin()) {
+        if ($user->id !== $course->instructor_id && ! $user->isAdmin()) {
             abort(403);
         }
 
         $request->validate([
-            'grade'    => 'required|integer|min:0|max:' . $submission->assignment->max_points,
+            'grade' => 'required|integer|min:0|max:'.$submission->assignment->max_points,
             'feedback' => 'nullable|string|max:3000',
         ]);
 
         $submission->update([
-            'grade'     => $request->grade,
-            'feedback'  => $request->feedback,
-            'status'    => 'graded',
+            'grade' => $request->grade,
+            'feedback' => $request->feedback,
+            'status' => 'graded',
             'graded_by' => $user->id,
         ]);
 
@@ -151,7 +158,7 @@ class SubmissionController extends Controller
         // Redirect: if came from submission show page, go back there; otherwise back
         if ($request->headers->get('referer') && str_contains($request->headers->get('referer'), '/submissions/')) {
             return redirect()->route('submissions.show', $submission)
-                             ->with('success', 'Grade saved successfully!');
+                ->with('success', 'Grade saved successfully!');
         }
 
         return back()->with('success', 'Submission graded successfully!');
@@ -200,7 +207,7 @@ class SubmissionController extends Controller
         }
 
         // Courses for filter tabs
-        $courses = \App\Models\Course::when(
+        $courses = Course::when(
             $user->isInstructor(),
             fn ($q) => $q->where('instructor_id', $user->id)
         )->orderBy('title')->get();
@@ -214,9 +221,9 @@ class SubmissionController extends Controller
 
         $stats = [
             'pending' => (clone $statsBase)->whereIn('status', ['submitted', 'late'])->count(),
-            'late'    => (clone $statsBase)->where('status', 'late')->count(),
-            'graded'  => (clone $statsBase)->where('status', 'graded')->count(),
-            'total'   => (clone $statsBase)->whereIn('status', ['submitted', 'late', 'graded'])->count(),
+            'late' => (clone $statsBase)->where('status', 'late')->count(),
+            'graded' => (clone $statsBase)->where('status', 'graded')->count(),
+            'total' => (clone $statsBase)->whereIn('status', ['submitted', 'late', 'graded'])->count(),
         ];
 
         $pendingCount = $stats['pending'];

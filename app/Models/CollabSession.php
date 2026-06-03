@@ -13,8 +13,8 @@ class CollabSession extends Model
     ];
 
     protected $casts = [
-        'cursor_line'    => 'integer',
-        'cursor_col'     => 'integer',
+        'cursor_line' => 'integer',
+        'cursor_col' => 'integer',
         'last_heartbeat' => 'datetime',
     ];
 

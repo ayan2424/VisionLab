@@ -21,7 +21,7 @@ class AnalyticsEvent extends Model
     public static function track(string $eventType, array $data = [], ?int $userId = null): void
     {
         static::create([
-            'user_id'    => $userId ?? auth()->id(),
+            'user_id' => $userId ?? auth()->id(),
             'event_type' => $eventType,
             'event_data' => $data,
         ]);

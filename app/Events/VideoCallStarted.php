@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -21,7 +20,7 @@ class VideoCallStarted implements ShouldBroadcastNow
 
     public function broadcastOn(): array
     {
-        return [new PresenceChannel('collab.' . $this->workspaceSlug)];
+        return [new PresenceChannel('collab.'.$this->workspaceSlug)];
     }
 
     public function broadcastAs(): string

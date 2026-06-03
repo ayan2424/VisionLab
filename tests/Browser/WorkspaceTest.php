@@ -20,20 +20,20 @@ class WorkspaceTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
-                    ->visit('/workspace')
-                    ->assertSee('VisionLab')
-                    ->assertSee('Loading VS Code…')
+                ->visit('/workspace')
+                ->assertSee('VisionLab')
+                ->assertSee('Loading VS Code…')
                     // Open AI Agent Panel
-                    ->click('#ai-toggle')
-                    ->pause(1000)
-                    ->assertSee('AI Agent')
-                    ->assertSee('Gemini 2.0 Flash / Claude 3')
+                ->click('#ai-toggle')
+                ->pause(1000)
+                ->assertSee('AI Agent')
+                ->assertSee('Gemini 2.0 Flash / Claude 3')
                     // Verify Memory Badge is visible
-                    ->assertSee('MEMORY')
+                ->assertSee('MEMORY')
                     // Verify the chat tabs exist
-                    ->assertSee('CHAT')
-                    ->assertSee('PLAN')
-                    ->assertSee('AGENT');
+                ->assertSee('CHAT')
+                ->assertSee('PLAN')
+                ->assertSee('AGENT');
         });
     }
 }
