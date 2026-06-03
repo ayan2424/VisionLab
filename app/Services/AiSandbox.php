@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Room;
-use App\Models\AiSnapshot;
-use App\Models\AiPendingPatch;
 use App\Models\AiActionsLog;
-use Illuminate\Support\Facades\Log;
+use App\Models\AiPendingPatch;
+use App\Models\AiSnapshot;
+use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Process\Process;
 
@@ -40,9 +39,9 @@ class AiSandbox
      */
     public function searchCodebase(Room $room, string $query): array
     {
-        $basePath = storage_path('workspaces' . DIRECTORY_SEPARATOR . $room->slug);
-        
-        if (!is_dir($basePath)) {
+        $basePath = storage_path('workspaces'.DIRECTORY_SEPARATOR.$room->slug);
+
+        if (! is_dir($basePath)) {
             return [];
         }
 
@@ -52,7 +51,7 @@ class AiSandbox
         $process->setTimeout(10);
         $process->run();
 
-        if (!$process->isSuccessful() && $process->getExitCode() !== 1) { // 1 means no match, other codes are errors
+        if (! $process->isSuccessful() && $process->getExitCode() !== 1) { // 1 means no match, other codes are errors
             return [];
         }
 
@@ -61,15 +60,17 @@ class AiSandbox
         $results = [];
 
         foreach ($lines as $line) {
-            if (empty($line)) continue;
-            
+            if (empty($line)) {
+                continue;
+            }
+
             // Format: /path/to/file:line:content
             $parts = explode(':', $line, 3);
             if (count($parts) >= 3) {
-                $filePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $parts[0]);
+                $filePath = str_replace($basePath.DIRECTORY_SEPARATOR, '', $parts[0]);
                 $results[] = [
-                    'file'    => $filePath,
-                    'line'    => $parts[1],
+                    'file' => $filePath,
+                    'line' => $parts[1],
                     'content' => $parts[2],
                 ];
             }
@@ -97,8 +98,8 @@ class AiSandbox
         // A real system would use a diff library to handle fuzzy matching.
         $patchedContent = str_replace($searchBlock, $replaceBlock, $currentContent);
 
-        if ($patchedContent === $currentContent && !empty($searchBlock)) {
-            return ['error' => "Could not find the exact search block in the file. Context might have changed."];
+        if ($patchedContent === $currentContent && ! empty($searchBlock)) {
+            return ['error' => 'Could not find the exact search block in the file. Context might have changed.'];
         }
 
         // Extremely strict sandboxing: prevent dangerous PHP functions
@@ -128,26 +129,26 @@ class AiSandbox
         // Store snapshot
         $snapshot = AiSnapshot::create([
             'workspace_id' => $room->id,
-            'file_path'    => $relativePath,
-            'content'      => $currentContent,
-            'created_by'   => Auth::id() ?? 1,
+            'file_path' => $relativePath,
+            'content' => $currentContent,
+            'created_by' => Auth::id() ?? 1,
         ]);
 
         // Store pending patch
         $patch = AiPendingPatch::create([
-            'workspace_id'     => $room->id,
-            'session_id'       => $sessionId,
-            'file_path'        => $relativePath,
+            'workspace_id' => $room->id,
+            'session_id' => $sessionId,
+            'file_path' => $relativePath,
             'original_content' => $currentContent,
-            'patched_content'  => $patchedContent,
-            'diff'             => $diffOutput,
-            'status'           => 'pending',
-            'created_by'       => Auth::id() ?? 1,
+            'patched_content' => $patchedContent,
+            'diff' => $diffOutput,
+            'status' => 'pending',
+            'created_by' => Auth::id() ?? 1,
         ]);
 
         return [
             'patch_id' => $patch->id,
-            'diff'     => $diffOutput
+            'diff' => $diffOutput,
         ];
     }
 
@@ -161,7 +162,9 @@ class AiSandbox
         }
 
         $room = Room::find($patch->workspace_id);
-        if (!$room) return false;
+        if (! $room) {
+            return false;
+        }
 
         $success = $this->manager->writeFile($room, $patch->file_path, $patch->patched_content);
 
@@ -169,12 +172,12 @@ class AiSandbox
             $patch->update(['status' => 'approved']);
 
             AiActionsLog::create([
-                'user_id'       => Auth::id() ?? 1,
+                'user_id' => Auth::id() ?? 1,
                 'workspace_ref' => $room->slug,
-                'action_type'   => 'apply_patch',
-                'file_path'     => $patch->file_path,
-                'diff_summary'  => "Applied patch #{$patch->id}",
-                'mode'          => 'AGENT',
+                'action_type' => 'apply_patch',
+                'file_path' => $patch->file_path,
+                'diff_summary' => "Applied patch #{$patch->id}",
+                'mode' => 'AGENT',
             ]);
         }
 
@@ -187,7 +190,9 @@ class AiSandbox
     public function rollbackPatch(AiPendingPatch $patch): bool
     {
         $room = Room::find($patch->workspace_id);
-        if (!$room) return false;
+        if (! $room) {
+            return false;
+        }
 
         $snapshot = AiSnapshot::where('workspace_id', $room->id)
             ->where('file_path', $patch->file_path)
@@ -195,22 +200,22 @@ class AiSandbox
             ->orderBy('created_at', 'desc')
             ->first();
 
-        if (!$snapshot) {
+        if (! $snapshot) {
             return false;
         }
 
         $success = $this->manager->writeFile($room, $patch->file_path, $snapshot->content);
-        
+
         if ($success) {
             $patch->update(['status' => 'rejected']);
-            
+
             AiActionsLog::create([
-                'user_id'       => Auth::id() ?? 1,
+                'user_id' => Auth::id() ?? 1,
                 'workspace_ref' => $room->slug,
-                'action_type'   => 'rollback_patch',
-                'file_path'     => $patch->file_path,
-                'diff_summary'  => "Rolled back patch #{$patch->id}",
-                'mode'          => 'AGENT',
+                'action_type' => 'rollback_patch',
+                'file_path' => $patch->file_path,
+                'diff_summary' => "Rolled back patch #{$patch->id}",
+                'mode' => 'AGENT',
             ]);
         }
 

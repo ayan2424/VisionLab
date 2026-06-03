@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Course extends Model
@@ -23,7 +23,7 @@ class Course extends Model
     {
         static::creating(function (Course $course) {
             if (empty($course->slug)) {
-                $course->slug = Str::slug($course->title) . '-' . Str::random(4);
+                $course->slug = Str::slug($course->title).'-'.Str::random(4);
             }
             if (empty($course->enrollment_code)) {
                 $course->enrollment_code = strtoupper(Str::random(6));
@@ -44,8 +44,8 @@ class Course extends Model
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'enrollments', 'course_id', 'student_id')
-                    ->withPivot('status', 'enrolled_at')
-                    ->wherePivot('status', 'active');
+            ->withPivot('status', 'enrolled_at')
+            ->wherePivot('status', 'active');
     }
 
     public function assignments(): HasMany
@@ -61,9 +61,9 @@ class Course extends Model
     public function isEnrolled(User $user): bool
     {
         return $this->enrollments()
-                    ->where('student_id', $user->id)
-                    ->where('status', 'active')
-                    ->exists();
+            ->where('student_id', $user->id)
+            ->where('status', 'active')
+            ->exists();
     }
 
     public function getStudentCountAttribute(): int
@@ -81,6 +81,7 @@ class Course extends Model
             'from-amber-600 to-orange-800',
             'from-purple-600 to-violet-800',
         ];
+
         return $gradients[$this->id % count($gradients)];
     }
 }

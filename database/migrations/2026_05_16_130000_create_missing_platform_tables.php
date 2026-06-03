@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         // Workspace-extension pivot table for per-workspace extension toggling
-        if (!Schema::hasTable('workspace_extensions')) {
+        if (! Schema::hasTable('workspace_extensions')) {
             Schema::create('workspace_extensions', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
@@ -22,7 +22,7 @@ return new class extends Migration
         }
 
         // Collab sessions for tracking active collaboration
-        if (!Schema::hasTable('collab_sessions')) {
+        if (! Schema::hasTable('collab_sessions')) {
             Schema::create('collab_sessions', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
@@ -40,7 +40,7 @@ return new class extends Migration
         }
 
         // Video rooms for persisting video call data
-        if (!Schema::hasTable('video_rooms')) {
+        if (! Schema::hasTable('video_rooms')) {
             Schema::create('video_rooms', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
@@ -57,7 +57,7 @@ return new class extends Migration
         }
 
         // Push subscriptions for web push notifications
-        if (!Schema::hasTable('push_subscriptions')) {
+        if (! Schema::hasTable('push_subscriptions')) {
             Schema::create('push_subscriptions', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained()->cascadeOnDelete();

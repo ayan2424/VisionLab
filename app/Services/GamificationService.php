@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\CodingSession;
-use App\Models\UserBadge;
 use App\Models\User;
+use App\Models\UserBadge;
 use Carbon\Carbon;
 
 class GamificationService
@@ -15,7 +15,7 @@ class GamificationService
     public function logActivity(User $user, int $durationMinutes = 0, int $commits = 0)
     {
         $today = Carbon::today();
-        
+
         $session = CodingSession::firstOrCreate(
             ['user_id' => $user->id, 'date' => $today->format('Y-m-d')]
         );
@@ -35,7 +35,9 @@ class GamificationService
             ->orderBy('date', 'desc')
             ->get();
 
-        if ($sessions->isEmpty()) return;
+        if ($sessions->isEmpty()) {
+            return;
+        }
 
         $streak = 0;
         $currentDate = Carbon::today();
@@ -77,7 +79,7 @@ class GamificationService
         $sessions = CodingSession::where('user_id', $user->id)
             ->where('date', '>=', $startDate)
             ->get()
-            ->keyBy(function($item) {
+            ->keyBy(function ($item) {
                 return $item->date->format('Y-m-d');
             });
 
@@ -88,7 +90,7 @@ class GamificationService
             $heatmap[] = [
                 'date' => $date,
                 'count' => $count,
-                'level' => $this->getHeatmapLevel($count)
+                'level' => $this->getHeatmapLevel($count),
             ];
         }
 
@@ -97,10 +99,19 @@ class GamificationService
 
     protected function getHeatmapLevel(int $count): int
     {
-        if ($count === 0) return 0;
-        if ($count <= 2) return 1;
-        if ($count <= 5) return 2;
-        if ($count <= 10) return 3;
+        if ($count === 0) {
+            return 0;
+        }
+        if ($count <= 2) {
+            return 1;
+        }
+        if ($count <= 5) {
+            return 2;
+        }
+        if ($count <= 10) {
+            return 3;
+        }
+
         return 4;
     }
 }

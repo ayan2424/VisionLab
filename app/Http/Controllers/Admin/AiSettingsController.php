@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AiModel;
 use App\Models\AiSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class AiSettingsController extends Controller
 {
@@ -31,7 +32,7 @@ class AiSettingsController extends Controller
     public function updateKeys(Request $request)
     {
         $keys = $request->input('keys', []);
-        
+
         foreach ($keys as $key => $value) {
             if ($value !== null && $value !== '••••••••') {
                 AiSetting::setValue($key, $value, 'api_keys');
@@ -47,7 +48,7 @@ class AiSettingsController extends Controller
     public function updateFeatures(Request $request)
     {
         $features = ['autocomplete_enabled', 'indexing_enabled', 'telemetry_enabled', 'allow_marketplace'];
-        
+
         foreach ($features as $feature) {
             AiSetting::setValue(
                 $feature,
@@ -74,9 +75,9 @@ class AiSettingsController extends Controller
      */
     public function toggleModel(AiModel $model)
     {
-        $model->update(['is_active' => !$model->is_active]);
+        $model->update(['is_active' => ! $model->is_active]);
 
-        return back()->with('success', "{$model->display_name} " . ($model->is_active ? 'enabled' : 'disabled') . '.');
+        return back()->with('success', "{$model->display_name} ".($model->is_active ? 'enabled' : 'disabled').'.');
     }
 
     /**
@@ -131,7 +132,7 @@ class AiSettingsController extends Controller
         $provider = $request->input('provider');
         $apiKey = AiSetting::getValue("{$provider}_api_key");
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return response()->json(['success' => false, 'message' => 'No API key set for this provider.']);
         }
 
@@ -152,7 +153,7 @@ class AiSettingsController extends Controller
 
     private function testAnthropic(string $apiKey): array
     {
-        $response = \Illuminate\Support\Facades\Http::withHeaders([
+        $response = Http::withHeaders([
             'x-api-key' => $apiKey,
             'anthropic-version' => '2023-06-01',
         ])->post('https://api.anthropic.com/v1/messages', [
@@ -163,24 +164,24 @@ class AiSettingsController extends Controller
 
         return $response->successful()
             ? ['success' => true, 'message' => 'Anthropic API connected!']
-            : ['success' => false, 'message' => 'Failed: ' . $response->json('error.message', 'Unknown error')];
+            : ['success' => false, 'message' => 'Failed: '.$response->json('error.message', 'Unknown error')];
     }
 
     private function testGoogle(string $apiKey): array
     {
-        $response = \Illuminate\Support\Facades\Http::post(
+        $response = Http::post(
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}",
             ['contents' => [['parts' => [['text' => 'Hi']]]]]
         );
 
         return $response->successful()
             ? ['success' => true, 'message' => 'Google Gemini API connected!']
-            : ['success' => false, 'message' => 'Failed: ' . $response->json('error.message', 'Unknown error')];
+            : ['success' => false, 'message' => 'Failed: '.$response->json('error.message', 'Unknown error')];
     }
 
     private function testOpenAI(string $apiKey): array
     {
-        $response = \Illuminate\Support\Facades\Http::withToken($apiKey)
+        $response = Http::withToken($apiKey)
             ->post('https://api.openai.com/v1/chat/completions', [
                 'model' => 'gpt-4.1-mini',
                 'max_tokens' => 10,
@@ -189,12 +190,12 @@ class AiSettingsController extends Controller
 
         return $response->successful()
             ? ['success' => true, 'message' => 'OpenAI API connected!']
-            : ['success' => false, 'message' => 'Failed: ' . $response->json('error.message', 'Unknown error')];
+            : ['success' => false, 'message' => 'Failed: '.$response->json('error.message', 'Unknown error')];
     }
 
     private function testDeepSeek(string $apiKey): array
     {
-        $response = \Illuminate\Support\Facades\Http::withToken($apiKey)
+        $response = Http::withToken($apiKey)
             ->post('https://api.deepseek.com/chat/completions', [
                 'model' => 'deepseek-chat',
                 'max_tokens' => 10,
@@ -203,6 +204,6 @@ class AiSettingsController extends Controller
 
         return $response->successful()
             ? ['success' => true, 'message' => 'DeepSeek API connected!']
-            : ['success' => false, 'message' => 'Failed: ' . $response->json('error.message', 'Unknown error')];
+            : ['success' => false, 'message' => 'Failed: '.$response->json('error.message', 'Unknown error')];
     }
 }

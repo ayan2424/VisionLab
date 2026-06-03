@@ -14,7 +14,7 @@ class Submission extends Model
 
     protected $casts = [
         'submitted_at' => 'datetime',
-        'grade'        => 'integer',
+        'grade' => 'integer',
     ];
 
     public function assignment(): BelongsTo
@@ -34,18 +34,21 @@ class Submission extends Model
 
     public function isLate(): bool
     {
-        if (!$this->submitted_at || !$this->assignment->due_date) return false;
+        if (! $this->submitted_at || ! $this->assignment->due_date) {
+            return false;
+        }
+
         return $this->submitted_at->gt($this->assignment->due_date);
     }
 
     public function getStatusBadgeClassAttribute(): string
     {
         return match ($this->status) {
-            'graded'      => 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
-            'submitted'   => 'text-blue-400 bg-blue-400/10 border-blue-400/20',
+            'graded' => 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+            'submitted' => 'text-blue-400 bg-blue-400/10 border-blue-400/20',
             'in_progress' => 'text-amber-400 bg-amber-400/10 border-amber-400/20',
-            'late'        => 'text-red-400 bg-red-400/10 border-red-400/20',
-            default       => 'text-slate-400 bg-slate-400/10 border-slate-400/20',
+            'late' => 'text-red-400 bg-red-400/10 border-red-400/20',
+            default => 'text-slate-400 bg-slate-400/10 border-slate-400/20',
         };
     }
 }
