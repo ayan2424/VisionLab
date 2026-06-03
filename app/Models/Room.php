@@ -22,7 +22,7 @@ class Room extends Model
     ];
 
     protected $casts = [
-        'is_public'        => 'boolean',
+        'is_public' => 'boolean',
         'max_participants' => 'integer',
     ];
 
@@ -58,6 +58,7 @@ class Room extends Model
     public function getPresenceColor(int $userId): string
     {
         $colors = ['#7c3aed', '#2563eb', '#0891b2', '#16a34a', '#dc2626', '#d97706', '#db2777'];
+
         return $colors[$userId % count($colors)];
     }
 }

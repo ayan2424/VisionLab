@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Course;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -24,11 +25,11 @@ Broadcast::channel('collab.{roomSlug}', function ($user, $roomSlug) {
     $colors = ['#7c3aed', '#2563eb', '#0891b2', '#16a34a', '#dc2626', '#d97706', '#db2777'];
 
     return [
-        'id'       => $user->id,
-        'name'     => $user->name,
+        'id' => $user->id,
+        'name' => $user->name,
         'initials' => $user->avatar_initials,
-        'color'    => $colors[$user->id % count($colors)],
-        'role'     => $user->role,
+        'color' => $colors[$user->id % count($colors)],
+        'role' => $user->role,
     ];
 });
 
@@ -41,11 +42,11 @@ Broadcast::channel('workspace.{roomId}', function ($user, $roomId) {
     $colors = ['#7c3aed', '#2563eb', '#0891b2', '#16a34a', '#dc2626', '#d97706', '#db2777'];
 
     return [
-        'id'       => $user->id,
-        'name'     => $user->name,
+        'id' => $user->id,
+        'name' => $user->name,
         'initials' => $user->avatar_initials,
-        'color'    => $colors[$user->id % count($colors)],
-        'role'     => $user->role,
+        'color' => $colors[$user->id % count($colors)],
+        'role' => $user->role,
     ];
 });
 
@@ -56,13 +57,15 @@ Broadcast::channel('workspace.{roomId}', function ($user, $roomId) {
 | Used to push NewAnnouncement events to enrolled students.
 */
 Broadcast::channel('course.{courseId}', function ($user, $courseId) {
-    $course = \App\Models\Course::find($courseId);
-    if (!$course) return false;
+    $course = Course::find($courseId);
+    if (! $course) {
+        return false;
+    }
 
     // Allow instructor, admin, or enrolled students
     if ($user->isAdmin() || $user->id === $course->instructor_id || $course->isEnrolled($user)) {
         return [
-            'id'   => $user->id,
+            'id' => $user->id,
             'name' => $user->name,
             'role' => $user->role,
         ];

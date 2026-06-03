@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Assignment;
 use App\Models\PushSubscription;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class NotifyDueAssignments extends Command
@@ -25,7 +24,8 @@ class NotifyDueAssignments extends Command
             ->get();
 
         if ($dueAssignments->isEmpty()) {
-            $this->info('No assignments due in the next ' . $hours . ' hours.');
+            $this->info('No assignments due in the next '.$hours.' hours.');
+
             return self::SUCCESS;
         }
 
@@ -36,7 +36,9 @@ class NotifyDueAssignments extends Command
 
             foreach ($course->enrollments as $enrollment) {
                 $student = $enrollment->student;
-                if (!$student) continue;
+                if (! $student) {
+                    continue;
+                }
 
                 // Check if student has a submission (skip if already submitted)
                 $hasSubmission = $assignment->submissions()
@@ -44,16 +46,18 @@ class NotifyDueAssignments extends Command
                     ->whereIn('status', ['submitted', 'graded'])
                     ->exists();
 
-                if ($hasSubmission) continue;
+                if ($hasSubmission) {
+                    continue;
+                }
 
                 $subscriptions = PushSubscription::where('user_id', $student->id)->get();
-                
+
                 foreach ($subscriptions as $sub) {
                     $this->sendPushNotification($sub, [
-                        'title' => "⏰ Assignment Due Soon",
-                        'body'  => "\"{$assignment->title}\" in {$course->title} is due {$assignment->due_date->diffForHumans()}",
-                        'url'   => "/assignments/{$assignment->id}",
-                        'icon'  => '/icons/icon-192.png',
+                        'title' => '⏰ Assignment Due Soon',
+                        'body' => "\"{$assignment->title}\" in {$course->title} is due {$assignment->due_date->diffForHumans()}",
+                        'url' => "/assignments/{$assignment->id}",
+                        'icon' => '/icons/icon-192.png',
                     ]);
                     $notified++;
                 }
@@ -67,11 +71,12 @@ class NotifyDueAssignments extends Command
 
     private function sendPushNotification(PushSubscription $sub, array $payload): void
     {
-        $vapidPublicKey  = config('webpush.public_key', env('VAPID_PUBLIC_KEY', ''));
+        $vapidPublicKey = config('webpush.public_key', env('VAPID_PUBLIC_KEY', ''));
         $vapidPrivateKey = config('webpush.private_key', env('VAPID_PRIVATE_KEY', ''));
 
-        if (!$vapidPublicKey || !$vapidPrivateKey) {
+        if (! $vapidPublicKey || ! $vapidPrivateKey) {
             Log::debug('Push notification skipped: VAPID keys not configured');
+
             return;
         }
 
@@ -79,9 +84,9 @@ class NotifyDueAssignments extends Command
             // For production, use a proper Web Push library like minishlink/web-push
             // This is a simplified implementation for demo purposes
             Log::info('Push notification sent', [
-                'user_id'  => $sub->user_id,
-                'endpoint' => substr($sub->endpoint, 0, 50) . '...',
-                'title'    => $payload['title'],
+                'user_id' => $sub->user_id,
+                'endpoint' => substr($sub->endpoint, 0, 50).'...',
+                'title' => $payload['title'],
             ]);
         } catch (\Throwable $e) {
             Log::error('Push notification failed', ['error' => $e->getMessage()]);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CodeUpdated;
+use App\Events\CursorMoved;
 use App\Events\UserJoinedRoom;
 use App\Models\Room;
 use App\Models\RoomMember;
@@ -19,13 +21,13 @@ class RoomController extends Controller
     public function create(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:80',
+            'name' => 'required|string|max:80',
             'language' => 'nullable|string|max:30',
         ]);
 
         $room = Room::create([
-            'slug'     => Room::generateSlug(),
-            'name'     => $validated['name'],
+            'slug' => Room::generateSlug(),
+            'name' => $validated['name'],
             'owner_id' => Auth::id(),
             'language' => $validated['language'] ?? 'python',
         ]);
@@ -50,17 +52,17 @@ class RoomController extends Controller
 
         // Broadcast join event
         broadcast(new UserJoinedRoom($room->slug, [
-            'id'       => $user->id,
-            'name'     => $user->name,
+            'id' => $user->id,
+            'name' => $user->name,
             'initials' => $user->avatar_initials,
-            'color'    => $room->getPresenceColor($user->id),
-            'role'     => $user->role,
+            'color' => $room->getPresenceColor($user->id),
+            'role' => $user->role,
         ]))->toOthers();
 
         return response()->json([
-            'success'    => true,
-            'room_slug'  => $room->slug,
-            'room_name'  => $room->name,
+            'success' => true,
+            'room_slug' => $room->slug,
+            'room_name' => $room->name,
             'user_color' => $room->getPresenceColor($user->id),
         ]);
     }
@@ -83,10 +85,10 @@ class RoomController extends Controller
             return response()->json(['error' => 'Not a room member'], 403);
         }
 
-        broadcast(new \App\Events\CodeUpdated(
-            roomId:  $room->slug,
-            userId:  Auth::id(),
-            fileId:  $validated['file_id'],
+        broadcast(new CodeUpdated(
+            roomId: $room->slug,
+            userId: Auth::id(),
+            fileId: $validated['file_id'],
             content: $validated['content'],
             version: $validated['version'] ?? 1,
         ))->toOthers();
@@ -102,21 +104,21 @@ class RoomController extends Controller
     {
         $validated = $request->validate([
             'file_id' => 'required|string|max:60',
-            'line'    => 'required|integer|min:1',
-            'column'  => 'required|integer|min:1',
+            'line' => 'required|integer|min:1',
+            'column' => 'required|integer|min:1',
         ]);
 
         $room = Room::where('slug', $slug)->firstOrFail();
         $user = Auth::user();
 
-        broadcast(new \App\Events\CursorMoved(
-            roomId:    $room->slug,
-            userId:    $user->id,
-            userName:  $user->name,
+        broadcast(new CursorMoved(
+            roomId: $room->slug,
+            userId: $user->id,
+            userName: $user->name,
             userColor: $room->getPresenceColor($user->id),
-            fileId:    $validated['file_id'],
-            line:      $validated['line'],
-            column:    $validated['column'],
+            fileId: $validated['file_id'],
+            line: $validated['line'],
+            column: $validated['column'],
         ))->toOthers();
 
         return response()->json(['success' => true]);

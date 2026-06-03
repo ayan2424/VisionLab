@@ -27,23 +27,23 @@ class ProgressController extends Controller
             ->keyBy('assignment_id');
 
         $courseProgress = [];
-        $totalPoints    = 0;
-        $earnedPoints   = 0;
-        $gradedCount    = 0;
-        $totalCount     = 0;
-        $inProgressCnt  = 0;
-        $pendingCnt     = 0;
+        $totalPoints = 0;
+        $earnedPoints = 0;
+        $gradedCount = 0;
+        $totalCount = 0;
+        $inProgressCnt = 0;
+        $pendingCnt = 0;
 
         foreach ($courses as $course) {
-            $assignments  = $course->assignments;
+            $assignments = $course->assignments;
             $courseGraded = 0;
-            $coursePts    = 0;
+            $coursePts = 0;
             $courseEarned = 0;
-            $rows         = [];
+            $rows = [];
 
             foreach ($assignments as $assignment) {
-                $sub  = $submissionsMap[$assignment->id] ?? null;
-                $pct  = null;
+                $sub = $submissionsMap[$assignment->id] ?? null;
+                $pct = null;
                 $totalCount++;
 
                 if ($sub) {
@@ -51,10 +51,10 @@ class ProgressController extends Controller
                         $gradedCount++;
                         $courseGraded++;
                         if ($assignment->max_points > 0) {
-                            $pct           = round($sub->grade / $assignment->max_points * 100);
-                            $coursePts    += $assignment->max_points;
+                            $pct = round($sub->grade / $assignment->max_points * 100);
+                            $coursePts += $assignment->max_points;
                             $courseEarned += $sub->grade;
-                            $totalPoints  += $assignment->max_points;
+                            $totalPoints += $assignment->max_points;
                             $earnedPoints += $sub->grade;
                         }
                     } elseif ($sub->status === 'in_progress') {
@@ -67,39 +67,39 @@ class ProgressController extends Controller
                 $rows[] = [
                     'assignment' => $assignment,
                     'submission' => $sub,
-                    'pct'        => $pct,
+                    'pct' => $pct,
                 ];
             }
 
             $courseProgress[] = [
-                'course'         => $course,
-                'assignments'    => $rows,
-                'graded_count'   => $courseGraded,
-                'total_count'    => $assignments->count(),
+                'course' => $course,
+                'assignments' => $rows,
+                'graded_count' => $courseGraded,
+                'total_count' => $assignments->count(),
                 'completion_pct' => $assignments->count() > 0
                                     ? round($courseGraded / $assignments->count() * 100)
                                     : 0,
-                'average'        => $coursePts > 0 ? round($courseEarned / $coursePts * 100) : null,
-                'graded_pct'     => $coursePts > 0 ? round($courseEarned / $coursePts * 100) : 0,
+                'average' => $coursePts > 0 ? round($courseEarned / $coursePts * 100) : null,
+                'graded_pct' => $coursePts > 0 ? round($courseEarned / $coursePts * 100) : 0,
             ];
         }
 
         $overallPct = $totalPoints > 0 ? round($earnedPoints / $totalPoints * 100) : null;
 
         $gradeLetter = match (true) {
-            $overallPct === null        => '—',
-            $overallPct >= 90           => 'A',
-            $overallPct >= 80           => 'B',
-            $overallPct >= 70           => 'C',
-            $overallPct >= 60           => 'D',
-            default                     => 'F',
+            $overallPct === null => '—',
+            $overallPct >= 90 => 'A',
+            $overallPct >= 80 => 'B',
+            $overallPct >= 70 => 'C',
+            $overallPct >= 60 => 'D',
+            default => 'F',
         };
 
         $stats = [
-            'courses'     => $courses->count(),
-            'graded'      => $gradedCount,
+            'courses' => $courses->count(),
+            'graded' => $gradedCount,
             'in_progress' => $inProgressCnt,
-            'pending'     => $pendingCnt,
+            'pending' => $pendingCnt,
         ];
 
         return view('progress.index', compact(

@@ -1,19 +1,21 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\AssignmentController;
-use App\Http\Controllers\SubmissionController;
-use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminWorkspaceController;
-use App\Http\Controllers\Admin\ExtensionController;
-use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AiSettingsController;
+use App\Http\Controllers\Admin\ExtensionController;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,11 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ── Workspace ──────────────────────────────────────────────────────
-    Route::get('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'index'])->name('workspace.index');
-    Route::get('/workspace/{workspace}', [\App\Http\Controllers\WorkspaceController::class, 'show'])->name('workspace.show');
+    Route::get('/workspace', [WorkspaceController::class, 'index'])->name('workspace.index');
+    Route::get('/workspace/{workspace}', [WorkspaceController::class, 'show'])->name('workspace.show');
 
     // ── Collaborative Rooms ────────────────────────────────────────────
-    Route::post('/rooms', [\App\Http\Controllers\RoomController::class, 'create'])->name('rooms.create');
+    Route::post('/rooms', [RoomController::class, 'create'])->name('rooms.create');
 
     // ── Courses ────────────────────────────────────────────────────────
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
@@ -67,13 +69,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/assignments/{assignment}', [AssignmentController::class, 'destroy'])->name('assignments.destroy');
 
     // ── Submissions ────────────────────────────────────────────────────
-    Route::post('/assignments/{assignment}/start',          [SubmissionController::class, 'start'])->name('submissions.start');
-    Route::get('/assignments/{assignment}/ide',             [SubmissionController::class, 'ide'])->name('submissions.ide');
-    Route::post('/assignments/{assignment}/save-snapshot',  [SubmissionController::class, 'saveSnapshot'])->name('submissions.save');
-    Route::post('/assignments/{assignment}/submit',         [SubmissionController::class, 'submit'])->name('submissions.submit');
-    Route::get('/submissions',                              [SubmissionController::class, 'queue'])->name('submissions.queue');
-    Route::get('/submissions/{submission}',                 [SubmissionController::class, 'show'])->name('submissions.show');
-    Route::patch('/submissions/{submission}/grade',         [SubmissionController::class, 'grade'])->name('submissions.grade');
+    Route::post('/assignments/{assignment}/start', [SubmissionController::class, 'start'])->name('submissions.start');
+    Route::get('/assignments/{assignment}/ide', [SubmissionController::class, 'ide'])->name('submissions.ide');
+    Route::post('/assignments/{assignment}/save-snapshot', [SubmissionController::class, 'saveSnapshot'])->name('submissions.save');
+    Route::post('/assignments/{assignment}/submit', [SubmissionController::class, 'submit'])->name('submissions.submit');
+    Route::get('/submissions', [SubmissionController::class, 'queue'])->name('submissions.queue');
+    Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
+    Route::patch('/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
 
     // ── Announcements ──────────────────────────────────────────────────
     Route::post('/courses/{course:slug}/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
@@ -83,8 +85,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
 
     // ── Profile ────────────────────────────────────────────────────────
-    Route::get('/profile',    [ProfileController::class, 'edit'])  ->name('profile.edit');
-    Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ── Admin Panel ────────────────────────────────────────────────────
@@ -128,7 +130,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/workspaces/{workspace}', [AdminWorkspaceController::class, 'destroy'])->name('workspaces.destroy');
     });
 });
-
-
 
 require __DIR__.'/auth.php';

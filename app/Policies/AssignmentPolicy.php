@@ -14,8 +14,13 @@ class AssignmentPolicy
 
     public function view(User $user, Assignment $assignment): bool
     {
-        if ($user->isAdmin()) return true;
-        if ($user->id === $assignment->course->instructor_id) return true;
+        if ($user->isAdmin()) {
+            return true;
+        }
+        if ($user->id === $assignment->course->instructor_id) {
+            return true;
+        }
+
         return $assignment->course->isEnrolled($user);
     }
 
