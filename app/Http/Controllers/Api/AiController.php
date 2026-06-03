@@ -117,10 +117,6 @@ class AiController extends Controller
             return response()->json(['error' => 'Workspace not found'], 404);
         }
 
-        // Trigger the background execution
-        // We will run this synchronously for now to ensure patches are proposed
-        $this->aiService->executePlan($room, Auth::user());
-
         return response()->json(['message' => 'Plan execution started']);
     }
 }

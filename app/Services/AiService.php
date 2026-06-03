@@ -205,8 +205,4 @@ class AiService
         };
     }
 
-    public function executePlan(Room $room, $user): void
-    {
-        Log::info("Executing plan for room {$room->slug}");
-    }
 }
