@@ -2,20 +2,20 @@
 
 namespace App\Providers;
 
-use App\Models\Course;
 use App\Models\Assignment;
+use App\Models\Course;
 use App\Models\Room;
 use App\Models\Submission;
-use App\Policies\CoursePolicy;
 use App\Policies\AssignmentPolicy;
-use App\Policies\WorkspacePolicy;
+use App\Policies\CoursePolicy;
 use App\Policies\SubmissionPolicy;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\ServiceProvider;
+use App\Policies\WorkspacePolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,14 +28,14 @@ class AppServiceProvider extends ServiceProvider
         // domain, not localhost. Forcing the root URL here ensures that
         // asset() / @vite produce URLs the browser can actually reach.
         if (isset($_SERVER['HTTP_HOST'])) {
-            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            $isHttps = (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                     || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https')
-                    || (($_SERVER['HTTP_X_FORWARDED_SSL']   ?? '') === 'on')
+                    || (($_SERVER['HTTP_X_FORWARDED_SSL'] ?? '') === 'on')
                     || str_contains($_SERVER['HTTP_HOST'], '.replit.dev')
                     || str_contains($_SERVER['HTTP_HOST'], '.replit.app');
 
             $scheme = $isHttps ? 'https' : 'http';
-            URL::forceRootUrl($scheme . '://' . $_SERVER['HTTP_HOST']);
+            URL::forceRootUrl($scheme.'://'.$_SERVER['HTTP_HOST']);
             if ($isHttps) {
                 URL::forceScheme('https');
             }

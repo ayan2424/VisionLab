@@ -22,40 +22,40 @@ class EnrollmentController extends Controller
         ]);
 
         $course = Course::where('enrollment_code', strtoupper($request->enrollment_code))
-                        ->where('is_active', true)
-                        ->first();
+            ->where('is_active', true)
+            ->first();
 
-        if (!$course) {
+        if (! $course) {
             return back()->withErrors(['enrollment_code' => 'Invalid enrollment code. Please check and try again.'])->withInput();
         }
 
         $user = Auth::user();
 
-        if (!$user->isStudent()) {
+        if (! $user->isStudent()) {
             return back()->withErrors(['enrollment_code' => 'Only students can enroll in courses.']);
         }
 
         $existing = Enrollment::where('course_id', $course->id)
-                               ->where('student_id', $user->id)
-                               ->first();
+            ->where('student_id', $user->id)
+            ->first();
 
         if ($existing) {
             if ($existing->status === 'active') {
                 return redirect()->route('courses.show', $course->slug)
-                                 ->with('info', 'You are already enrolled in this course.');
+                    ->with('info', 'You are already enrolled in this course.');
             }
             $existing->update(['status' => 'active']);
         } else {
             Enrollment::create([
-                'course_id'  => $course->id,
+                'course_id' => $course->id,
                 'student_id' => $user->id,
-                'status'     => 'active',
-                'enrolled_at'=> now(),
+                'status' => 'active',
+                'enrolled_at' => now(),
             ]);
         }
 
         return redirect()->route('courses.show', $course->slug)
-                         ->with('success', "Welcome to {$course->title}!");
+            ->with('success', "Welcome to {$course->title}!");
     }
 
     public function inviteStudent(Request $request, Course $course)
@@ -68,13 +68,13 @@ class EnrollmentController extends Controller
 
         $student = User::where('email', $request->email)->first();
 
-        if (!$student->isStudent()) {
+        if (! $student->isStudent()) {
             return back()->withErrors(['email' => 'Only student accounts can be enrolled.']);
         }
 
         $existing = Enrollment::where('course_id', $course->id)
-                               ->where('student_id', $student->id)
-                               ->first();
+            ->where('student_id', $student->id)
+            ->first();
 
         if ($existing) {
             if ($existing->status === 'active') {
@@ -83,10 +83,10 @@ class EnrollmentController extends Controller
             $existing->update(['status' => 'active']);
         } else {
             Enrollment::create([
-                'course_id'  => $course->id,
+                'course_id' => $course->id,
                 'student_id' => $student->id,
-                'status'     => 'active',
-                'enrolled_at'=> now(),
+                'status' => 'active',
+                'enrolled_at' => now(),
             ]);
         }
 
@@ -98,8 +98,8 @@ class EnrollmentController extends Controller
         $this->authorize('update', $course);
 
         Enrollment::where('course_id', $course->id)
-                  ->where('student_id', $studentId)
-                  ->delete();
+            ->where('student_id', $studentId)
+            ->delete();
 
         return back()->with('success', 'Student removed from course.');
     }

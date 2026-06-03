@@ -14,7 +14,10 @@ class CoursePolicy
 
     public function view(User $user, Course $course): bool
     {
-        if ($user->isAdmin() || $user->id === $course->instructor_id) return true;
+        if ($user->isAdmin() || $user->id === $course->instructor_id) {
+            return true;
+        }
+
         return $course->isEnrolled($user);
     }
 

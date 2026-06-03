@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 
 class AiSetting extends Model
 {
@@ -17,7 +18,7 @@ class AiSetting extends Model
     {
         return Cache::remember("ai_setting.{$key}", 300, function () use ($key, $default) {
             $setting = static::where('key', $key)->first();
-            if (!$setting || !$setting->value) {
+            if (! $setting || ! $setting->value) {
                 return $default;
             }
 
@@ -59,7 +60,7 @@ class AiSetting extends Model
     /**
      * Get all settings by category.
      */
-    public static function getByCategory(string $category): \Illuminate\Database\Eloquent\Collection
+    public static function getByCategory(string $category): Collection
     {
         return static::where('category', $category)->get();
     }

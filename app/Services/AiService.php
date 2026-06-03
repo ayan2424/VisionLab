@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Room;
 use App\Models\AiSetting;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use App\Models\Room;
+use GuzzleHttp\Client;
 
 class AiService
 {
@@ -23,10 +22,11 @@ class AiService
     public function handleChatCompletion(Room $room, array $messages, string $mode = 'CHAT', string $model = 'claude-3-5-sonnet-20241022')
     {
         $apiKey = $this->resolveApiKey($model);
-        
+
         if (empty($apiKey)) {
-            yield "data: " . json_encode(['choices' => [['delta' => ['content' => "Error: No API key configured for this model's provider. Please contact the administrator."]]]]) . "\n\n";
+            yield 'data: '.json_encode(['choices' => [['delta' => ['content' => "Error: No API key configured for this model's provider. Please contact the administrator."]]]])."\n\n";
             yield "data: [DONE]\n\n";
+
             return;
         }
 
@@ -34,7 +34,7 @@ class AiService
         $systemPrompt = $this->getSystemPrompt($mode);
         $memoryContent = $this->sandbox->readFile($room, '.VisionLab_memory.md');
         if ($memoryContent) {
-            $systemPrompt = "User's Memory:\n" . $memoryContent . "\n\n" . $systemPrompt;
+            $systemPrompt = "User's Memory:\n".$memoryContent."\n\n".$systemPrompt;
         }
 
         if (str_starts_with($model, 'claude')) {
@@ -50,9 +50,16 @@ class AiService
 
     private function resolveApiKey(string $model): ?string
     {
-        if (str_starts_with($model, 'claude')) return AiSetting::getValue('anthropic_api_key');
-        if (str_starts_with($model, 'gemini')) return AiSetting::getValue('google_api_key');
-        if (str_starts_with($model, 'deepseek')) return AiSetting::getValue('deepseek_api_key');
+        if (str_starts_with($model, 'claude')) {
+            return AiSetting::getValue('anthropic_api_key');
+        }
+        if (str_starts_with($model, 'gemini')) {
+            return AiSetting::getValue('google_api_key');
+        }
+        if (str_starts_with($model, 'deepseek')) {
+            return AiSetting::getValue('deepseek_api_key');
+        }
+
         return AiSetting::getValue('openai_api_key');
     }
 
@@ -60,10 +67,12 @@ class AiService
     {
         $anthropicMessages = [];
         foreach ($messages as $msg) {
-            if ($msg['role'] === 'system') continue;
+            if ($msg['role'] === 'system') {
+                continue;
+            }
             $anthropicMessages[] = [
                 'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
-                'content' => $msg['content']
+                'content' => $msg['content'],
             ];
         }
 
@@ -75,7 +84,7 @@ class AiService
             'stream' => true,
         ];
 
-        $client = new \GuzzleHttp\Client();
+        $client = new Client;
         $response = $client->post('https://api.anthropic.com/v1/messages', [
             'headers' => [
                 'x-api-key' => $apiKey,
@@ -87,7 +96,7 @@ class AiService
         ]);
 
         $body = $response->getBody();
-        while (!$body->eof()) {
+        while (! $body->eof()) {
             $chunk = $body->read(1024);
             $lines = explode("\n", $chunk);
             foreach ($lines as $line) {
@@ -95,7 +104,7 @@ class AiService
                     $data = json_decode(substr($line, 6), true);
                     if ($data && isset($data['type']) && $data['type'] === 'content_block_delta') {
                         $text = $data['delta']['text'] ?? '';
-                        yield "data: " . json_encode(['choices' => [['delta' => ['content' => $text]]]]) . "\n\n";
+                        yield 'data: '.json_encode(['choices' => [['delta' => ['content' => $text]]]])."\n\n";
                     }
                 }
             }
@@ -107,10 +116,12 @@ class AiService
     {
         $geminiMessages = [];
         foreach ($messages as $msg) {
-            if ($msg['role'] === 'system') continue;
+            if ($msg['role'] === 'system') {
+                continue;
+            }
             $geminiMessages[] = [
                 'role' => $msg['role'] === 'user' ? 'user' : 'model',
-                'parts' => [['text' => $msg['content']]]
+                'parts' => [['text' => $msg['content']]],
             ];
         }
 
@@ -119,18 +130,18 @@ class AiService
             'contents' => $geminiMessages,
         ];
 
-        $client = new \GuzzleHttp\Client();
+        $client = new Client;
         $response = $client->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:streamGenerateContent?key={$apiKey}", [
             'json' => $payload,
             'stream' => true,
         ]);
 
         $body = $response->getBody();
-        while (!$body->eof()) {
+        while (! $body->eof()) {
             $chunk = $body->read(2048);
             if (preg_match('/"text":\s*"([^"]+)"/', $chunk, $matches)) {
                 $text = stripcslashes($matches[1]);
-                yield "data: " . json_encode(['choices' => [['delta' => ['content' => $text]]]]) . "\n\n";
+                yield 'data: '.json_encode(['choices' => [['delta' => ['content' => $text]]]])."\n\n";
             }
         }
         yield "data: [DONE]\n\n";
@@ -145,7 +156,7 @@ class AiService
             }
         }
 
-        $client = new \GuzzleHttp\Client();
+        $client = new Client;
         $response = $client->post('https://api.openai.com/v1/chat/completions', [
             'headers' => [
                 'Authorization' => "Bearer {$apiKey}",
@@ -161,7 +172,7 @@ class AiService
         ]);
 
         $body = $response->getBody();
-        while (!$body->eof()) {
+        while (! $body->eof()) {
             yield $body->read(2048);
         }
     }
@@ -175,7 +186,7 @@ class AiService
             }
         }
 
-        $client = new \GuzzleHttp\Client();
+        $client = new Client;
         $response = $client->post('https://api.deepseek.com/chat/completions', [
             'headers' => [
                 'Authorization' => "Bearer {$apiKey}",
@@ -191,7 +202,7 @@ class AiService
         ]);
 
         $body = $response->getBody();
-        while (!$body->eof()) {
+        while (! $body->eof()) {
             yield $body->read(2048);
         }
     }
@@ -199,10 +210,9 @@ class AiService
     private function getSystemPrompt(string $mode): string
     {
         return match ($mode) {
-            'PLAN' => "You are VisionLab Planner. Create step-by-step implementation plans. Do NOT use the propose_patch tool. Only text.",
+            'PLAN' => 'You are VisionLab Planner. Create step-by-step implementation plans. Do NOT use the propose_patch tool. Only text.',
             'AGENT' => "You are VisionLab Agent. You must fulfill the user's request by reading necessary files, and then proposing patches using the `propose_patch` tool.",
-            default => "You are an AI coding assistant in the VisionLab IDE."
+            default => 'You are an AI coding assistant in the VisionLab IDE.'
         };
     }
-
 }

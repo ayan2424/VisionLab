@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class AiModel extends Model
@@ -27,7 +28,7 @@ class AiModel extends Model
     /**
      * Get all active models for a specific role.
      */
-    public static function getActiveByRole(string $role): \Illuminate\Database\Eloquent\Collection
+    public static function getActiveByRole(string $role): Collection
     {
         return static::where('role', $role)
             ->where('is_active', true)
@@ -51,7 +52,7 @@ class AiModel extends Model
     /**
      * Get all active chat models (for the extension sidebar dropdown).
      */
-    public static function getActiveChatModels(): \Illuminate\Database\Eloquent\Collection
+    public static function getActiveChatModels(): Collection
     {
         return static::whereIn('role', ['chat', 'agent'])
             ->where('is_active', true)

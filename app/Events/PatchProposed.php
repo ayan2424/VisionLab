@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -15,6 +14,7 @@ class PatchProposed implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $roomSlug;
+
     public array $patchData;
 
     /**
@@ -32,11 +32,11 @@ class PatchProposed implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('collab.' . $this->roomSlug),
-            new PrivateChannel('workspace.' . $this->roomSlug . '.patches'),
+            new PresenceChannel('collab.'.$this->roomSlug),
+            new PrivateChannel('workspace.'.$this->roomSlug.'.patches'),
         ];
     }
-    
+
     /**
      * Data to broadcast.
      */
