@@ -33,3 +33,5 @@ out/
 .agent-src/gui/dist
 .agent-src/extensions/vscode/out
 .agent-src/extensions/vscode/bin
+/.agent-src
+/storage/extensions
