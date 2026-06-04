@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -75,9 +76,12 @@ class CourseController extends Controller
         $students  = $course->students()->get();
         $userSubmissions = [];
         if ($user->isStudent()) {
-            foreach ($course->assignments as $assignment) {
-                $userSubmissions[$assignment->id] = $assignment->submissionFor($user);
-            }
+            $assignmentIds = $course->assignments->pluck('id');
+            $userSubmissions = Submission::whereIn('assignment_id', $assignmentIds)
+                ->where('student_id', $user->id)
+                ->get()
+                ->keyBy('assignment_id')
+                ->all();
         }
 
         $tab = request('tab', 'stream');
