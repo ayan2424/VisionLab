@@ -17,20 +17,20 @@ class PushSubscriptionController extends Controller
     public function subscribe(Request $request): JsonResponse
     {
         $request->validate([
-            'endpoint'         => 'required|url|max:500',
-            'keys.p256dh'      => 'required|string',
-            'keys.auth'        => 'required|string',
+            'endpoint' => 'required|url|max:500',
+            'keys.p256dh' => 'required|string',
+            'keys.auth' => 'required|string',
             'content_encoding' => 'sometimes|string|max:20',
         ]);
 
         PushSubscription::updateOrCreate(
             [
-                'user_id'  => Auth::id(),
+                'user_id' => Auth::id(),
                 'endpoint' => $request->endpoint,
             ],
             [
-                'public_key'       => $request->input('keys.p256dh'),
-                'auth_token'       => $request->input('keys.auth'),
+                'public_key' => $request->input('keys.p256dh'),
+                'auth_token' => $request->input('keys.auth'),
                 'content_encoding' => $request->input('content_encoding', 'aesgcm'),
             ]
         );

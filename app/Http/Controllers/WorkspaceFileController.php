@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AiActionsLog;
 use App\Models\Room;
 use App\Services\CodeServerManager;
 use Illuminate\Http\JsonResponse;
@@ -31,7 +32,9 @@ class WorkspaceFileController extends Controller
     public function list(string $slug): JsonResponse
     {
         $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        if (! $room) {
+            return response()->json(['error' => 'Workspace not found'], 404);
+        }
 
         $tree = $this->codeServer->listFiles($room);
 
@@ -45,10 +48,14 @@ class WorkspaceFileController extends Controller
     public function read(Request $request, string $slug): JsonResponse
     {
         $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        if (! $room) {
+            return response()->json(['error' => 'Workspace not found'], 404);
+        }
 
         $path = $request->query('path');
-        if (!$path) return response()->json(['error' => 'Path required'], 400);
+        if (! $path) {
+            return response()->json(['error' => 'Path required'], 400);
+        }
 
         $content = $this->codeServer->readFile($room, $path);
         if ($content === null) {
@@ -56,9 +63,9 @@ class WorkspaceFileController extends Controller
         }
 
         return response()->json([
-            'path'    => $path,
+            'path' => $path,
             'content' => $content,
-            'size'    => strlen($content),
+            'size' => strlen($content),
         ]);
     }
 
@@ -69,12 +76,14 @@ class WorkspaceFileController extends Controller
     public function write(Request $request, string $slug): JsonResponse
     {
         $request->validate([
-            'path'    => 'required|string|max:500',
+            'path' => 'required|string|max:500',
             'content' => 'required|string',
         ]);
 
         $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        if (! $room) {
+            return response()->json(['error' => 'Workspace not found'], 404);
+        }
 
         // Sandbox check: block dangerous paths
         $path = $request->input('path');
@@ -87,12 +96,12 @@ class WorkspaceFileController extends Controller
         if ($success) {
             // Log the write action
             if (Auth::check()) {
-                \App\Models\AiActionsLog::create([
-                    'user_id'       => Auth::id(),
+                AiActionsLog::create([
+                    'user_id' => Auth::id(),
                     'workspace_ref' => $room->slug,
-                    'action_type'   => 'file_write',
-                    'file_path'     => $path,
-                    'diff_summary'  => 'Manual write via file explorer',
+                    'action_type' => 'file_write',
+                    'file_path' => $path,
+                    'diff_summary' => 'Manual write via file explorer',
                 ]);
             }
         }
@@ -107,12 +116,14 @@ class WorkspaceFileController extends Controller
     public function create(Request $request, string $slug): JsonResponse
     {
         $request->validate([
-            'path'         => 'required|string|max:500',
+            'path' => 'required|string|max:500',
             'is_directory' => 'sometimes|boolean',
         ]);
 
         $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        if (! $room) {
+            return response()->json(['error' => 'Workspace not found'], 404);
+        }
 
         $success = $this->codeServer->createFile(
             $room,
@@ -134,7 +145,9 @@ class WorkspaceFileController extends Controller
         ]);
 
         $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        if (! $room) {
+            return response()->json(['error' => 'Workspace not found'], 404);
+        }
 
         $path = $request->input('path');
         if ($this->isDangerousPath($path)) {
@@ -144,12 +157,12 @@ class WorkspaceFileController extends Controller
         $success = $this->codeServer->deleteFile($room, $path);
 
         if ($success && Auth::check()) {
-            \App\Models\AiActionsLog::create([
-                'user_id'       => Auth::id(),
+            AiActionsLog::create([
+                'user_id' => Auth::id(),
                 'workspace_ref' => $room->slug,
-                'action_type'   => 'file_delete',
-                'file_path'     => $path,
-                'diff_summary'  => 'File deleted via explorer',
+                'action_type' => 'file_delete',
+                'file_path' => $path,
+                'diff_summary' => 'File deleted via explorer',
             ]);
         }
 
@@ -168,7 +181,9 @@ class WorkspaceFileController extends Controller
         ]);
 
         $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        if (! $room) {
+            return response()->json(['error' => 'Workspace not found'], 404);
+        }
 
         $success = $this->codeServer->renameFile(
             $room,

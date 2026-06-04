@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AnalyticsController extends Controller
 {
@@ -13,29 +11,29 @@ class AnalyticsController extends Controller
         $users = User::all();
 
         // ── KPI cards ────────────────────────────────────────────
-        $totalUsers       = $users->count();
-        $adminCount       = $users->where('role', 'admin')->count();
-        $instructorCount  = $users->where('role', 'instructor')->count();
-        $studentCount     = $users->where('role', 'student')->count();
+        $totalUsers = $users->count();
+        $adminCount = $users->where('role', 'admin')->count();
+        $instructorCount = $users->where('role', 'instructor')->count();
+        $studentCount = $users->where('role', 'student')->count();
 
         // ── Simulated metrics (realistic for demo) ───────────────
-        $executions       = 1_247;
-        $aiInteractions   = 834;
-        $activeSessions   = rand(3, 12);
-        $avgExecTime      = 1.34;
+        $executions = 1_247;
+        $aiInteractions = 834;
+        $activeSessions = rand(3, 12);
+        $avgExecTime = 1.34;
 
         // ── Activity chart — last 14 days (simulated) ────────────
         $activityLabels = [];
-        $execData       = [];
-        $aiData         = [];
-        $collabData     = [];
+        $execData = [];
+        $aiData = [];
+        $collabData = [];
 
         for ($i = 13; $i >= 0; $i--) {
-            $date             = now()->subDays($i);
+            $date = now()->subDays($i);
             $activityLabels[] = $date->format('M d');
-            $execData[]       = rand(40, 180);
-            $aiData[]         = rand(20, 90);
-            $collabData[]     = rand(5, 40);
+            $execData[] = rand(40, 180);
+            $aiData[] = rand(20, 90);
+            $collabData[] = rand(5, 40);
         }
 
         // ── Language distribution ─────────────────────────────────
@@ -43,19 +41,19 @@ class AnalyticsController extends Controller
         $languageCounts = [38, 24, 15, 10, 7, 4, 2];
 
         // ── Recent sessions (last 10 — simulated) ─────────────────
-        $languages  = ['python', 'javascript', 'typescript', 'php', 'java', 'rust'];
-        $langIcons  = ['🐍', '⚡', '📘', '🐘', '☕', '🦀'];
+        $languages = ['python', 'javascript', 'typescript', 'php', 'java', 'rust'];
+        $langIcons = ['🐍', '⚡', '📘', '🐘', '☕', '🦀'];
         $recentSessions = [];
         foreach ($users->take(8) as $u) {
             $li = array_rand($languages);
             $recentSessions[] = [
-                'user'       => $u,
-                'language'   => $languages[$li],
-                'icon'       => $langIcons[$li],
+                'user' => $u,
+                'language' => $languages[$li],
+                'icon' => $langIcons[$li],
                 'executions' => rand(3, 47),
-                'ai_calls'   => rand(1, 28),
-                'duration'   => rand(8, 142) . ' min',
-                'ago'        => rand(1, 120) . 'm ago',
+                'ai_calls' => rand(1, 28),
+                'duration' => rand(8, 142).' min',
+                'ago' => rand(1, 120).'m ago',
             ];
         }
 

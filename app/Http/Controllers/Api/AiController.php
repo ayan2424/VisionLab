@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Room;
 use App\Models\AiPendingPatch;
-use App\Services\AiService;
+use App\Models\Room;
 use App\Services\AiSandbox;
+use App\Services\AiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class AiController extends Controller
 {
     private AiService $aiService;
+
     private AiSandbox $aiSandbox;
 
     public function __construct(AiService $aiService, AiSandbox $aiSandbox)
@@ -29,7 +30,7 @@ class AiController extends Controller
     {
         // Must have X-Workspace-Id or fallback to find any workspace owned by user for MVP
         $workspaceId = $request->header('X-Workspace-Id');
-        
+
         if ($workspaceId) {
             $room = Room::where('slug', $workspaceId)->orWhere('id', $workspaceId)->first();
         } else {
@@ -37,7 +38,7 @@ class AiController extends Controller
             $room = Room::where('owner_id', Auth::id())->first();
         }
 
-        if (!$room) {
+        if (! $room) {
             return response()->json(['error' => 'Workspace not found'], 404);
         }
 
@@ -49,7 +50,9 @@ class AiController extends Controller
         if ($stream) {
             $response = new StreamedResponse(function () use ($room, $messages, $mode, $model) {
                 // Keep output buffer clear
-                if (ob_get_level() > 0) ob_end_clean();
+                if (ob_get_level() > 0) {
+                    ob_end_clean();
+                }
 
                 foreach ($this->aiService->handleChatCompletion($room, $messages, $mode, $model) as $chunk) {
                     echo $chunk;
@@ -96,7 +99,7 @@ class AiController extends Controller
         }
 
         $patch->update(['status' => 'rejected']);
-        
+
         return response()->json(['message' => 'Patch rejected.']);
     }
 
@@ -106,20 +109,16 @@ class AiController extends Controller
     public function executePlan(Request $request)
     {
         $workspaceId = $request->input('workspaceId') ?? $request->header('X-Workspace-Id');
-        
+
         if ($workspaceId) {
             $room = Room::where('slug', $workspaceId)->orWhere('id', $workspaceId)->first();
         } else {
             $room = Room::where('owner_id', Auth::id())->first();
         }
 
-        if (!$room) {
+        if (! $room) {
             return response()->json(['error' => 'Workspace not found'], 404);
         }
-
-        // Trigger the background execution
-        // We will run this synchronously for now to ensure patches are proposed
-        $this->aiService->executePlan($room, Auth::user());
 
         return response()->json(['message' => 'Plan execution started']);
     }

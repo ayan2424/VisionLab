@@ -19,8 +19,8 @@ class CleanupWorkspaces extends Command
         $hours = (int) $this->option('inactive');
         $force = $this->option('force');
 
-        $this->info("🧹 VisionLab Workspace Cleanup");
-        $this->info($force ? "   Mode: FORCE (stopping all)" : "   Mode: Inactive > {$hours} hours");
+        $this->info('🧹 VisionLab Workspace Cleanup');
+        $this->info($force ? '   Mode: FORCE (stopping all)' : "   Mode: Inactive > {$hours} hours");
 
         $rooms = Room::all();
         $stopped = 0;
@@ -28,12 +28,15 @@ class CleanupWorkspaces extends Command
         foreach ($rooms as $room) {
             $status = $manager->getStatus($room);
 
-            if (!$status['running']) continue;
+            if (! $status['running']) {
+                continue;
+            }
 
             if ($force) {
                 $this->warn("   ⏹  Stopping: {$room->slug}");
                 $manager->stopWorkspace($room);
                 $stopped++;
+
                 continue;
             }
 

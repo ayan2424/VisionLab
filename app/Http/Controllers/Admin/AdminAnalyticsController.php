@@ -8,8 +8,8 @@ use App\Models\AiChatSession;
 use App\Models\Course;
 use App\Models\Submission;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AdminAnalyticsController extends Controller
 {
@@ -20,9 +20,9 @@ class AdminAnalyticsController extends Controller
 
             // Daily registrations for last 30 days
             $dailyUsers = User::select(
-                    DB::raw('DATE(created_at) as date'),
-                    DB::raw('COUNT(*) as count')
-                )
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as count')
+            )
                 ->where('created_at', '>=', $now->copy()->subDays(29)->startOfDay())
                 ->groupBy(DB::raw('DATE(created_at)'))
                 ->orderBy('date')
@@ -33,9 +33,9 @@ class AdminAnalyticsController extends Controller
 
             // Daily submissions for last 30 days
             $dailySubs = Submission::select(
-                    DB::raw('DATE(submitted_at) as date'),
-                    DB::raw('COUNT(*) as count')
-                )
+                DB::raw('DATE(submitted_at) as date'),
+                DB::raw('COUNT(*) as count')
+            )
                 ->whereNotNull('submitted_at')
                 ->where('submitted_at', '>=', $now->copy()->subDays(29)->startOfDay())
                 ->groupBy(DB::raw('DATE(submitted_at)'))
@@ -47,9 +47,9 @@ class AdminAnalyticsController extends Controller
 
             // Daily AI actions for last 30 days
             $dailyAi = AiActionsLog::select(
-                    DB::raw('DATE(created_at) as date'),
-                    DB::raw('COUNT(*) as count')
-                )
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as count')
+            )
                 ->where('created_at', '>=', $now->copy()->subDays(29)->startOfDay())
                 ->groupBy(DB::raw('DATE(created_at)'))
                 ->orderBy('date')
@@ -66,12 +66,12 @@ class AdminAnalyticsController extends Controller
 
             // Summary stats
             $stats = [
-                'total_users'       => User::count(),
-                'total_courses'     => Course::count(),
+                'total_users' => User::count(),
+                'total_courses' => Course::count(),
                 'total_submissions' => Submission::count(),
-                'pending_grading'   => Submission::where('status', 'submitted')->count(),
-                'ai_actions_today'  => AiActionsLog::whereDate('created_at', today())->count(),
-                'ai_actions_total'  => AiActionsLog::count(),
+                'pending_grading' => Submission::where('status', 'submitted')->count(),
+                'ai_actions_today' => AiActionsLog::whereDate('created_at', today())->count(),
+                'ai_actions_total' => AiActionsLog::count(),
             ];
 
             $recentActions = AiActionsLog::with('user')->latest()->take(10)->get();
@@ -90,6 +90,7 @@ class AdminAnalyticsController extends Controller
             $result['labels'][] = now()->subDays($i)->format('M d');
             $result['values'][] = $data->has($date) ? (int) $data[$date]->count : 0;
         }
+
         return $result;
     }
 }

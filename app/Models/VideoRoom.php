@@ -14,7 +14,7 @@ class VideoRoom extends Model
 
     protected $casts = [
         'started_at' => 'datetime',
-        'ended_at'   => 'datetime',
+        'ended_at' => 'datetime',
     ];
 
     public function room(): BelongsTo

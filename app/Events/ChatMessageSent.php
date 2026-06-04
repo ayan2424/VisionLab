@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -36,9 +35,9 @@ class ChatMessageSent implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'user_id'   => $this->userId,
+            'user_id' => $this->userId,
             'user_name' => $this->userName,
-            'message'   => $this->message,
+            'message' => $this->message,
             'timestamp' => $this->timestamp,
         ];
     }

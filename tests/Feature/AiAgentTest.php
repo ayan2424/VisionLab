@@ -27,8 +27,8 @@ class AiAgentTest extends TestCase
             'context' => [
                 'filename' => 'test.py',
                 'language' => 'python',
-                'code' => 'print("hello")'
-            ]
+                'code' => 'print("hello")',
+            ],
         ]);
 
         $response->assertStatus(200);
@@ -37,7 +37,7 @@ class AiAgentTest extends TestCase
             'code_snippet',
             'patch',
             'model',
-            'mode'
+            'mode',
         ]);
     }
 
@@ -49,7 +49,7 @@ class AiAgentTest extends TestCase
             'instruction' => 'fix the bug',
             'code' => 'print(hello)',
             'language' => 'python',
-            'filename' => 'test.py'
+            'filename' => 'test.py',
         ]);
 
         $response->assertStatus(200);
@@ -57,8 +57,8 @@ class AiAgentTest extends TestCase
             'patch' => [
                 'original',
                 'patched',
-                'file'
-            ]
+                'file',
+            ],
         ]);
     }
 }
