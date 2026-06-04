@@ -110,7 +110,7 @@ class CourseSeeder extends Seeder
             'max_points'       => 200,
             'due_date'         => now()->subDays(3),
             'starter_language' => 'python',
-            'starter_code'     => "import os\nimport google.generativeai as genai\n\n# Configure the API\ngenai.configure(api_key=os.environ.get('GEMINI_API_KEY', ''))\n\ndef chat_with_ai(history: list, user_message: str) -> str:\n    \"\"\"Send a message and get AI response.\"\"\"\n    # TODO: implement\n    pass\n\nif __name__ == '__main__':\n    history = []\n    print('VisionLabChat — type quit to exit')\n    while True:\n        msg = input('You: ')\n        if msg.lower() == 'quit':\n            break\n        reply = chat_with_ai(history, msg)\n        print(f'AI: {reply}')\n",
+            'starter_code'     => "import os\nimport google.generativeai as genai\n\n# Configure the API\ngenai.configure(api_key=os.environ.get('GEMINI_API_KEY', ''))\n\n# Initialize the model\nmodel = genai.GenerativeModel('gemini-1.5-flash')\n\ndef chat_with_ai(history: list, user_message: str) -> str:\n    \"\"\"Send a message and get AI response.\"\"\"\n    chat = model.start_chat(history=history)\n    response = chat.send_message(user_message)\n    # Update history in place so it persists across calls\n    history.clear()\n    for msg in chat.history:\n        history.append(msg)\n    return response.text\n\nif __name__ == '__main__':\n    history = []\n    print('VisionLabChat — type quit to exit')\n    while True:\n        msg = input('You: ')\n        if msg.lower() == 'quit':\n            break\n        reply = chat_with_ai(history, msg)\n        print(f'AI: {reply}')\n",
             'auto_workspace'   => true,
         ]);
 
