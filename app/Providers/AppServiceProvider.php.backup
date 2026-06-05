@@ -1,0 +1,12 @@
+use App\Models\Recording;
+use App\Policies\RecordingPolicy;
+use Illuminate\Support\Facades\Gate;
++use App\Models\Recording;
++use App\Policies\RecordingPolicy;
++
++// Inside boot() or the $policies array:
++Gate::policy(Recording::class, RecordingPolicy::class);
+public function boot(): void
+{
+    Gate::policy(Recording::class, RecordingPolicy::class);
+}

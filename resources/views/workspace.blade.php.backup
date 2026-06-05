@@ -167,10 +167,6 @@
             display:flex;align-items:center;gap:8px;
         }
         #vc-toast.show{opacity:1;transform:translateY(0);}
-
-        /* ── Recording indicator ── */
-        #rec-indicator { display:none; }
-        #rec-indicator.rec-active { display:flex !important; }
     </style>
 </head>
 <body class="h-full">
@@ -460,12 +456,6 @@
             <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s ease-in-out infinite;"></div>
             <span id="video-title" style="font-size:13px;font-weight:700;color:#f1f5f9;">Video Call Active</span>
             <span id="video-participants" style="font-size:11px;color:#64748b;">0 participants</span>
-            {{-- Recording indicator --}}
-            <div id="rec-indicator" style="display:none;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);">
-                <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;animation:livePulse 1s ease-in-out infinite;flex-shrink:0;"></span>
-                <span style="font-size:10px;font-weight:800;color:#f87171;letter-spacing:.06em;">REC</span>
-                <span id="rec-timer" style="font-size:10px;font-weight:700;color:#fca5a5;font-variant-numeric:tabular-nums;">00:00</span>
-            </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
             <button onclick="minimizeVideo()" style="display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.05);color:#94a3b8;border:1px solid #21262d;">
@@ -799,68 +789,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ─── Recording state ──────────────────────────────────────────────
-let recordingActive       = false;
-let recordingTimerInterval = null;
-let recordingStartedAt    = null;
-let currentRecordingId    = null;
-
-// ─── Recording UI ─────────────────────────────────────────────────
-function updateRecordingUI(active) {
-    const indicator = document.getElementById('rec-indicator');
-    if (active) {
-        recordingActive    = true;
-        recordingStartedAt = Date.now();
-        indicator.classList.add('rec-active');
-        clearInterval(recordingTimerInterval);
-        recordingTimerInterval = setInterval(() => {
-            const elapsed = Math.floor((Date.now() - recordingStartedAt) / 1000);
-            const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const ss = String(elapsed % 60).padStart(2, '0');
-            document.getElementById('rec-timer').textContent = `${mm}:${ss}`;
-        }, 1000);
-    } else {
-        recordingActive    = false;
-        recordingStartedAt = null;
-        clearInterval(recordingTimerInterval);
-        recordingTimerInterval = null;
-        indicator.classList.remove('rec-active');
-        document.getElementById('rec-timer').textContent = '00:00';
-    }
-}
-
-async function startRecording() {
-    try {
-        const res = await fetch(`${VC.apiBase}/workspace/${VC.roomSlug}/recording/start`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': VC.csrf, 'Accept': 'application/json' },
-            credentials: 'same-origin',
-            body: JSON.stringify({ room_slug: VC.roomSlug }),
-        });
-        if (!res.ok) { toast('Could not start recording', 'warn'); return; }
-        const data = await res.json();
-        currentRecordingId = data.recording_id ?? null;
-        updateRecordingUI(true);
-        toast('Recording started', 'success');
-    } catch (_) {
-        toast('Recording start failed', 'warn');
-    }
-}
-
-async function stopRecording() {
-    if (!recordingActive && !currentRecordingId) return;
-    try {
-        await fetch(`${VC.apiBase}/workspace/${VC.roomSlug}/recording/stop`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': VC.csrf, 'Accept': 'application/json' },
-            credentials: 'same-origin',
-            body: JSON.stringify({ recording_id: currentRecordingId }),
-        });
-    } catch (_) {}
-    currentRecordingId = null;
-    updateRecordingUI(false);
-}
-
 // ─── Video Call (Jitsi Meet) ──────────────────────────────────────
 let jitsiApi = null;
 let videoActive = false;
@@ -919,7 +847,6 @@ function launchJitsi(data){
             toolbarButtons: [
                 'microphone','camera','closedcaptions','desktop',
                 'chat','raisehand','tileview','hangup',
-                ...(data.is_instructor ? ['recording'] : []),
             ],
         },
         interfaceConfigOverwrite: {
@@ -934,20 +861,6 @@ function launchJitsi(data){
     jitsiApi.addEventListener('readyToClose', ()=> endVideoCall());
     jitsiApi.addEventListener('participantJoined', ()=> updateVideoParticipants());
     jitsiApi.addEventListener('participantLeft', ()=> updateVideoParticipants());
-
-    // Recording status sync from Jitsi
-    jitsiApi.addEventListener('recordingStatusChanged', (e) => {
-        if (e.on) {
-            updateRecordingUI(true);
-        } else {
-            updateRecordingUI(false);
-        }
-    });
-
-    // Auto-start recording for instructors
-    if (data.is_instructor) {
-        setTimeout(() => startRecording(), 1500);
-    }
 
     toast(`Video call started by ${data.starter?.name || 'you'}`, 'success');
 }
@@ -970,11 +883,6 @@ function maximizeVideo(){
 }
 
 async function endVideoCall(){
-    // Stop recording before disposing Jitsi
-    if (recordingActive || currentRecordingId) {
-        await stopRecording();
-    }
-
     if(jitsiApi){ jitsiApi.dispose(); jitsiApi = null; }
     videoActive = false;
     document.getElementById('video-modal').style.display = 'none';

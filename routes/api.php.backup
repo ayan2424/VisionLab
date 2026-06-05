@@ -111,31 +111,6 @@ Route::middleware(['auth:sanctum', 'throttle:10,1'])
 
 /*
 |--------------------------------------------------------------------------
-| Recording API (Video Call Recording)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
-    ->prefix('workspace/{roomSlug}/recording')->name('api.recording.')->group(function () {
-    Route::post('/start', [\App\Http\Controllers\RecordingController::class, 'start'])
-        ->name('start');
-    Route::post('/stop',  [\App\Http\Controllers\RecordingController::class, 'stop'])
-        ->name('stop');
-});
-
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
-    ->prefix('recording')->name('api.recording.')->group(function () {
-    Route::get('/list',                         [\App\Http\Controllers\RecordingController::class, 'index'])
-        ->name('index');
-    Route::get('/{recording}/playback',         [\App\Http\Controllers\RecordingController::class, 'playback'])
-        ->name('playback');
-    Route::post('/{recording}/approve',         [\App\Http\Controllers\RecordingController::class, 'approve'])
-        ->name('approve');
-    Route::post('/{recording}/reject',          [\App\Http\Controllers\RecordingController::class, 'reject'])
-        ->name('reject');
-});
-
-/*
-|--------------------------------------------------------------------------
 | Health Check (Phase 9)
 |--------------------------------------------------------------------------
 */
