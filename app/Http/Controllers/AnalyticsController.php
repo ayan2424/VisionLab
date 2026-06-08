@@ -10,13 +10,14 @@ class AnalyticsController extends Controller
 {
     public function index()
     {
-        $users = User::all();
-
         // ── KPI cards ────────────────────────────────────────────
-        $totalUsers       = $users->count();
-        $adminCount       = $users->where('role', 'admin')->count();
-        $instructorCount  = $users->where('role', 'instructor')->count();
-        $studentCount     = $users->where('role', 'student')->count();
+        $totalUsers       = User::count();
+        $rolesCount       = User::select('role', DB::raw('count(*) as count'))
+                                ->groupBy('role')
+                                ->pluck('count', 'role');
+        $adminCount       = $rolesCount['admin'] ?? 0;
+        $instructorCount  = $rolesCount['instructor'] ?? 0;
+        $studentCount     = $rolesCount['student'] ?? 0;
 
         // ── Simulated metrics (realistic for demo) ───────────────
         $executions       = 1_247;
@@ -46,7 +47,8 @@ class AnalyticsController extends Controller
         $languages  = ['python', 'javascript', 'typescript', 'php', 'java', 'rust'];
         $langIcons  = ['🐍', '⚡', '📘', '🐘', '☕', '🦀'];
         $recentSessions = [];
-        foreach ($users->take(8) as $u) {
+        $recentUsers = User::limit(8)->get();
+        foreach ($recentUsers as $u) {
             $li = array_rand($languages);
             $recentSessions[] = [
                 'user'       => $u,
@@ -75,7 +77,7 @@ class AnalyticsController extends Controller
             'executions', 'aiInteractions', 'activeSessions', 'avgExecTime',
             'activityLabels', 'execData', 'aiData', 'collabData',
             'languageLabels', 'languageCounts',
-            'recentSessions', 'heatmap', 'users'
+            'recentSessions', 'heatmap'
         ));
     }
 }
