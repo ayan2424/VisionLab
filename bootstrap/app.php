@@ -15,14 +15,20 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
 
-        // Global web middleware — security headers on all responses
+        $middleware->encryptCookies(except: [
+            'key',
+        ]);
+
+        // Global web middleware — security headers and account status check
         $middleware->web(append: [
             \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\CheckAccountStatus::class,
         ]);
 
         $middleware->alias([
-            'role'     => \App\Http\Middleware\RoleMiddleware::class,
-            'security' => \App\Http\Middleware\SecurityHeaders::class,
+            'role'           => \App\Http\Middleware\RoleMiddleware::class,
+            'security'       => \App\Http\Middleware\SecurityHeaders::class,
+            'account.active' => \App\Http\Middleware\CheckAccountStatus::class,
         ]);
 
         $middleware->throttleApi();

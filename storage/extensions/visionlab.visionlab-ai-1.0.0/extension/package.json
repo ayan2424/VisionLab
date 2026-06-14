@@ -1,26 +1,26 @@
 {
-    "name": "visionlab-ai",
+    "name": "visionlab-agent",
     "icon": "extension/icon.png",
-    "author": "Continue Dev, Inc",
+    "author": "Aptech Vision 2026",
     "version": "1.3.38",
     "repository": {
         "type": "git",
-        "url": "https://github.com/continuedev/continue"
+        "url": "https://visionlab.local"
     },
     "extensionKind": [
         "ui",
         "workspace"
     ],
     "bugs": {
-        "url": "https://github.com/continuedev/continue/issues",
-        "email": "nate@continue.dev"
+        "url": "https://visionlab.local",
+        "email": "support@visionlab.local"
     },
-    "homepage": "https://continue.dev",
+    "homepage": "https://visionlab.local",
     "qna": "https://github.com/continuedev/continue/issues/new/choose",
     "license": "Apache-2.0",
     "displayName": "VisionLab Agent",
     "pricing": "Free",
-    "description": "VisionLab AI Coding Assistant",
+    "description": "VisionLab Autonomous Collaborative Agent",
     "publisher": "VisionLab",
     "engines": {
         "vscode": "^1.70.0",
@@ -86,13 +86,6 @@
         "configuration": {
             "title": "Continue",
             "properties": {
-                "continue.telemetryEnabled": {
-                    "type": "boolean",
-                    "default": true,
-                    "markdownDescription": "Continue collects anonymous usage data, cleaned of PII, to help us improve the product for our users. Read more  at [continue.dev \u203a Telemetry](https://docs.continue.dev/telemetry).",
-                    "markdownDeprecationMessage": "This setting is deprecated and will be removed in a later version. Please use the _Telemetry > Allow Anonymous Telemetry_ setting in the extension's User Settings page.",
-                    "deprecationMessage": "Please use the _Telemetry > Allow Anonymous Telemetry_ setting in the extension's User Settings page."
-                },
                 "continue.showInlineTip": {
                     "type": "boolean",
                     "default": true,
@@ -244,12 +237,6 @@
                 "group": "Continue"
             },
             {
-                "command": "continue.shareSession",
-                "category": "Continue",
-                "title": "Share Current Chat Session as Markdown",
-                "group": "Continue"
-            },
-            {
                 "command": "continue.viewHistory",
                 "category": "Continue",
                 "title": "View History",
@@ -333,12 +320,6 @@
                 "command": "continue.focusContinueInput",
                 "category": "Continue",
                 "title": "Focus Continue Chat",
-                "group": "Continue"
-            },
-            {
-                "command": "continue.enterEnterpriseLicenseKey",
-                "category": "Continue",
-                "title": "Enter Enterprise License Key",
                 "group": "Continue"
             },
             {

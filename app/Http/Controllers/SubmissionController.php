@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\SubmissionGraded;
+use App\Http\Requests\GradeSubmissionRequest;
 use App\Models\Assignment;
 use App\Models\Submission;
 use Illuminate\Http\Request;
@@ -84,20 +85,12 @@ class SubmissionController extends Controller
 
     public function show(Submission $submission)
     {
+        $this->authorize('view', $submission);
+
         $user = Auth::user();
 
-        // Students can only see their own submission
-        if ($user->isStudent() && $submission->student_id !== $user->id) {
-            abort(403);
-        }
-
-        // Instructors can only see submissions from their courses; admin sees all
         $assignment = $submission->assignment()->with('course')->firstOrFail();
         $course     = $assignment->course;
-
-        if ($user->isInstructor() && $course->instructor_id !== $user->id) {
-            abort(403);
-        }
 
         $canGrade = ($user->isAdmin() || ($user->isInstructor() && $course->instructor_id === $user->id))
                     && in_array($submission->status, ['submitted', 'late', 'graded']);
@@ -120,23 +113,14 @@ class SubmissionController extends Controller
         ));
     }
 
-    public function grade(Request $request, Submission $submission)
+    public function grade(GradeSubmissionRequest $request, Submission $submission)
     {
-        $user   = Auth::user();
-        $course = $submission->assignment->course;
-
-        if ($user->id !== $course->instructor_id && !$user->isAdmin()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'grade'    => 'required|integer|min:0|max:' . $submission->assignment->max_points,
-            'feedback' => 'nullable|string|max:3000',
-        ]);
+        $user      = Auth::user();
+        $validated = $request->validated();
 
         $submission->update([
-            'grade'     => $request->grade,
-            'feedback'  => $request->feedback,
+            'grade'     => $validated['grade'],
+            'feedback'  => $validated['feedback'] ?? null,
             'status'    => 'graded',
             'graded_by' => $user->id,
         ]);

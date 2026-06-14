@@ -38,5 +38,9 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Gate::policy(Course::class, CoursePolicy::class);
+
+        \Illuminate\Support\Facades\RateLimiter::for('api', function (\Illuminate\Http\Request $request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

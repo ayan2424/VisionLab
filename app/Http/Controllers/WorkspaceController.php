@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room;
+use App\Models\Workspace;
 use App\Services\CodeServerManager;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class WorkspaceController extends Controller
 {
@@ -14,47 +16,6 @@ class WorkspaceController extends Controller
     public function __construct(CodeServerManager $codeServerManager)
     {
         $this->codeServerManager = $codeServerManager;
-    }
-    private function defaultFiles(): array
-    {
-        $name = Auth::user()->name;
-        return [
-            [
-                'id'       => 'main-py',
-                'name'     => 'main.py',
-                'type'     => 'file',
-                'language' => 'python',
-                'content'  => "# VisionLab— Workspace\n# Welcome, {$name}!\n\ndef greet(name: str) -> str:\n    \"\"\"Return a personalised greeting.\"\"\"\n    return f\"Hello, {name}! Welcome to VisionLab.\"\n\nif __name__ == \"__main__\":\n    message = greet(\"World\")\n    print(message)\n",
-            ],
-            [
-                'id'       => 'utils-py',
-                'name'     => 'utils.py',
-                'type'     => 'file',
-                'language' => 'python',
-                'content'  => "# Utility helpers\n\ndef add(a: int, b: int) -> int:\n    return a + b\n\ndef subtract(a: int, b: int) -> int:\n    return a - b\n\ndef multiply(a: int, b: int) -> int:\n    return a * b\n",
-            ],
-            [
-                'id'       => 'index-js',
-                'name'     => 'index.js',
-                'type'     => 'file',
-                'language' => 'javascript',
-                'content'  => "// VisionLab— JavaScript Workspace\n\nconst greet = (name) => {\n    return `Hello, \${name}! Welcome to VisionLab.`;\n};\n\nconsole.log(greet('World'));\n",
-            ],
-            [
-                'id'       => 'hello-php',
-                'name'     => 'hello.php',
-                'type'     => 'file',
-                'language' => 'php',
-                'content'  => "<?php\n\nfunction greet(string \$name): string {\n    return \"Hello, {\$name}! Welcome to VisionLab.\";\n}\n\necho greet('World') . PHP_EOL;\n",
-            ],
-            [
-                'id'       => 'readme-md',
-                'name'     => 'README.md',
-                'type'     => 'file',
-                'language' => 'markdown',
-                'content'  => "# My VisionCode Workspace\n\n> Powered by **VisionLab** — Aptech Vision 2026\n\n## Getting Started\n\n1. Select a file from the explorer on the left\n2. Edit in the Monaco editor\n3. Press `Ctrl + Enter` to execute\n4. Use the **AI Sidebar** for instant help\n\n## AI Agent Modes\n\n| Mode  | Capability |\n|-------|------------|\n| CHAT  | Ask questions, get explanations |\n| PLAN  | Step-by-step execution plan |\n| AGENT | Autonomous read/write with diff preview |\n",
-            ],
-        ];
     }
 
     public static function pistonLanguage(string $lang): array
@@ -75,64 +36,242 @@ class WorkspaceController extends Controller
         };
     }
 
-    /** Personal workspace (no room) */
+    /** Personal workspace — auto-provisions */
     public function index(Request $request)
     {
-        $user  = Auth::user();
-        
-        $room = Room::firstOrCreate(
-            ['slug' => 'personal-' . $user->id],
+        $user = Auth::user();
+
+        $workspace = Workspace::firstOrCreate(
+            ['student_id' => $user->id, 'name' => 'personal-' . $user->id],
             [
-                'name' => 'My Workspace',
-                'owner_id' => $user->id,
-                'language' => 'python',
-                'is_public' => false,
-                'max_participants' => 1,
+                'course_id' => null,
+                'language'  => 'python',
+                'port'      => null,
+                'token'     => Str::random(64),
+                'status'    => 'pending',
             ]
         );
 
-        $serverInfo = $this->codeServerManager->startWorkspace($room);
+        $serverInfo = $this->codeServerManager->startWorkspace($workspace);
 
-        return view('workspace', [
-            'user'          => $user,
-            'workspaceName' => 'My Workspace',
-            'roomSlug'      => $room->slug,
-            'isCollaborative' => false,
-            'reverbConfig'  => $this->reverbConfig(),
-            'vscodeUrl'     => $serverInfo['url'],
-        ]);
-    }
-
-    /** Named collaborative room */
-    public function show(Request $request, string $workspaceId)
-    {
-        $user  = Auth::user();
-
-        // Try to load a real room
-        $room = Room::where('slug', $workspaceId)->firstOrFail();
-        
-        $serverInfo = $this->codeServerManager->startWorkspace($room);
+        if (isset($serverInfo['port'])) {
+            $cookiePath = str_starts_with($serverInfo['url'], '/codeserver/') 
+                ? '/codeserver/' . $serverInfo['port'] 
+                : '/';
+            cookie()->queue(
+                'key',
+                $serverInfo['token'],
+                525600, // 1 year in minutes
+                $cookiePath
+            );
+        }
 
         return view('workspace', [
             'user'            => $user,
-            'workspaceName'   => $room->name,
-            'roomSlug'        => $room->slug,
-            'isCollaborative' => true,
+            'workspace'       => $workspace->fresh(),
+            'workspaceName'   => 'My Workspace',
+            'roomSlug'        => 'personal-' . $user->id,
+            'isCollaborative' => false,
             'reverbConfig'    => $this->reverbConfig(),
             'vscodeUrl'       => $serverInfo['url'],
         ]);
     }
 
+    /** Named workspace by ID */
+    public function show(Request $request, Workspace $workspace)
+    {
+        $this->authorize('view', $workspace);
+
+        $user = Auth::user();
+        $serverInfo = $this->codeServerManager->startWorkspace($workspace);
+
+        if (isset($serverInfo['port'])) {
+            $cookiePath = str_starts_with($serverInfo['url'], '/codeserver/') 
+                ? '/codeserver/' . $serverInfo['port'] 
+                : '/';
+            cookie()->queue(
+                'key',
+                $serverInfo['token'],
+                525600, // 1 year in minutes
+                $cookiePath
+            );
+        }
+
+        return view('workspace', [
+            'user'            => $user,
+            'workspace'       => $workspace->fresh(),
+            'workspaceName'   => $workspace->name,
+            'roomSlug'        => 'ws-' . $workspace->id,
+            'isCollaborative' => $workspace->collaborators()->count() > 1,
+            'reverbConfig'    => $this->reverbConfig(),
+            'vscodeUrl'       => $serverInfo['url'],
+        ]);
+    }
+
+    /** Start a workspace container */
+    public function start(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+
+        $result = $this->codeServerManager->startWorkspace($workspace);
+
+        return response()->json([
+            'status' => 'running',
+            'url'    => $result['url'],
+            'port'   => $result['port'],
+        ]);
+    }
+
+    /** Stop a workspace container */
+    public function stop(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('manage', $workspace);
+
+        $this->codeServerManager->stopWorkspace($workspace);
+
+        return response()->json(['status' => 'stopped']);
+    }
+
+    /** Restart a workspace container */
+    public function restart(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('manage', $workspace);
+
+        $this->codeServerManager->restartWorkspace($workspace);
+
+        return response()->json(['status' => 'restarted']);
+    }
+
+    /** Get workspace status */
+    public function status(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('view', $workspace);
+
+        $status = $this->codeServerManager->getStatus($workspace);
+        $stats  = $this->codeServerManager->getStats($workspace);
+
+        return response()->json([
+            'status'    => $workspace->fresh()->status,
+            'running'   => $status['running'],
+            'url'       => $status['url'],
+            'stats'     => $stats,
+            'heartbeat' => $workspace->heartbeat_at?->diffForHumans(),
+        ]);
+    }
+
+    // ── File I/O API ────────────────────────────────────────────────────
+
+    /** List files in workspace */
+    public function files(Workspace $workspace, Request $request): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+
+        $path  = $request->query('path', '');
+        $files = $this->codeServerManager->listFiles($workspace, $path);
+
+        return response()->json($files);
+    }
+
+    /** Read a file */
+    public function readFile(Workspace $workspace, Request $request): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+
+        $path    = $request->query('path', '');
+        $content = $this->codeServerManager->readFile($workspace, $path);
+
+        if ($content === null) {
+            return response()->json(['error' => 'File not found or access denied'], 404);
+        }
+
+        return response()->json(['path' => $path, 'content' => $content]);
+    }
+
+    /** Write a file */
+    public function writeFile(Workspace $workspace, Request $request): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+
+        $request->validate([
+            'path'    => 'required|string|max:500',
+            'content' => 'required|string|max:1048576', // 1MB max
+        ]);
+
+        $success = $this->codeServerManager->writeFile(
+            $workspace,
+            $request->input('path'),
+            $request->input('content')
+        );
+
+        if (!$success) {
+            return response()->json(['error' => 'Write failed — path may be invalid'], 403);
+        }
+
+        return response()->json(['status' => 'written']);
+    }
+
+    /** Create a file or directory */
+    public function createFile(Workspace $workspace, Request $request): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+
+        $request->validate([
+            'path'         => 'required|string|max:500',
+            'is_directory' => 'sometimes|boolean',
+        ]);
+
+        $success = $this->codeServerManager->createFile(
+            $workspace,
+            $request->input('path'),
+            $request->boolean('is_directory')
+        );
+
+        if (!$success) {
+            return response()->json(['error' => 'Creation failed'], 400);
+        }
+
+        return response()->json(['status' => 'created']);
+    }
+
+    /** Delete a file or directory */
+    public function deleteFile(Workspace $workspace, Request $request): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+
+        $request->validate(['path' => 'required|string|max:500']);
+
+        $success = $this->codeServerManager->deleteFile($workspace, $request->input('path'));
+
+        return response()->json(['status' => $success ? 'deleted' : 'failed']);
+    }
+
+    /** Rename a file or directory */
+    public function renameFile(Workspace $workspace, Request $request): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+
+        $request->validate([
+            'old_path' => 'required|string|max:500',
+            'new_path' => 'required|string|max:500',
+        ]);
+
+        $success = $this->codeServerManager->renameFile(
+            $workspace,
+            $request->input('old_path'),
+            $request->input('new_path')
+        );
+
+        return response()->json(['status' => $success ? 'renamed' : 'failed']);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+
     private function reverbConfig(): array
     {
-        // On Replit, the WebSocket server is reachable via the public dev domain on port 8080.
-        // In production, REVERB_HOST/PORT/SCHEME should be set explicitly.
         $host   = env('REVERB_HOST', 'localhost');
         $port   = (int) env('REVERB_PORT', 8080);
         $scheme = env('REVERB_SCHEME', 'http');
 
-        // Detect Replit environment — use the public dev domain so the browser
-        // can reach the Reverb server from outside the container.
         if (isset($_SERVER['HTTP_HOST']) && str_contains($_SERVER['HTTP_HOST'], '.replit.dev')) {
             $host   = $_SERVER['HTTP_HOST'];
             $port   = 443;

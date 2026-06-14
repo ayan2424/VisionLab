@@ -25,12 +25,13 @@
     </div>
 
     {{-- ═══ Stats Row ═══ --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
         @foreach([
             ['label'=>'Courses','value'=>$courses->count(),'color'=>'#F05000','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
             ['label'=>'Pending','value'=>$pendingSubmissions,'color'=>'#0891B2','icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
             ['label'=>'Due Soon','value'=>$upcomingAssignments->count(),'color'=>'#D97706','icon'=>'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
-            ['label'=>'News','value'=>$recentAnnouncements->count(),'color'=>'#059669','icon'=>'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z'],
+            ['label'=>'Unread','value'=>$unreadAnnouncementCount ?? 0,'color'=>'#059669','icon'=>'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9'],
+            ['label'=>'🔥 Streak','value'=>$streak ?? 0,'color'=>'#DC2626','icon'=>'M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z'],
         ] as $i => $s)
         <div class="stat-card group" style="animation:fadeSlideUp .35s ease both;animation-delay:{{ 100 + $i*60 }}ms">
             <div class="flex items-center gap-3">
@@ -93,10 +94,16 @@
             <div style="opacity:0;animation:fadeSlideUp .4s .35s ease forwards">
                 <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style="color:var(--vc-text);">
                     <span class="w-1 h-4 rounded-full" style="background:#059669;"></span> Recent Announcements
+                    @if(($unreadAnnouncementCount ?? 0) > 0)
+                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold text-white" style="background:#DC2626;">{{ $unreadAnnouncementCount }} new</span>
+                    @endif
                 </h3>
                 @forelse($recentAnnouncements as $ann)
-                <div class="vc-card p-4 mb-2">
+                <div class="vc-card p-4 mb-2 {{ ($ann->is_unread ?? false) ? 'ring-1 ring-orange-500/20' : '' }}">
                     <div class="flex items-start gap-3">
+                        @if($ann->is_unread ?? false)
+                        <div class="w-2 h-2 rounded-full flex-shrink-0 mt-2" style="background:var(--vc-accent);"></div>
+                        @endif
                         <div class="w-7 h-7 rounded-full bg-orange-600 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5">
                             {{ strtoupper(substr($ann->author->name ?? 'I', 0, 1)) }}
                         </div>
@@ -116,6 +123,30 @@
                 </div>
                 @endforelse
             </div>
+
+            {{-- Recently Graded --}}
+            @if(isset($gradedSubmissions) && $gradedSubmissions->count() > 0)
+            <div style="opacity:0;animation:fadeSlideUp .4s .45s ease forwards">
+                <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style="color:var(--vc-text);">
+                    <span class="w-1 h-4 rounded-full" style="background:#8B5CF6;"></span> Recently Graded
+                </h3>
+                @foreach($gradedSubmissions as $gs)
+                <div class="vc-card p-4 mb-2">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="min-w-0 mr-3">
+                            <div class="text-xs font-semibold line-clamp-1" style="color:var(--vc-text);">{{ $gs->assignment->title }}</div>
+                            <div class="text-[10px]" style="color:var(--vc-muted);">{{ $gs->assignment->course->title }}</div>
+                        </div>
+                        @php $pct = $gs->assignment->max_points > 0 ? round($gs->grade / $gs->assignment->max_points * 100) : 0; @endphp
+                        <span class="text-sm font-black" style="color:{{ $pct >= 80 ? '#059669' : ($pct >= 60 ? '#D97706' : '#DC2626') }};">{{ $gs->grade }}/{{ $gs->assignment->max_points }}</span>
+                    </div>
+                    <div class="w-full h-1.5 rounded-full overflow-hidden" style="background:var(--vc-border);">
+                        <div class="h-full rounded-full transition-all duration-500" style="width:{{ $pct }}%;background:{{ $pct >= 80 ? '#059669' : ($pct >= 60 ? '#D97706' : '#DC2626') }};"></div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
         </div>
 
         {{-- ── Right sidebar (2 cols) ── --}}

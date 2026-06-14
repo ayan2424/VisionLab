@@ -92,22 +92,6 @@ Route::middleware(['auth:sanctum'])
         ->name('execute-plan');
 });
 
-/*
-|--------------------------------------------------------------------------
-| AI Agent API (Phase 5 - Legacy UI Panel)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:sanctum', 'throttle:10,1'])
-    ->prefix('ai')->name('api.ai.legacy.')->group(function () {
-    Route::post('/chat',          [\App\Http\Controllers\AiAgentController::class, 'chat'])
-        ->name('chat');
-    Route::post('/propose-patch', [\App\Http\Controllers\AiAgentController::class, 'proposePatch'])
-        ->name('propose-patch');
-    Route::post('/apply-patch',   [\App\Http\Controllers\AiAgentController::class, 'applyPatch'])
-        ->name('apply-patch');
-    Route::post('/rollback',      [\App\Http\Controllers\AiAgentController::class, 'rollback'])
-        ->name('rollback');
-});
 
 /*
 |--------------------------------------------------------------------------

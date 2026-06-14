@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Room;
+use App\Models\Workspace;
+use App\Models\WorkspaceQuota;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
@@ -14,6 +15,8 @@ use Symfony\Component\Process\Process;
  * a locally running OpenVSCode Server or shows a placeholder UI.
  *
  * In production, spawns a Docker container per workspace using codercom/code-server.
+ * Supports: resource quotas, extension injection, heartbeat, file I/O with
+ * realpath-based path traversal protection.
  */
 class CodeServerManager
 {
@@ -24,24 +27,27 @@ class CodeServerManager
     /** Docker image for code-server */
     private const DOCKER_IMAGE = 'codercom/code-server:latest';
 
+    /** Static cache for Docker availability */
+    private static ?bool $dockerAvailable = null;
+
     /**
      * Start a workspace container.
      *
-     * @param Room $room  The workspace/room to start
+     * @param Workspace $workspace The workspace to start
      * @return array{url: string, port: int, token: string, container_id: string|null}
      */
-    public function startWorkspace(Room $room): array
+    public function startWorkspace(Workspace $workspace): array
     {
-        $workspacePath = $this->ensureWorkspaceDirectory($room);
+        $workspacePath = $this->ensureWorkspaceDirectory($workspace);
 
         // Development mode — Docker not available
         if (!$this->isDockerAvailable()) {
-            Log::info("CodeServerManager: Docker unavailable, using dev fallback for room {$room->slug}");
-            return $this->devFallback($room);
+            Log::info("CodeServerManager: Docker unavailable, using dev fallback for workspace {$workspace->name}");
+            return $this->devFallback($workspace);
         }
 
         // Check if container already running
-        $existingStatus = $this->getStatus($room);
+        $existingStatus = $this->getStatus($workspace);
         if ($existingStatus['running']) {
             return [
                 'url'          => $existingStatus['url'],
@@ -52,32 +58,49 @@ class CodeServerManager
         }
 
         $port  = $this->allocatePort();
-        $token = Str::random(32);
-        $name  = 'visioncode_ws_' . $room->slug;
+        $token = $workspace->token;
+        if (!$token) {
+            $token = Str::random(32);
+            $workspace->update(['token' => $token]);
+        }
+        $name  = 'vl_ws_' . $workspace->id;
 
         // Remove any stale container with the same name
         $this->removeContainer($name);
+
+        // Resolve resource quota
+        $quota = $this->resolveQuota($workspace);
+
+        $image = config('visionlab.container_image', 'codercom/code-server:latest');
+        
+        $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
+        $proxyUrl = $isLocalhost 
+            ? "http://localhost:{$port}/?folder=/home/coder/project" 
+            : "/codeserver/{$port}/?folder=/home/coder/project";
+
+        $authMode = $isLocalhost ? 'none' : 'password';
 
         $cmd = [
             'docker', 'run', '-d',
             '--name', $name,
             '-v', "{$workspacePath}:/home/coder/project",
-            '-v', storage_path('extensions/visioncode-patch-reviewer') . ":/home/coder/.local/share/code-server/extensions/visioncode-patch-reviewer",
-            '-v', storage_path('extensions/visioncode-collab') . ":/home/coder/.local/share/code-server/extensions/visioncode-collab",
+            '-v', storage_path('extensions/active') . ":/home/coder/extensions",
             '-p', "{$port}:8080",
             '-e', "PASSWORD={$token}",
-            '-e', "VISIONCODE_API_TOKEN=" . ($room->owner?->createToken('workspace')->plainTextToken ?? ''),
-            '-e', "VISIONCODE_ROOM_SLUG={$room->slug}",
+            '-e', "VISIONCODE_API_TOKEN=" . ($workspace->owner?->createToken('workspace')->plainTextToken ?? ''),
+            '-e', "VISIONCODE_WORKSPACE_ID={$workspace->id}",
             '-e', "VISIONCODE_USER_ID=" . (auth()->id() ?? '0'),
             '-e', "VISIONCODE_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
             '-e', "VISIONCODE_API_URL=" . url('/api'),
-            '-v', storage_path('extensions/visionlab.visionlab-ai-1.0.0') . ":/home/coder/.local/share/code-server/extensions/visionlab.visionlab-ai-1.0.0",
+
             '--restart', 'unless-stopped',
-            '--memory', '512m',
-            '--cpus', '0.5',
-            self::DOCKER_IMAGE,
-            '--auth', 'password',
+            '--memory', ($quota['memory_mb'] ?? 512) . 'm',
+            '--cpu-shares', (string) ($quota['cpu_shares'] ?? 1024),
+            $image,
+            '--auth', $authMode,
             '--bind-addr', '0.0.0.0:8080',
+            '--disable-telemetry',
+            '--extensions-dir', '/home/coder/extensions',
         ];
 
         $process = new Process($cmd);
@@ -86,27 +109,40 @@ class CodeServerManager
 
         if (!$process->isSuccessful()) {
             Log::error("CodeServerManager: Failed to start container", [
-                'room'   => $room->slug,
-                'error'  => $process->getErrorOutput(),
-                'output' => $process->getOutput(),
+                'workspace' => $workspace->id,
+                'error'     => $process->getErrorOutput(),
+                'output'    => $process->getOutput(),
             ]);
 
-            return $this->devFallback($room);
+            return $this->devFallback($workspace);
         }
 
         $containerId = trim($process->getOutput());
 
+        // Update workspace record
+        $workspace->update([
+            'container_id'    => $containerId,
+            'port'            => $port,
+            'token'           => $token,
+            'storage_path'    => $workspacePath,
+            'status'          => 'running',
+            'heartbeat_at'    => now(),
+            'container_image' => $image,
+            'proxy_url'       => $proxyUrl,
+            'quota_data'      => $quota,
+        ]);
+
         Log::info("CodeServerManager: Started container", [
-            'room'         => $room->slug,
+            'workspace'    => $workspace->id,
             'container_id' => substr($containerId, 0, 12),
             'port'         => $port,
         ]);
 
-        // Inject Continue config
-        $this->setupContinueExtension($name, $room);
+        // Inject Continue AI config
+        $this->setupContinueExtension($name, $workspace);
 
         return [
-            'url'          => "http://localhost:{$port}/?folder=/home/coder/project",
+            'url'          => $proxyUrl,
             'port'         => $port,
             'token'        => $token,
             'container_id' => $containerId,
@@ -116,25 +152,52 @@ class CodeServerManager
     /**
      * Stop and remove a workspace container.
      */
-    public function stopWorkspace(Room $room): bool
+    public function stopWorkspace(Workspace $workspace): bool
     {
-        $name = 'visioncode_ws_' . $room->slug;
+        $name = 'vl_ws_' . $workspace->id;
 
         if (!$this->isDockerAvailable()) {
             return true;
         }
 
-        return $this->removeContainer($name);
+        $result = $this->removeContainer($name);
+
+        if ($result) {
+            $workspace->update(['status' => 'stopped', 'heartbeat_at' => null]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Restart a workspace container.
+     */
+    public function restartWorkspace(Workspace $workspace): bool
+    {
+        $name = 'vl_ws_' . $workspace->id;
+
+        if (!$this->isDockerAvailable()) {
+            return false;
+        }
+
+        $process = new Process(['docker', 'restart', $name]);
+        $process->setTimeout(30);
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            $workspace->update(['status' => 'running', 'heartbeat_at' => now()]);
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Get the status of a workspace container.
-     *
-     * @return array{running: bool, url: string|null, port: int|null, token: string|null, container_id: string|null}
      */
-    public function getStatus(Room $room): array
+    public function getStatus(Workspace $workspace): array
     {
-        $name = 'visioncode_ws_' . $room->slug;
+        $name = 'vl_ws_' . $workspace->id;
 
         if (!$this->isDockerAvailable()) {
             return ['running' => false, 'url' => null, 'port' => null, 'token' => null, 'container_id' => null];
@@ -160,29 +223,82 @@ class CodeServerManager
         $portProcess->setTimeout(10);
         $portProcess->run();
         $portOutput = trim($portProcess->getOutput());
-        preg_match('/:(\d+)$/', $portOutput, $portMatch);
+        preg_match('/:(\\d+)$/', $portOutput, $portMatch);
         $port = isset($portMatch[1]) ? (int)$portMatch[1] : null;
+
+        $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
+        $iframeUrl = $isLocalhost 
+            ? "http://localhost:{$port}/?folder=/home/coder/project" 
+            : "/codeserver/{$port}/?folder=/home/coder/project";
 
         return [
             'running'      => true,
-            'url'          => $port ? "http://localhost:{$port}/?folder=/home/coder/project" : null,
+            'url'          => $port ? $iframeUrl : null,
             'port'         => $port,
-            'token'        => null, // Token is set at creation, cannot retrieve from running container
+            'token'        => $workspace->token,
             'container_id' => $id,
         ];
     }
 
     /**
-     * List files in a workspace directory (recursive tree).
-     *
-     * @return array<int, array{name: string, path: string, type: string, children?: array}>
+     * Check container health and update heartbeat.
      */
-    public function listFiles(Room $room, string $relativePath = ''): array
+    public function heartbeat(Workspace $workspace): bool
     {
-        $basePath = $this->workspacePath($room);
+        if (!$workspace->container_id || !$this->isDockerAvailable()) {
+            return false;
+        }
+
+        $process = new Process([
+            'docker', 'inspect', '--format', '{{.State.Running}}', $workspace->container_id,
+        ]);
+        $process->setTimeout(10);
+        $process->run();
+
+        $isRunning = trim($process->getOutput()) === 'true';
+
+        $workspace->update([
+            'status'       => $isRunning ? 'running' : 'stopped',
+            'heartbeat_at' => $isRunning ? now() : $workspace->heartbeat_at,
+        ]);
+
+        return $isRunning;
+    }
+
+    /**
+     * Get container resource usage stats.
+     */
+    public function getStats(Workspace $workspace): ?array
+    {
+        if (!$workspace->container_id || !$this->isDockerAvailable()) {
+            return null;
+        }
+
+        $process = new Process([
+            'docker', 'stats', '--no-stream', '--format', '{{json .}}', $workspace->container_id,
+        ]);
+        $process->setTimeout(10);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            return null;
+        }
+
+        return json_decode(trim($process->getOutput()), true);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // File I/O — Sandboxed Operations
+    // ══════════════════════════════════════════════════════════════════════
+
+    /**
+     * List files in a workspace directory (recursive tree).
+     */
+    public function listFiles(Workspace $workspace, string $relativePath = ''): array
+    {
+        $basePath = $this->workspacePath($workspace);
         $fullPath = $basePath . ($relativePath ? DIRECTORY_SEPARATOR . ltrim($relativePath, '/\\') : '');
 
-        // Security: prevent path traversal
         $realBase = realpath($basePath);
         $realFull = realpath($fullPath);
 
@@ -199,7 +315,6 @@ class CodeServerManager
 
         foreach ($items as $item) {
             if ($item === '.' || $item === '..') continue;
-            // Skip hidden files/directories
             if (str_starts_with($item, '.') && $item !== '.visioncode_memory.md') continue;
 
             $itemPath = $realFull . DIRECTORY_SEPARATOR . $item;
@@ -212,13 +327,12 @@ class CodeServerManager
             ];
 
             if (is_dir($itemPath)) {
-                $entry['children'] = $this->listFiles($room, $relPath);
+                $entry['children'] = $this->listFiles($workspace, $relPath);
             }
 
             $tree[] = $entry;
         }
 
-        // Sort: directories first, then alphabetical
         usort($tree, function ($a, $b) {
             if ($a['type'] !== $b['type']) {
                 return $a['type'] === 'directory' ? -1 : 1;
@@ -232,25 +346,23 @@ class CodeServerManager
     /**
      * Read a file from the workspace.
      */
-    public function readFile(Room $room, string $relativePath): ?string
+    public function readFile(Workspace $workspace, string $relativePath): ?string
     {
-        $fullPath = $this->resolveSecurePath($room, $relativePath);
+        $fullPath = $this->resolveSecurePath($workspace, $relativePath);
         if ($fullPath === null || !is_file($fullPath)) {
             return null;
         }
-
         return file_get_contents($fullPath);
     }
 
     /**
      * Write content to a file in the workspace.
      */
-    public function writeFile(Room $room, string $relativePath, string $content): bool
+    public function writeFile(Workspace $workspace, string $relativePath, string $content): bool
     {
-        $basePath = $this->workspacePath($room);
+        $basePath = $this->workspacePath($workspace);
         $fullPath = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
 
-        // Security: ensure the resolved path stays within workspace
         $realBase = realpath($basePath);
         $dir = dirname($fullPath);
 
@@ -267,9 +379,9 @@ class CodeServerManager
         file_put_contents($fullPath, $content);
 
         Log::info("CodeServerManager: File written", [
-            'room' => $room->slug,
-            'path' => $relativePath,
-            'size' => strlen($content),
+            'workspace' => $workspace->id,
+            'path'      => $relativePath,
+            'size'      => strlen($content),
         ]);
 
         return true;
@@ -278,13 +390,12 @@ class CodeServerManager
     /**
      * Delete a file from the workspace.
      */
-    public function deleteFile(Room $room, string $relativePath): bool
+    public function deleteFile(Workspace $workspace, string $relativePath): bool
     {
-        $fullPath = $this->resolveSecurePath($room, $relativePath);
+        $fullPath = $this->resolveSecurePath($workspace, $relativePath);
         if ($fullPath === null) return false;
 
         if (is_dir($fullPath)) {
-            // Recursively delete directory
             $this->deleteDirectory($fullPath);
             return true;
         }
@@ -299,9 +410,9 @@ class CodeServerManager
     /**
      * Create a new file or directory in the workspace.
      */
-    public function createFile(Room $room, string $relativePath, bool $isDirectory = false): bool
+    public function createFile(Workspace $workspace, string $relativePath, bool $isDirectory = false): bool
     {
-        $basePath = $this->workspacePath($room);
+        $basePath = $this->workspacePath($workspace);
         $fullPath = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
 
         $realBase = realpath($basePath);
@@ -328,12 +439,12 @@ class CodeServerManager
     /**
      * Rename a file or directory in the workspace.
      */
-    public function renameFile(Room $room, string $oldPath, string $newPath): bool
+    public function renameFile(Workspace $workspace, string $oldPath, string $newPath): bool
     {
-        $oldFull = $this->resolveSecurePath($room, $oldPath);
+        $oldFull = $this->resolveSecurePath($workspace, $oldPath);
         if ($oldFull === null) return false;
 
-        $basePath = $this->workspacePath($room);
+        $basePath = $this->workspacePath($workspace);
         $newFull  = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $newPath), DIRECTORY_SEPARATOR);
 
         $realBase = realpath($basePath);
@@ -351,30 +462,30 @@ class CodeServerManager
         return rename($oldFull, $newFull);
     }
 
-    // ── Private helpers ──────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════
+    // Private Helpers
+    // ══════════════════════════════════════════════════════════════════════
 
-    private function ensureWorkspaceDirectory(Room $room): string
+    private function ensureWorkspaceDirectory(Workspace $workspace): string
     {
-        $path = $this->workspacePath($room);
+        $path = $this->workspacePath($workspace);
 
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
-
-            // Create default files for new workspaces
-            $this->seedDefaultFiles($path, $room);
+            $this->seedDefaultFiles($path, $workspace);
         }
 
         return $path;
     }
 
-    private function workspacePath(Room $room): string
+    private function workspacePath(Workspace $workspace): string
     {
-        return storage_path('workspaces' . DIRECTORY_SEPARATOR . $room->slug);
+        return storage_path('workspaces' . DIRECTORY_SEPARATOR . 'ws-' . $workspace->id);
     }
 
-    private function resolveSecurePath(Room $room, string $relativePath): ?string
+    private function resolveSecurePath(Workspace $workspace, string $relativePath): ?string
     {
-        $basePath = $this->workspacePath($room);
+        $basePath = $this->workspacePath($workspace);
         $fullPath = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
 
         $realBase = realpath($basePath);
@@ -388,18 +499,44 @@ class CodeServerManager
         return $realFull;
     }
 
-    private function seedDefaultFiles(string $path, Room $room): void
+    private function resolveQuota(Workspace $workspace): array
     {
-        $lang = $room->language ?? 'python';
+        $quota = WorkspaceQuota::where(function ($q) use ($workspace) {
+            $q->where(fn ($q2) => $q2->where('scope', 'user')->where('scope_id', $workspace->student_id))
+              ->orWhere(fn ($q2) => $q2->where('scope', 'course')->where('scope_id', $workspace->course_id))
+              ->orWhere('scope', 'global');
+        })
+        ->where('is_active', true)
+        ->orderByRaw("CASE scope WHEN 'user' THEN 1 WHEN 'course' THEN 2 WHEN 'global' THEN 3 END")
+        ->first();
 
-        $files = [
-            'README.md' => "# {$room->name}\n\n> Powered by **VisionLab** — Aptech Vision 2026\n\n## Getting Started\n\n1. Write your code in the editor\n2. Use the integrated terminal to run it\n3. Open the AI sidebar for assistance\n",
-            'main.' . $this->fileExtension($lang) => $this->starterCode($lang),
+        return [
+            'memory_mb'       => $quota?->memory_mb ?? 512,
+            'cpu_shares'      => $quota?->cpu_shares ?? 1024,
+            'disk_mb'         => $quota?->disk_mb ?? 1024,
+            'timeout_minutes' => $quota?->timeout_minutes ?? 120,
         ];
+    }
 
-        foreach ($files as $name => $content) {
-            file_put_contents($path . DIRECTORY_SEPARATOR . $name, $content);
+    private function seedDefaultFiles(string $path, Workspace $workspace): void
+    {
+        $lang = $workspace->language ?? 'python';
+
+        // If assignment has starter code, use that
+        if ($workspace->assignment && $workspace->assignment->starter_code) {
+            $ext = $this->fileExtension($lang);
+            file_put_contents($path . DIRECTORY_SEPARATOR . "main.{$ext}", $workspace->assignment->starter_code);
+        } else {
+            file_put_contents(
+                $path . DIRECTORY_SEPARATOR . 'main.' . $this->fileExtension($lang),
+                $this->starterCode($lang)
+            );
         }
+
+        file_put_contents(
+            $path . DIRECTORY_SEPARATOR . 'README.md',
+            "# {$workspace->name}\n\n> Powered by **VisionLab** — Aptech Vision 2026\n\n## Getting Started\n\n1. Write your code in the editor\n2. Use the integrated terminal to run it\n3. Open the AI sidebar for assistance\n"
+        );
     }
 
     private function fileExtension(string $lang): string
@@ -415,6 +552,7 @@ class CodeServerManager
             'rust'       => 'rs',
             'go'         => 'go',
             'ruby'       => 'rb',
+            'bash'       => 'sh',
             default      => 'py',
         };
     }
@@ -422,34 +560,49 @@ class CodeServerManager
     private function starterCode(string $lang): string
     {
         return match ($lang) {
-            'python' => "# VisionLabWorkspace\n\ndef greet(name: str) -> str:\n    \"\"\"Return a personalised greeting.\"\"\"\n    return f\"Hello, {name}! Welcome to VisionLab.\"\n\nif __name__ == \"__main__\":\n    print(greet(\"World\"))\n",
-            'javascript' => "// VisionLabWorkspace\n\nconst greet = (name) => {\n    return `Hello, \${name}! Welcome to VisionLab.`;\n};\n\nconsole.log(greet('World'));\n",
+            'python' => "# VisionLab Workspace\n\ndef greet(name: str) -> str:\n    \"\"\"Return a personalised greeting.\"\"\"\n    return f\"Hello, {name}! Welcome to VisionLab.\"\n\nif __name__ == \"__main__\":\n    print(greet(\"World\"))\n",
+            'javascript' => "// VisionLab Workspace\n\nconst greet = (name) => {\n    return `Hello, \${name}! Welcome to VisionLab.`;\n};\n\nconsole.log(greet('World'));\n",
             'php' => "<?php\n\nfunction greet(string \$name): string {\n    return \"Hello, {\$name}! Welcome to VisionLab.\";\n}\n\necho greet('World') . PHP_EOL;\n",
-            default => "# VisionLabWorkspace\nprint('Hello, World!')\n",
+            default => "# VisionLab Workspace\nprint('Hello, World!')\n",
         };
     }
 
-    private function isDockerAvailable(): bool
+    public function isDockerAvailable(): bool
     {
-        $process = new Process(['docker', 'info']);
-        $process->setTimeout(5);
-        $process->run();
+        if (self::$dockerAvailable !== null) {
+            return self::$dockerAvailable;
+        }
 
-        return $process->isSuccessful();
+        try {
+            $process = new Process(['docker', 'info']);
+            $process->setTimeout(15);
+            $process->run();
+            self::$dockerAvailable = $process->isSuccessful();
+            return self::$dockerAvailable;
+        } catch (\Throwable $e) {
+            self::$dockerAvailable = false;
+            return false;
+        }
     }
 
     private function allocatePort(): int
     {
-        // Find an available port in our range
+        // Check DB for used ports first
+        $usedPorts = Workspace::whereNotNull('port')
+            ->whereIn('status', ['running', 'pending'])
+            ->pluck('port')
+            ->toArray();
+
         for ($port = self::PORT_MIN; $port <= self::PORT_MAX; $port++) {
-            $socket = @fsockopen('localhost', $port, $errno, $errstr, 0.1);
-            if ($socket === false) {
-                return $port; // Port is available
+            if (!in_array($port, $usedPorts)) {
+                $socket = @fsockopen('localhost', $port, $errno, $errstr, 0.1);
+                if ($socket === false) {
+                    return $port;
+                }
+                fclose($socket);
             }
-            fclose($socket);
         }
 
-        // Fallback: random port in range
         return rand(self::PORT_MIN, self::PORT_MAX);
     }
 
@@ -477,21 +630,14 @@ class CodeServerManager
         rmdir($dir);
     }
 
-    /**
-     * Set up the Continue AI extension inside the container.
-     */
-    private function setupContinueExtension(string $containerName, Room $room): void
+    private function setupContinueExtension(string $containerName, Workspace $workspace): void
     {
-        // 1. We assume the Continue extension (Continue.continue) is already installed in the image 
-        //    or we can install it via code-server CLI. For MVP we'll just write the config 
-        //    so if the user installs it, it works instantly.
-        
-        $token = $room->owner?->createToken('workspace')->plainTextToken ?? '';
-        
+        $token = $workspace->owner?->createToken('workspace')->plainTextToken ?? '';
+
         $config = [
             "models" => [
                 [
-                    "title" => "VisionCode Agent",
+                    "title" => "VisionLab Agent",
                     "model" => "claude-3-opus-20240229",
                     "provider" => "openai",
                     "apiBase" => "http://host.docker.internal:8000/api/ai/v1",
@@ -519,19 +665,15 @@ class CodeServerManager
         ];
 
         $json = json_encode($config, JSON_UNESCAPED_SLASHES);
-        
-        $script = "mkdir -p /home/coder/.continue && echo '" . addslashes($json) . "' > /home/coder/.continue/config.json";
-        
+        $jsonForBash = str_replace("'", "'\\''", $json);
+        $script = "mkdir -p /home/coder/.continue && echo '{$jsonForBash}' > /home/coder/.continue/config.json";
+
         $process = new Process(['docker', 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
     }
 
-    /**
-     * Dev fallback when Docker is not available.
-     */
-    private function devFallback(Room $room): array
+    private function devFallback(Workspace $workspace): array
     {
-        // Try OpenVSCode Server on standard ports
         $devPort = (int) env('VSCODE_SERVER_PORT', 8099);
         $devUrl  = env('VSCODE_SERVER_URL', "http://localhost:{$devPort}/");
 

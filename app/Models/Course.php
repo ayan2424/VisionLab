@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,6 +11,7 @@ use Illuminate\Support\Str;
 
 class Course extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'instructor_id', 'title', 'slug', 'description',
         'cover_image', 'enrollment_code', 'is_active',
@@ -69,6 +71,11 @@ class Course extends Model
     public function getStudentCountAttribute(): int
     {
         return $this->students()->count();
+    }
+
+    public function workspaces(): HasMany
+    {
+        return $this->hasMany(Workspace::class);
     }
 
     public function getCoverGradientAttribute(): string

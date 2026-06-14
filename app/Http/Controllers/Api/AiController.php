@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Room;
+use App\Models\Workspace;
 use App\Models\AiPendingPatch;
 use App\Services\AiService;
 use App\Services\AiSandbox;
@@ -30,14 +30,17 @@ class AiController extends Controller
         // Must have X-Workspace-Id or fallback to find any workspace owned by user for MVP
         $workspaceId = $request->header('X-Workspace-Id');
         
+        $workspace = null;
         if ($workspaceId) {
-            $room = Room::where('slug', $workspaceId)->orWhere('id', $workspaceId)->first();
-        } else {
-            // Fallback for MVP if header isn't passed correctly by Continue
-            $room = Room::where('owner_id', Auth::id())->first();
+            $id = str_replace('ws-', '', $workspaceId);
+            $workspace = Workspace::find($id);
+        }
+        
+        if (!$workspace) {
+            $workspace = Workspace::where('student_id', Auth::id())->first();
         }
 
-        if (!$room) {
+        if (!$workspace) {
             return response()->json(['error' => 'Workspace not found'], 404);
         }
 
@@ -46,11 +49,11 @@ class AiController extends Controller
         $mode = $request->header('X-Ai-Mode', 'AGENT'); // CHAT, PLAN, AGENT
 
         if ($stream) {
-            $response = new StreamedResponse(function () use ($room, $messages, $mode) {
+            $response = new StreamedResponse(function () use ($workspace, $messages, $mode) {
                 // Keep output buffer clear
                 if (ob_get_level() > 0) ob_end_clean();
 
-                foreach ($this->aiService->handleChatCompletion($room, $messages, $mode, true) as $chunk) {
+                foreach ($this->aiService->handleChatCompletion($workspace, $messages, $mode, true, Auth::id()) as $chunk) {
                     echo $chunk;
                     flush();
                 }
@@ -106,19 +109,23 @@ class AiController extends Controller
     {
         $workspaceId = $request->input('workspaceId') ?? $request->header('X-Workspace-Id');
         
+        $workspace = null;
         if ($workspaceId) {
-            $room = Room::where('slug', $workspaceId)->orWhere('id', $workspaceId)->first();
-        } else {
-            $room = Room::where('owner_id', Auth::id())->first();
+            $id = str_replace('ws-', '', $workspaceId);
+            $workspace = Workspace::find($id);
+        }
+        
+        if (!$workspace) {
+            $workspace = Workspace::where('student_id', Auth::id())->first();
         }
 
-        if (!$room) {
+        if (!$workspace) {
             return response()->json(['error' => 'Workspace not found'], 404);
         }
 
         // Trigger the background execution
         // We will run this synchronously for now to ensure patches are proposed
-        $this->aiService->executePlan($room, Auth::user());
+        $this->aiService->executePlan($workspace, Auth::user());
 
         return response()->json(['message' => 'Plan execution started']);
     }

@@ -57,6 +57,91 @@
         @endforeach
     </div>
 
+    {{-- Contribution Heatmap --}}
+    <div class="vc-card p-6" style="opacity:0;animation:fadeSlideUp .3s .2s ease forwards;">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold flex items-center gap-2" style="color:var(--vc-text);">
+                <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+                Activity Heatmap
+            </h3>
+            <div class="flex items-center gap-4">
+                <div id="heatmap-streak" class="text-xs font-semibold" style="color:var(--vc-muted);"></div>
+                <div id="heatmap-total" class="text-xs font-semibold" style="color:var(--vc-muted);"></div>
+            </div>
+        </div>
+
+        <div id="contribution-heatmap" class="overflow-x-auto pb-2" style="min-height:100px;">
+            <div class="text-center py-8 text-xs" style="color:var(--vc-muted);">Loading activity data...</div>
+        </div>
+
+        {{-- Legend --}}
+        <div class="flex items-center justify-end gap-1 mt-3">
+            <span class="text-[10px]" style="color:var(--vc-muted);">Less</span>
+            @foreach(['var(--vc-elevated)', 'rgba(240,80,0,0.2)', 'rgba(240,80,0,0.4)', 'rgba(240,80,0,0.6)', 'rgba(240,80,0,0.85)'] as $c)
+            <div class="w-3 h-3 rounded-sm" style="background:{{ $c }};"></div>
+            @endforeach
+            <span class="text-[10px]" style="color:var(--vc-muted);">More</span>
+        </div>
+    </div>
+
+    <script>
+    (async () => {
+        try {
+            const res = await fetch('{{ route("contributions.heatmap") }}', {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await res.json();
+
+            // Update stats
+            const streakEl = document.getElementById('heatmap-streak');
+            const totalEl = document.getElementById('heatmap-total');
+            if (streakEl) streakEl.textContent = `🔥 ${data.current_streak}d streak`;
+            if (totalEl) totalEl.textContent = `${data.total_contributions} contributions`;
+
+            // Build heatmap
+            const container = document.getElementById('contribution-heatmap');
+            if (!container || !data.heatmap) return;
+
+            const weeks = [];
+            let currentWeek = [];
+            data.heatmap.forEach((day, i) => {
+                const d = new Date(day.date);
+                if (i === 0) {
+                    // Pad the first week
+                    for (let p = 0; p < d.getDay(); p++) currentWeek.push(null);
+                }
+                currentWeek.push(day);
+                if (d.getDay() === 6 || i === data.heatmap.length - 1) {
+                    weeks.push(currentWeek);
+                    currentWeek = [];
+                }
+            });
+
+            const colors = ['var(--vc-elevated)', 'rgba(240,80,0,0.2)', 'rgba(240,80,0,0.4)', 'rgba(240,80,0,0.6)', 'rgba(240,80,0,0.85)'];
+            const cellSize = 12;
+            const gap = 2;
+            const totalW = weeks.length * (cellSize + gap);
+
+            let svg = `<svg width="${totalW}" height="${7 * (cellSize + gap)}" style="display:block;">`;
+            weeks.forEach((week, wi) => {
+                week.forEach((day, di) => {
+                    if (!day) return;
+                    const x = wi * (cellSize + gap);
+                    const y = di * (cellSize + gap);
+                    const color = colors[day.level] || colors[0];
+                    const title = `${day.date}: ${day.count} contributions`;
+                    svg += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" rx="2" fill="${color}" style="cursor:pointer;"><title>${title}</title></rect>`;
+                });
+            });
+            svg += '</svg>';
+            container.innerHTML = svg;
+        } catch (e) {
+            const c = document.getElementById('contribution-heatmap');
+            if (c) c.innerHTML = '<div class="text-center py-4 text-xs" style="color:var(--vc-muted);">Unable to load heatmap.</div>';
+        }
+    })();
+    </script>
+
     @forelse($courseProgress as $cp)
     @php
         $course    = $cp['course'];

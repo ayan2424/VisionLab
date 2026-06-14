@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Submission extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'assignment_id', 'student_id', 'workspace_snapshot_path',
         'code_snapshot', 'status', 'submitted_at', 'grade', 'feedback', 'graded_by',
@@ -30,6 +33,16 @@ class Submission extends Model
     public function grader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'graded_by');
+    }
+
+    public function workspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class);
+    }
+
+    public function forensics(): HasOne
+    {
+        return $this->hasOne(SubmissionForensic::class);
     }
 
     public function isLate(): bool

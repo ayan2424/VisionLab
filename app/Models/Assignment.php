@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 
 class Assignment extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'course_id', 'title', 'description', 'max_points',
         'due_date', 'starter_code', 'starter_language', 'auto_workspace',

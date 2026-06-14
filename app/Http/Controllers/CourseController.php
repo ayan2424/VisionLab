@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCourseRequest;
+use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
-use App\Models\Enrollment;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CourseController extends Controller
 {
@@ -34,15 +33,9 @@ class CourseController extends Controller
         return view('courses.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreCourseRequest $request)
     {
-        $this->authorize('create', Course::class);
-
-        $validated = $request->validate([
-            'title'       => 'required|string|max:120',
-            'description' => 'nullable|string|max:2000',
-            'cover_image' => 'nullable|image|max:2048',
-        ]);
+        $validated = $request->validated();
 
         $coverPath = null;
         if ($request->hasFile('cover_image')) {
@@ -67,12 +60,10 @@ class CourseController extends Controller
                         ->firstOrFail();
 
         $user = Auth::user();
+        $this->authorize('view', $course);
+
         $isInstructor = $user->id === $course->instructor_id || $user->isAdmin();
         $isEnrolled   = $course->isEnrolled($user);
-
-        if (!$isInstructor && !$isEnrolled) {
-            abort(403, 'You are not enrolled in this course.');
-        }
 
         $students  = $course->students()->get();
         $userSubmissions = [];
@@ -90,22 +81,17 @@ class CourseController extends Controller
         ));
     }
 
-    public function edit(Course $course)
+    public function edit(string $slug)
     {
+        $course = Course::where('slug', $slug)->firstOrFail();
         $this->authorize('update', $course);
         return view('courses.edit', compact('course'));
     }
 
-    public function update(Request $request, Course $course)
+    public function update(UpdateCourseRequest $request, string $slug)
     {
-        $this->authorize('update', $course);
-
-        $validated = $request->validate([
-            'title'       => 'required|string|max:120',
-            'description' => 'nullable|string|max:2000',
-            'cover_image' => 'nullable|image|max:2048',
-            'is_active'   => 'sometimes|boolean',
-        ]);
+        $course    = Course::where('slug', $slug)->firstOrFail();
+        $validated = $request->validated();
 
         if ($request->hasFile('cover_image')) {
             if ($course->cover_image) Storage::disk('public')->delete($course->cover_image);
@@ -118,8 +104,9 @@ class CourseController extends Controller
                          ->with('success', 'Course updated successfully!');
     }
 
-    public function destroy(Course $course)
+    public function destroy(string $slug)
     {
+        $course = Course::where('slug', $slug)->firstOrFail();
         $this->authorize('delete', $course);
 
         if ($course->cover_image) Storage::disk('public')->delete($course->cover_image);

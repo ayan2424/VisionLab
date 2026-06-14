@@ -101,6 +101,27 @@
     </div>
 </div>
 
+
+{{-- Infrastructure & Security Row --}}
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6" style="opacity:0;animation:fadeSlideUp .4s .5s ease forwards">
+    @foreach([
+        ['label'=>'Suspended Users','value'=>$stats['suspended_users'] ?? 0,'color'=>'#ef4444','icon'=>'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636'],
+        ['label'=>'Running Workspaces','value'=>$stats['active_workspaces'] ?? 0,'color'=>'#10b981','icon'=>'M5 12h14M12 5l7 7-7 7'],
+        ['label'=>'AI Patches Pending','value'=>$stats['ai_patches_pending'] ?? 0,'color'=>'#f59e0b','icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+        ['label'=>'Deployments','value'=>$stats['deployments_active'] ?? 0,'color'=>'#8b5cf6','icon'=>'M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12'],
+    ] as $i => $s)
+    <div class="vc-card p-3 flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:{{ $s['color'] }}12;">
+            <svg class="w-4 h-4" style="color:{{ $s['color'] }};" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $s['icon'] }}"/></svg>
+        </div>
+        <div>
+            <div class="text-lg font-bold" style="color:{{ $s['color'] }};">{{ $s['value'] }}</div>
+            <div class="text-[10px]" style="color:var(--vc-muted);">{{ $s['label'] }}</div>
+        </div>
+    </div>
+    @endforeach
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     {{-- Recent Users --}}
     <div class="vc-card p-5">
@@ -149,14 +170,43 @@
                 <div class="text-xs" style="color:var(--vc-text);">{{ $action->user->name ?? 'Unknown' }}</div>
                 <div class="text-xs" style="color:var(--vc-muted);">{{ $action->action_type }} &middot; {{ $action->created_at->diffForHumans() }}</div>
             </div>
-            <span class="text-xs px-2 py-0.5 rounded-md border flex-shrink-0"
-                  style="color:var(--vc-accent);background:rgba(240,80,0,0.1);border-color:rgba(240,80,0,0.2);">{{ $action->mode }}</span>
         </div>
         @empty
         <div class="text-center py-8 text-xs" style="color:var(--vc-muted);">No AI actions logged yet.</div>
         @endforelse
     </div>
 </div>
+
+{{-- Audit Logs --}}
+@if(isset($recentAuditLogs) && $recentAuditLogs->count() > 0)
+<div class="vc-card p-5 mt-6" style="opacity:0;animation:fadeSlideUp .4s .6s ease forwards">
+    <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">🛡️ Recent Audit Logs</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead>
+                <tr style="border-bottom:1px solid var(--vc-border);">
+                    <th class="text-left pb-2 text-xs font-semibold" style="color:var(--vc-muted);">Actor</th>
+                    <th class="text-left pb-2 text-xs font-semibold" style="color:var(--vc-muted);">Action</th>
+                    <th class="text-left pb-2 text-xs font-semibold" style="color:var(--vc-muted);">Target</th>
+                    <th class="text-left pb-2 text-xs font-semibold" style="color:var(--vc-muted);">IP</th>
+                    <th class="text-right pb-2 text-xs font-semibold" style="color:var(--vc-muted);">Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($recentAuditLogs as $log)
+                <tr style="border-bottom:1px solid var(--vc-border);">
+                    <td class="py-2 text-xs" style="color:var(--vc-text);">{{ $log->actor->name ?? 'System' }}</td>
+                    <td class="py-2 text-xs" style="color:var(--vc-accent);">{{ $log->action }}</td>
+                    <td class="py-2 text-xs font-mono" style="color:var(--vc-text-secondary);">{{ $log->resource_type }}#{{ $log->resource_id }}</td>
+                    <td class="py-2 text-xs" style="color:var(--vc-muted);">{{ $log->ip_address ?? '—' }}</td>
+                    <td class="py-2 text-xs text-right" style="color:var(--vc-muted);">{{ $log->created_at->diffForHumans() }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
 
 <script>
 document.querySelectorAll('.stat-counter').forEach(el => {

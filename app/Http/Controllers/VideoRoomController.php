@@ -42,7 +42,7 @@ class VideoRoomController extends Controller
 
         // Create a new video room
         $roomName    = 'visioncode-' . $slug . '-' . Str::random(6);
-        $jitsiDomain = env('JITSI_DOMAIN', 'meet.jit.si');
+        $jitsiDomain = config('visionlab.jitsi.domain', 'meet.jit.si');
 
         $callData = [
             'room_name'    => $roomName,
@@ -123,8 +123,8 @@ class VideoRoomController extends Controller
      */
     private function generateJwt($user, string $roomName): ?string
     {
-        $appId     = env('JITSI_APP_ID');
-        $appSecret = env('JITSI_APP_SECRET');
+        $appId     = config('visionlab.jitsi.app_id');
+        $appSecret = config('visionlab.jitsi.jwt_secret');
 
         if (!$appId || !$appSecret) {
             return null; // No JWT auth configured, use public Jitsi
@@ -135,7 +135,7 @@ class VideoRoomController extends Controller
 
         $payload = base64_encode(json_encode([
             'iss' => $appId,
-            'sub' => env('JITSI_DOMAIN', 'meet.jit.si'),
+            'sub' => config('visionlab.jitsi.domain', 'meet.jit.si'),
             'aud' => $appId,
             'iat' => $now,
             'exp' => $now + 7200, // 2 hours
