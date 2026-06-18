@@ -1,0 +1,65 @@
+{
+  "name": "visionlab-collab",
+  "displayName": "VisionLab Collaboration Agent",
+  "description": "Real-time collaboration, Jitsi video, and AI Patch reviewing for VisionLab workspaces.",
+  "version": "1.0.0",
+  "publisher": "VisionLab",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "visionlab.startCollab",
+        "title": "VisionLab: Start Collaboration Session"
+      },
+      {
+        "command": "visionlab.openVideo",
+        "title": "VisionLab: Open Video Panel"
+      },
+      {
+        "command": "visionlab.reviewPatches",
+        "title": "VisionLab: Review AI Patches"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "visionlab-sidebar",
+          "title": "VisionLab",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "visionlab-sidebar": [
+        {
+          "type": "webview",
+          "id": "visionlab.patchReviewerView",
+          "name": "Patch Reviewer"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^18.x",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "pusher-js": "^8.3.0",
+    "laravel-echo": "^1.15.3"
+  }
+}

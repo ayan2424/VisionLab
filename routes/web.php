@@ -19,7 +19,11 @@ use Illuminate\Support\Facades\Route;
 | Public Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn () => view('welcome'))->name('home');
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::get('/healthz', [\App\Http\Controllers\HealthController::class, 'check'])->name('health');
 Route::get('/demo', fn () => view('demo'))->name('demo');
 Route::get('/offline', fn () => view('offline'))->name('offline');
 
@@ -31,7 +35,10 @@ Route::get('/offline', fn () => view('offline'))->name('offline');
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+    // Phase 10: PWA Offline Fallback
+    Route::view('/offline', 'errors.offline')->name('offline');
 
     // ── Workspace ──────────────────────────────────────────────────────
     Route::get('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'index'])->name('workspace.index');
@@ -40,17 +47,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/workspace/{workspace}/stop', [\App\Http\Controllers\WorkspaceController::class, 'stop'])->name('workspace.stop');
     Route::post('/workspace/{workspace}/restart', [\App\Http\Controllers\WorkspaceController::class, 'restart'])->name('workspace.restart');
     Route::get('/workspace/{workspace}/status', [\App\Http\Controllers\WorkspaceController::class, 'status'])->name('workspace.status');
+    Route::get('/workspace/{workspace}/ping', [\App\Http\Controllers\WorkspaceController::class, 'ping'])->name('workspace.ping');
 
     // ── Workspace File I/O ──────────────────────────────────────────────
     Route::get('/workspace/{workspace}/files', [\App\Http\Controllers\WorkspaceController::class, 'files'])->name('workspace.files');
     Route::get('/workspace/{workspace}/read-file', [\App\Http\Controllers\WorkspaceController::class, 'readFile'])->name('workspace.readFile');
+    Route::get('/workspace/{workspace}/download-file', [\App\Http\Controllers\WorkspaceController::class, 'downloadFile'])->name('workspace.downloadFile');
     Route::post('/workspace/{workspace}/write-file', [\App\Http\Controllers\WorkspaceController::class, 'writeFile'])->name('workspace.writeFile');
     Route::post('/workspace/{workspace}/create-file', [\App\Http\Controllers\WorkspaceController::class, 'createFile'])->name('workspace.createFile');
     Route::delete('/workspace/{workspace}/delete-file', [\App\Http\Controllers\WorkspaceController::class, 'deleteFile'])->name('workspace.deleteFile');
     Route::post('/workspace/{workspace}/rename-file', [\App\Http\Controllers\WorkspaceController::class, 'renameFile'])->name('workspace.renameFile');
 
-    // ── Collaborative Rooms ────────────────────────────────────────────
+    // ── Collaborative Rooms & Chat ─────────────────────────────────────
     Route::post('/rooms', [\App\Http\Controllers\RoomController::class, 'create'])->name('rooms.create');
+    Route::post('/workspace/{workspace}/chat', [\App\Http\Controllers\ChatController::class, 'store'])->name('workspace.chat');
 
     // ── Courses ────────────────────────────────────────────────────────
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
@@ -60,10 +70,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/courses/{slug}/edit', [CourseController::class, 'edit'])->name('courses.edit');
     Route::put('/courses/{slug}', [CourseController::class, 'update'])->name('courses.update');
     Route::delete('/courses/{slug}', [CourseController::class, 'destroy'])->name('courses.destroy');
+    Route::get('/courses/{course:slug}/roster', [\App\Http\Controllers\CourseController::class, 'roster'])->name('courses.roster');
+    Route::put('/courses/{course:slug}/extensions', [\App\Http\Controllers\CourseExtensionController::class, 'update'])->name('courses.extensions.update');
 
     // ── Enrollments ────────────────────────────────────────────────────
     Route::get('/join', [EnrollmentController::class, 'joinForm'])->name('enrollments.join');
     Route::post('/join', [EnrollmentController::class, 'joinByCode'])->name('enrollments.join.post');
+    Route::post('/courses/{course:slug}/invite', [EnrollmentController::class, 'invite'])->name('enrollments.invite');
     Route::delete('/courses/{course:slug}/students/{studentId}', [EnrollmentController::class, 'remove'])->name('enrollments.remove');
 
     // ── Assignments ────────────────────────────────────────────────────
@@ -86,6 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ── Announcements ──────────────────────────────────────────────────
     Route::post('/courses/{course:slug}/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
     Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+    Route::post('/announcements/{announcement}/read', [\App\Http\Controllers\AnnouncementReadController::class, 'markAsRead'])->name('announcements.read');
 
     // ── Progress ───────────────────────────────────────────────────────
     Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
@@ -105,7 +119,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ── Admin Panel ────────────────────────────────────────────────────
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['role:admin', 'throttle:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
         // Users
@@ -124,6 +138,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/extensions/{extension}', [ExtensionController::class, 'update'])->name('extensions.update');
         Route::patch('/extensions/{extension}/toggle', [ExtensionController::class, 'toggleGlobal'])->name('extensions.toggle');
         Route::delete('/extensions/{extension}', [ExtensionController::class, 'destroy'])->name('extensions.destroy');
+
+        // Workspaces
+        Route::get('/workspaces', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'index'])->name('workspaces.index');
+        Route::get('/workspaces/{workspace}', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'show'])->name('workspaces.show');
+        Route::post('/workspaces/{workspace}/stop', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'stop'])->name('workspaces.stop');
+        Route::post('/workspaces/{workspace}/archive', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'archive'])->name('workspaces.archive');
+
+        // Quotas
+        Route::get('/quotas', [\App\Http\Controllers\Admin\AdminQuotaController::class, 'index'])->name('quotas.index');
+        Route::post('/quotas', [\App\Http\Controllers\Admin\AdminQuotaController::class, 'updateGlobal'])->name('quotas.updateGlobal');
+
+        // Audit Logs
+        Route::get('/audits', [\App\Http\Controllers\Admin\AdminAuditController::class, 'index'])->name('audits.index');
 
         // Analytics
         Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics');

@@ -25,7 +25,7 @@ class CodeServerManager
     private const PORT_MAX = 9999;
 
     /** Docker image for code-server */
-    private const DOCKER_IMAGE = 'codercom/code-server:latest';
+    private const DOCKER_IMAGE = 'visionlab/workspace:latest';
 
     /** Static cache for Docker availability */
     private static ?bool $dockerAvailable = null;
@@ -71,7 +71,7 @@ class CodeServerManager
         // Resolve resource quota
         $quota = $this->resolveQuota($workspace);
 
-        $image = config('visionlab.container_image', 'codercom/code-server:latest');
+        $image = config('visionlab.container_image', 'visionlab/workspace:latest');
         
         $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
         $proxyUrl = $isLocalhost 
@@ -84,7 +84,6 @@ class CodeServerManager
             'docker', 'run', '-d',
             '--name', $name,
             '-v', "{$workspacePath}:/home/coder/project",
-            '-v', storage_path('extensions/active') . ":/home/coder/extensions",
             '-p', "{$port}:8080",
             '-e', "PASSWORD={$token}",
             '-e', "VISIONCODE_API_TOKEN=" . ($workspace->owner?->createToken('workspace')->plainTextToken ?? ''),
@@ -92,7 +91,7 @@ class CodeServerManager
             '-e', "VISIONCODE_USER_ID=" . (auth()->id() ?? '0'),
             '-e', "VISIONCODE_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
             '-e', "VISIONCODE_API_URL=" . url('/api'),
-
+            '-e', 'EXTENSIONS_GALLERY={}', // Disable public VS Code Marketplace for lockdown
             '--restart', 'unless-stopped',
             '--memory', ($quota['memory_mb'] ?? 512) . 'm',
             '--cpu-shares', (string) ($quota['cpu_shares'] ?? 1024),
@@ -100,7 +99,6 @@ class CodeServerManager
             '--auth', $authMode,
             '--bind-addr', '0.0.0.0:8080',
             '--disable-telemetry',
-            '--extensions-dir', '/home/coder/extensions',
         ];
 
         $process = new Process($cmd);
@@ -138,8 +136,8 @@ class CodeServerManager
             'port'         => $port,
         ]);
 
-        // Inject Continue AI config
-        $this->setupContinueExtension($name, $workspace);
+        // Inject Configs and Extensions dynamically
+        $this->setupWorkspaceExtensions($name, $workspace);
 
         return [
             'url'          => $proxyUrl,
@@ -263,6 +261,28 @@ class CodeServerManager
         ]);
 
         return $isRunning;
+    }
+
+    /**
+     * Check if the Code-Server HTTP interface is ready to accept connections.
+     */
+    public function isWorkspaceReady(Workspace $workspace): bool
+    {
+        if (!$workspace->port || !$this->isDockerAvailable()) {
+            return false;
+        }
+
+        try {
+            // Fast ping to the Docker bound port.
+            // If code-server hasn't bound the internal 8080 port yet, this will fail or timeout.
+            // Using 'localhost' instead of '127.0.0.1' for better Docker Desktop Windows compatibility
+            $response = \Illuminate\Support\Facades\Http::timeout(2)
+                ->get("http://localhost:{$workspace->port}/healthz");
+
+            return $response->successful();
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     /**
@@ -483,7 +503,7 @@ class CodeServerManager
         return storage_path('workspaces' . DIRECTORY_SEPARATOR . 'ws-' . $workspace->id);
     }
 
-    private function resolveSecurePath(Workspace $workspace, string $relativePath): ?string
+    public function resolveSecurePath(Workspace $workspace, string $relativePath): ?string
     {
         $basePath = $this->workspacePath($workspace);
         $fullPath = $basePath . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
@@ -491,7 +511,20 @@ class CodeServerManager
         $realBase = realpath($basePath);
         $realFull = realpath($fullPath);
 
-        if ($realBase === false || $realFull === false || !str_starts_with($realFull, $realBase)) {
+        // If file doesn't exist yet, realpath returns false. We can't strictly use realpath for new files.
+        // For new files, we resolve the directory instead.
+        if ($realFull === false) {
+            $dir = dirname($fullPath);
+            $realDir = realpath($dir);
+            if ($realBase === false || $realDir === false || !str_starts_with($realDir, $realBase)) {
+                Log::warning("CodeServerManager: Path traversal blocked (new file)", ['path' => $relativePath]);
+                return null;
+            }
+            // Normalize the full path
+            return $realDir . DIRECTORY_SEPARATOR . basename($fullPath);
+        }
+
+        if ($realBase === false || !str_starts_with($realFull, $realBase)) {
             Log::warning("CodeServerManager: Path traversal blocked", ['path' => $relativePath]);
             return null;
         }
@@ -499,22 +532,24 @@ class CodeServerManager
         return $realFull;
     }
 
+    public function getSecureFilePath(Workspace $workspace, string $relativePath): ?string
+    {
+        $path = $this->resolveSecurePath($workspace, $relativePath);
+        if ($path && is_file($path)) {
+            return $path;
+        }
+        return null;
+    }
+
     private function resolveQuota(Workspace $workspace): array
     {
-        $quota = WorkspaceQuota::where(function ($q) use ($workspace) {
-            $q->where(fn ($q2) => $q2->where('scope', 'user')->where('scope_id', $workspace->student_id))
-              ->orWhere(fn ($q2) => $q2->where('scope', 'course')->where('scope_id', $workspace->course_id))
-              ->orWhere('scope', 'global');
-        })
-        ->where('is_active', true)
-        ->orderByRaw("CASE scope WHEN 'user' THEN 1 WHEN 'course' THEN 2 WHEN 'global' THEN 3 END")
-        ->first();
+        $quota = WorkspaceQuota::resolveFor($workspace->student_id, $workspace->course_id);
 
         return [
-            'memory_mb'       => $quota?->memory_mb ?? 512,
-            'cpu_shares'      => $quota?->cpu_shares ?? 1024,
-            'disk_mb'         => $quota?->disk_mb ?? 1024,
-            'timeout_minutes' => $quota?->timeout_minutes ?? 120,
+            'memory_mb'       => $quota->memory_mb ?? 512,
+            'cpu_shares'      => $quota->cpu_shares ?? 1024,
+            'disk_mb'         => $quota->disk_mb ?? 1024,
+            'timeout_minutes' => $quota->timeout_minutes ?? 120,
         ];
     }
 
@@ -619,6 +654,30 @@ class CodeServerManager
         return $rm->isSuccessful();
     }
 
+    public function installExtension(Workspace $workspace, string $identifierOrPath): bool
+    {
+        $containerName = "ws-{$workspace->id}";
+        $process = new Process(['docker', 'exec', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
+        $process->run();
+        
+        if (!$process->isSuccessful()) {
+            \Illuminate\Support\Facades\Log::error("Failed to install extension $identifierOrPath in $containerName: " . $process->getErrorOutput());
+        }
+        return $process->isSuccessful();
+    }
+
+    public function uninstallExtension(Workspace $workspace, string $identifier): bool
+    {
+        $containerName = "ws-{$workspace->id}";
+        $process = new Process(['docker', 'exec', $containerName, 'code-server', '--uninstall-extension', $identifier]);
+        $process->run();
+        
+        if (!$process->isSuccessful()) {
+            \Illuminate\Support\Facades\Log::error("Failed to uninstall extension $identifier in $containerName: " . $process->getErrorOutput());
+        }
+        return $process->isSuccessful();
+    }
+
     private function deleteDirectory(string $dir): void
     {
         $items = scandir($dir);
@@ -630,8 +689,9 @@ class CodeServerManager
         rmdir($dir);
     }
 
-    private function setupContinueExtension(string $containerName, Workspace $workspace): void
+    private function setupWorkspaceExtensions(string $containerName, Workspace $workspace): void
     {
+        // 1. Setup VisionLab Agent Config
         $token = $workspace->owner?->createToken('workspace')->plainTextToken ?? '';
 
         $config = [
@@ -670,6 +730,22 @@ class CodeServerManager
 
         $process = new Process(['docker', 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
+
+        // 2. Install enabled extensions dynamically
+        $enabledExtensions = \App\Models\WorkspaceExtension::with('extension')
+            ->where('workspace_id', $workspace->id)
+            ->where('is_enabled', true)
+            ->get();
+
+        foreach ($enabledExtensions as $wsExt) {
+            $ext = $wsExt->extension;
+            $identifier = $ext->package_identifier;
+            // Use custom artifact_path if present, else identifier
+            $target = $ext->is_builtin ? $identifier : ($ext->artifact_path ?? $identifier);
+            
+            $this->installExtension($workspace, $target);
+            $wsExt->update(['sync_status' => 'synced']);
+        }
     }
 
     private function devFallback(Workspace $workspace): array

@@ -7,12 +7,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware(['auth:sanctum', 'throttle:push'])->post('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'store']);
+
 /*
 |--------------------------------------------------------------------------
 | Code Execution API
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:30,1'])
+Route::middleware(['auth:sanctum', 'throttle:api'])
     ->prefix('code')->name('api.code.')->group(function () {
     Route::post('/run',     [\App\Http\Controllers\CodeExecutionController::class, 'run'])
         ->name('run');
@@ -25,7 +27,7 @@ Route::middleware(['auth:sanctum', 'throttle:30,1'])
 | Real-Time Collaboration API (Phase 4 — Reverb)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
+Route::middleware(['auth:sanctum', 'throttle:api'])
     ->prefix('rooms')->name('api.rooms.')->group(function () {
     Route::post('/{slug}/join',      [\App\Http\Controllers\RoomController::class, 'join'])
         ->name('join');
@@ -40,7 +42,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
 | Workspace File I/O API (Phase 2)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
+Route::middleware(['auth:sanctum', 'throttle:file-api'])
     ->prefix('workspace/{slug}')->name('api.workspace.')->group(function () {
     Route::get('/files',       [\App\Http\Controllers\WorkspaceFileController::class, 'list'])
         ->name('files');
@@ -54,6 +56,10 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
         ->name('delete-file');
     Route::post('/rename-file',[\App\Http\Controllers\WorkspaceFileController::class, 'rename'])
         ->name('rename-file');
+    
+    // Phase 9: VisionGuard Forensics
+    Route::post('/forensics/sync', [\App\Http\Controllers\Api\ForensicsController::class, 'sync'])
+        ->name('forensics.sync');
 });
 
 /*
@@ -61,7 +67,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
 | Video Conferencing API (Phase 6)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:30,1'])
+Route::middleware(['auth:sanctum', 'throttle:video'])
     ->prefix('workspace/{slug}/video')->name('api.video.')->group(function () {
     Route::post('/start',  [\App\Http\Controllers\VideoRoomController::class, 'start'])
         ->name('start');
@@ -76,14 +82,16 @@ Route::middleware(['auth:sanctum', 'throttle:30,1'])
 | AI Agent API (Phase 4 - Continue Integration)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
+Route::middleware(['auth:sanctum', 'throttle:ai'])
     ->prefix('ai/v1')->name('api.ai.')->group(function () {
     Route::post('/chat/completions', [\App\Http\Controllers\Api\AiController::class, 'chatCompletions'])
         ->name('chat.completions');
 });
 
-Route::middleware(['auth:sanctum'])
+Route::middleware(['auth:sanctum', 'throttle:ai'])
     ->prefix('ai/patches')->name('api.ai.patches.')->group(function () {
+    Route::get('/pending', [\App\Http\Controllers\Api\AiController::class, 'pendingPatches'])
+        ->name('pending');
     Route::post('/{patch}/approve', [\App\Http\Controllers\Api\AiController::class, 'approvePatch'])
         ->name('approve');
     Route::post('/{patch}/reject', [\App\Http\Controllers\Api\AiController::class, 'rejectPatch'])
@@ -98,7 +106,7 @@ Route::middleware(['auth:sanctum'])
 | Recording API (Video Call Recording)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
+Route::middleware(['auth:sanctum', 'throttle:video'])
     ->prefix('workspace/{roomSlug}/recording')->name('api.recording.')->group(function () {
     Route::post('/start', [\App\Http\Controllers\RecordingController::class, 'start'])
         ->name('start');
@@ -106,7 +114,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
         ->name('stop');
 });
 
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
+Route::middleware(['auth:sanctum', 'throttle:video'])
     ->prefix('recording')->name('api.recording.')->group(function () {
     Route::get('/list',                         [\App\Http\Controllers\RecordingController::class, 'index'])
         ->name('index');

@@ -37,6 +37,22 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Update streak
+        $user = Auth::user();
+        if (!$user->last_activity_at || $user->last_activity_at->lt(now()->startOfDay())) {
+            // If last activity was exactly yesterday, increment. Otherwise, reset to 1.
+            if ($user->last_activity_at && $user->last_activity_at->isYesterday()) {
+                $user->current_streak += 1;
+            } else {
+                $user->current_streak = 1;
+            }
+            if ($user->current_streak > $user->longest_streak) {
+                $user->longest_streak = $user->current_streak;
+            }
+            $user->last_activity_at = now();
+            $user->save();
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

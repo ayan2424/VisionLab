@@ -83,6 +83,15 @@ class AiSandbox
      */
     public function preparePatch(Workspace $workspace, ?int $sessionId, string $relativePath, string $searchBlock, string $replaceBlock): ?array
     {
+        // Sandbox check: Prevent AI from touching critical internal directories
+        $normalizedPath = strtolower(str_replace('\\', '/', $relativePath));
+        $blocked = ['.env', 'vendor/', 'storage/', 'bootstrap/', 'node_modules/', '.git/'];
+        foreach ($blocked as $pattern) {
+            if (str_contains($normalizedPath, $pattern)) {
+                return ['error' => "Security Sandbox: AI is not permitted to modify {$pattern}"];
+            }
+        }
+
         $currentContent = $this->readFile($workspace, $relativePath);
         if ($currentContent === null) {
             // File might not exist. If searchBlock is empty, it's a new file.

@@ -43,6 +43,9 @@ COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zzz-visioncode.conf
 
 WORKDIR /var/www/html
 
+# Copy composer from the vendor stage
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Copy application
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
@@ -52,7 +55,8 @@ COPY --from=assets /app/public/build ./public/build
 RUN composer dump-autoload --optimize --no-dev \
     && php artisan config:cache \
     && php artisan route:cache \
-    && php artisan view:cache
+    && php artisan view:cache \
+    && php artisan event:cache
 
 # Storage permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \

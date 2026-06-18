@@ -1,0 +1,62 @@
+openapi: 3.1.0
+info:
+  title: VisionLab API
+  version: 1.0.0
+  description: API documentation for VisionLab's workspace orchestration, collaboration, and learning management platform.
+servers:
+  - url: https://api.visionlab.edu/v1
+    description: Production Server
+  - url: http://localhost/api
+    description: Local Development Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /healthz:
+    get:
+      summary: Health Check
+      description: Returns the health status of all primary dependency probes.
+      responses:
+        '200':
+          description: All systems operational
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  checks:
+                    type: object
+        '503':
+          description: Service Unavailable
+  /rooms/{slug}/start:
+    post:
+      summary: Start Video Call
+      description: Returns a Jitsi JWT to authenticate the user for the room.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Call started successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                  room_name:
+                    type: string
+                  jwt:
+                    type: string

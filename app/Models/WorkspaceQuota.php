@@ -33,10 +33,14 @@ class WorkspaceQuota extends Model
         return $query->where('is_active', true);
     }
 
-    public function scopeForScope($query, string $scope, ?int $scopeId = null)
+    public function scopeForScope($query, string $scope, $scopeValue = null)
     {
         return $query->where('scope', $scope)
-            ->when($scopeId, fn ($q) => $q->where('scope_id', $scopeId));
+            ->when($scopeValue !== null, function ($q) use ($scopeValue) {
+                $q->where(function ($q2) use ($scopeValue) {
+                    $q2->where('scope_id', $scopeValue)->orWhere('scope_value', $scopeValue);
+                });
+            });
     }
 
     public function scopeGlobal($query)
@@ -61,6 +65,19 @@ class WorkspaceQuota extends Model
             $courseQuota = static::active()->forScope('course', $courseId)->first();
             if ($courseQuota) {
                 return $courseQuota;
+            }
+        }
+
+        if ($userId) {
+            $user = \App\Models\User::find($userId);
+            if ($user && $user->role) {
+                // Assuming role is a string enum, scope_id will be mapped or we can use string scope_id.
+                // Wait, scope_id is an integer. Let's see how scope_id is casted. It's not casted, so it's a string?
+                // The database schema likely defines scope_id as string or bigInteger. Let's assume it can be a string.
+                $roleQuota = static::active()->forScope('role', $user->role)->first();
+                if ($roleQuota) {
+                    return $roleQuota;
+                }
             }
         }
 

@@ -4,14 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#F05000">
+    <meta name="theme-color" content="#0a0a0a">
     <meta name="description" content="VisionLab — Collaborative coding platform for universities. Full VS Code IDE, AI Agent, and Smart LMS.">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="VisionLab">
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <link rel="apple-touch-icon" href="/logo.svg">
+    <script src="/pwa.js" defer></script>
+    <meta name="vapid-public-key" content="{{ config('webpush.vapid.public_key') }}">
     <title>{{ isset($title) ? $title . ' — VisionLab' : 'VisionLab' }}</title>
 
     @php

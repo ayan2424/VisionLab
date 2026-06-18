@@ -67,17 +67,23 @@ class CourseController extends Controller
 
         $students  = $course->students()->get();
         $userSubmissions = [];
+        $readAnnouncementIds = [];
+
         if ($user->isStudent()) {
             foreach ($course->assignments as $assignment) {
                 $userSubmissions[$assignment->id] = $assignment->submissionFor($user);
             }
+            $readAnnouncementIds = \App\Models\AnnouncementRead::where('user_id', $user->id)
+                ->whereIn('announcement_id', $course->announcements->pluck('id'))
+                ->pluck('announcement_id')
+                ->toArray();
         }
 
         $tab = request('tab', 'stream');
 
         return view('courses.show', compact(
             'course', 'isInstructor', 'isEnrolled', 'students',
-            'userSubmissions', 'tab'
+            'userSubmissions', 'readAnnouncementIds', 'tab'
         ));
     }
 

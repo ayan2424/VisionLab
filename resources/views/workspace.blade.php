@@ -98,9 +98,37 @@
         }
         .modal-overlay.open .modal-content { transform: scale(1); }
 
+        /* Collaborators */
+        .collab-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700; color: #fff;
+            border: 2px solid #050505; margin-left: -8px; z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .collab-avatar:first-child { margin-left: 0; }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast {
+            background: rgba(10, 10, 10, 0.9); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; padding: 12px 16px; border-radius: 8px; font-size: 13px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: auto; display: flex; align-items: center; gap: 10px;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast-title { font-weight: 700; color: #f97316; }
+
     </style>
 </head>
 <body class="h-full">
+
+{{-- Toast Container --}}
+<div id="toast-container"></div>
 
 {{-- TOP BAR --}}
 <div id="vc-topbar">
@@ -141,8 +169,11 @@
             Video Call
         </button>
 
+        {{-- Collaborators Container --}}
+        <div id="collaborators-container" style="display:flex;align-items:center;gap:-8px;margin-left:8px;"></div>
+
         {{-- User Menu --}}
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #4f46e5, #7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,0.4);margin-left:8px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #4f46e5, #7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,0.4);margin-left:4px;">
             {{ $user->avatar_initials ?? 'U' }}
         </div>
     </div>
@@ -188,7 +219,7 @@
 
         {{-- VS CODE IFRAME (Full Screen, No external File Explorer) --}}
         <iframe id="vscode-frame"
-            src="{{ $vscodeUrl ?? '' }}"
+            data-src="{{ $vscodeUrl ?? '' }}"
             allow="clipboard-read; clipboard-write"
             sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox"
             onload="onVsCodeLoad()"
@@ -212,20 +243,35 @@
     <div class="modal-content" style="padding:24px;">
         <h3 style="color:#f1f5f9;margin:0 0 8px 0;">Deploy Workspace</h3>
         <p style="color:#64748b;font-size:13px;margin:0 0 20px 0;">Push your code to the cloud instantly.</p>
-        <div style="display:flex;gap:12px;">
-            <button class="pill-btn" style="flex:1;justify-content:center;background:#fff;color:#000;">Vercel</button>
-            <button class="pill-btn" style="flex:1;justify-content:center;background:#0b0d14;color:#fff;border:1px solid #333;">Railway</button>
+        <div id="deploy-buttons" style="display:flex;gap:12px;">
+            <button onclick="deployWorkspace('vercel')" class="pill-btn" style="flex:1;justify-content:center;background:#fff;color:#000;">Vercel</button>
+            <button onclick="deployWorkspace('railway')" class="pill-btn" style="flex:1;justify-content:center;background:#0b0d14;color:#fff;border:1px solid #333;">Railway</button>
+        </div>
+        <div id="deploy-status" style="display:none;margin-top:20px;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                <div id="deploy-spinner" class="spinner"></div>
+                <span id="deploy-text" style="color:#f1f5f9;font-size:13px;font-weight:600;">Queuing deployment...</span>
+            </div>
+            <a id="deploy-link" href="#" target="_blank" style="display:none;color:#38bdf8;font-size:12px;text-decoration:none;">View Deployment &rarr;</a>
         </div>
     </div>
 </div>
 
 <script>
-    // Premium Loader Simulation & Iframe Load detection
+    // Real-Time Polling for Workspace Readiness
     let vscLoaded = false;
     let currentStep = 1;
+    let pollInterval = null;
+    let fallbackTimeout = null;
+    const workspaceId = "{{ $workspace->id }}";
+    
+    // Animate steps while waiting (Step 1 -> Step 2 -> Step 3)
+    setTimeout(advanceStep, 2000);
+    setTimeout(advanceStep, 5000);
+    // Note: We don't advance to Step 4 (Finalizing) until we actually get 'ready: true'
 
     function advanceStep() {
-        if (vscLoaded || currentStep >= 4) return;
+        if (vscLoaded || currentStep >= 3) return;
         
         // Mark current as done
         const cur = document.getElementById('step-' + currentStep);
@@ -243,19 +289,57 @@
         }
     }
 
-    // Simulate boot progress
-    setTimeout(advanceStep, 2000);
-    setTimeout(advanceStep, 5000);
-    setTimeout(advanceStep, 8000);
+    function startPolling() {
+        pollInterval = setInterval(async () => {
+            try {
+                const pingUrl = "{{ route('workspace.ping', $workspace->id) }}";
+                const response = await fetch(pingUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.error("Ping returned status:", response.status);
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (data.ready) {
+                    clearInterval(pollInterval);
+                    // Fast-forward to step 4
+                    currentStep = 3;
+                    advanceStep(); 
+                    
+                    // Inject the iframe src to start loading VS Code
+                    const frame = document.getElementById('vscode-frame');
+                    frame.src = frame.getAttribute('data-src');
+                    
+                    // Fallback to force hide preloader if iframe load event fails to fire
+                    fallbackTimeout = setTimeout(() => {
+                        if (!vscLoaded) onVsCodeLoad();
+                    }, 10000);
+                }
+            } catch (err) {
+                console.error("Ping failed", err);
+            }
+        }, 3000);
+    }
 
     function onVsCodeLoad() {
-        if (!document.getElementById('vscode-frame').src || document.getElementById('vscode-frame').src === window.location.href) return;
+        const frame = document.getElementById('vscode-frame');
+        if (!frame.src || frame.src === window.location.href || frame.src === 'about:blank') return;
         
         vscLoaded = true;
+        if (fallbackTimeout) clearTimeout(fallbackTimeout);
+        if (pollInterval) clearInterval(pollInterval);
         
         // Fast forward all steps to done
         for(let i=1; i<=4; i++) {
             const el = document.getElementById('step-' + i);
+            if(el.classList.contains('done')) continue;
             el.classList.remove('active'); el.classList.add('done');
             el.innerHTML = `<svg style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg> <span>${el.innerText}</span>`;
         }
@@ -273,8 +357,257 @@
         document.getElementById('vsc-label').textContent = 'Failed to Boot';
     }
 
-    // Safety fallback
-    setTimeout(() => { if(!vscLoaded) onVsCodeLoad(); }, 12000);
+    // Start checking if container is ready
+    startPolling();
+
+    // ─────────────────────────────────────────────────────────────
+    // COLLABORATION (Reverb Presence & Chat)
+    // ─────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof window.initEcho === 'function') {
+            const reverbConfig = @json($reverbConfig);
+            const echo = window.initEcho(reverbConfig);
+            const roomSlug = "{{ $roomSlug }}";
+            const currentUserId = {{ auth()->id() ?? 'null' }};
+            
+            document.getElementById('reverb-dot').style.background = '#10b981'; // Green dot
+            
+            // Join Presence Channel
+            const channel = echo.join(`collab.${roomSlug}`);
+            
+            channel.here((users) => {
+                updateCollaboratorsUI(users);
+            })
+            .joining((user) => {
+                addCollaborator(user);
+            })
+            .leaving((user) => {
+                removeCollaborator(user);
+            })
+            .listen('ChatMessageSent', (e) => {
+                appendChatMessage(e);
+            });
+            
+            let activeUsers = [];
+            
+            function updateCollaboratorsUI(users) {
+                activeUsers = users;
+                renderCollaborators();
+            }
+            
+            function addCollaborator(user) {
+                if (!activeUsers.find(u => u.id === user.id)) {
+                    activeUsers.push(user);
+                    renderCollaborators();
+                }
+            }
+            
+            function removeCollaborator(user) {
+                activeUsers = activeUsers.filter(u => u.id !== user.id);
+                renderCollaborators();
+            }
+            
+            function renderCollaborators() {
+                const container = document.getElementById('collaborators-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                // Render up to 3 avatars
+                const displayUsers = activeUsers.slice(0, 3);
+                displayUsers.forEach(user => {
+                    const div = document.createElement('div');
+                    div.className = 'collab-avatar';
+                    div.style.background = user.color || '#4f46e5';
+                    div.title = user.name;
+                    div.textContent = user.initials;
+                    container.appendChild(div);
+                });
+                
+                if (activeUsers.length > 3) {
+                    const div = document.createElement('div');
+                    div.className = 'collab-avatar';
+                    div.style.background = '#334155';
+                    div.textContent = '+' + (activeUsers.length - 3);
+                    container.appendChild(div);
+                }
+            }
+            
+            function appendChatMessage(e) {
+                // Ignore our own messages from toast
+                if (e.user_id === currentUserId) return;
+                
+                showToast(e.user_name, e.message);
+            }
+
+            function showToast(title, message) {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                
+                toast.innerHTML = `
+                    <div style="width:24px;height:24px;background:rgba(249,115,22,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#f97316;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    </div>
+                    <div>
+                        <div class="toast-title">${title}</div>
+                        <div style="color:#cbd5e1;">${message}</div>
+                    </div>
+                `;
+                
+                container.appendChild(toast);
+                
+                // Trigger animation
+                requestAnimationFrame(() => toast.classList.add('show'));
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+            
+            // Expose the channel globally for iframe (extension) to hook into if needed
+            window.workspaceChannel = channel;
+            window.workspaceUserId = currentUserId;
+        }
+    });
+
+    // ─────────────────────────────────────────────────────────────
+    // VIDEO CALL (Phase 7 - Jitsi Meet)
+    // ─────────────────────────────────────────────────────────────
+    let activeCall = false;
+
+    async function checkVideoStatus() {
+        try {
+            const res = await fetch(`/api/workspace/{{ $roomSlug }}/video/status`, {
+                headers: { 'Authorization': `Bearer {{ $workspace->owner?->createToken('workspace')->plainTextToken ?? '' }}`, 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            
+            const btn = document.getElementById('video-btn');
+            if (data.active) {
+                activeCall = true;
+                btn.textContent = 'Join Call';
+                btn.style.background = 'rgba(239, 68, 68, 0.1)';
+                btn.style.color = '#ef4444';
+                btn.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                btn.onclick = joinVideoCall;
+            } else {
+                activeCall = false;
+                btn.textContent = 'Video Call';
+                btn.style.background = 'rgba(16,185,129,0.1)';
+                btn.style.color = '#4ade80';
+                btn.style.borderColor = 'rgba(16,185,129,0.3)';
+                btn.onclick = startVideoCall;
+            }
+        } catch (e) {
+            console.error('Failed to fetch video status', e);
+        }
+    }
+
+    async function startVideoCall() {
+        try {
+            const res = await fetch(`/api/workspace/{{ $roomSlug }}/video/start`, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer {{ $workspace->owner?->createToken('workspace')->plainTextToken ?? '' }}`, 
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await res.json();
+            if (data.active) {
+                checkVideoStatus();
+            }
+        } catch (e) {
+            alert('Failed to start video call.');
+        }
+    }
+
+    async function joinVideoCall() {
+        // Just trigger the start endpoint again to get details, the extension handles rendering.
+        startVideoCall();
+    }
+
+    // Initial check
+    checkVideoStatus();
+
+    // ── Phase 9: Deployment Logic ──
+    async function deployWorkspace(provider) {
+        document.getElementById('deploy-buttons').style.display = 'none';
+        const statusDiv = document.getElementById('deploy-status');
+        const statusText = document.getElementById('deploy-text');
+        const statusSpinner = document.getElementById('deploy-spinner');
+        const statusLink = document.getElementById('deploy-link');
+        
+        statusDiv.style.display = 'block';
+        statusText.textContent = `Queuing deployment to ${provider}...`;
+        statusText.style.color = '#f1f5f9';
+        statusSpinner.style.display = 'block';
+        statusLink.style.display = 'none';
+
+        try {
+            const res = await fetch(`/workspace/{{ $workspace->id }}/deploy`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ provider: provider })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                pollDeployment(data.deployment.id);
+            } else {
+                showDeployError(data.error || 'Failed to queue deployment.');
+            }
+        } catch (e) {
+            showDeployError(e.message);
+        }
+    }
+
+    async function pollDeployment(deploymentId) {
+        const statusText = document.getElementById('deploy-text');
+        const statusSpinner = document.getElementById('deploy-spinner');
+        const statusLink = document.getElementById('deploy-link');
+
+        const interval = setInterval(async () => {
+            try {
+                const res = await fetch(`/deployments/${deploymentId}/status`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+
+                if (data.status === 'building') {
+                    statusText.textContent = 'Building project...';
+                } else if (data.status === 'deployed') {
+                    clearInterval(interval);
+                    statusText.textContent = 'Deployed Successfully!';
+                    statusText.style.color = '#10B981'; // Success Green
+                    statusSpinner.style.display = 'none';
+                    if (data.public_url) {
+                        statusLink.href = data.public_url;
+                        statusLink.style.display = 'block';
+                    }
+                    showToast('Deployment Successful', 'Your project is live.', 'success');
+                } else if (data.status === 'failed') {
+                    clearInterval(interval);
+                    showDeployError(data.error_summary || 'Deployment failed.');
+                }
+            } catch (e) {
+                // Ignore temporary fetch failures
+            }
+        }, 3000);
+    }
+
+    function showDeployError(msg) {
+        document.getElementById('deploy-text').textContent = 'Error: ' + msg;
+        document.getElementById('deploy-text').style.color = '#EF4444'; // Error Red
+        document.getElementById('deploy-spinner').style.display = 'none';
+        document.getElementById('deploy-buttons').style.display = 'flex';
+    }
+
 </script>
 
 </body>

@@ -208,6 +208,18 @@
 </div>
 @endif
 
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style="opacity:0;animation:fadeSlideUp .5s .5s ease forwards">
+    <div class="vc-card p-4">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--vc-text);">Platform Growth</h3>
+        <canvas id="growthChart" height="200"></canvas>
+    </div>
+    <div class="vc-card p-4">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--vc-text);">AI Token Usage</h3>
+        <canvas id="aiUsageChart" height="200"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.querySelectorAll('.stat-counter').forEach(el => {
     const target = parseInt(el.dataset.target);
@@ -219,6 +231,36 @@ document.querySelectorAll('.stat-counter').forEach(el => {
         el.textContent = start;
         if (start >= target) clearInterval(timer);
     }, 40);
+});
+
+// Initialize Chart.js
+const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+new Chart(ctxGrowth, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'New Users',
+            data: [12, 19, 3, 5, 2, 3],
+            borderColor: '#ff7a00',
+            tension: 0.4
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#aaa' } }, y: { ticks: { color: '#aaa' } } } }
+});
+
+const ctxAi = document.getElementById('aiUsageChart').getContext('2d');
+new Chart(ctxAi, {
+    type: 'bar',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Tokens (k)',
+            data: [120, 190, 300, 500, 200, 300],
+            backgroundColor: '#10B981',
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#aaa' } }, y: { ticks: { color: '#aaa' } } } }
 });
 </script>
 @endsection

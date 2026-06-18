@@ -94,28 +94,91 @@
                 </div>
             </div>
 
-            {{-- Code viewer --}}
-            <div class="vc-card overflow-hidden">
-                <div class="flex items-center justify-between px-4 py-3 border-b" style="background:var(--vc-elevated);border-color:var(--vc-border);">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2.5 h-2.5 rounded-full bg-red-500/70"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/70"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-500/70"></div>
-                        <span class="ml-2 text-xs font-mono font-semibold" style="color:var(--vc-text-secondary);">{{ $assignment->starter_language === 'python' ? 'solution.py' : ($assignment->starter_language === 'javascript' ? 'solution.js' : ($assignment->starter_language === 'php' ? 'solution.php' : 'solution.' . $assignment->starter_language)) }}</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span id="line-count" class="text-xs font-semibold" style="color:var(--vc-muted);"></span>
-                        <button onclick="copyCode()" class="text-xs font-bold transition-colors hover:text-current" style="color:var(--vc-text-secondary);" onmouseover="this.style.color='var(--vc-text)';" onmouseout="this.style.color='var(--vc-text-secondary)';">Copy</button>
-                    </div>
+            {{-- Code viewer / Forensics Tabs --}}
+            <div class="vc-card overflow-hidden flex flex-col">
+                <div class="flex border-b" style="border-color:var(--vc-border);background:var(--vc-elevated);">
+                    <button onclick="switchTab('code')" id="tab-code" class="px-6 py-3 text-sm font-bold border-b-2 transition-colors" style="border-color:var(--vc-accent);color:var(--vc-text);">Source Code</button>
+                    @if($canGrade)
+                    <button onclick="switchTab('forensics')" id="tab-forensics" class="px-6 py-3 text-sm font-bold border-b-2 border-transparent transition-colors" style="color:var(--vc-muted);" onmouseover="if(!this.classList.contains('active'))this.style.color='var(--vc-text)';" onmouseout="if(!this.classList.contains('active'))this.style.color='var(--vc-muted)';">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            VisionGuard Forensics
+                        </span>
+                    </button>
+                    @endif
                 </div>
-                @if($submission->code_snapshot)
-                <div id="monaco-viewer" style="height:500px;"></div>
-                @else
-                <div class="flex items-center justify-center" style="height:250px;">
-                    <div class="text-center text-sm font-semibold" style="color:var(--vc-muted);">
-                        <svg class="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        No code submitted yet
+
+                {{-- CODE TAB --}}
+                <div id="content-code" class="flex-1">
+                    <div class="flex items-center justify-between px-4 py-3 border-b" style="background:var(--vc-elevated);border-color:var(--vc-border);">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/70"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/70"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/70"></div>
+                            <span class="ml-2 text-xs font-mono font-semibold" style="color:var(--vc-text-secondary);">{{ $assignment->starter_language === 'python' ? 'solution.py' : ($assignment->starter_language === 'javascript' ? 'solution.js' : ($assignment->starter_language === 'php' ? 'solution.php' : 'solution.' . $assignment->starter_language)) }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="line-count" class="text-xs font-semibold" style="color:var(--vc-muted);"></span>
+                            <button onclick="copyCode()" class="text-xs font-bold transition-colors hover:text-current" style="color:var(--vc-text-secondary);" onmouseover="this.style.color='var(--vc-text)';" onmouseout="this.style.color='var(--vc-text-secondary)';">Copy</button>
+                        </div>
                     </div>
+                    @if($submission->code_snapshot)
+                    <div id="monaco-viewer" style="height:500px;"></div>
+                    @else
+                    <div class="flex items-center justify-center" style="height:250px;">
+                        <div class="text-center text-sm font-semibold" style="color:var(--vc-muted);">
+                            <svg class="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            No code submitted yet
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                {{-- FORENSICS TAB --}}
+                @if($canGrade)
+                <div id="content-forensics" class="hidden flex-1 p-6">
+                    @if($submission->forensic)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-6">
+                            <div class="relative w-48 h-48 mx-auto">
+                                <canvas id="forensicsChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <div class="text-3xl font-black" style="color:var(--vc-text);">{{ $submission->forensic->human_percentage }}%</div>
+                                    <div class="text-xs font-bold" style="color:var(--vc-muted);">Human</div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-bold" style="color:var(--vc-text);">Contribution Analysis</h3>
+                                <div class="flex justify-between items-center p-3 rounded-lg border" style="background:var(--vc-bg);border-color:var(--vc-border);">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                        <span class="text-sm font-semibold" style="color:var(--vc-text-secondary);">Human Typed</span>
+                                    </div>
+                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->human_keystroke_count) }} chars</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg border" style="background:var(--vc-bg);border-color:var(--vc-border);">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                        <span class="text-sm font-semibold" style="color:var(--vc-text-secondary);">AI / Pasted</span>
+                                    </div>
+                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->ai_injected_char_count + $submission->forensic->pasted_char_count) }} chars</span>
+                                </div>
+                                <div class="pt-2">
+                                    <span class="text-xs font-semibold px-2 py-1 rounded" style="background:rgba(99,102,241,0.1);color:#818cf8;">
+                                        Confidence: {{ ucfirst($submission->forensic->confidence_level) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 rounded-xl text-xs leading-relaxed" style="background:var(--vc-surface);color:var(--vc-muted);">
+                            <strong style="color:var(--vc-text-secondary);">Disclaimer:</strong> VisionGuard classifies keystrokes versus rapid block insertions to estimate AI assistance. This does not definitively prove cheating and should be used alongside academic judgment. Data synced {{ $submission->forensic->last_synced_at ? $submission->forensic->last_synced_at->diffForHumans() : 'never' }}.
+                        </div>
+                    @else
+                        <div class="flex flex-col items-center justify-center py-12 text-center">
+                            <svg class="w-12 h-12 mb-4 text-indigo-400 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <h3 class="text-lg font-bold" style="color:var(--vc-text);">No Forensics Data Available</h3>
+                            <p class="text-sm mt-2 max-w-md" style="color:var(--vc-muted);">VisionGuard has not captured any telemetry for this submission. The student may not have used the VisionLab workspace, or telemetry was blocked.</p>
+                        </div>
+                    @endif
                 </div>
                 @endif
             </div>
@@ -281,7 +344,8 @@
     </div>
 </div>
 
-{{-- Load Monaco script --}}
+{{-- Load scripts --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
 <script>
 const SUBMISSION = {
@@ -363,6 +427,78 @@ function appendFeedback(text) {
     ta.value = ta.value ? ta.value.trim() + ' ' + text : text;
     ta.focus();
 }
+
+// ── Tabs ─────────────────────────────────────────────────────────
+function switchTab(tab) {
+    document.getElementById('tab-code').classList.remove('active');
+    document.getElementById('tab-code').style.borderColor = 'transparent';
+    document.getElementById('tab-code').style.color = 'var(--vc-muted)';
+    
+    const tabForensics = document.getElementById('tab-forensics');
+    if (tabForensics) {
+        tabForensics.classList.remove('active');
+        tabForensics.style.borderColor = 'transparent';
+        tabForensics.style.color = 'var(--vc-muted)';
+    }
+
+    document.getElementById('content-code').classList.add('hidden');
+    const contentForensics = document.getElementById('content-forensics');
+    if (contentForensics) contentForensics.classList.add('hidden');
+
+    const activeBtn = document.getElementById('tab-' + tab);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.borderColor = 'var(--vc-accent)';
+        activeBtn.style.color = 'var(--vc-text)';
+    }
+
+    const activeContent = document.getElementById('content-' + tab);
+    if (activeContent) activeContent.classList.remove('hidden');
+
+    if (tab === 'forensics' && !window.forensicsChartRendered) {
+        renderForensicsChart();
+    }
+}
+
+// Ensure the first tab is styled correctly
+document.addEventListener('DOMContentLoaded', () => {
+    switchTab('code');
+});
+
+// ── Forensics Chart ──────────────────────────────────────────────
+@if($canGrade && $submission->forensic)
+function renderForensicsChart() {
+    window.forensicsChartRendered = true;
+    const ctx = document.getElementById('forensicsChart');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Human Typed', 'AI / Pasted'],
+            datasets: [{
+                data: [{{ $submission->forensic->human_percentage }}, {{ $submission->forensic->ai_percentage }}],
+                backgroundColor: ['#10B981', '#8B5CF6'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            cutout: '75%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+@endif
 
 // ── Copy code ─────────────────────────────────────────────────────
 function copyCode() {

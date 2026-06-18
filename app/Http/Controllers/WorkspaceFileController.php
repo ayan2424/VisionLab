@@ -30,10 +30,10 @@ class WorkspaceFileController extends Controller
      */
     public function list(string $slug): JsonResponse
     {
-        $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        $workspace = $this->resolveWorkspace($slug);
+        if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
-        $tree = $this->codeServer->listFiles($room);
+        $tree = $this->codeServer->listFiles($workspace);
 
         return response()->json(['files' => $tree]);
     }
@@ -44,13 +44,13 @@ class WorkspaceFileController extends Controller
      */
     public function read(Request $request, string $slug): JsonResponse
     {
-        $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        $workspace = $this->resolveWorkspace($slug);
+        if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
         $path = $request->query('path');
         if (!$path) return response()->json(['error' => 'Path required'], 400);
 
-        $content = $this->codeServer->readFile($room, $path);
+        $content = $this->codeServer->readFile($workspace, $path);
         if ($content === null) {
             return response()->json(['error' => 'File not found or access denied'], 404);
         }
@@ -73,23 +73,23 @@ class WorkspaceFileController extends Controller
             'content' => 'required|string',
         ]);
 
-        $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        $workspace = $this->resolveWorkspace($slug);
+        if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
         // Sandbox check: block dangerous paths
         $path = $request->input('path');
-        if ($this->isDangerousPath($path)) {
+        if ($this->isDangerousPath($workspace, $path)) {
             return response()->json(['error' => 'Write access denied for this path'], 403);
         }
 
-        $success = $this->codeServer->writeFile($room, $path, $request->input('content'));
+        $success = $this->codeServer->writeFile($workspace, $path, $request->input('content'));
 
         if ($success) {
             // Log the write action
             if (Auth::check()) {
                 \App\Models\AiActionsLog::create([
                     'user_id'       => Auth::id(),
-                    'workspace_ref' => $room->slug,
+                    'workspace_ref' => $slug,
                     'action_type'   => 'file_write',
                     'file_path'     => $path,
                     'diff_summary'  => 'Manual write via file explorer',
@@ -111,11 +111,11 @@ class WorkspaceFileController extends Controller
             'is_directory' => 'sometimes|boolean',
         ]);
 
-        $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        $workspace = $this->resolveWorkspace($slug);
+        if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
         $success = $this->codeServer->createFile(
-            $room,
+            $workspace,
             $request->input('path'),
             $request->boolean('is_directory')
         );
@@ -133,20 +133,20 @@ class WorkspaceFileController extends Controller
             'path' => 'required|string|max:500',
         ]);
 
-        $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        $workspace = $this->resolveWorkspace($slug);
+        if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
         $path = $request->input('path');
-        if ($this->isDangerousPath($path)) {
+        if ($this->isDangerousPath($workspace, $path)) {
             return response()->json(['error' => 'Delete access denied for this path'], 403);
         }
 
-        $success = $this->codeServer->deleteFile($room, $path);
+        $success = $this->codeServer->deleteFile($workspace, $path);
 
         if ($success && Auth::check()) {
             \App\Models\AiActionsLog::create([
                 'user_id'       => Auth::id(),
-                'workspace_ref' => $room->slug,
+                'workspace_ref' => $slug,
                 'action_type'   => 'file_delete',
                 'file_path'     => $path,
                 'diff_summary'  => 'File deleted via explorer',
@@ -167,11 +167,11 @@ class WorkspaceFileController extends Controller
             'new_path' => 'required|string|max:500',
         ]);
 
-        $room = $this->resolveRoom($slug);
-        if (!$room) return response()->json(['error' => 'Workspace not found'], 404);
+        $workspace = $this->resolveWorkspace($slug);
+        if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
         $success = $this->codeServer->renameFile(
-            $room,
+            $workspace,
             $request->input('old_path'),
             $request->input('new_path')
         );
@@ -181,29 +181,47 @@ class WorkspaceFileController extends Controller
 
     // ── Helpers ──────────────────────────────────────────────────
 
-    private function resolveRoom(string $slug): ?Room
+    private function resolveWorkspace(string $slug): ?\App\Models\Workspace
     {
-        return Room::where('slug', $slug)->first();
+        $id = str_replace('ws-', '', $slug);
+        return \App\Models\Workspace::find($id);
     }
 
     /**
      * Block writes to dangerous paths (sandbox enforcement).
      */
-    private function isDangerousPath(string $path): bool
+    private function isDangerousPath(\App\Models\Workspace $workspace, string $path): bool
     {
         $normalized = strtolower(str_replace('\\', '/', $path));
 
-        $blocked = ['.env', 'vendor/', 'storage/', 'bootstrap/', 'node_modules/'];
-
-        foreach ($blocked as $pattern) {
-            if (str_contains($normalized, $pattern)) {
-                return true;
-            }
+        // Block path traversal attempts in the relative string (early exit)
+        if (str_contains($normalized, '..')) {
+            Log::warning('Path traversal attempt blocked via relative path inspection', ['path' => $path]);
+            return true;
         }
 
-        // Block path traversal attempts
-        if (str_contains($normalized, '..')) {
+        // Validate via realpath in CodeServerManager
+        $securePath = $this->codeServer->resolveSecurePath($workspace, $path);
+        if ($securePath === null) {
+            // resolveSecurePath already logs path traversal
             return true;
+        }
+
+        // Check if the secure absolute path touches protected directories
+        $blocked = [
+            DIRECTORY_SEPARATOR . '.env',
+            DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR,
+            DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR,
+            DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR,
+            DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR,
+            DIRECTORY_SEPARATOR . '.git' . DIRECTORY_SEPARATOR,
+        ];
+
+        foreach ($blocked as $pattern) {
+            if (str_contains($securePath, $pattern)) {
+                Log::warning('Write attempt to protected directory blocked', ['path' => $securePath]);
+                return true;
+            }
         }
 
         return false;

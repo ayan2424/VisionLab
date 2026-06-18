@@ -167,6 +167,15 @@ class DeploymentController extends Controller
                         'vercel_response' => $data,
                     ]),
                 ]);
+
+                // Phase 9: Gamification - Award Cloud Pioneer Badge
+                \App\Models\UserBadge::awardOnce(
+                    $deployment->user_id,
+                    'first_deployment',
+                    'Cloud Pioneer',
+                    'Successfully deployed a project to the cloud.',
+                    '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>'
+                );
             } else {
                 $deployment->update([
                     'status'        => 'failed',

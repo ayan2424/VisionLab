@@ -71,6 +71,24 @@ class AiController extends Controller
     }
 
     /**
+     * Get pending patches.
+     */
+    public function pendingPatches(Request $request)
+    {
+        $workspaceId = $request->query('workspace_id');
+        if (!$workspaceId) {
+            return response()->json([], 400);
+        }
+
+        $id = str_replace('ws-', '', $workspaceId);
+        $patches = AiPendingPatch::where('workspace_id', $id)
+            ->where('status', 'pending')
+            ->get();
+
+        return response()->json($patches);
+    }
+
+    /**
      * Approve a proposed patch.
      */
     public function approvePatch(Request $request, AiPendingPatch $patch)

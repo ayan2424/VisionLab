@@ -20,3 +20,10 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# VisionLab Compilation & Security
+/visionlab-ide
+visionlab_compile.sh
+*.patch
+*.pem
+build.log

@@ -1,84 +1,106 @@
-const CACHE_NAME = 'visioncode-v1';
-const OFFLINE_URL = '/offline';
-
-const PRECACHE_ASSETS = [
-    '/',
+const CACHE_NAME = 'visionlab-v1';
+const STATIC_ASSETS = [
     '/offline',
-    '/manifest.json',
+    '/logo.svg',
+    '/manifest.json'
 ];
 
-const NAVIGATION_ROUTES = [
-    '/dashboard', '/courses', '/workspace', '/admin'
-];
-
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(PRECACHE_ASSETS).catch(() => {});
-        }).then(() => self.skipWaiting())
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(STATIC_ASSETS);
+        })
     );
+    self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-        ).then(() => self.clients.claim())
+        caches.keys().then((keys) => {
+            return Promise.all(
+                keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+            );
+        })
     );
+    self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-    const { request } = event;
-    const url = new URL(request.url);
+self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
 
-    // Skip non-GET, cross-origin, WebSocket
-    if (request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) {
+    // Skip cross-origin requests, API routes, and Reverb websocket
+    if (url.origin !== location.origin || url.pathname.startsWith('/api') || url.pathname.startsWith('/app')) {
         return;
     }
 
-    // Workspace: network only
-    if (url.pathname.startsWith('/workspace')) {
-        return;
-    }
-
-    // Static assets: cache first
-    if (url.pathname.match(/\.(css|js|png|jpg|jpeg|svg|ico|woff2?|ttf)$/)) {
+    // Do NOT cache Workspace routes (IDE must be live)
+    if (url.pathname.startsWith('/workspace/')) {
         event.respondWith(
-            caches.match(request).then(cached => cached || fetch(request).then(res => {
-                const clone = res.clone();
-                caches.open(CACHE_NAME).then(c => c.put(request, clone));
-                return res;
-            }))
+            fetch(event.request).catch(() => {
+                // If offline and trying to load workspace, show offline fallback page
+                return caches.match('/offline');
+            })
         );
         return;
     }
 
-    // Navigation: network first, fallback offline
-    if (request.mode === 'navigate') {
+    // Network-first strategy for dynamic HTML pages
+    if (event.request.mode === 'navigate') {
         event.respondWith(
-            fetch(request).catch(() => caches.match('/offline') || new Response('Offline', { status: 503 }))
+            fetch(event.request).catch(() => {
+                return caches.match('/offline');
+            })
         );
         return;
     }
-});
 
-// Push notifications
-self.addEventListener('push', event => {
-    const data = event.data ? event.data.json() : {};
-    event.waitUntil(
-        self.registration.showNotification(data.title || 'VisionLab', {
-            body: data.body || 'You have a new notification.',
-            icon: '/icons/icon-192.png',
-            badge: '/icons/icon-192.png',
-            data: { url: data.url || '/dashboard' },
-            vibrate: [100, 50, 100]
+    // Stale-while-revalidate for static assets (CSS, JS, images)
+    event.respondWith(
+        caches.match(event.request).then((cachedResponse) => {
+            const fetchPromise = fetch(event.request).then((networkResponse) => {
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, networkResponse.clone());
+                });
+                return networkResponse;
+            }).catch(() => null);
+
+            return cachedResponse || fetchPromise;
         })
     );
 });
 
-self.addEventListener('notificationclick', event => {
-    event.notification.close();
+// Push Notification Handling
+self.addEventListener('push', function(event) {
+    if (!event.data) return;
+    
+    let data = {};
+    try {
+        data = event.data.json();
+    } catch (e) {
+        data = { title: 'VisionLab', body: event.data.text() };
+    }
+
+    const options = {
+        body: data.body,
+        icon: '/logo.svg',
+        badge: '/logo.svg',
+        vibrate: [100, 50, 100],
+        data: {
+            url: data.url || '/dashboard'
+        }
+    };
+
     event.waitUntil(
-        clients.openWindow(event.notification.data.url || '/dashboard')
+        self.registration.showNotification(data.title || 'New Notification', options)
     );
+});
+
+// Click notification handler
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    if (event.notification.data && event.notification.data.url) {
+        event.waitUntil(
+            clients.openWindow(event.notification.data.url)
+        );
+    }
 });

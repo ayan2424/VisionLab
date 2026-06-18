@@ -159,6 +159,18 @@ class WorkspaceController extends Controller
         ]);
     }
 
+    /** Ping workspace readiness */
+    public function ping(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('view', $workspace);
+
+        $isReady = $this->codeServerManager->isWorkspaceReady($workspace);
+        
+        \Illuminate\Support\Facades\Log::info('Ping called for workspace ' . $workspace->id, ['ready' => $isReady]);
+
+        return response()->json(['ready' => $isReady]);
+    }
+
     // ── File I/O API ────────────────────────────────────────────────────
 
     /** List files in workspace */
@@ -185,6 +197,21 @@ class WorkspaceController extends Controller
         }
 
         return response()->json(['path' => $path, 'content' => $content]);
+    }
+
+    /** Download a file */
+    public function downloadFile(Workspace $workspace, Request $request)
+    {
+        $this->authorize('access', $workspace);
+
+        $path = $request->query('path', '');
+        $securePath = $this->codeServerManager->getSecureFilePath($workspace, $path);
+
+        if ($securePath === null) {
+            abort(404, 'File not found or access denied');
+        }
+
+        return response()->download($securePath);
     }
 
     /** Write a file */

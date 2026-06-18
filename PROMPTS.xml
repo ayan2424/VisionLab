@@ -14,7 +14,8 @@
       <BASIS>AI features must account for prompt injection, sensitive information disclosure, insecure tool design, excessive agency, model denial of service, supply-chain risk, and overreliance.</BASIS>
       <BASIS>Containerized IDEs must be exposed only through authenticated, TLS-protected, policy-controlled routes, with extension storage, user data, download behavior, proxy behavior, and webview secure-context requirements handled deliberately.</BASIS>
       <BASIS>PWA behavior must improve reliability without misleading users: service workers are optional enhancement layers, offline fallbacks must be explicit, and online-only capabilities such as live IDE workspaces must fail honestly.</BASIS>
-      <BASIS>Extension Modifications: AI must strictly use source-level compilation (e.g., Docker) for IDE extensions. Shortcuts like regex-patching compiled JS bundles to hide UI elements or bypass proper telemetry removal are strictly forbidden. Unwanted components must be eradicated natively at the source level.</BASIS>
+      <BASIS>Extension & IDE Modifications: AI must strictly use source-level compilation (e.g., Docker) for both IDE extensions AND the core `code-server` engine. Shortcuts like regex-patching compiled JS bundles to hide UI elements or bypass proper telemetry removal are strictly forbidden. Unwanted components must be eradicated natively at the source level.</BASIS>
+      <BASIS>Container environments are fundamentally Nix-based. Using `apt` or `apt-get` to install packages is strictly non-viable and forbidden. All package resolution must occur via `dev.nix`.</BASIS>
     </RESEARCH_BASIS>
     <SOURCE_REFERENCES>
       <REFERENCE name="OpenAI Prompt Engineering" url="https://developers.openai.com/api/docs/guides/prompt-engineering"/>
@@ -50,7 +51,7 @@
     </SKILL_AND_SOURCE_PROTOCOL>
     <UNIVERSAL_REQUIREMENTS>
       <REQUIREMENT>Use Laravel 11, MySQL 8, Blade, Tailwind CSS, Laravel Reverb, Redis where needed, Docker-managed code-server workspaces, and TypeScript for VS Code extensions.</REQUIREMENT>
-      <REQUIREMENT>Preserve an ultra-premium dark design system with accessible contrast, responsive layouts, and highly interactive navigation. The UI must feature 3D-style interactions (especially in the Hero section), fully rounded/pilled geometry, and floating elements. Use Google-like fluid gradients for frontend pages, and strictly use an Orange accent color exclusively for the IDE Workspace.</REQUIREMENT>
+      <REQUIREMENT>Preserve an ultra-premium dark design system (Strict #0a0a0a) with accessible contrast, responsive layouts, and highly interactive navigation. The UI must feature 3D-style interactions, fully rounded/pilled geometry, and floating elements. Use fluid gradients and vibrant glassmorphism for frontend pages, and strictly use an Orange accent color exclusively for the full-screen IDE Workspace container environment.</REQUIREMENT>
       <REQUIREMENT>Use complete data flows backed by persistence, authorization, validation, audit logs, error states, and recovery paths.</REQUIREMENT>
       <REQUIREMENT>Use realistic seed data only where it supports local development, automated tests, or competition evaluation. Seeded data must be clearly separated from production runtime behavior.</REQUIREMENT>
       <REQUIREMENT>Never expose secrets, write outside allowed workspace paths, bypass policies, disable authorization for convenience, or hide failed operations behind success messages.</REQUIREMENT>
@@ -90,14 +91,21 @@
         <DETAIL>Every classroom list must include pagination, filters or search where the list can grow, empty states, and role-appropriate actions.</DETAIL>
       </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="3" Name="Workspace IDE Specifics">
-        <DETAIL>The workspace manager must resolve workspace root, project root, container name, dynamic port or proxy route, access token, container image, resource policy, environment variables, startup timeout, health check, and cleanup behavior.</DETAIL>
-        <DETAIL>Workspace startup must be idempotent: if a healthy container exists, reuse it; if metadata points to a missing or unhealthy container, repair or restart according to policy and log the decision.</DETAIL>
+        <DETAIL>The workspace manager must resolve workspace root, project root, container name, dynamic port or proxy route, access token, container image (which must support Nix-based declarative environments via `dev.nix` for reproducible language toolchains), resource policy, environment variables, startup timeout, health check, and cleanup behavior.</DETAIL>
+        <DETAIL>Workspace startup must be idempotent and resilient to `SIGABRT` / JavaScript heap OOM crashes. If a container crashes, repair or restart it gracefully according to policy and log the decision.</DETAIL>
         <DETAIL>Workspace resource resolution must be deterministic: administrator global defaults, course-specific quota, user-specific quota, role default, then hard platform fallback. The effective quota must be visible to administrators and logged on container start.</DETAIL>
-        <DETAIL>The IDE shell must include top bar, workspace title, role-aware actions, active collaborators, video entry point, deploy entry point when enabled, file explorer, code-server iframe, AI and patch status indicators, status bar, and terminal entry point.</DETAIL>
-        <DETAIL>The file explorer must support folders, files, refresh, create, rename, delete, read, write, active file state, failure toasts, denied actions, and mobile navigation.</DETAIL>
+        <DETAIL>The IDE shell must be completely full-screen within the container workspace, with no external JavaScript file explorer wrapping it. It must natively sync preloader removal with `code-server`'s internal `/healthz` dynamic polling.</DETAIL>
+        <DETAIL>The IDE must support integrated **Web Previews** (via Simple Browser proxying) so that students can view dynamically rendered web applications, not just static HTML files.</DETAIL>
         <DETAIL>File APIs must return stable JSON shapes with success, validation error, authorization error, conflict, not found, and server error cases.</DETAIL>
         <DETAIL>The workspace UI must clearly distinguish container starting, running, unhealthy, stopped, failed, unauthorized, and offline states.</DETAIL>
         <DETAIL>Do not use external public IDE instances as a substitute for a workspace. If the local environment cannot run containers, show a truthful setup error and document prerequisites.</DETAIL>
+      </PHASE_BLUEPRINT>
+      <PHASE_BLUEPRINT Phase="3b" Name="Sovereign Native IDE Compilation">
+        <DETAIL>Fork `coder/code-server` locally to deeply mutate its source code for Sovereign Native Governance.</DETAIL>
+        <DETAIL>Natively inject the VisionLab Agent extension into the core codebase so it cannot be removed.</DETAIL>
+        <DETAIL>Permanently disable generic upstream IDE telemetry and hide distracting default explorers via profound TypeScript UI mutations.</DETAIL>
+        <DETAIL>Hardcode the VisionLab Strict `#0a0a0a` Dark Theme into the VS Code baseline registry.</DETAIL>
+        <DETAIL>Compile the heavily modified source codebase on a high-end GCP compute node (e.g., e2-standard-8) to produce the proprietary `visionlab-ide` artifact.</DETAIL>
       </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="4" Name="Extension and Lockdown Specifics">
         <DETAIL>Maintain an extension manifest with package identifier, display name, version, category, source, checksum, built-in status, required status, global availability, course availability, workspace overrides, and rollout state.</DETAIL>
@@ -174,7 +182,7 @@
       <PHASE_BLUEPRINT Phase="12" Name="Deployment and Evaluation Specifics">
         <DETAIL>Production topology must define application, web server, database, Redis, queue workers, scheduler, Reverb, workspace containers, storage, video service, AI provider, push service, monitoring, and backup boundaries.</DETAIL>
         <DETAIL>CI/CD must run dependency installation, static checks where available, backend tests, frontend build, browser tests where available, image build, artifact verification, and deployment only after successful checks.</DETAIL>
-        <DETAIL>Deployment documentation must include first deploy, environment variables, migrations, seed data for local evaluation, queue workers, scheduler, storage links, extension artifacts, workspace image build, backup, restore, rollback, and incident handling.</DETAIL>
+        <DETAIL>Deployment documentation must include 24/7 Cloud Server orchestration (e2-standard-8 GCP nodes) for autonomous agents, first deploy, environment variables, migrations, seed data, storage links, workspace image builds, and incident handling.</DETAIL>
         <DETAIL>Health checks must cover database, Redis, queue, scheduler, Reverb, storage, workspace orchestration, AI provider configuration, push configuration, and video provider configuration.</DETAIL>
         <DETAIL>Competition readiness must rely on functioning product workflows, prepared evaluation accounts, reset procedures, preflight checklist, service contingency plan, and operator runbook.</DETAIL>
         <DETAIL>Release evidence must include version manifest, migration state, test summary, security verification summary, deployment checklist, backup confirmation, known risks, and rollback plan.</DETAIL>
@@ -188,7 +196,8 @@
       <STRATEGY name="Container Lifecycle Discipline">Workspace start, stop, health, quota, token, routing, storage, cleanup, and error states are treated as a managed lifecycle rather than scattered Docker calls.</STRATEGY>
       <STRATEGY name="Human Approved AI Mutation">AI may assist deeply, but code and operational changes require sandboxing, patch preview, audit trail, and human confirmation before mutation.</STRATEGY>
       <STRATEGY name="Extension Governance">Extension delivery combines artifact provenance, integrity checks, immutable required tools, role-aware optional tools, and runtime policy enforcement.</STRATEGY>
-      <STRATEGY name="Continue Source Ownership">The VisionLab AI agent must be produced from the official Continue source tree or a maintained fork, with deliberate full-source audit, source-level branding, configuration, compilation, smoke testing, and artifact recording. Binary package editing, wrapper-only branding, package-name-only edits, container-runtime overlays, or post-install disguises are not acceptable for the AI agent or any sensitive extension.</STRATEGY>
+      <STRATEGY name="Continue Source Ownership">The VisionLab AI agent must be produced from the official Continue source tree or a maintained fork, with deliberate full-source audit, source-level branding, configuration, compilation, smoke testing, and artifact recording. The core IDE `code-server` must similarly be natively recompiled from source to implement branding and hide UI components. Binary package editing, wrapper-only branding, package-name-only edits, container-runtime overlays, or post-install disguises are not acceptable for the AI agent, any sensitive extension, or the code-server binary.</STRATEGY>
+      <STRATEGY name="Smart Declarative Environments">Workspace containers use Nix (`dev.nix`) for package resolution (e.g., PHP, Composer, Node). Do not restrict the AI Agent with hardcoded `dev.nix` code snippets. Instead, present the conceptual requirement and empower the AI to use its robust thinking power to dynamically construct and resolve the optimal Nix environment logic for any given workspace.</STRATEGY>
       <STRATEGY name="Independent Agent Fork">The upstream AI extension source may be imported once as a legally reviewed starting point, then VisionLab must own its source repository, build pipeline, release cadence, artifact registry, roadmap, and maintenance. Future workspace installs must use VisionLab-built artifacts only, with no automatic dependency on upstream extension releases, registries, branding, endpoints, or runtime services.</STRATEGY>
       <STRATEGY name="Real Product Evaluation">Competition readiness is built from functioning workflows, evaluation accounts, reliable preflight checks, and operator runbooks, not staged-only screens.</STRATEGY>
       <STRATEGY name="Async External Integrations">AI providers, video providers, push, and project deployment providers require queued work, retries, status records, timeout handling, and user-visible failure states.</STRATEGY>
@@ -312,6 +321,23 @@
         <IMPLEMENTATION_STEP id="3.5" name="Workspace Security and Visual Verification">
           <DETAIL>Verify workspace authorization, path traversal denial, container health state, file operations, UI layout, iframe loading, and Docker-unavailable behavior.</DETAIL>
           <DETAIL>Record environment prerequisites and operator diagnostics for workspace startup failures.</DETAIL>
+        </IMPLEMENTATION_STEP>
+      </PHASE_STEPS>
+      <PHASE_STEPS Phase="3b" Name="Sovereign Native IDE Compilation">
+        <IMPLEMENTATION_STEP id="3b.1" name="Source Code Retrieval and Deep Rebranding">
+          <DETAIL>Clone the upstream `code-server` and its core `vscode` submodules to the local environment.</DETAIL>
+          <DETAIL>Modify `package.json`, `product.json`, and core window title mechanisms to exclusively display 'VisionLab IDE'.</DETAIL>
+        </IMPLEMENTATION_STEP>
+        <IMPLEMENTATION_STEP id="3b.2" name="UI Mutilation and Lockdown">
+          <DETAIL>Execute source-level eradication of extraneous UI elements like the standalone file explorer, welcome screens, and upstream update checks.</DETAIL>
+          <DETAIL>Bake the strict `#0a0a0a` dark theme tokens directly into the VS Code theme registry.</DETAIL>
+        </IMPLEMENTATION_STEP>
+        <IMPLEMENTATION_STEP id="3b.3" name="Native Extension Embedding">
+          <DETAIL>Inject the VisionLab AI Agent and Collaboration extensions natively into the `extensions/` payload of the source tree.</DETAIL>
+        </IMPLEMENTATION_STEP>
+        <IMPLEMENTATION_STEP id="3b.4" name="High-End GCP Compilation">
+          <DETAIL>Transfer the profoundly mutated codebase to the high-end GCP production node via rsync/scp.</DETAIL>
+          <DETAIL>Execute `yarn build` and `yarn release` to compile the C++ bindings and TypeScript logic into the final standalone `.tar.gz` artifact.</DETAIL>
         </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
       <PHASE_STEPS Phase="4" Name="Extension Ecosystem and Lockdown">

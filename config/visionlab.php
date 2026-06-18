@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'container_prefix' => env('VISIONLAB_CONTAINER_PREFIX', 'vl-ws-'),
-    'container_image'  => env('VISIONLAB_CONTAINER_IMAGE', 'codercom/code-server:latest'),
+    'container_image'  => env('VISIONLAB_CONTAINER_IMAGE', 'visionlab/workspace:latest'),
     'storage_path'     => env('VISIONLAB_STORAGE_PATH', storage_path('workspaces')),
     'base_port'        => (int) env('VISIONLAB_BASE_PORT', 9000),
     'proxy_host'       => env('VISIONLAB_PROXY_HOST', '127.0.0.1'),
