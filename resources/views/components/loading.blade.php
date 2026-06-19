@@ -24,3 +24,5 @@ $sizeClasses = match($size) {
         <span class="w-2 h-2 rounded-full bg-[var(--vc-accent)] animate-bounce" style="animation-delay: 0.3s;"></span>
     </div>
 @endif
+
+

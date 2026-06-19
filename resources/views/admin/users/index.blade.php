@@ -43,7 +43,7 @@
                 <td class="px-5 py-4">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                             style="background:{{ $user->role === 'admin' ? '#ef4444' : ($user->role === 'instructor' ? 'linear-gradient(135deg,#F05000,#FF8147)' : '#06b6d4') }}">
+                             style="background:{{ $user->role === 'admin' ? '#ef4444' : ($user->role === 'instructor' ? 'linear-gradient(135deg,#7c3aed,#8b5cf6)' : '#06b6d4') }}">
                             {{ strtoupper(substr($user->name, 0, 1)) }}
                         </div>
                         <div class="min-w-0">
@@ -91,3 +91,5 @@
 
 <div class="mt-5">{{ $users->withQueryString()->links() }}</div>
 @endsection
+
+

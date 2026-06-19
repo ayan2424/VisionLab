@@ -7,7 +7,7 @@
 
             {{-- Ambient orbs --}}
             <div class="absolute w-[500px] h-[500px] rounded-full bg-cyan-400/15 blur-[120px] -top-40 -right-40 pointer-events-none"></div>
-            <div class="absolute w-[400px] h-[400px] rounded-full bg-orange-600/20 blur-[100px] -bottom-32 -left-20 pointer-events-none"></div>
+            <div class="absolute w-[400px] h-[400px] rounded-full bg-violet-600/20 blur-[100px] -bottom-32 -left-20 pointer-events-none"></div>
 
             {{-- Grid --}}
             <div class="absolute inset-0 opacity-[0.04]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
@@ -30,8 +30,8 @@
                 {{-- Feature list --}}
                 <div class="space-y-4">
                     <div class="flex items-start gap-3 group">
-                        <div class="w-9 h-9 rounded-xl bg-orange-600/10 border border-orange-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-orange-600/20 transition-colors">
-                            <svg class="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                        <div class="w-9 h-9 rounded-xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-600/20 transition-colors">
+                            <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
                         </div>
                         <div>
                             <div class="text-sm font-semibold text-white">Full VS Code IDE</div>
@@ -57,8 +57,8 @@
                         </div>
                     </div>
                     <div class="flex items-start gap-3 group">
-                        <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500/20 transition-colors">
-                            <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-cyan-500/20 transition-colors">
+                            <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         </div>
                         <div>
                             <div class="text-sm font-semibold text-white">Smart LMS</div>
@@ -209,3 +209,5 @@
         }
     </script>
 </x-guest-layout>
+
+

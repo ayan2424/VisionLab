@@ -78,10 +78,10 @@ class CodeServerManager
             ? "http://localhost:{$port}/?folder=/home/coder/project" 
             : "/codeserver/{$port}/?folder=/home/coder/project";
 
-        $authMode = $isLocalhost ? 'none' : 'password';
+        $authMode = 'none'; // Permanently disabled password auth as requested
 
         $cmd = [
-            'docker', 'run', '-d',
+            $this->dockerCmd(), 'run', '-d',
             '--name', $name,
             '-v', "{$workspacePath}:/home/coder/project",
             '-p', "{$port}:8080",
@@ -91,7 +91,6 @@ class CodeServerManager
             '-e', "VISIONCODE_USER_ID=" . (auth()->id() ?? '0'),
             '-e', "VISIONCODE_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
             '-e', "VISIONCODE_API_URL=" . url('/api'),
-            '-e', 'EXTENSIONS_GALLERY={}', // Disable public VS Code Marketplace for lockdown
             '--restart', 'unless-stopped',
             '--memory', ($quota['memory_mb'] ?? 512) . 'm',
             '--cpu-shares', (string) ($quota['cpu_shares'] ?? 1024),
@@ -137,7 +136,11 @@ class CodeServerManager
         ]);
 
         // Inject Configs and Extensions dynamically
-        $this->setupWorkspaceExtensions($name, $workspace);
+        try {
+            $this->setupWorkspaceExtensions($name, $workspace);
+        } catch (\Throwable $e) {
+            Log::warning("Could not setup workspace extensions (Phase 4 not migrated yet?): " . $e->getMessage());
+        }
 
         return [
             'url'          => $proxyUrl,
@@ -178,7 +181,7 @@ class CodeServerManager
             return false;
         }
 
-        $process = new Process(['docker', 'restart', $name]);
+        $process = new Process([$this->dockerCmd(), 'restart', $name]);
         $process->setTimeout(30);
         $process->run();
 
@@ -201,7 +204,7 @@ class CodeServerManager
             return ['running' => false, 'url' => null, 'port' => null, 'token' => null, 'container_id' => null];
         }
 
-        $process = new Process(['docker', 'inspect', '--format', '{{.State.Running}}:{{.Id}}', $name]);
+        $process = new Process([$this->dockerCmd(), 'inspect', '--format', '{{.State.Running}}:{{.Id}}', $name]);
         $process->setTimeout(10);
         $process->run();
 
@@ -217,7 +220,7 @@ class CodeServerManager
         }
 
         // Get the mapped port
-        $portProcess = new Process(['docker', 'port', $name, '8080']);
+        $portProcess = new Process([$this->dockerCmd(), 'port', $name, '8080']);
         $portProcess->setTimeout(10);
         $portProcess->run();
         $portOutput = trim($portProcess->getOutput());
@@ -248,7 +251,7 @@ class CodeServerManager
         }
 
         $process = new Process([
-            'docker', 'inspect', '--format', '{{.State.Running}}', $workspace->container_id,
+            $this->dockerCmd(), 'inspect', '--format', '{{.State.Running}}', $workspace->container_id,
         ]);
         $process->setTimeout(10);
         $process->run();
@@ -295,7 +298,7 @@ class CodeServerManager
         }
 
         $process = new Process([
-            'docker', 'stats', '--no-stream', '--format', '{{json .}}', $workspace->container_id,
+            $this->dockerCmd(), 'stats', '--no-stream', '--format', '{{json .}}', $workspace->container_id,
         ]);
         $process->setTimeout(10);
         $process->run();
@@ -602,6 +605,11 @@ class CodeServerManager
         };
     }
 
+    private function dockerCmd(): string
+    {
+        return PHP_OS_FAMILY === 'Windows' ? 'docker' : '/usr/bin/docker';
+    }
+
     public function isDockerAvailable(): bool
     {
         if (self::$dockerAvailable !== null) {
@@ -609,7 +617,7 @@ class CodeServerManager
         }
 
         try {
-            $process = new Process(['docker', 'info']);
+            $process = new Process([$this->dockerCmd(), 'info']);
             $process->setTimeout(15);
             $process->run();
             self::$dockerAvailable = $process->isSuccessful();
@@ -643,11 +651,11 @@ class CodeServerManager
 
     private function removeContainer(string $name): bool
     {
-        $stop = new Process(['docker', 'stop', $name]);
+        $stop = new Process([$this->dockerCmd(), 'stop', $name]);
         $stop->setTimeout(15);
         $stop->run();
 
-        $rm = new Process(['docker', 'rm', '-f', $name]);
+        $rm = new Process([$this->dockerCmd(), 'rm', '-f', $name]);
         $rm->setTimeout(10);
         $rm->run();
 
@@ -657,7 +665,7 @@ class CodeServerManager
     public function installExtension(Workspace $workspace, string $identifierOrPath): bool
     {
         $containerName = "ws-{$workspace->id}";
-        $process = new Process(['docker', 'exec', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
+        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
         $process->run();
         
         if (!$process->isSuccessful()) {
@@ -669,7 +677,7 @@ class CodeServerManager
     public function uninstallExtension(Workspace $workspace, string $identifier): bool
     {
         $containerName = "ws-{$workspace->id}";
-        $process = new Process(['docker', 'exec', $containerName, 'code-server', '--uninstall-extension', $identifier]);
+        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'code-server', '--uninstall-extension', $identifier]);
         $process->run();
         
         if (!$process->isSuccessful()) {
@@ -728,7 +736,7 @@ class CodeServerManager
         $jsonForBash = str_replace("'", "'\\''", $json);
         $script = "mkdir -p /home/coder/.continue && echo '{$jsonForBash}' > /home/coder/.continue/config.json";
 
-        $process = new Process(['docker', 'exec', $containerName, 'bash', '-c', $script]);
+        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
 
         // 2. Install enabled extensions dynamically

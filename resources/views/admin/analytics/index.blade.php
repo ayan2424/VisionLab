@@ -15,7 +15,7 @@
         ['label' => 'Total Users',       'value' => $stats['total_users'],       'color' => 'text-violet-400'],
         ['label' => 'Total Courses',      'value' => $stats['total_courses'],      'color' => 'text-cyan-400'],
         ['label' => 'Total Submissions',  'value' => $stats['total_submissions'],  'color' => 'text-emerald-400'],
-        ['label' => 'Pending Grading',    'value' => $stats['pending_grading'],    'color' => 'text-amber-400'],
+        ['label' => 'Pending Grading',    'value' => $stats['pending_grading'],    'color' => 'text-cyan-400'],
         ['label' => 'AI Actions Today',   'value' => $stats['ai_actions_today'],   'color' => 'text-rose-400'],
         ['label' => 'Total AI Actions',   'value' => $stats['ai_actions_total'],   'color' => 'text-blue-400'],
     ] as $i => $stat)
@@ -62,7 +62,7 @@
             <div class="text-center">
                 <div class="text-slate-500 text-sm mb-2">No AI sessions yet</div>
                 <div class="grid grid-cols-3 gap-2 mt-4">
-                    @foreach([['CHAT','text-violet-400'],['PLAN','text-cyan-400'],['AGENT','text-amber-400']] as $mode)
+                    @foreach([['CHAT','text-violet-400'],['PLAN','text-cyan-400'],['AGENT','text-cyan-400']] as $mode)
                     <div class="text-center p-3 rounded-xl border border-white/[0.06]">
                         <div class="text-lg font-black {{ $mode[1] }}">0</div>
                         <div class="text-xs text-slate-500 mt-1">{{ $mode[0] }}</div>
@@ -99,7 +99,7 @@
                     <td class="py-2.5 pr-4 text-xs text-slate-400">{{ $action->action_type }}</td>
                     <td class="py-2.5 pr-4">
                         <span class="px-2 py-0.5 rounded-md text-xs border
-                            {{ $action->mode === 'AGENT' ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' : ($action->mode === 'PLAN' ? 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20' : 'text-violet-400 bg-violet-400/10 border-violet-400/20') }}">
+                            {{ $action->mode === 'AGENT' ? 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20' : ($action->mode === 'PLAN' ? 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20' : 'text-violet-400 bg-violet-400/10 border-violet-400/20') }}">
                             {{ $action->mode }}
                         </span>
                     </td>
@@ -226,3 +226,5 @@ document.querySelectorAll('.stat-counter').forEach(el => {
 });
 </script>
 @endsection
+
+

@@ -72,7 +72,7 @@
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                             style="background:linear-gradient(135deg,#F05000,#FF8147);">
+                             style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">
                             {{ strtoupper(substr($ann->author->name ?? 'I', 0, 1)) }}
                         </div>
                         <div>
@@ -182,7 +182,7 @@
             $sub = $userSubmissions[$assignment->id] ?? null;
             $isOverdue = $assignment->isOverdue();
         @endphp
-        <div class="vc-card p-5 mb-4 hover:border-orange-500/30 transition-all">
+        <div class="vc-card p-5 mb-4 hover:border-violet-500/30 transition-all">
             <div class="flex items-start justify-between">
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1">
@@ -238,7 +238,7 @@
             <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">Instructor</h3>
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                     style="background:linear-gradient(135deg,#F05000,#FF8147);">
+                     style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">
                     {{ strtoupper(substr($course->instructor->name, 0, 1)) }}
                 </div>
                 <div>
@@ -333,3 +333,5 @@
     @endif
 </div>
 @endsection
+
+

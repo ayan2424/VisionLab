@@ -113,7 +113,7 @@
                     <div class="flex items-center justify-between px-4 py-3 border-b" style="background:var(--vc-elevated);border-color:var(--vc-border);">
                         <div class="flex items-center gap-2">
                             <div class="w-2.5 h-2.5 rounded-full bg-red-500/70"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/70"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-cyan-500/70"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-green-500/70"></div>
                             <span class="ml-2 text-xs font-mono font-semibold" style="color:var(--vc-text-secondary);">{{ $assignment->starter_language === 'python' ? 'solution.py' : ($assignment->starter_language === 'javascript' ? 'solution.js' : ($assignment->starter_language === 'php' ? 'solution.php' : 'solution.' . $assignment->starter_language)) }}</span>
                         </div>
@@ -371,7 +371,7 @@ require(['vs/editor/editor.main'], function() {
         colors: {
             'editor.background':             '#00000000', // transparent to inherit
             'editorLineNumber.foreground':   '#9CA3AF',
-            'editorCursor.foreground':       '#F97316',
+            'editorCursor.foreground':       '#8b5cf6',
         }
     });
 
@@ -512,3 +512,5 @@ function copyCode() {
 }
 </script>
 @endsection
+
+

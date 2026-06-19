@@ -1,5 +1,5 @@
 {{--
-  Dashboard Layout — Unified Layout System (Firebase × Amber Tech)
+  Dashboard Layout — Unified Layout System (Firebase × cyan Tech)
 --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -112,3 +112,5 @@ window.vcToast = vcToast;
 </style>
 </body>
 </html>
+
+

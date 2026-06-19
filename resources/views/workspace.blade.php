@@ -47,7 +47,7 @@
         .loader-box {
             background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px; padding: 40px; width: 400px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(249, 115, 22, 0.1); /* Workspace Orange Accent */
+            box-shadow: 0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(249, 115, 22, 0.1); /* Workspace violet Accent */
             display: flex; flex-direction: column; gap: 24px;
         }
 
@@ -73,7 +73,7 @@
             transition: color 0.3s;
         }
         .step-item.active { color: #f1f5f9; font-weight: 600; }
-        .step-item.done { color: #f97316; } /* Orange */
+        .step-item.done { color: #f97316; } /* orange */
 
         .spinner {
             width: 16px; height: 16px; border: 2px solid transparent;
@@ -170,7 +170,7 @@
         <div id="collaborators-container" style="display:flex;align-items:center;gap:-8px;margin-left:8px;"></div>
 
         {{-- User Menu --}}
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #4f46e5, #7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,0.4);margin-left:4px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #f97316, #fb923c);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.4);margin-left:4px;">
             {{ $user->avatar_initials ?? 'U' }}
         </div>
     </div>
@@ -442,7 +442,7 @@
                 toast.className = 'toast';
                 
                 toast.innerHTML = `
-                    <div style="width:24px;height:24px;background:rgba(249,115,22,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#f97316;">
+                    <div style="width:24px;height:24px;background:rgba(249,115,22,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8b5cf6;">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
                     </div>
                     <div>
@@ -609,3 +609,4 @@
 
 </body>
 </html>
+

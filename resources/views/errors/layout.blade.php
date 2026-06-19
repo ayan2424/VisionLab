@@ -18,7 +18,7 @@
         
         <div class="flex justify-center mb-10">
             <a href="/" class="flex items-center gap-2 group">
-                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-vc-accent to-orange-600 shadow-[0_0_20px_rgba(240,80,0,0.3)] group-hover:scale-105 transition-transform">
+                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-vc-accent to-cyan-600 shadow-[0_0_20px_rgba(240,80,0,0.3)] group-hover:scale-105 transition-transform">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                 </div>
                 <span class="text-xl font-bold tracking-tight text-white">VisionLab</span>
@@ -48,3 +48,5 @@
 
 </body>
 </html>
+
+

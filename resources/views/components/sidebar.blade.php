@@ -185,7 +185,7 @@
     <div class="p-4 border-t flex items-center gap-3" style="border-color:var(--vc-border);">
         <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 flex-1 overflow-hidden group">
             <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                 style="background:{{ Auth::user()->isAdmin() ? '#EF4444' : (Auth::user()->isInstructor() ? '#F05000' : '#16A34A') }};">
+                 style="background:{{ Auth::user()->isAdmin() ? '#EF4444' : (Auth::user()->isInstructor() ? '#7c3aed' : '#16A34A') }};">
                 {{ Auth::user()->avatar_initials }}
             </div>
             <div class="min-w-0">
@@ -201,3 +201,5 @@
         </form>
     </div>
 </aside>
+
+

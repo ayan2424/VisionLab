@@ -51,7 +51,7 @@
                     @elseif($ws->status === 'stopped')
                         <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-gray-500/10 text-gray-400">Stopped</span>
                     @else
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-500">{{ ucfirst($ws->status) }}</span>
+                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500">{{ ucfirst($ws->status) }}</span>
                     @endif
                 </td>
                 <td class="px-4 py-3 text-right">
@@ -78,3 +78,5 @@
     @endif
 </div>
 @endsection
+
+

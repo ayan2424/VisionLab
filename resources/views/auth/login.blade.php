@@ -6,7 +6,7 @@
              style="background:linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%);">
 
             {{-- Ambient orbs --}}
-            <div class="absolute w-[500px] h-[500px] rounded-full bg-orange-600/20 blur-[120px] -top-40 -left-40 pointer-events-none"></div>
+            <div class="absolute w-[500px] h-[500px] rounded-full bg-violet-600/20 blur-[120px] -top-40 -left-40 pointer-events-none"></div>
             <div class="absolute w-[400px] h-[400px] rounded-full bg-cyan-400/15 blur-[100px] -bottom-32 -right-20 pointer-events-none"></div>
 
             {{-- Grid lines --}}
@@ -14,8 +14,8 @@
 
             {{-- Content --}}
             <div class="relative z-10 max-w-md w-full" style="opacity:0;animation:slideRight 0.8s 0.3s ease forwards">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-400/20 bg-orange-400/5 text-orange-300 text-xs font-medium mb-8">
-                    <span class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></span>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-400/20 bg-violet-400/5 text-violet-300 text-xs font-medium mb-8">
+                    <span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse"></span>
                     Powered by AI · Built for Developers
                 </div>
 
@@ -31,18 +31,18 @@
                     <div class="flex items-center gap-2 px-4 py-2.5" style="border-bottom:1px solid rgba(255,255,255,0.06);">
                         <div class="flex gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-red-400/80"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400/80"></span>
                             <span class="w-2.5 h-2.5 rounded-full bg-green-400/80"></span>
                         </div>
                         <span class="text-[10px] text-slate-500 ml-2 font-mono">agent.py — VisionLab</span>
                     </div>
                     {{-- Code lines --}}
                     <div class="p-4 font-mono text-xs leading-6" id="codePreview">
-                        <div><span class="text-orange-400">class</span> <span class="text-cyan-300">VisionAgent</span><span class="text-slate-400">:</span></div>
-                        <div class="pl-4"><span class="text-orange-400">def</span> <span class="text-emerald-400">analyze</span><span class="text-slate-400">(self, code):</span></div>
+                        <div><span class="text-violet-400">class</span> <span class="text-cyan-300">VisionAgent</span><span class="text-slate-400">:</span></div>
+                        <div class="pl-4"><span class="text-violet-400">def</span> <span class="text-emerald-400">analyze</span><span class="text-slate-400">(self, code):</span></div>
                         <div class="pl-8"><span class="text-slate-500"># AI-powered code analysis</span></div>
-                        <div class="pl-8"><span class="text-amber-300">result</span> <span class="text-slate-400">=</span> <span class="text-emerald-400">self.engine.run</span><span class="text-slate-400">(code)</span></div>
-                        <div class="pl-8"><span class="text-orange-400">return</span> <span class="text-amber-300">result</span><span class="text-slate-400">.optimize()</span></div>
+                        <div class="pl-8"><span class="text-cyan-300">result</span> <span class="text-slate-400">=</span> <span class="text-emerald-400">self.engine.run</span><span class="text-slate-400">(code)</span></div>
+                        <div class="pl-8"><span class="text-violet-400">return</span> <span class="text-cyan-300">result</span><span class="text-slate-400">.optimize()</span></div>
                     </div>
                 </div>
 
@@ -116,7 +116,7 @@
                     {{-- Remember me + Forgot --}}
                     <div class="flex items-center justify-between">
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="remember" class="rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-500 w-4 h-4">
+                            <input type="checkbox" name="remember" class="rounded border-gray-300 dark:border-gray-600 text-violet-500 focus:ring-violet-500 w-4 h-4">
                             <span class="text-sm" style="color:var(--vc-text-secondary);">Remember me</span>
                         </label>
                         @if(Route::has('password.request'))
@@ -135,7 +135,7 @@
                     <div class="space-y-2">
                         @foreach([
                             ['label' => 'Admin Account', 'email' => 'admin@visioncode.ai', 'pass' => 'Admin@12345', 'color' => '#DC2626'],
-                            ['label' => 'Instructor Account', 'email' => 'instructor@visioncode.ai', 'pass' => 'Instructor@12345', 'color' => '#F05000'],
+                            ['label' => 'Instructor Account', 'email' => 'instructor@visioncode.ai', 'pass' => 'Instructor@12345', 'color' => '#7c3aed'],
                             ['label' => 'Student Account', 'email' => 'student@visioncode.ai', 'pass' => 'Student@12345', 'color' => '#059669'],
                         ] as $demo)
                         <button type="button"
@@ -164,3 +164,5 @@
         }
     </style>
 </x-guest-layout>
+
+

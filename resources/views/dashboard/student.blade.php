@@ -27,7 +27,7 @@
     {{-- ═══ Stats Row ═══ --}}
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
         @foreach([
-            ['label'=>'Courses','value'=>$courses->count(),'color'=>'#F05000','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
+            ['label'=>'Courses','value'=>$courses->count(),'color'=>'#7c3aed','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
             ['label'=>'Pending','value'=>$pendingSubmissions,'color'=>'#0891B2','icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
             ['label'=>'Due Soon','value'=>$upcomingAssignments->count(),'color'=>'#D97706','icon'=>'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
             ['label'=>'Unread','value'=>$unreadAnnouncementCount ?? 0,'color'=>'#059669','icon'=>'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9'],
@@ -76,7 +76,7 @@
                     <a href="{{ route('courses.show', $course->slug) }}"
                        class="vc-card flex items-center gap-4 p-4 hover:-translate-y-0.5 transition-all duration-200">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                             style="background:linear-gradient(135deg,#F05000,#FF8147);">
+                             style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">
                             {{ strtoupper(substr($course->title, 0, 1)) }}
                         </div>
                         <div class="flex-1 min-w-0">
@@ -99,12 +99,12 @@
                     @endif
                 </h3>
                 @forelse($recentAnnouncements as $ann)
-                <div class="vc-card p-4 mb-2 {{ ($ann->is_unread ?? false) ? 'ring-1 ring-orange-500/20' : '' }}">
+                <div class="vc-card p-4 mb-2 {{ ($ann->is_unread ?? false) ? 'ring-1 ring-violet-500/20' : '' }}">
                     <div class="flex items-start gap-3">
                         @if($ann->is_unread ?? false)
                         <div class="w-2 h-2 rounded-full flex-shrink-0 mt-2" style="background:var(--vc-accent);"></div>
                         @endif
-                        <div class="w-7 h-7 rounded-full bg-orange-600 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5">
+                        <div class="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5">
                             {{ strtoupper(substr($ann->author->name ?? 'I', 0, 1)) }}
                         </div>
                         <div class="flex-1 min-w-0">
@@ -188,7 +188,7 @@
                 </h3>
                 <div class="space-y-1">
                     @foreach([
-                        ['route'=>'workspace.index','label'=>'Open Workspace IDE','c'=>'#F05000','i'=>'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4'],
+                        ['route'=>'workspace.index','label'=>'Open Workspace IDE','c'=>'#7c3aed','i'=>'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4'],
                         ['route'=>'progress.index','label'=>'View My Progress','c'=>'#059669','i'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
                         ['route'=>'enrollments.join','label'=>'Join New Course','c'=>'#0891B2','i'=>'M12 4v16m8-8H4'],
                     ] as $act)
@@ -214,3 +214,5 @@
     </div>
 </div>
 @endsection
+
+

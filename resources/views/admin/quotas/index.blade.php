@@ -18,7 +18,7 @@
             <div class="p-4 rounded-xl" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-xs" 
-                         style="background:{{ $quota->role === 'student' ? '#16A34A' : ($quota->role === 'instructor' ? '#F05000' : '#3B82F6') }}">
+                         style="background:{{ $quota->role === 'student' ? '#16A34A' : ($quota->role === 'instructor' ? '#7c3aed' : '#3B82F6') }}">
                         {{ strtoupper(substr($quota->role, 0, 1)) }}
                     </div>
                     <h3 class="font-bold uppercase tracking-wider text-sm" style="color:var(--vc-text);">
@@ -60,3 +60,5 @@
     </form>
 </div>
 @endsection
+
+

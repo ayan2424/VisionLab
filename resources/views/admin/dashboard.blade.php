@@ -43,12 +43,12 @@
     @foreach([
         ['label' => 'Total Users',      'value' => $stats['total_users'],       'sub' => $stats['total_students'].' students',       'color' => 'indigo', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
         ['label' => 'Total Courses',    'value' => $stats['total_courses'],      'sub' => $stats['active_courses'].' active',          'color' => 'cyan',   'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
-        ['label' => 'Pending Grading',  'value' => $stats['pending_grading'],    'sub' => $stats['total_submissions'].' total subs',   'color' => 'amber',  'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
+        ['label' => 'Pending Grading',  'value' => $stats['pending_grading'],    'sub' => $stats['total_submissions'].' total subs',   'color' => 'cyan',  'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
         ['label' => 'AI Actions Today', 'value' => $stats['ai_actions_today'],   'sub' => $stats['ai_actions_total'].' total',        'color' => 'emerald','icon' => 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z'],
     ] as $i => $stat)
     @php
         // Map colors to specific hex for backgrounds/borders
-        $cMap = ['indigo'=>['#FF8147','rgba(240,80,0,0.1)'], 'cyan'=>['#06b6d4','rgba(6,182,212,0.1)'], 'amber'=>['#f59e0b','rgba(245,158,11,0.1)'], 'emerald'=>['#10b981','rgba(16,185,129,0.1)']];
+        $cMap = ['indigo'=>['#8b5cf6','rgba(240,80,0,0.1)'], 'cyan'=>['#06b6d4','rgba(6,182,212,0.1)'], 'cyan'=>['#f59e0b','rgba(245,158,11,0.1)'], 'emerald'=>['#10b981','rgba(16,185,129,0.1)']];
         $hex = $cMap[$stat['color']][0];
         $bg = $cMap[$stat['color']][1];
     @endphp
@@ -133,7 +133,7 @@
         <div class="flex items-center justify-between py-2.5 last:border-0" style="border-bottom:1px solid var(--vc-border);">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                     style="background:{{ $user->role === 'admin' ? '#dc2626' : ($user->role === 'instructor' ? 'linear-gradient(135deg,#F05000,#FF8147)' : '#0891b2') }}">
+                     style="background:{{ $user->role === 'admin' ? '#dc2626' : ($user->role === 'instructor' ? 'linear-gradient(135deg,#7c3aed,#8b5cf6)' : '#0891b2') }}">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
                 <div>
@@ -264,3 +264,5 @@ new Chart(ctxAi, {
 });
 </script>
 @endsection
+
+

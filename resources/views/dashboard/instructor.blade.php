@@ -27,7 +27,7 @@
     {{-- Stats --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         @foreach([
-            ['label'=>'My Courses','value'=>$courses->count(),'color'=>'#F05000','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
+            ['label'=>'My Courses','value'=>$courses->count(),'color'=>'#7c3aed','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
             ['label'=>'Students','value'=>$totalStudents,'color'=>'#0891B2','icon'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
             ['label'=>'Pending Grading','value'=>$pendingGrading,'color'=>$pendingGrading > 0 ? '#D97706' : '#059669','icon'=>'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
             ['label'=>'Avg Grade','value'=>$avgGrade ? round($avgGrade, 1) . '%' : '—','color'=>'#8B5CF6','icon'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
@@ -72,7 +72,7 @@
                 @forelse($courses as $course)
                 <a href="{{ route('courses.show', $course->slug) }}" class="vc-card flex items-center gap-4 p-4 mb-2 hover:-translate-y-0.5 transition-all duration-200">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                         style="background:linear-gradient(135deg,#F05000,#FF8147);">{{ strtoupper(substr($course->title, 0, 1)) }}</div>
+                         style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">{{ strtoupper(substr($course->title, 0, 1)) }}</div>
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-semibold line-clamp-1" style="color:var(--vc-text);">{{ $course->title }}</div>
                         <div class="text-[11px]" style="color:var(--vc-muted);">{{ $course->students_count }} students · Code: {{ $course->enrollment_code }}</div>
@@ -134,7 +134,7 @@
                 </h3>
                 <div class="space-y-1">
                     @foreach([
-                        ['route'=>'courses.create','label'=>'Create New Course','c'=>'#F05000','i'=>'M12 4v16m8-8H4'],
+                        ['route'=>'courses.create','label'=>'Create New Course','c'=>'#7c3aed','i'=>'M12 4v16m8-8H4'],
                         ['route'=>'submissions.queue','label'=>'Grade Submissions','c'=>'#D97706','i'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
                         ['route'=>'workspace.index','label'=>'Open Workspace IDE','c'=>'#059669','i'=>'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4'],
                     ] as $act)
@@ -151,3 +151,5 @@
     </div>
 </div>
 @endsection
+
+

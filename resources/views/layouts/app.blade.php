@@ -123,3 +123,5 @@
     <script src="{{ asset('build/assets/animations.js') }}"></script>
 </body>
 </html>
+
+

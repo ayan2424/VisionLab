@@ -102,7 +102,7 @@
                         </svg>
                         <span id="notif-badge"
                               class="absolute -top-0.5 -right-0.5 hidden items-center justify-center w-4 h-4 rounded-full text-white text-[9px] font-black"
-                              style="background:#F05000;">
+                              style="background:#7c3aed;">
                             <span id="notif-count">0</span>
                         </span>
                     </button>
@@ -157,7 +157,7 @@
                 {{-- Role badge --}}
                 <span class="px-2 py-0.5 rounded-md text-xs font-bold border
                     @if(Auth::user()->isAdmin()) text-red-500 bg-red-500/10 border-red-500/20
-                    @elseif(Auth::user()->isInstructor()) text-orange-500 bg-orange-600/10 border-orange-500/20
+                    @elseif(Auth::user()->isInstructor()) text-violet-500 bg-violet-600/10 border-violet-500/20
                     @else text-emerald-500 bg-emerald-500/10 border-emerald-500/20 @endif">
                     {{ strtoupper(Auth::user()->role) }}
                 </span>
@@ -169,7 +169,7 @@
                             style="border:1px solid transparent;">
                         <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white
                             @if(Auth::user()->isAdmin()) bg-red-500
-                            @elseif(Auth::user()->isInstructor()) bg-orange-600
+                            @elseif(Auth::user()->isInstructor()) bg-violet-600
                             @else bg-emerald-500 @endif">
                             {{ Auth::user()->avatar_initials }}
                         </div>
@@ -248,7 +248,7 @@
         @auth
         <div class="px-4 py-3" style="border-top:1px solid var(--vc-border);">
             <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-xs font-bold text-white">
+                <div class="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-xs font-bold text-white">
                     {{ Auth::user()->avatar_initials }}
                 </div>
                 <div>
@@ -316,3 +316,5 @@ function notifBell() {
     };
 }
 </script>
+
+

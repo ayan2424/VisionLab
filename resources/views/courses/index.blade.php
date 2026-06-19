@@ -82,7 +82,7 @@
                 <div class="flex items-center justify-between" style="border-top:1px solid var(--vc-border);padding-top:12px;">
                     <div class="flex items-center gap-2">
                         <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
-                             style="background:linear-gradient(135deg,#F05000,#FF8147);">
+                             style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">
                             {{ strtoupper(substr($course->instructor->name ?? 'I', 0, 1)) }}
                         </div>
                         <span class="text-xs font-medium" style="color:var(--vc-muted);">{{ $course->instructor->name ?? 'Instructor' }}</span>
@@ -101,3 +101,5 @@
     @endif
 </div>
 @endsection
+
+

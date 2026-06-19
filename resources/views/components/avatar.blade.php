@@ -21,3 +21,5 @@ $displayInitials = $initials ?: strtoupper(substr($name, 0, 2));
         {{ $displayInitials }}
     @endif
 </div>
+
+

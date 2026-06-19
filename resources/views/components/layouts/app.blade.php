@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#F05000">
+    <meta name="theme-color" content="#7c3aed">
     <meta name="description" content="VisionLab — Collaborative coding platform for universities.">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="/icons/icon-192.png">
@@ -107,3 +107,5 @@
     <style>@keyframes toastIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }</style>
 </body>
 </html>
+
+

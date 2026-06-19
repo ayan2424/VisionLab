@@ -122,6 +122,18 @@ class WorkspaceController extends Controller
         ]);
     }
 
+    /** Ping workspace status */
+    public function ping(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('access', $workspace);
+        
+        $isReady = $this->codeServerManager->isWorkspaceReady($workspace);
+        
+        \Log::info("Ping workspace {$workspace->id}: ready={$isReady}, port={$workspace->port}, docker=".$this->codeServerManager->isDockerAvailable());
+        
+        return response()->json(['ready' => $isReady]);
+    }
+
     /** Stop a workspace container */
     public function stop(Workspace $workspace): JsonResponse
     {

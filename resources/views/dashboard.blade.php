@@ -4,3 +4,5 @@
         <p class="text-muted text-sm">Redirecting…</p>
     </div>
 </x-app-layout>
+
+

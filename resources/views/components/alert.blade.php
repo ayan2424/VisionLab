@@ -4,7 +4,7 @@
 $variants = [
     'info'    => ['bg' => 'bg-blue-500/10 border-blue-500/20', 'icon' => '💡', 'text' => 'text-blue-400'],
     'success' => ['bg' => 'bg-emerald-500/10 border-emerald-500/20', 'icon' => '✓', 'text' => 'text-emerald-400'],
-    'warning' => ['bg' => 'bg-amber-500/10 border-amber-500/20', 'icon' => '⚠', 'text' => 'text-amber-400'],
+    'warning' => ['bg' => 'bg-cyan-500/10 border-cyan-500/20', 'icon' => '⚠', 'text' => 'text-cyan-400'],
     'danger'  => ['bg' => 'bg-red-500/10 border-red-500/20', 'icon' => '✕', 'text' => 'text-red-400'],
 ];
 $v = $variants[$variant] ?? $variants['info'];
@@ -26,3 +26,5 @@ $v = $variants[$variant] ?? $variants['info'];
         </button>
     @endif
 </div>
+
+

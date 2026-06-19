@@ -4,7 +4,7 @@
 $colorClasses = match($color) {
     'brand'   => 'text-[var(--vc-accent)]',
     'success' => 'text-emerald-400',
-    'warning' => 'text-amber-400',
+    'warning' => 'text-cyan-400',
     'danger'  => 'text-red-400',
     'info'    => 'text-blue-400',
     default   => 'text-[var(--vc-accent)]',
@@ -38,3 +38,5 @@ $colorClasses = match($color) {
         </div>
     @endif
 </div>
+
+
