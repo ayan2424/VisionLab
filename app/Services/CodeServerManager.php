@@ -80,10 +80,16 @@ class CodeServerManager
 
         $authMode = 'none'; // Permanently disabled password auth as requested
 
+        $extensionsPath = storage_path('app/extensions');
+        if (!is_dir($extensionsPath)) {
+            mkdir($extensionsPath, 0755, true);
+        }
+
         $cmd = [
             $this->dockerCmd(), 'run', '-d',
             '--name', $name,
             '-v', "{$workspacePath}:/home/coder/project",
+            '-v', "{$extensionsPath}:/var/opt/extensions:ro",
             '-p', "{$port}:8080",
             '-e', "PASSWORD={$token}",
             '-e', "VISIONCODE_API_TOKEN=" . ($workspace->owner?->createToken('workspace')->plainTextToken ?? ''),
@@ -664,7 +670,14 @@ class CodeServerManager
 
     public function installExtension(Workspace $workspace, string $identifierOrPath): bool
     {
-        $containerName = "ws-{$workspace->id}";
+        $containerName = "vl_ws_{$workspace->id}";
+        
+        // Map local path to container mount path
+        if (str_starts_with($identifierOrPath, 'extensions/')) {
+            $filename = basename($identifierOrPath);
+            $identifierOrPath = "/var/opt/extensions/{$filename}";
+        }
+
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
         $process->run();
         
@@ -676,7 +689,7 @@ class CodeServerManager
 
     public function uninstallExtension(Workspace $workspace, string $identifier): bool
     {
-        $containerName = "ws-{$workspace->id}";
+        $containerName = "vl_ws_{$workspace->id}";
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'code-server', '--uninstall-extension', $identifier]);
         $process->run();
         
@@ -739,7 +752,7 @@ class CodeServerManager
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
 
-        // 2. Install enabled extensions dynamically
+        // 2. Install enabled extensions dynamically from WorkspaceExtension pivot
         $enabledExtensions = \App\Models\WorkspaceExtension::with('extension')
             ->where('workspace_id', $workspace->id)
             ->where('is_enabled', true)
@@ -747,12 +760,25 @@ class CodeServerManager
 
         foreach ($enabledExtensions as $wsExt) {
             $ext = $wsExt->extension;
+            if (!$ext || !$ext->is_active) continue;
+            
             $identifier = $ext->package_identifier;
             // Use custom artifact_path if present, else identifier
             $target = $ext->is_builtin ? $identifier : ($ext->artifact_path ?? $identifier);
             
             $this->installExtension($workspace, $target);
             $wsExt->update(['sync_status' => 'synced']);
+        }
+
+        // 3. Always install global builtin extensions (e.g. VisionLab Agent)
+        $globalExtensions = \App\Models\Extension::where('is_global', true)
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($globalExtensions as $ext) {
+            $identifier = $ext->package_identifier;
+            $target = $ext->artifact_path ?? $identifier; // Prioritize local .vsix if available
+            $this->installExtension($workspace, $target);
         }
     }
 
