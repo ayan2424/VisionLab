@@ -140,7 +140,7 @@
         @apply relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
                cursor-pointer transition-all duration-200 ease-out;
         background: transparent;
-        color: var(--vc-text-secondary);
+        color: var(white);
         border: 1px solid var(--vc-border);
     }
     .btn-secondary:hover, .btn-ghost:hover {
@@ -195,7 +195,7 @@
         border: 1px solid var(--vc-border);
         border-radius: 1rem;
     }
-    :root .glass { background: rgba(255,255,255,0.7); }
+    :root .glass { background: rgba(0, 0, 0, 0.7); }
     .dark .glass { background: rgba(24,24,27,0.6); }
 
     .glass-hover {
@@ -210,9 +210,9 @@
     /* ── Badge / pill ──────────────────────────────────────────── */
     .badge {
         @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
-        background: rgba(99,102,241,0.08);
+        background: rgba(255, 255, 255, 0.08);
         color: var(--vc-accent);
-        border: 1px solid rgba(99,102,241,0.15);
+        border: 1px solid rgb(99, 101, 241);
     }
 
     /* ── Skeleton ──────────────────────────────────────────────── */
@@ -232,14 +232,14 @@
     /* ── Nav link ──────────────────────────────────────────────── */
     .nav-link {
         @apply text-sm font-medium transition-colors duration-200 cursor-pointer;
-        color: var(--vc-text-secondary);
+        color: white;
     }
-    .nav-link:hover { color: var(--vc-text); }
+    .nav-link:hover { color: rgb(196, 188, 188) }
 
     /* ── Section title ─────────────────────────────────────────── */
     .section-title {
         @apply text-3xl md:text-4xl font-bold;
-        color: var(--vc-text);
+        color: rgb(130, 147, 245);
     }
     .section-subtitle {
         @apply text-base max-w-xl mx-auto;
