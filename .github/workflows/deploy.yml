@@ -98,24 +98,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker images
-        run: |
-          docker build -t visioncode-app:latest .
-          docker build -t visioncode-codeserver:latest -f docker/Dockerfile.codeserver .
-
-      - name: Deploy to server
+      - name: Deploy to aaPanel Server
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
+          username: ubuntu
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            cd /opt/visioncode
-            git pull origin main
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d --build
-            docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
-            docker compose -f docker-compose.prod.yml exec app php artisan config:cache
-            docker compose -f docker-compose.prod.yml exec app php artisan route:cache
-            docker compose -f docker-compose.prod.yml exec app php artisan view:cache
-            echo "✅ Deployment complete!"
+            cd /www/wwwroot/visionlab
+            sudo -u www git pull origin main
+            sudo -u www composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            sudo -u www php artisan migrate --force
+            sudo -u www php artisan optimize:clear
+            echo "✅ Deployment to aaPanel complete!"
