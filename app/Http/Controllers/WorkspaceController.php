@@ -171,18 +171,6 @@ class WorkspaceController extends Controller
         ]);
     }
 
-    /** Ping workspace readiness */
-    public function ping(Workspace $workspace): JsonResponse
-    {
-        $this->authorize('view', $workspace);
-
-        $isReady = $this->codeServerManager->isWorkspaceReady($workspace);
-        
-        \Illuminate\Support\Facades\Log::info('Ping called for workspace ' . $workspace->id, ['ready' => $isReady]);
-
-        return response()->json(['ready' => $isReady]);
-    }
-
     // ── File I/O API ────────────────────────────────────────────────────
 
     /** List files in workspace */
