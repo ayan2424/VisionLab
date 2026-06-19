@@ -3,216 +3,495 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-<div class="max-w-6xl mx-auto">
+<style>
+    /* ═══════════════════════════════════════════════════════════════════
+       STUDENT DASHBOARD — Premium Dark Design System
+       Matches landing page aesthetic: clean, minimal, subtle 3D
+       ═══════════════════════════════════════════════════════════════════ */
+    .dash-section { margin-bottom: 2rem; }
 
-    {{-- ═══ Welcome + Actions ═══ --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6"
-         style="opacity:0;animation:fadeSlideUp .4s .05s ease forwards">
-        <div>
-            <h2 class="text-xl font-bold" style="color:var(--vc-text);">Welcome back, {{ Str::before(auth()->user()->name, ' ') }} 👋</h2>
-            <p class="text-sm mt-0.5" style="color:var(--vc-text-secondary);">{{ now()->format('l, M d Y') }} · Here's your learning overview.</p>
-        </div>
-        <div class="flex items-center gap-2">
-            <a href="{{ route('workspace.index') }}" class="btn-primary py-2 px-4 text-xs">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                Open IDE
-            </a>
-            <a href="{{ route('enrollments.join') }}" class="btn-secondary py-2 px-4 text-xs">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Join Course
-            </a>
-        </div>
-    </div>
+    /* Stat Cards */
+    .stat-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .stat-card-custom {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-style: preserve-3d;
+    }
+    .stat-card-custom:hover {
+        border-color: rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.04);
+        transform: perspective(800px) translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .stat-card-custom::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(255,255,255,0.03), transparent 40%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+    .stat-card-custom:hover::before { opacity: 1; }
+    .stat-icon {
+        width: 36px; height: 36px;
+        border-radius: 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+    .stat-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        color: var(--vc-text-secondary, #a1a1aa);
+    }
 
-    {{-- ═══ Stats Row ═══ --}}
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
-        @foreach([
-            ['label'=>'Courses','value'=>$courses->count(),'color'=>'#7c3aed','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
-            ['label'=>'Pending','value'=>$pendingSubmissions,'color'=>'#0891B2','icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
-            ['label'=>'Due Soon','value'=>$upcomingAssignments->count(),'color'=>'#D97706','icon'=>'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
-            ['label'=>'Unread','value'=>$unreadAnnouncementCount ?? 0,'color'=>'#059669','icon'=>'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9'],
-            ['label'=>'🔥 Streak','value'=>$streak ?? 0,'color'=>'#DC2626','icon'=>'M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z'],
-        ] as $i => $s)
-        <div class="stat-card group" style="animation:fadeSlideUp .35s ease both;animation-delay:{{ 100 + $i*60 }}ms">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
-                     style="background:{{ $s['color'] }}12;border:1px solid {{ $s['color'] }}18;">
-                    <svg class="w-5 h-5" style="color:{{ $s['color'] }};" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $s['icon'] }}"/></svg>
-                </div>
-                <div>
-                    <div class="text-2xl font-black" style="color:var(--vc-text);">{{ $s['value'] }}</div>
-                    <div class="text-[11px] font-medium" style="color:var(--vc-text-secondary);">{{ $s['label'] }}</div>
-                </div>
+    /* Content cards */
+    .content-card {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .content-card:hover {
+        border-color: rgba(255,255,255,0.1);
+    }
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .card-header-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .card-body { padding: 1.25rem 1.5rem; }
+
+    /* Course items */
+    .course-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.85rem;
+        border-radius: 0.75rem;
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+    .course-item:hover { background: rgba(255,255,255,0.03); }
+    .course-avatar {
+        width: 36px; height: 36px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+    .course-name { font-size: 0.85rem; font-weight: 600; color: white; }
+    .course-instructor { font-size: 0.7rem; color: var(--vc-text-secondary, #71717a); }
+
+    /* Assignment items */
+    .assignment-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem;
+        border-radius: 0.75rem;
+        transition: background 0.2s;
+    }
+    .assignment-item:hover { background: rgba(255,255,255,0.03); }
+    .assignment-title { font-size: 0.85rem; font-weight: 600; color: white; }
+    .assignment-course { font-size: 0.7rem; color: var(--vc-text-secondary, #71717a); }
+    .due-badge {
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        white-space: nowrap;
+    }
+    .due-urgent { background: rgba(239,68,68,0.15); color: #f87171; }
+    .due-soon { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .due-normal { background: rgba(16,185,129,0.15); color: #34d399; }
+
+    /* Announcement items */
+    .announcement-item {
+        padding: 0.85rem;
+        border-radius: 0.75rem;
+        transition: background 0.2s;
+    }
+    .announcement-item:hover { background: rgba(255,255,255,0.03); }
+    .announcement-title { font-size: 0.8rem; font-weight: 600; color: white; margin-bottom: 0.15rem; }
+    .announcement-time { font-size: 0.65rem; color: var(--vc-text-secondary, #52525b); }
+    .unread-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #a855f7;
+        box-shadow: 0 0 8px #a855f7;
+        flex-shrink: 0;
+    }
+
+    /* Quick actions */
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.02);
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+    .action-btn:hover {
+        border-color: rgba(168,85,247,0.3);
+        background: rgba(168,85,247,0.05);
+        transform: translateY(-1px);
+    }
+    .action-icon {
+        width: 32px; height: 32px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+
+    /* Grade bar */
+    .grade-bar-bg {
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255,255,255,0.06);
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+    .grade-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 1s ease;
+    }
+
+    /* Animation */
+    .fade-in {
+        animation: dashFadeIn 0.6s ease forwards;
+        opacity: 0;
+    }
+    @keyframes dashFadeIn {
+        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; transform: translateY(12px); }
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--vc-text-secondary, #52525b);
+    }
+    .empty-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        opacity: 0.4;
+    }
+</style>
+
+<div class="dash-section">
+    <!-- Welcome Header -->
+    <div class="fade-in" style="margin-bottom:2rem;animation-delay:0.05s">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+            <div>
+                <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.25rem">
+                    Welcome back, {{ explode(' ', Auth::user()->name)[0] }} 👋
+                </h2>
+                <p style="font-size:0.8rem;color:var(--vc-text-secondary, #71717a)">
+                    {{ now()->format('l, F j, Y') }} · {{ $courses->count() }} active {{ Str::plural('course', $courses->count()) }}
+                </p>
             </div>
-        </div>
-        @endforeach
-    </div>
-
-    {{-- ═══ Content Grid ═══ --}}
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
-
-        {{-- ── Left: Courses + Announcements (3 cols) ── --}}
-        <div class="lg:col-span-3 space-y-5">
-
-            {{-- Courses --}}
-            <div style="opacity:0;animation:fadeSlideUp .4s .25s ease forwards">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style="color:var(--vc-text);">
-                        <span class="w-1 h-4 rounded-full" style="background:var(--vc-accent);"></span> My Courses
-                    </h3>
-                    <a href="{{ route('courses.index') }}" class="text-[11px] font-medium" style="color:var(--vc-accent);">View all →</a>
-                </div>
-
-                @if($courses->isEmpty())
-                <div class="vc-card p-10 text-center" style="border-style:dashed;">
-                    <svg class="w-10 h-10 mx-auto mb-3" style="color:var(--vc-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                    <p class="text-sm font-semibold mb-1" style="color:var(--vc-text);">No courses yet</p>
-                    <p class="text-xs mb-4" style="color:var(--vc-muted);">Join your first course with an enrollment code.</p>
-                    <a href="{{ route('enrollments.join') }}" class="btn-primary py-2 px-5 text-xs">Join a Course</a>
-                </div>
-                @else
-                <div class="space-y-2">
-                    @foreach($courses as $course)
-                    <a href="{{ route('courses.show', $course->slug) }}"
-                       class="vc-card flex items-center gap-4 p-4 hover:-translate-y-0.5 transition-all duration-200">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                             style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">
-                            {{ strtoupper(substr($course->title, 0, 1)) }}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-semibold line-clamp-1" style="color:var(--vc-text);">{{ $course->title }}</div>
-                            <div class="text-[11px]" style="color:var(--vc-muted);">{{ $course->instructor->name }} · {{ $course->students_count }} students</div>
-                        </div>
-                        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--vc-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
-                    @endforeach
-                </div>
-                @endif
-            </div>
-
-            {{-- Announcements --}}
-            <div style="opacity:0;animation:fadeSlideUp .4s .35s ease forwards">
-                <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style="color:var(--vc-text);">
-                    <span class="w-1 h-4 rounded-full" style="background:#059669;"></span> Recent Announcements
-                    @if(($unreadAnnouncementCount ?? 0) > 0)
-                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold text-white" style="background:#DC2626;">{{ $unreadAnnouncementCount }} new</span>
-                    @endif
-                </h3>
-                @forelse($recentAnnouncements as $ann)
-                <div class="vc-card p-4 mb-2 {{ ($ann->is_unread ?? false) ? 'ring-1 ring-violet-500/20' : '' }}">
-                    <div class="flex items-start gap-3">
-                        @if($ann->is_unread ?? false)
-                        <div class="w-2 h-2 rounded-full flex-shrink-0 mt-2" style="background:var(--vc-accent);"></div>
-                        @endif
-                        <div class="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5">
-                            {{ strtoupper(substr($ann->author->name ?? 'I', 0, 1)) }}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-semibold" style="color:var(--vc-text);">{{ $ann->title }}</div>
-                            <div class="flex items-center gap-2 text-[10px] mt-0.5 mb-1.5" style="color:var(--vc-muted);">
-                                <span class="px-1.5 py-0.5 rounded text-[9px] font-medium" style="background:rgba(240,80,0,0.06);color:var(--vc-accent);">{{ $ann->course->title }}</span>
-                                {{ $ann->created_at->diffForHumans() }}
-                            </div>
-                            <p class="text-xs leading-relaxed line-clamp-2" style="color:var(--vc-text-secondary);">{{ $ann->body }}</p>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="vc-card p-6 text-center">
-                    <p class="text-xs" style="color:var(--vc-muted);">No announcements yet.</p>
-                </div>
-                @endforelse
-            </div>
-
-            {{-- Recently Graded --}}
-            @if(isset($gradedSubmissions) && $gradedSubmissions->count() > 0)
-            <div style="opacity:0;animation:fadeSlideUp .4s .45s ease forwards">
-                <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style="color:var(--vc-text);">
-                    <span class="w-1 h-4 rounded-full" style="background:#8B5CF6;"></span> Recently Graded
-                </h3>
-                @foreach($gradedSubmissions as $gs)
-                <div class="vc-card p-4 mb-2">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="min-w-0 mr-3">
-                            <div class="text-xs font-semibold line-clamp-1" style="color:var(--vc-text);">{{ $gs->assignment->title }}</div>
-                            <div class="text-[10px]" style="color:var(--vc-muted);">{{ $gs->assignment->course->title }}</div>
-                        </div>
-                        @php $pct = $gs->assignment->max_points > 0 ? round($gs->grade / $gs->assignment->max_points * 100) : 0; @endphp
-                        <span class="text-sm font-black" style="color:{{ $pct >= 80 ? '#059669' : ($pct >= 60 ? '#D97706' : '#DC2626') }};">{{ $gs->grade }}/{{ $gs->assignment->max_points }}</span>
-                    </div>
-                    <div class="w-full h-1.5 rounded-full overflow-hidden" style="background:var(--vc-border);">
-                        <div class="h-full rounded-full transition-all duration-500" style="width:{{ $pct }}%;background:{{ $pct >= 80 ? '#059669' : ($pct >= 60 ? '#D97706' : '#DC2626') }};"></div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            @endif
-        </div>
-
-        {{-- ── Right sidebar (2 cols) ── --}}
-        <div class="lg:col-span-2 space-y-5">
-
-            {{-- Deadlines --}}
-            <div class="vc-card overflow-hidden" style="opacity:0;animation:fadeSlideUp .4s .2s ease forwards">
-                <div class="px-4 py-3 flex items-center gap-2" style="border-bottom:1px solid var(--vc-border);">
-                    <span class="w-1 h-4 rounded-full" style="background:#D97706;"></span>
-                    <h3 class="text-xs font-bold uppercase tracking-widest" style="color:var(--vc-text);">Upcoming Deadlines</h3>
-                </div>
-                @forelse($upcomingAssignments as $a)
-                <a href="{{ route('assignments.show', $a->id) }}" class="flex items-center justify-between px-4 py-3 transition-colors"
-                   style="border-bottom:1px solid var(--vc-border);">
-                    <div class="min-w-0 mr-3">
-                        <div class="text-xs font-medium line-clamp-1" style="color:var(--vc-text);">{{ $a->title }}</div>
-                        <div class="text-[10px]" style="color:var(--vc-muted);">{{ $a->course->title }}</div>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        @php $d = now()->diffInDays($a->due_date, false); @endphp
-                        <div class="text-[11px] font-bold" style="color:{{ $d <= 2 ? 'var(--vc-danger)' : 'var(--vc-text-secondary)' }};">{{ $a->due_date->format('M d') }}</div>
-                        <div class="text-[9px]" style="color:{{ $d <= 2 ? 'var(--vc-danger)' : 'var(--vc-muted)' }};">
-                            @if($d <= 0) Overdue @elseif($d == 1) Tomorrow @else {{ $d }}d left @endif
-                        </div>
-                    </div>
+            <div style="display:flex;gap:0.5rem">
+                <a href="{{ route('workspace.index') }}" class="action-btn" style="border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">
+                    <span style="color:#00e5ff">⚡</span> Launch IDE
                 </a>
-                @empty
-                <div class="text-center py-8 px-4">
-                    <svg class="w-6 h-6 mx-auto mb-2" style="color:var(--vc-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
-                    <p class="text-xs" style="color:var(--vc-muted);">All caught up!</p>
-                </div>
-                @endforelse
+                <a href="{{ route('courses.index') }}" class="action-btn">
+                    <span>📚</span> Browse Courses
+                </a>
             </div>
+        </div>
+    </div>
 
-            {{-- Quick Actions --}}
-            <div class="vc-card p-4" style="opacity:0;animation:fadeSlideUp .4s .3s ease forwards">
-                <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style="color:var(--vc-text);">
-                    <span class="w-1 h-4 rounded-full" style="background:var(--vc-accent);"></span> Quick Actions
-                </h3>
-                <div class="space-y-1">
-                    @foreach([
-                        ['route'=>'workspace.index','label'=>'Open Workspace IDE','c'=>'#7c3aed','i'=>'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4'],
-                        ['route'=>'progress.index','label'=>'View My Progress','c'=>'#059669','i'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
-                        ['route'=>'enrollments.join','label'=>'Join New Course','c'=>'#0891B2','i'=>'M12 4v16m8-8H4'],
-                    ] as $act)
-                    <a href="{{ route($act['route']) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-xs transition-all" style="color:var(--vc-text-secondary);">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:{{ $act['c'] }}10;">
-                            <svg class="w-3.5 h-3.5" style="color:{{ $act['c'] }};" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $act['i'] }}"/></svg>
+    <!-- Stats Row -->
+    <div class="stat-row fade-in" style="animation-delay:0.1s">
+        <div class="stat-card-custom">
+            <div class="stat-icon" style="background:rgba(168,85,247,0.12)">📘</div>
+            <div class="stat-value" style="color:white">{{ $courses->count() }}</div>
+            <div class="stat-label">Active Courses</div>
+        </div>
+        <div class="stat-card-custom">
+            <div class="stat-icon" style="background:rgba(0,229,255,0.12)">📝</div>
+            <div class="stat-value" style="color:white">{{ $pendingSubmissions ?? 0 }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card-custom">
+            <div class="stat-icon" style="background:rgba(245,158,11,0.12)">⏰</div>
+            <div class="stat-value" style="color:white">{{ isset($upcomingAssignments) ? $upcomingAssignments->count() : 0 }}</div>
+            <div class="stat-label">Due Soon</div>
+        </div>
+        <div class="stat-card-custom">
+            <div class="stat-icon" style="background:rgba(236,72,153,0.12)">💬</div>
+            <div class="stat-value" style="color:white">{{ $unreadAnnouncementCount ?? 0 }}</div>
+            <div class="stat-label">Unread</div>
+        </div>
+        <div class="stat-card-custom">
+            <div class="stat-icon" style="background:rgba(16,185,129,0.12)">🔥</div>
+            <div class="stat-value" style="background:linear-gradient(to right,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ $streak ?? 0 }}</div>
+            <div class="stat-label">Day Streak</div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div style="display:grid;grid-template-columns:1fr;gap:1.25rem" class="fade-in">
+
+        <div style="display:grid;grid-template-columns:1fr;gap:1.25rem" class="content-grid-lg">
+            <!-- LEFT COLUMN -->
+            <div style="display:flex;flex-direction:column;gap:1.25rem">
+                <!-- Active Courses -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <span class="card-header-title">
+                            <span style="color:#a855f7">●</span> Active Courses
+                        </span>
+                        <a href="{{ route('courses.index') }}" style="font-size:0.7rem;color:var(--vc-text-secondary, #71717a);text-decoration:none">View all →</a>
+                    </div>
+                    <div class="card-body">
+                        @if($courses->count() > 0)
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0.75rem">
+                                @foreach($courses->take(6) as $course)
+                                @php
+                                    $colors = ['#7c3aed','#0891b2','#059669','#db2777','#ea580c','#2563eb'];
+                                    $color = $colors[$loop->index % count($colors)];
+                                @endphp
+                                <a href="{{ route('courses.show', $course) }}" class="course-item" style="text-decoration:none">
+                                    <div class="course-avatar" style="background:{{ $color }}22;color:{{ $color }}">
+                                        {{ strtoupper(substr($course->title, 0, 2)) }}
+                                    </div>
+                                    <div>
+                                        <div class="course-name">{{ Str::limit($course->title, 30) }}</div>
+                                        <div class="course-instructor">{{ $course->instructor->name ?? 'No instructor' }}</div>
+                                    </div>
+                                </a>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="empty-state">
+                                <div class="empty-icon">📚</div>
+                                <p style="font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">No courses yet</p>
+                                <p style="font-size:0.75rem;margin-bottom:1rem">Join a course to get started</p>
+                                <a href="{{ route('courses.index') }}" class="action-btn" style="display:inline-flex">Join a Course</a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Announcements & Grades sub-grid -->
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem">
+                    <!-- Announcements -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <span class="card-header-title">
+                                <span style="color:#00e5ff">●</span> Announcements
+                            </span>
                         </div>
-                        {{ $act['label'] }}
-                    </a>
-                    @endforeach
+                        <div class="card-body">
+                            @if(isset($recentAnnouncements) && $recentAnnouncements->count() > 0)
+                                <div style="display:flex;flex-direction:column;gap:0.5rem">
+                                    @foreach($recentAnnouncements->take(4) as $announcement)
+                                    <div class="announcement-item" style="display:flex;align-items:flex-start;gap:0.75rem">
+                                        @if(!$announcement->is_read)
+                                            <div class="unread-dot" style="margin-top:0.4rem"></div>
+                                        @endif
+                                        <div style="flex:1">
+                                            <div class="announcement-title">{{ Str::limit($announcement->title, 40) }}</div>
+                                            <div class="announcement-time">{{ $announcement->created_at->diffForHumans() }}</div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="empty-state" style="padding:1.5rem">
+                                    <div class="empty-icon">📢</div>
+                                    <p style="font-size:0.75rem">No announcements</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Recent Grades -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <span class="card-header-title">
+                                <span style="color:#10b981">●</span> Recent Grades
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            @if(isset($gradedSubmissions) && $gradedSubmissions->count() > 0)
+                                <div style="display:flex;flex-direction:column;gap:0.75rem">
+                                    @foreach($gradedSubmissions->take(4) as $sub)
+                                    @php
+                                        $pct = $sub->assignment && $sub->assignment->max_points > 0
+                                            ? round(($sub->grade / $sub->assignment->max_points) * 100)
+                                            : 0;
+                                        $barColor = $pct >= 80 ? '#10b981' : ($pct >= 50 ? '#f59e0b' : '#ef4444');
+                                    @endphp
+                                    <div>
+                                        <div style="display:flex;justify-content:space-between;align-items:center">
+                                            <span style="font-size:0.8rem;font-weight:600;color:white">{{ Str::limit($sub->assignment->title ?? 'Assignment', 25) }}</span>
+                                            <span style="font-size:0.75rem;font-weight:700;color:{{ $barColor }}">{{ $pct }}%</span>
+                                        </div>
+                                        <div class="grade-bar-bg">
+                                            <div class="grade-bar-fill" style="width:{{ $pct }}%;background:{{ $barColor }}"></div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="empty-state" style="padding:1.5rem">
+                                    <div class="empty-icon">📊</div>
+                                    <p style="font-size:0.75rem">No grades yet</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {{-- Platform tip --}}
-            <div class="rounded-xl p-4" style="background:rgba(240,80,0,0.05);border:1px solid rgba(240,80,0,0.1);opacity:0;animation:fadeSlideUp .4s .4s ease forwards">
-                <div class="flex items-center gap-2 text-xs font-bold mb-1.5" style="color:var(--vc-accent);">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                    VisionLab Tip
+            <!-- RIGHT COLUMN -->
+            <div style="display:flex;flex-direction:column;gap:1.25rem">
+                <!-- Upcoming Assignments -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <span class="card-header-title">
+                            <span style="color:#f59e0b">●</span> Upcoming
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        @if(isset($upcomingAssignments) && $upcomingAssignments->count() > 0)
+                            <div style="display:flex;flex-direction:column;gap:0.5rem">
+                                @foreach($upcomingAssignments->take(5) as $assignment)
+                                @php
+                                    $daysLeft = now()->diffInDays($assignment->due_date, false);
+                                    $badgeClass = $daysLeft <= 1 ? 'due-urgent' : ($daysLeft <= 3 ? 'due-soon' : 'due-normal');
+                                    $badgeText = $daysLeft < 0 ? 'Overdue' : ($daysLeft == 0 ? 'Today' : ($daysLeft == 1 ? 'Tomorrow' : $daysLeft . 'd left'));
+                                @endphp
+                                <div class="assignment-item">
+                                    <div>
+                                        <div class="assignment-title">{{ Str::limit($assignment->title, 28) }}</div>
+                                        <div class="assignment-course">{{ $assignment->course->title ?? '' }}</div>
+                                    </div>
+                                    <span class="due-badge {{ $badgeClass }}">{{ $badgeText }}</span>
+                                </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="empty-state" style="padding:1.5rem">
+                                <div class="empty-icon">✅</div>
+                                <p style="font-size:0.75rem">All caught up!</p>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-                <p class="text-[11px] leading-relaxed" style="color:var(--vc-text-secondary);">Open the IDE workspace and use the AI Agent in <strong style="color:var(--vc-accent);">AGENT mode</strong> to get code analysis, suggestions, and patch proposals.</p>
+
+                <!-- Quick Actions -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <span class="card-header-title">
+                            <span style="color:#ec4899">●</span> Quick Actions
+                        </span>
+                    </div>
+                    <div class="card-body" style="display:flex;flex-direction:column;gap:0.5rem">
+                        <a href="{{ route('workspaces.index') }}" class="action-btn">
+                            <div class="action-icon" style="background:rgba(0,229,255,0.1);color:#00e5ff">⚡</div>
+                            Workspace IDE
+                        </a>
+                        <a href="{{ route('courses.index') }}" class="action-btn">
+                            <div class="action-icon" style="background:rgba(168,85,247,0.1);color:#a855f7">📘</div>
+                            My Courses
+                        </a>
+                    </div>
+                </div>
+
+                <!-- AI Tip -->
+                <div class="content-card" style="border-color:rgba(168,85,247,0.15);background:rgba(168,85,247,0.02)">
+                    <div class="card-body" style="display:flex;gap:0.75rem;align-items:flex-start">
+                        <span style="font-size:1.25rem">🤖</span>
+                        <div>
+                            <div style="font-size:0.8rem;font-weight:700;color:white;margin-bottom:0.25rem">AI Agent Tip</div>
+                            <p style="font-size:0.7rem;color:var(--vc-text-secondary, #71717a);line-height:1.5">
+                                Try switching to <strong style="color:#a855f7">Socratic Mode</strong> for guided learning — it asks questions instead of giving answers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 3D Tilt for stat cards -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.stat-card-custom').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const midX = rect.width / 2;
+            const midY = rect.height / 2;
+            card.style.transform = `perspective(800px) rotateX(${((y - midY) / midY) * -6}deg) rotateY(${((x - midX) / midX) * 6}deg) scale(1.02)`;
+            card.style.setProperty('--mouse-x', x + 'px');
+            card.style.setProperty('--mouse-y', y + 'px');
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
+        });
+    });
+});
+</script>
+
+<style>
+@media (min-width: 1024px) {
+    .content-grid-lg { grid-template-columns: 2fr 1fr !important; }
+}
+</style>
 @endsection
-
-
