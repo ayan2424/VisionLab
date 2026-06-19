@@ -18,7 +18,7 @@ $extension = Extension::updateOrCreate(
         'is_global' => true,
         'is_builtin' => true,
         'is_active' => true,
-        'artifact_path' => 'extensions/' . $filename,
+        'artifact_path' => $destPath,
         'checksum' => $hash,
         'rollout_state' => 'released',
     ]
