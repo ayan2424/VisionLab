@@ -1,117 +1,136 @@
+version: '3.8'
+
 services:
-  nginx:
+  visionlab-app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    image: ghcr.io/visionlab-edu/visionlab-app:latest
+    container_name: visionlab-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+    volumes:
+      - .:/var/www/html
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - visionlab-mysql
+      - visionlab-redis
+    networks:
+      - visionlab-network
+    security_opt:
+      - no-new-privileges:true
+
+  visionlab-queue:
+    image: ghcr.io/visionlab-edu/visionlab-app:latest
+    container_name: visionlab-queue
+    restart: unless-stopped
+    command: php artisan horizon
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - visionlab-app
+      - visionlab-redis
+    networks:
+      - visionlab-network
+    security_opt:
+      - no-new-privileges:true
+
+  visionlab-reverb:
+    image: ghcr.io/visionlab-edu/visionlab-app:latest
+    container_name: visionlab-reverb
+    restart: unless-stopped
+    command: php artisan reverb:start --host="0.0.0.0" --port=8080
+    working_dir: /var/www/html
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - visionlab-app
+      - visionlab-redis
+    networks:
+      - visionlab-network
+    security_opt:
+      - no-new-privileges:true
+
+  visionlab-scheduler:
+    image: ghcr.io/visionlab-edu/visionlab-app:latest
+    container_name: visionlab-scheduler
+    restart: unless-stopped
+    command: sh -c "while [ true ]; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - visionlab-app
+    networks:
+      - visionlab-network
+    security_opt:
+      - no-new-privileges:true
+
+  visionlab-nginx:
     image: nginx:alpine
-    container_name: visionlab_nginx
+    container_name: visionlab-nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./public:/var/www/html/public:ro
-    depends_on:
-      - app
-    networks:
-      - visionlab_net
-    restart: unless-stopped
-
-  app:
-    build:
-      context: .
-      target: backend
-    container_name: visionlab_app
-    restart: unless-stopped
-    volumes:
       - .:/var/www/html
-    environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
-      - DB_HOST=db
-      - REDIS_HOST=redis
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
     depends_on:
-      - db
-      - redis
+      - visionlab-app
     networks:
-      - visionlab_net
+      - visionlab-network
 
-  db:
+  visionlab-mysql:
     image: mysql:8.0
-    container_name: visionlab_db
+    container_name: visionlab-mysql
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-visionlab}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
-      MYSQL_USER: ${DB_USERNAME:-visionlab}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-visionlab}
     volumes:
-      - visionlab_db_data:/var/lib/mysql
+      - visionlab-mysql-data:/var/lib/mysql
     networks:
-      - visionlab_net
-    # Do not expose ports to host in production
+      - visionlab-network
 
-  redis:
+  visionlab-redis:
     image: redis:7-alpine
-    container_name: visionlab_redis
+    container_name: visionlab-redis
     restart: unless-stopped
     volumes:
-      - visionlab_redis_data:/data
+      - visionlab-redis-data:/data
     networks:
-      - visionlab_net
-    # Do not expose ports to host in production
+      - visionlab-network
 
-  reverb:
-    build:
-      context: .
-      target: backend
-    container_name: visionlab_reverb
+  visionlab-jitsi:
+    image: jitsi/web:latest
+    container_name: visionlab-jitsi
     restart: unless-stopped
-    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    ports:
+      - "8443:443"
     environment:
-      - APP_ENV=production
-      - DB_HOST=db
-      - REDIS_HOST=redis
-    depends_on:
-      - redis
+      - ENABLE_AUTH=1
+      - AUTH_TYPE=jwt
+      - JWT_APP_ID=${JITSI_APP_ID}
+      - JWT_APP_SECRET=${JITSI_APP_SECRET}
     networks:
-      - visionlab_net
-
-  queue:
-    build:
-      context: .
-      target: backend
-    container_name: visionlab_queue
-    restart: unless-stopped
-    command: php artisan horizon
-    environment:
-      - APP_ENV=production
-      - DB_HOST=db
-      - REDIS_HOST=redis
-    depends_on:
-      - db
-      - redis
-    networks:
-      - visionlab_net
-
-  scheduler:
-    build:
-      context: .
-      target: backend
-    container_name: visionlab_scheduler
-    restart: unless-stopped
-    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
-    environment:
-      - APP_ENV=production
-      - DB_HOST=db
-      - REDIS_HOST=redis
-    depends_on:
-      - db
-      - redis
-    networks:
-      - visionlab_net
+      - visionlab-network
 
 networks:
-  visionlab_net:
+  visionlab-network:
     driver: bridge
 
 volumes:
-  visionlab_db_data:
-  visionlab_redis_data:
+  visionlab-mysql-data:
+  visionlab-redis-data:
