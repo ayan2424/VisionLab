@@ -22,12 +22,12 @@
     --vc-text:           #1A1714;
     --vc-text-secondary: #6B6560;
     --vc-muted:          #A39A90;
-    --vc-accent:         #F05000;
-    --vc-accent-hover:   #D94700;
-    --vc-accent-subtle:  #FFF0E8;
+    --vc-accent:         #6366F1;
+    --vc-accent-hover:   #4F46E5;
+    --vc-accent-subtle:  #EEF2FF;
     --vc-input:          #FFFFFF;
     --vc-input-border:   #E6E3DC;
-    --vc-input-focus:    #F05000;
+    --vc-input-focus:    #6366F1;
     --vc-shadow-sm:      0 1px 2px rgba(0,0,0,0.05);
     --vc-shadow-md:      0 4px 12px rgba(0,0,0,0.08);
     --vc-shadow-lg:      0 12px 40px rgba(0,0,0,0.12);
@@ -51,12 +51,12 @@
     --vc-text:           #FAFAFA;
     --vc-text-secondary: #A1A1AA;
     --vc-muted:          #71717A;
-    --vc-accent:         #FF6B2B;
-    --vc-accent-hover:   #FF8147;
-    --vc-accent-subtle:  #431407;
+    --vc-accent:         #8B5CF6;
+    --vc-accent-hover:   #A78BFA;
+    --vc-accent-subtle:  #2E1065;
     --vc-input:          #18181B;
     --vc-input-border:   #3F3F46;
-    --vc-input-focus:    #FF6B2B;
+    --vc-input-focus:    #8B5CF6;
     --vc-shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
     --vc-shadow-md:      0 4px 16px rgba(0,0,0,0.5);
     --vc-shadow-lg:      0 12px 48px rgba(0,0,0,0.6);
@@ -85,7 +85,7 @@
     }
 
     ::selection {
-        background: rgba(240, 80, 0, 0.2);
+        background: rgba(99, 102, 241, 0.2);
         color: var(--vc-text);
     }
 
@@ -117,7 +117,7 @@
     }
     .vc-card:hover {
         box-shadow: var(--vc-shadow-md);
-        border-color: rgba(240, 80, 0, 0.3);
+        border-color: rgba(99, 102, 241, 0.3);
     }
 
     /* ── Button: Primary ──────────────────────────────────────── */
@@ -130,7 +130,7 @@
     }
     .btn-primary:hover {
         background: var(--vc-accent-hover);
-        box-shadow: 0 4px 14px rgba(240,80,0,0.3);
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
         transform: translateY(-1px);
     }
     .btn-primary:active { transform: translateY(0); }
@@ -154,11 +154,11 @@
     .btn-glow {
         @apply relative inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
                text-white cursor-pointer transition-all duration-200 ease-out overflow-hidden;
-        background: linear-gradient(135deg, #F05000, #FF8147);
-        border: 1px solid rgba(240,80,0,0.5);
+        background: linear-gradient(135deg, #6366F1, #EC4899);
+        border: 1px solid rgba(99,102,241,0.5);
     }
     .btn-glow:hover {
-        box-shadow: 0 0 24px rgba(240,80,0,0.4), 0 0 48px rgba(255,129,71,0.15);
+        box-shadow: 0 0 24px rgba(99,102,241,0.4), 0 0 48px rgba(236,72,153,0.15);
         transform: translateY(-1px);
     }
     .btn-glow:active { transform: translateY(0); }
@@ -176,17 +176,17 @@
     .input-dark:focus, .vc-input:focus {
         outline: none;
         border-color: var(--vc-input-focus);
-        box-shadow: 0 0 0 3px rgba(240,80,0,0.12);
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
     }
 
     /* ── Gradient text ────────────────────────────────────────── */
     .text-gradient-violet, .text-gradient-brand {
         @apply bg-clip-text text-transparent;
-        background-image: linear-gradient(135deg, #F05000 0%, #FF8147 100%);
+        background-image: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
     }
     .text-gradient-cyan {
         @apply bg-clip-text text-transparent;
-        background-image: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+        background-image: linear-gradient(135deg, #14B8A6 0%, #3B82F6 100%);
     }
 
     /* ── Glass card (for special sections) ─────────────────────── */
@@ -210,9 +210,9 @@
     /* ── Badge / pill ──────────────────────────────────────────── */
     .badge {
         @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
-        background: rgba(240,80,0,0.08);
+        background: rgba(99,102,241,0.08);
         color: var(--vc-accent);
-        border: 1px solid rgba(240,80,0,0.15);
+        border: 1px solid rgba(99,102,241,0.15);
     }
 
     /* ── Skeleton ──────────────────────────────────────────────── */

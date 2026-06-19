@@ -108,6 +108,8 @@ jobs:
             cd /www/wwwroot/visionlab
             sudo -u www git pull origin main
             sudo -u www composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            sudo -u www npm install
+            sudo -u www npm run build
             sudo -u www php artisan migrate --force
             sudo -u www php artisan optimize:clear
             echo "✅ Deployment to aaPanel complete!"
