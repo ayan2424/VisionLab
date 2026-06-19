@@ -674,8 +674,8 @@ class CodeServerManager
         
         // Map local path to container mount path
         if (str_starts_with($identifierOrPath, 'extensions/')) {
-            $filename = basename($identifierOrPath);
-            $identifierOrPath = "/var/opt/extensions/{$filename}";
+            $subPath = substr($identifierOrPath, strlen('extensions/'));
+            $identifierOrPath = "/var/opt/extensions/{$subPath}";
         }
 
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
