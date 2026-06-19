@@ -97,6 +97,8 @@ class CodeServerManager
             '-e', "VISIONCODE_USER_ID=" . (auth()->id() ?? '0'),
             '-e', "VISIONCODE_USER_NAME=" . (auth()->user()?->name ?? 'Guest'),
             '-e', "VISIONCODE_API_URL=" . url('/api'),
+            '-e', "OPENAI_API_BASE=" . url('/api/ai/v1'),
+            '-e', "OPENAI_API_KEY=" . ($workspace->owner?->createToken('workspace')->plainTextToken ?? 'dummy_key'),
             '--restart', 'unless-stopped',
             '--memory', ($quota['memory_mb'] ?? 512) . 'm',
             '--cpu-shares', (string) ($quota['cpu_shares'] ?? 1024),

@@ -2,80 +2,106 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\AiActionsLog;
+use App\Models\AiChatSession;
+use App\Models\AnalyticsEvent;
+use App\Models\Submission;
+use App\Models\Workspace;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AnalyticsController extends Controller
 {
+    /**
+     * Display analytics for the current user (Instructor or Student).
+     * Students see their own analytics. Instructors see aggregated analytics for their courses.
+     */
     public function index()
     {
-        $users = User::all();
+        $user = Auth::user();
+        $now = now();
 
-        // ── KPI cards ────────────────────────────────────────────
-        $totalUsers       = $users->count();
-        $adminCount       = $users->where('role', 'admin')->count();
-        $instructorCount  = $users->where('role', 'instructor')->count();
-        $studentCount     = $users->where('role', 'student')->count();
+        if ($user->role === 'student') {
+            // Student view
+            $cacheKey = "student_analytics_{$user->id}";
+            $data = \Illuminate\Support\Facades\Cache::tags(['analytics', "user_{$user->id}"])->remember($cacheKey, now()->addMinutes(30), function() use ($user, $now) {
+                $executions = AnalyticsEvent::forUser($user->id)
+                    ->ofType('workspace.command_executed')
+                    ->count();
+                    
+                $aiInteractions = AiActionsLog::where('user_id', $user->id)->count();
+                
+                $activeSessions = Workspace::where('user_id', $user->id)
+                    ->where('status', 'running')
+                    ->count();
 
-        // ── Simulated metrics (realistic for demo) ───────────────
-        $executions       = 1_247;
-        $aiInteractions   = 834;
-        $activeSessions   = rand(3, 12);
-        $avgExecTime      = 1.34;
+                // Activity chart (Last 14 days)
+                $dailyActivity = AnalyticsEvent::forUser($user->id)
+                    ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+                    ->where('created_at', '>=', $now->copy()->subDays(13)->startOfDay())
+                    ->groupBy(DB::raw('DATE(created_at)'))
+                    ->pluck('count', 'date');
+                    
+                $activityChart = $this->fillDays(13, $dailyActivity);
 
-        // ── Activity chart — last 14 days (simulated) ────────────
-        $activityLabels = [];
-        $execData       = [];
-        $aiData         = [];
-        $collabData     = [];
+                return compact('executions', 'aiInteractions', 'activeSessions', 'activityChart');
+            });
 
-        for ($i = 13; $i >= 0; $i--) {
-            $date             = now()->subDays($i);
-            $activityLabels[] = $date->format('M d');
-            $execData[]       = rand(40, 180);
-            $aiData[]         = rand(20, 90);
-            $collabData[]     = rand(5, 40);
+            return view('analytics.student', $data);
+            
+        } elseif ($user->role === 'instructor') {
+            // Instructor view
+            $cacheKey = "instructor_analytics_{$user->id}";
+            $data = \Illuminate\Support\Facades\Cache::tags(['analytics', "user_{$user->id}"])->remember($cacheKey, now()->addMinutes(30), function() use ($user, $now) {
+                $myCourses = $user->courses()->pluck('id');
+                $studentIds = DB::table('course_user')
+                    ->whereIn('course_id', $myCourses)
+                    ->pluck('user_id');
+
+                $executions = AnalyticsEvent::whereIn('user_id', $studentIds)
+                    ->ofType('workspace.command_executed')
+                    ->count();
+                    
+                $aiInteractions = AiActionsLog::whereIn('user_id', $studentIds)->count();
+                
+                $pendingGrading = Submission::whereIn('course_id', $myCourses)
+                    ->where('status', 'submitted')
+                    ->count();
+
+                // Activity chart (Last 14 days)
+                $dailyActivity = AnalyticsEvent::whereIn('user_id', $studentIds)
+                    ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+                    ->where('created_at', '>=', $now->copy()->subDays(13)->startOfDay())
+                    ->groupBy(DB::raw('DATE(created_at)'))
+                    ->pluck('count', 'date');
+                    
+                $activityChart = $this->fillDays(13, $dailyActivity);
+
+                $recentEvents = AnalyticsEvent::whereIn('user_id', $studentIds)
+                    ->with('user')
+                    ->latest()
+                    ->take(10)
+                    ->get();
+                
+                return compact('executions', 'aiInteractions', 'pendingGrading', 'activityChart', 'recentEvents');
+            });
+
+            return view('analytics.instructor', $data);
         }
 
-        // ── Language distribution ─────────────────────────────────
-        $languageLabels = ['Python', 'JavaScript', 'PHP', 'TypeScript', 'Java', 'Rust', 'Other'];
-        $languageCounts = [38, 24, 15, 10, 7, 4, 2];
+        // Admins should use AdminAnalyticsController
+        return redirect()->route('admin.analytics');
+    }
 
-        // ── Recent sessions (last 10 — simulated) ─────────────────
-        $languages  = ['python', 'javascript', 'typescript', 'php', 'java', 'rust'];
-        $langIcons  = ['🐍', '⚡', '📘', '🐘', '☕', '🦀'];
-        $recentSessions = [];
-        foreach ($users->take(8) as $u) {
-            $li = array_rand($languages);
-            $recentSessions[] = [
-                'user'       => $u,
-                'language'   => $languages[$li],
-                'icon'       => $langIcons[$li],
-                'executions' => rand(3, 47),
-                'ai_calls'   => rand(1, 28),
-                'duration'   => rand(8, 142) . ' min',
-                'ago'        => rand(1, 120) . 'm ago',
-            ];
+    private function fillDays(int $days, $data): array
+    {
+        $result = ['labels' => [], 'values' => []];
+        for ($i = $days; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $result['labels'][] = now()->subDays($i)->format('M d');
+            $result['values'][] = $data->has($date) ? (int) $data[$date] : 0;
         }
-
-        // ── Hourly heatmap (last 7 days × 24 hours) ──────────────
-        $heatmap = [];
-        for ($d = 6; $d >= 0; $d--) {
-            $row = ['day' => now()->subDays($d)->format('D'), 'hours' => []];
-            for ($h = 0; $h < 24; $h++) {
-                $intensity = ($h >= 9 && $h <= 22) ? rand(0, 100) : rand(0, 20);
-                $row['hours'][] = $intensity;
-            }
-            $heatmap[] = $row;
-        }
-
-        return view('analytics', compact(
-            'totalUsers', 'adminCount', 'instructorCount', 'studentCount',
-            'executions', 'aiInteractions', 'activeSessions', 'avgExecTime',
-            'activityLabels', 'execData', 'aiData', 'collabData',
-            'languageLabels', 'languageCounts',
-            'recentSessions', 'heatmap', 'users'
-        ));
+        return $result;
     }
 }

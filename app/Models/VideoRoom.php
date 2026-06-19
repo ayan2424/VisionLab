@@ -15,6 +15,7 @@ class VideoRoom extends Model
         'started_at',
         'ended_at',
         'is_active',
+        'meeting_notes',
     ];
 
     protected $casts = [
@@ -36,5 +37,10 @@ class VideoRoom extends Model
     public function host()
     {
         return $this->belongsTo(User::class, 'host_id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(VideoAttendance::class);
     }
 }

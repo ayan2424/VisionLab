@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\UserBadge;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,22 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    /**
+     * Display the user's gamified profile (Heatmap and Badges).
+     */
+    public function index(Request $request): View
+    {
+        $user = $request->user();
+        $badges = UserBadge::where('user_id', $user->id)
+            ->orderByDesc('earned_at')
+            ->get();
+
+        return view('profile.index', [
+            'user' => $user,
+            'badges' => $badges,
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */

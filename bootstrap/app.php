@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Global web middleware — security headers and account status check
         $middleware->web(append: [
+            \App\Http\Middleware\CheckMaintenanceMode::class,
             \App\Http\Middleware\SecurityHeaders::class,
             \App\Http\Middleware\CheckAccountStatus::class,
         ]);

@@ -1,45 +1,52 @@
 @extends('layouts.admin')
-@section('title', 'Analytics')
+@section('title', 'Admin Analytics')
+@section('page-title', 'Analytics')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-    <div>
-        <h1 class="text-2xl font-bold text-white">Analytics</h1>
-        <p class="text-slate-500 text-sm mt-1">Platform usage — last 30 days</p>
-    </div>
+<div class="flex items-center justify-between mb-6" style="opacity:0;animation:fadeSlideUp .5s .05s ease forwards">
+    <h1 class="text-xl font-bold" style="color:var(--vc-text);">Platform Analytics</h1>
 </div>
 
-{{-- Summary stat cards --}}
-<div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-    @foreach([
-        ['label' => 'Total Users',       'value' => $stats['total_users'],       'color' => 'text-violet-400'],
-        ['label' => 'Total Courses',      'value' => $stats['total_courses'],      'color' => 'text-cyan-400'],
-        ['label' => 'Total Submissions',  'value' => $stats['total_submissions'],  'color' => 'text-emerald-400'],
-        ['label' => 'Pending Grading',    'value' => $stats['pending_grading'],    'color' => 'text-cyan-400'],
-        ['label' => 'AI Actions Today',   'value' => $stats['ai_actions_today'],   'color' => 'text-rose-400'],
-        ['label' => 'Total AI Actions',   'value' => $stats['ai_actions_total'],   'color' => 'text-blue-400'],
-    ] as $i => $stat)
-    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;animation:fadeSlideUp .3s ease both;animation-delay:{{ $i*60 }}ms;">
-        <div class="text-3xl font-black {{ $stat['color'] }} stat-counter mb-1" data-target="{{ $stat['value'] }}">{{ $stat['value'] }}</div>
+{{-- KPI Stats --}}
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" style="opacity:0;animation:fadeSlideUp .5s .1s ease forwards">
+    @php
+        $kpis = [
+            ['label' => 'Total Users', 'value' => $stats['total_users'], 'color' => '#8b5cf6'],
+            ['label' => 'Active Workspaces', 'value' => $stats['total_workspaces'], 'color' => '#06b6d4'],
+            ['label' => 'AI Actions Logged', 'value' => $stats['ai_actions_total'], 'color' => '#f59e0b'],
+            ['label' => 'Telemetry Events', 'value' => $stats['telemetry_events'], 'color' => '#ef4444'],
+        ];
+    @endphp
+    @foreach($kpis as $stat)
+    <div class="rounded-2xl border border-white/[0.07] p-5 relative overflow-hidden group" style="background:#111111;">
+        <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl transition-opacity opacity-20 group-hover:opacity-40" style="background:{{ $stat['color'] }}"></div>
+        <div class="text-3xl font-black mb-1" style="color:var(--vc-text);">
+            <span class="stat-counter" data-target="{{ (int)$stat['value'] }}">0</span>
+        </div>
         <div class="text-xs text-slate-500">{{ $stat['label'] }}</div>
     </div>
     @endforeach
 </div>
 
 {{-- Charts --}}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     {{-- User Registrations --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
-        <h3 class="text-sm font-bold text-white mb-4">New User Registrations</h3>
+    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-2" style="background:#111111;">
+        <h3 class="text-sm font-bold text-white mb-4">Daily Registrations (Last 30 Days)</h3>
         <div class="relative h-52">
             <canvas id="userChart"></canvas>
         </div>
     </div>
-    {{-- Submissions --}}
+
+    {{-- Role Distribution --}}
     <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
-        <h3 class="text-sm font-bold text-white mb-4">Daily Submissions</h3>
-        <div class="relative h-52">
-            <canvas id="submissionChart"></canvas>
+        <h3 class="text-sm font-bold text-white mb-4">Users by Role</h3>
+        <div class="relative h-52 flex items-center justify-center">
+            @if(array_sum($roleDistribution) > 0)
+            <canvas id="roleChart"></canvas>
+            @else
+            <div class="text-center text-slate-500 text-sm">No data</div>
+            @endif
         </div>
     </div>
 </div>
@@ -47,11 +54,12 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     {{-- AI Actions --}}
     <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-2" style="background:#111111;">
-        <h3 class="text-sm font-bold text-white mb-4">AI Actions Per Day</h3>
+        <h3 class="text-sm font-bold text-white mb-4">AI Actions (Last 30 Days)</h3>
         <div class="relative h-52">
             <canvas id="aiChart"></canvas>
         </div>
     </div>
+
     {{-- AI Mode Distribution --}}
     <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">AI Mode Usage</h3>
@@ -59,58 +67,71 @@
             @if(array_sum($aiModes) > 0)
             <canvas id="modeChart"></canvas>
             @else
-            <div class="text-center">
-                <div class="text-slate-500 text-sm mb-2">No AI sessions yet</div>
-                <div class="grid grid-cols-3 gap-2 mt-4">
-                    @foreach([['CHAT','text-violet-400'],['PLAN','text-cyan-400'],['AGENT','text-cyan-400']] as $mode)
-                    <div class="text-center p-3 rounded-xl border border-white/[0.06]">
-                        <div class="text-lg font-black {{ $mode[1] }}">0</div>
-                        <div class="text-xs text-slate-500 mt-1">{{ $mode[0] }}</div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
+            <div class="text-center text-slate-500 text-sm">No AI data</div>
             @endif
         </div>
     </div>
 </div>
 
-{{-- Recent AI Actions Table --}}
-<div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
-    <h3 class="text-sm font-bold text-white mb-4">Recent AI Actions Log</h3>
-    @if($recentActions->isEmpty())
-    <div class="text-center py-8 text-slate-500 text-sm">No AI actions logged yet. Use the AI agent in a workspace to see logs.</div>
-    @else
-    <div class="overflow-x-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    {{-- Submissions --}}
+    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
+        <h3 class="text-sm font-bold text-white mb-4">Submissions (Last 30 Days)</h3>
+        <div class="relative h-52">
+            <canvas id="submissionChart"></canvas>
+        </div>
+    </div>
+
+    {{-- Workspaces --}}
+    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
+        <h3 class="text-sm font-bold text-white mb-4">Workspaces Started (Last 14 Days)</h3>
+        <div class="relative h-52">
+            <canvas id="workspaceChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    {{-- Event Taxonomy --}}
+    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-1" style="background:#111111;">
+        <h3 class="text-sm font-bold text-white mb-4">Top Event Taxonomy</h3>
+        <div class="relative h-52 flex items-center justify-center">
+            @if(array_sum($eventTypes) > 0)
+            <canvas id="eventChart"></canvas>
+            @else
+            <div class="text-center text-slate-500 text-sm">No events logged</div>
+            @endif
+        </div>
+    </div>
+
+    {{-- Recent Telemetry Events Table --}}
+    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-2 overflow-auto" style="background:#111111;max-height:300px;">
+        <h3 class="text-sm font-bold text-white mb-4">Recent Telemetry Log</h3>
+        @if($recentEvents->isEmpty())
+        <div class="text-center py-8 text-slate-500 text-sm">No telemetry events logged yet.</div>
+        @else
         <table class="w-full">
             <thead>
                 <tr class="border-b border-white/[0.06]">
-                    <th class="text-left pb-3 text-xs font-semibold text-slate-400">User</th>
-                    <th class="text-left pb-3 text-xs font-semibold text-slate-400">Action</th>
-                    <th class="text-left pb-3 text-xs font-semibold text-slate-400">Mode</th>
-                    <th class="text-left pb-3 text-xs font-semibold text-slate-400">File</th>
-                    <th class="text-right pb-3 text-xs font-semibold text-slate-400">Time</th>
+                    <th class="text-left pb-2 text-xs font-semibold text-slate-400">Time</th>
+                    <th class="text-left pb-2 text-xs font-semibold text-slate-400">User</th>
+                    <th class="text-left pb-2 text-xs font-semibold text-slate-400">Event</th>
+                    <th class="text-right pb-2 text-xs font-semibold text-slate-400">Resource</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($recentActions as $action)
+                @foreach($recentEvents as $ev)
                 <tr class="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                    <td class="py-2.5 pr-4 text-sm text-white">{{ $action->user->name ?? 'Unknown' }}</td>
-                    <td class="py-2.5 pr-4 text-xs text-slate-400">{{ $action->action_type }}</td>
-                    <td class="py-2.5 pr-4">
-                        <span class="px-2 py-0.5 rounded-md text-xs border
-                            {{ $action->mode === 'AGENT' ? 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20' : ($action->mode === 'PLAN' ? 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20' : 'text-violet-400 bg-violet-400/10 border-violet-400/20') }}">
-                            {{ $action->mode }}
-                        </span>
-                    </td>
-                    <td class="py-2.5 pr-4 text-xs text-slate-500 font-mono">{{ $action->file_path ?? '—' }}</td>
-                    <td class="py-2.5 text-xs text-slate-500 text-right">{{ $action->created_at->diffForHumans() }}</td>
+                    <td class="py-2 pr-4 text-xs text-slate-500">{{ $ev->created_at->format('M d, H:i:s') }}</td>
+                    <td class="py-2 pr-4 text-sm text-white">{{ collect($ev->user)->get('name', 'Guest') }}</td>
+                    <td class="py-2 pr-4 text-xs font-mono text-[#3b82f6]">{{ $ev->event_type }}</td>
+                    <td class="py-2 text-xs text-slate-500 text-right">{{ collect($ev->resource_type)->last() ?? '—' }} #{{ collect($ev->resource_id)->last() ?? '' }}</td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+        @endif
     </div>
-    @endif
 </div>
 
 <style>
@@ -126,90 +147,111 @@ const chartDefaults = {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-        x: {
-            ticks: { color: '#475569', font: { size: 10 }, maxTicksLimit: 8 },
-            grid: { color: 'rgba(255,255,255,0.04)' }
-        },
-        y: {
-            ticks: { color: '#475569', font: { size: 10 } },
-            grid: { color: 'rgba(255,255,255,0.04)' },
-            beginAtZero: true
-        }
+        x: { ticks: { color: '#475569', font: { size: 10 }, maxTicksLimit: 8 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#475569', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
     }
 };
 
-// User chart
+// 1. User chart
 new Chart(document.getElementById('userChart'), {
     type: 'line',
     data: {
         labels: {!! json_encode($userChart['labels']) !!},
         datasets: [{
             data: {!! json_encode($userChart['values']) !!},
-            borderColor: '#8b5cf6',
-            backgroundColor: 'rgba(240,80,0,.12)',
-            borderWidth: 2, fill: true, tension: 0.4,
-            pointBackgroundColor: '#8b5cf6', pointRadius: 3
+            borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,.12)', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 2
         }]
     },
     options: { ...chartDefaults }
 });
 
-// Submission chart
+// 2. Submission chart
 new Chart(document.getElementById('submissionChart'), {
     type: 'bar',
     data: {
         labels: {!! json_encode($submissionChart['labels']) !!},
         datasets: [{
             data: {!! json_encode($submissionChart['values']) !!},
-            backgroundColor: 'rgba(6,182,212,.6)',
-            borderColor: '#06b6d4', borderWidth: 1, borderRadius: 4
+            backgroundColor: 'rgba(16,185,129,.6)', borderColor: '#10b981', borderWidth: 1, borderRadius: 4
         }]
     },
     options: { ...chartDefaults }
 });
 
-// AI chart
+// 3. AI chart
 new Chart(document.getElementById('aiChart'), {
     type: 'line',
     data: {
         labels: {!! json_encode($aiChart['labels']) !!},
         datasets: [{
             data: {!! json_encode($aiChart['values']) !!},
-            borderColor: '#f59e0b',
-            backgroundColor: 'rgba(245,158,11,.1)',
-            borderWidth: 2, fill: true, tension: 0.4,
-            pointBackgroundColor: '#f59e0b', pointRadius: 3
+            borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.1)', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 2
+        }]
+    },
+    options: { ...chartDefaults }
+});
+
+// 4. Workspace chart
+new Chart(document.getElementById('workspaceChart'), {
+    type: 'bar',
+    data: {
+        labels: {!! json_encode($workspaceChart['labels']) !!},
+        datasets: [{
+            data: {!! json_encode($workspaceChart['values']) !!},
+            backgroundColor: 'rgba(6,182,212,.6)', borderColor: '#06b6d4', borderWidth: 1, borderRadius: 4
         }]
     },
     options: { ...chartDefaults }
 });
 
 @if(array_sum($aiModes) > 0)
-// Mode doughnut
+// 5. Mode doughnut
 new Chart(document.getElementById('modeChart'), {
     type: 'doughnut',
     data: {
-        labels: ['CHAT', 'PLAN', 'AGENT'],
+        labels: {!! json_encode(array_keys($aiModes)) !!},
         datasets: [{
-            data: [
-                {!! $aiModes['CHAT'] ?? 0 !!},
-                {!! $aiModes['PLAN'] ?? 0 !!},
-                {!! $aiModes['AGENT'] ?? 0 !!}
-            ],
-            backgroundColor: ['rgba(240,80,0,.8)', 'rgba(6,182,212,.8)', 'rgba(245,158,11,.8)'],
-            borderColor: ['#8b5cf6', '#06b6d4', '#f59e0b'],
-            borderWidth: 2
+            data: {!! json_encode(array_values($aiModes)) !!},
+            backgroundColor: ['#8b5cf6', '#06b6d4', '#f59e0b', '#ef4444'],
+            borderWidth: 0
         }]
     },
-    options: {
-        responsive: true, maintainAspectRatio: false, cutout: '65%',
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: { color: '#94a3b8', font: { size: 11 }, padding: 12 }
-            }
-        }
-    }
+    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
+});
+@endif
+
+@if(array_sum($roleDistribution) > 0)
+// 6. Role doughnut
+new Chart(document.getElementById('roleChart'), {
+    type: 'pie',
+    data: {
+        labels: {!! json_encode(array_keys($roleDistribution)) !!},
+        datasets: [{
+            data: {!! json_encode(array_values($roleDistribution)) !!},
+            backgroundColor: ['#ef4444', '#10b981', '#3b82f6', '#f59e0b'],
+            borderWidth: 0
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
+});
+@endif
+
+@if(array_sum($eventTypes) > 0)
+// 7. Event Taxonomy
+new Chart(document.getElementById('eventChart'), {
+    type: 'polarArea',
+    data: {
+        labels: {!! json_encode(array_keys($eventTypes)) !!},
+        datasets: [{
+            data: {!! json_encode(array_values($eventTypes)) !!},
+            backgroundColor: [
+                'rgba(59,130,246,0.6)', 'rgba(16,185,129,0.6)', 'rgba(245,158,11,0.6)', 
+                'rgba(239,68,68,0.6)', 'rgba(139,92,246,0.6)', 'rgba(6,182,212,0.6)'
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
 });
 @endif
 
@@ -217,14 +259,12 @@ new Chart(document.getElementById('modeChart'), {
 document.querySelectorAll('.stat-counter').forEach(el => {
     const target = parseInt(el.dataset.target);
     if (!target) return;
-    let n = 0; const step = Math.ceil(target / 25);
+    let n = 0; const step = Math.ceil(target / 25) || 1;
     const t = setInterval(() => {
         n = Math.min(n + step, target);
-        el.textContent = n;
+        el.textContent = n.toLocaleString();
         if (n >= target) clearInterval(t);
     }, 40);
 });
 </script>
 @endsection
-
-

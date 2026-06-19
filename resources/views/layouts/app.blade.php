@@ -55,11 +55,88 @@
     {{-- Global toast container --}}
     <x-toast-container />
 
+    {{-- PWA UI Elements --}}
+    <div id="pwa-install-prompt" class="hidden fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 z-50">
+        <div>
+            <div class="font-bold text-sm">Install VisionLab</div>
+            <div class="text-xs text-blue-100">Add to your home screen for quick access.</div>
+        </div>
+        <button id="pwa-install-btn" class="bg-white text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-50 transition-colors">Install</button>
+        <button id="pwa-install-close" class="text-blue-200 hover:text-white"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+
     {{-- PWA + Echo --}}
     <script>
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('/serviceworker.js').catch(()=>{}));
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').then(reg => {
+                console.log('SW Registered', reg);
+                window.swRegistration = reg;
+            }).catch(err => console.error('SW Error', err));
+        });
     }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('pwa-install-prompt').classList.remove('hidden');
+    });
+
+    document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('pwa-install-prompt').classList.add('hidden');
+            }
+            deferredPrompt = null;
+        }
+    });
+
+    document.getElementById('pwa-install-close')?.addEventListener('click', () => {
+        document.getElementById('pwa-install-prompt').classList.add('hidden');
+    });
+
+    // WebPush Subscription
+    window.subscribeToPush = async function() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            const vapidPublicKey = document.querySelector('meta[name="vapid-public-key"]')?.content;
+            if(!vapidPublicKey) return;
+
+            const subscription = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+            });
+
+            await fetch('/api/push-subscriptions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('vl_token') // or sanctum cookie
+                },
+                body: JSON.stringify(subscription)
+            });
+            console.log('Subscribed to push notifications!');
+        } catch(e) {
+            console.error('Failed to subscribe to push', e);
+        }
+    };
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
 
     @if(Auth::check())
     (function initGlobalEcho() {

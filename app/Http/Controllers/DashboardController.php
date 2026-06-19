@@ -30,111 +30,123 @@ class DashboardController extends Controller
 
     private function studentDashboard($user)
     {
-        $courses = Course::whereHas('enrollments', function ($q) use ($user) {
-            $q->where('student_id', $user->id)->where('status', 'active');
-        })->with('instructor')->withCount('students')->latest()->take(6)->get();
+        $cacheKey = "student_dashboard_{$user->id}";
 
-        // Upcoming deadlines across all enrolled courses
-        $upcomingAssignments = Assignment::whereHas('course.enrollments', function ($q) use ($user) {
-            $q->where('student_id', $user->id)->where('status', 'active');
-        })
-        ->where('due_date', '>', now())
-        ->orderBy('due_date')
-        ->take(5)
-        ->with('course')
-        ->get();
+        $data = \Illuminate\Support\Facades\Cache::tags(['dashboard', "user_{$user->id}"])->remember($cacheKey, now()->addMinutes(15), function() use ($user) {
+            $courses = Course::whereHas('enrollments', function ($q) use ($user) {
+                $q->where('student_id', $user->id)->where('status', 'active');
+            })->with('instructor')->withCount('students')->latest()->take(6)->get();
 
-        // Recent announcements with unread indicator
-        $recentAnnouncements = Announcement::whereHas('course.enrollments', function ($q) use ($user) {
-            $q->where('student_id', $user->id)->where('status', 'active');
-        })
-        ->with(['course', 'author'])
-        ->latest()
-        ->take(5)
-        ->get()
-        ->each(function ($announcement) use ($user) {
-            $announcement->is_unread = !$announcement->isReadBy($user);
+            // Upcoming deadlines across all enrolled courses
+            $upcomingAssignments = Assignment::whereHas('course.enrollments', function ($q) use ($user) {
+                $q->where('student_id', $user->id)->where('status', 'active');
+            })
+            ->where('due_date', '>', now())
+            ->orderBy('due_date')
+            ->take(5)
+            ->with('course')
+            ->get();
+
+            // Recent announcements with unread indicator
+            $recentAnnouncements = Announcement::whereHas('course.enrollments', function ($q) use ($user) {
+                $q->where('student_id', $user->id)->where('status', 'active');
+            })
+            ->with(['course', 'author'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->each(function ($announcement) use ($user) {
+                $announcement->is_unread = !$announcement->isReadBy($user);
+            });
+
+            $unreadAnnouncementCount = Announcement::whereHas('course.enrollments', function ($q) use ($user) {
+                $q->where('student_id', $user->id)->where('status', 'active');
+            })->whereDoesntHave('reads', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->count();
+
+            // Submission stats
+            $pendingSubmissions = Submission::where('student_id', $user->id)
+                                            ->whereIn('status', ['in_progress', 'not_started'])
+                                            ->count();
+
+            $gradedSubmissions = Submission::where('student_id', $user->id)
+                                           ->where('status', 'graded')
+                                           ->latest('updated_at')
+                                           ->take(3)
+                                           ->with('assignment.course')
+                                           ->get();
+
+            // Streak and badges
+            $streak = $user->current_streak ?? 0;
+            $badges = UserBadge::where('user_id', $user->id)->with('badge')->latest('earned_at')->take(5)->get();
+
+            // Active workspaces
+            $activeWorkspaces = Workspace::where('student_id', $user->id)
+                                          ->where('status', 'running')
+                                          ->with('course')
+                                          ->take(3)
+                                          ->get();
+
+            return compact(
+                'courses', 'upcomingAssignments', 'recentAnnouncements',
+                'unreadAnnouncementCount', 'pendingSubmissions', 'gradedSubmissions',
+                'streak', 'badges', 'activeWorkspaces'
+            );
         });
 
-        $unreadAnnouncementCount = Announcement::whereHas('course.enrollments', function ($q) use ($user) {
-            $q->where('student_id', $user->id)->where('status', 'active');
-        })->whereDoesntHave('reads', function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })->count();
-
-        // Submission stats
-        $pendingSubmissions = Submission::where('student_id', $user->id)
-                                        ->whereIn('status', ['in_progress', 'not_started'])
-                                        ->count();
-
-        $gradedSubmissions = Submission::where('student_id', $user->id)
-                                       ->where('status', 'graded')
-                                       ->latest('updated_at')
-                                       ->take(3)
-                                       ->with('assignment.course')
-                                       ->get();
-
-        // Streak and badges
-        $streak = $user->current_streak ?? 0;
-        $badges = UserBadge::where('user_id', $user->id)->latest('earned_at')->take(5)->get();
-
-        // Active workspaces
-        $activeWorkspaces = Workspace::where('student_id', $user->id)
-                                      ->where('status', 'running')
-                                      ->with('course')
-                                      ->take(3)
-                                      ->get();
-
-        return view('dashboard.student', compact(
-            'courses', 'upcomingAssignments', 'recentAnnouncements',
-            'unreadAnnouncementCount', 'pendingSubmissions', 'gradedSubmissions',
-            'streak', 'badges', 'activeWorkspaces'
-        ));
+        return view('dashboard.student', $data);
     }
 
     private function instructorDashboard($user)
     {
-        $courses = Course::where('instructor_id', $user->id)
-                         ->withCount('students')
-                         ->latest()
-                         ->get();
+        $cacheKey = "instructor_dashboard_{$user->id}";
 
-        // Pending grading count (submitted + late)
-        $pendingGrading = Submission::whereHas('assignment.course', function ($q) use ($user) {
-            $q->where('instructor_id', $user->id);
-        })->whereIn('status', ['submitted', 'late'])->count();
+        $data = \Illuminate\Support\Facades\Cache::tags(['dashboard', "user_{$user->id}"])->remember($cacheKey, now()->addMinutes(15), function() use ($user) {
+            $courses = Course::where('instructor_id', $user->id)
+                             ->withCount('students')
+                             ->latest()
+                             ->get();
 
-        $totalStudents = $courses->sum('students_count');
-
-        // Recent submissions awaiting review
-        $recentSubmissions = Submission::whereHas('assignment.course', function ($q) use ($user) {
-            $q->where('instructor_id', $user->id);
-        })->with(['student', 'assignment.course'])->latest()->take(10)->get();
-
-        // Late submission count
-        $lateSubmissions = Submission::whereHas('assignment.course', function ($q) use ($user) {
-            $q->where('instructor_id', $user->id);
-        })->where('status', 'late')->count();
-
-        // Active workspaces in instructor's courses
-        $activeWorkspaceCount = Workspace::whereHas('course', function ($q) use ($user) {
-            $q->where('instructor_id', $user->id);
-        })->where('status', 'running')->count();
-
-        // Average grade across all graded submissions
-        $avgGrade = Submission::whereHas('assignment.course', function ($q) use ($user) {
-            $q->where('instructor_id', $user->id);
-        })->where('status', 'graded')->avg('grade');
-
-        // AI activity — pending patches across instructor's courses
-        $pendingPatches = AiPendingPatch::where('status', 'pending')
-            ->whereHas('workspace.course', function ($q) use ($user) {
+            // Pending grading count (submitted + late)
+            $pendingGrading = Submission::whereHas('assignment.course', function ($q) use ($user) {
                 $q->where('instructor_id', $user->id);
-            })->count();
+            })->whereIn('status', ['submitted', 'late'])->count();
 
-        return view('dashboard.instructor', compact(
-            'courses', 'pendingGrading', 'totalStudents', 'recentSubmissions',
-            'lateSubmissions', 'activeWorkspaceCount', 'avgGrade', 'pendingPatches'
-        ));
+            $totalStudents = $courses->sum('students_count');
+
+            // Recent submissions awaiting review
+            $recentSubmissions = Submission::whereHas('assignment.course', function ($q) use ($user) {
+                $q->where('instructor_id', $user->id);
+            })->with(['student', 'assignment.course'])->latest()->take(10)->get();
+
+            // Late submission count
+            $lateSubmissions = Submission::whereHas('assignment.course', function ($q) use ($user) {
+                $q->where('instructor_id', $user->id);
+            })->where('status', 'late')->count();
+
+            // Active workspaces in instructor's courses
+            $activeWorkspaceCount = Workspace::whereHas('course', function ($q) use ($user) {
+                $q->where('instructor_id', $user->id);
+            })->where('status', 'running')->count();
+
+            // Average grade across all graded submissions
+            $avgGrade = Submission::whereHas('assignment.course', function ($q) use ($user) {
+                $q->where('instructor_id', $user->id);
+            })->where('status', 'graded')->avg('grade');
+
+            // AI activity — pending patches across instructor's courses
+            $pendingPatches = AiPendingPatch::where('status', 'pending')
+                ->whereHas('workspace.course', function ($q) use ($user) {
+                    $q->where('instructor_id', $user->id);
+                })->count();
+
+            return compact(
+                'courses', 'pendingGrading', 'totalStudents', 'recentSubmissions',
+                'lateSubmissions', 'activeWorkspaceCount', 'avgGrade', 'pendingPatches'
+            );
+        });
+
+        return view('dashboard.instructor', $data);
     }
 }

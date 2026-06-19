@@ -513,6 +513,16 @@
             });
             const data = await res.json();
             if (data.active) {
+                // Ping attendance
+                await fetch(`/api/workspace/{{ $roomSlug }}/video/attendance`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer {{ $workspace->owner?->createToken('workspace')->plainTextToken ?? '' }}`, 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'join' })
+                });
                 checkVideoStatus();
             }
         } catch (e) {

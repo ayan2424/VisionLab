@@ -67,6 +67,10 @@
                 <td class="px-5 py-4 text-xs" style="color:var(--vc-text-secondary);">{{ $user->created_at->format('M d, Y') }}</td>
                 <td class="px-5 py-4">
                     <div class="flex items-center justify-end gap-2">
+                        @if($user->id !== auth()->id())
+                        <a href="{{ route('admin.users.impersonate', $user->id) }}" class="btn-ghost py-1 px-3 text-xs" style="color:var(--vc-info);border-color:rgba(59,130,246,0.3);" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='transparent'" title="Login as this user">Impersonate</a>
+                        @endif
+                        <a href="{{ route('admin.users.export', $user->id) }}" class="btn-ghost py-1 px-3 text-xs" style="color:var(--vc-accent);border-color:rgba(240,80,0,0.3);" onmouseover="this.style.background='rgba(240,80,0,0.1)'" onmouseout="this.style.background='transparent'" title="Download GDPR Data">Export</a>
                         <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-ghost py-1 px-3 text-xs">Edit</a>
                         @if($user->status === 'active' && $user->id !== auth()->id())
                         <form method="POST" action="{{ route('admin.users.suspend', $user->id) }}">

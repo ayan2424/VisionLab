@@ -73,6 +73,8 @@ Route::middleware(['auth:sanctum', 'throttle:video'])
         ->name('start');
     Route::get('/status',  [\App\Http\Controllers\VideoRoomController::class, 'status'])
         ->name('status');
+    Route::post('/attendance', [\App\Http\Controllers\VideoRoomController::class, 'attendance'])
+        ->name('attendance');
     Route::post('/end',    [\App\Http\Controllers\VideoRoomController::class, 'end'])
         ->name('end');
 });
@@ -145,6 +147,16 @@ Route::get('/health', function () {
         'timestamp' => now()->toISOString(),
         'version'   => '1.0.0',
     ], $db ? 200 : 503);
+});
+
+/*
+|--------------------------------------------------------------------------
+| VisionGuard Telemetry API (Phase 9)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth:sanctum'])->prefix('visionguard')->name('api.visionguard.')->group(function () {
+    Route::post('/log', [\App\Http\Controllers\VisionGuardController::class, 'logEvent'])->name('log');
+    Route::get('/forensics', [\App\Http\Controllers\VisionGuardController::class, 'getForensics'])->name('forensics');
 });
 
 Route::post('/webhook/deploy', [\App\Http\Controllers\WebhookController::class, 'deploy']);

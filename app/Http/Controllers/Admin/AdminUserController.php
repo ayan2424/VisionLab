@@ -75,4 +75,46 @@ class AdminUserController extends Controller
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'User deleted.');
     }
+
+    public function impersonate(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['error' => 'You cannot impersonate yourself.']);
+        }
+
+        session(['impersonator_id' => auth()->id()]);
+        auth()->login($user);
+
+        return redirect()->route('dashboard')->with('success', "You are now impersonating {$user->name}.");
+    }
+
+    public function stopImpersonating()
+    {
+        if (session()->has('impersonator_id')) {
+            $adminId = session('impersonator_id');
+            session()->forget('impersonator_id');
+            
+            $admin = User::find($adminId);
+            if ($admin) {
+                auth()->login($admin);
+                return redirect()->route('admin.users.index')->with('success', 'Welcome back. Impersonation stopped.');
+            }
+        }
+
+        return redirect()->route('dashboard');
+    }
+
+    public function exportGdpr(User $user)
+    {
+        $data = [
+            'profile' => $user->only(['id', 'name', 'email', 'role', 'status', 'created_at']),
+            'courses' => $user->enrollments()->with('course')->get()->map->course->only(['id', 'name', 'slug']),
+            'workspaces' => $user->workspaces()->select('id', 'name', 'slug', 'created_at')->get(),
+            'submissions' => \App\Models\Submission::where('student_id', $user->id)->get(),
+        ];
+
+        return response()->json($data, 200, [
+            'Content-Disposition' => 'attachment; filename="gdpr_export_' . $user->id . '.json"'
+        ]);
+    }
 }

@@ -15,7 +15,8 @@ php artisan down || true
 
 # 2. Pull latest code from Git
 echo "📥 Pulling latest code from GitHub..."
-git pull origin main || true
+git fetch --all || true
+git reset --hard origin/main || true
 
 # 3. Install/Update PHP Dependencies
 echo "📦 Installing PHP dependencies..."

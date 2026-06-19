@@ -1,17 +1,37 @@
 {
-  "name": "VisionLab",
-  "short_name": "VisionLab",
-  "description": "Collaborative Coding and Learning Management System",
-  "start_url": "/dashboard",
-  "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
-  "icons": [
-    {
-      "src": "/logo.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+    "name": "VisionLab",
+    "short_name": "VisionLab",
+    "description": "Collaborative coding and learning management for universities.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#0a0a0a",
+    "icons": [
+        {
+            "src": "/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "New Workspace",
+            "short_name": "Workspace",
+            "description": "Create a new code-server workspace",
+            "url": "/workspaces",
+            "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
+        },
+        {
+            "name": "Assignments",
+            "short_name": "Assignments",
+            "description": "View pending assignments",
+            "url": "/dashboard",
+            "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
+        }
+    ]
 }

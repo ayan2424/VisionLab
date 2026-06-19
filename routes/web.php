@@ -112,8 +112,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/workspace/{workspace}/deployments', [\App\Http\Controllers\DeploymentController::class, 'index'])->name('workspace.deployments');
     Route::get('/deployments/{deployment}/status', [\App\Http\Controllers\DeploymentController::class, 'status'])->name('deployments.status');
     Route::delete('/deployments/{deployment}', [\App\Http\Controllers\DeploymentController::class, 'destroy'])->name('deployments.destroy');
+    Route::get('/my-deployments', function() {
+        return view('deployments.index', [
+            'deployments' => \App\Models\Deployment::where('user_id', auth()->id())->latest()->get(),
+            'workspaces' => \App\Models\Workspace::where('user_id', auth()->id())->get()
+        ]);
+    })->name('deployments.index');
 
     // ── Profile ────────────────────────────────────────────────────────
+    Route::get('/profile/dashboard', [ProfileController::class, 'index'])  ->name('profile.index');
     Route::get('/profile',    [ProfileController::class, 'edit'])  ->name('profile.edit');
     Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -124,6 +131,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Users
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}/impersonate', [AdminUserController::class, 'impersonate'])->name('users.impersonate');
+        Route::get('/users/{user}/export', [AdminUserController::class, 'exportGdpr'])->name('users.export');
         Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
         Route::post('/users/{user}/suspend', [AdminUserController::class, 'suspend'])->name('users.suspend');
@@ -154,7 +163,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Analytics
         Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics');
+
+        // System Configs
+        Route::get('/system', [\App\Http\Controllers\Admin\AdminSystemController::class, 'index'])->name('system.index');
+        Route::post('/system/flags', [\App\Http\Controllers\Admin\AdminSystemController::class, 'updateFlags'])->name('system.flags.update');
+        Route::post('/system/maintenance', [\App\Http\Controllers\Admin\AdminSystemController::class, 'toggleMaintenance'])->name('system.maintenance.toggle');
+
+        // Webhooks
+        Route::resource('webhooks', \App\Http\Controllers\Admin\AdminWebhookController::class)->except(['show']);
     });
+});
+
+// Stop impersonation route (Needs to be inside `auth` but NOT `admin` middleware, because the impersonated user might not be an admin!)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/stop-impersonating', [\App\Http\Controllers\Admin\AdminUserController::class, 'stopImpersonating'])->name('stop_impersonating');
 });
 
 require __DIR__.'/auth.php';

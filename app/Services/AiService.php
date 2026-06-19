@@ -325,11 +325,11 @@ class AiService
     private function logAction(Workspace $workspace, ?int $userId, string $action, array $context): void
     {
         AiActionsLog::create([
-            'user_id'      => $userId,
-            'workspace_id' => $workspace->id,
-            'action_type'  => $action,
-            'context'      => $context,
-            'ip_address'   => request()?->ip(),
+            'user_id'       => $userId,
+            'workspace_ref' => 'ws-' . $workspace->id,
+            'action_type'   => substr($action, 0, 50),
+            'diff_summary'  => json_encode($context),
+            'mode'          => $context['mode'] ?? 'CHAT',
         ]);
     }
 }

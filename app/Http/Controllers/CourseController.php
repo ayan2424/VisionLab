@@ -70,8 +70,13 @@ class CourseController extends Controller
         $readAnnouncementIds = [];
 
         if ($user->isStudent()) {
+            $submissions = \App\Models\Submission::where('student_id', $user->id)
+                ->whereIn('assignment_id', $course->assignments->pluck('id'))
+                ->get()
+                ->keyBy('assignment_id');
+
             foreach ($course->assignments as $assignment) {
-                $userSubmissions[$assignment->id] = $assignment->submissionFor($user);
+                $userSubmissions[$assignment->id] = $submissions->get($assignment->id);
             }
             $readAnnouncementIds = \App\Models\AnnouncementRead::where('user_id', $user->id)
                 ->whereIn('announcement_id', $course->announcements->pluck('id'))
