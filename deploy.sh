@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+function cleanup() {
+  echo "✅ Bringing application out of maintenance mode..."
+  php artisan up
+}
+trap cleanup EXIT
+
 echo "🚀 Starting VisionLab Deployment..."
 
 # 1. Enter maintenance mode
@@ -9,7 +15,7 @@ php artisan down || true
 
 # 2. Pull latest code from Git
 echo "📥 Pulling latest code from GitHub..."
-git pull origin main
+git pull origin main || true
 
 # 3. Install/Update PHP Dependencies
 echo "📦 Installing PHP dependencies..."
@@ -49,9 +55,5 @@ if [ "$(id -u)" -eq 0 ]; then
     chown -R www:www public/build storage bootstrap/cache
     chmod -R 775 storage bootstrap/cache
 fi
-
-# 10. Exit maintenance mode
-echo "✅ Bringing application out of maintenance mode..."
-php artisan up
 
 echo "🎉 Deployment successful!"
