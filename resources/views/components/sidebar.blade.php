@@ -4,14 +4,9 @@
     <!-- ── Logo ── -->
     <div class="h-16 flex items-center px-5 border-b" style="border-color:var(--vc-border);">
         <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105"
-                 style="background:linear-gradient(135deg,#F05000,#FF8147);box-shadow:0 4px 14px rgba(240,80,0,0.25);">
-                <svg class="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                </svg>
-            </div>
+            <x-logo size="h-9 w-9" :showText="false" />
             <div>
-                <span class="text-base font-bold tracking-tight" style="color:var(--vc-text);">Vision<span style="color:var(--vc-accent);">Code</span></span>
+                <span class="text-base font-bold tracking-tight" style="color:var(--vc-text);">Vision<span style="color:var(--vc-accent);">Lab</span></span>
                 <span class="block text-[9px] font-semibold uppercase tracking-widest" style="color:var(--vc-muted);">AI Platform</span>
             </div>
         </a>

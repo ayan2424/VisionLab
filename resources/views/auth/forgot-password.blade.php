@@ -4,13 +4,8 @@
 
             {{-- Logo --}}
             <div class="text-center mb-8" style="opacity:0;animation:fadeUp 0.6s 0.1s ease forwards">
-                <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5">
-                    <div class="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center shadow-glow-sm">
-                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold">Vision<span class="text-gradient-violet">Code</span> AI</span>
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5 group">
+                    <x-logo size="h-10 w-10" textSize="text-xl" />
                 </a>
                 <p class="mt-2 text-sm text-muted">Reset your password</p>
             </div>

@@ -82,11 +82,7 @@
                 {{-- Logo --}}
                 <div class="mb-10" style="opacity:0;animation:fadeUp 0.5s 0.1s ease forwards">
                     <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5 group">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center group-hover:shadow-glow-brand transition-all duration-300"
-                             style="background:linear-gradient(135deg,#F05000,#FF8147);">
-                            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                        </div>
-                        <span class="text-xl font-bold" style="color:var(--vc-text);">Vision<span style="color:var(--vc-accent);">Code</span> AI</span>
+                        <x-logo size="h-10 w-10" textSize="text-xl" />
                     </a>
                 </div>
 

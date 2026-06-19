@@ -10,13 +10,7 @@
             {{-- Logo + Nav links --}}
             <div class="flex items-center gap-6">
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-shadow duration-200"
-                         style="background:linear-gradient(135deg,#F05000,#FF8147);box-shadow:0 2px 8px rgba(240,80,0,0.3);">
-                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                        </svg>
-                    </div>
-                    <span class="text-sm font-bold" style="color:var(--vc-text);">Vision<span style="color:var(--vc-accent);">Code</span> AI</span>
+                    <x-logo size="h-8 w-8" textSize="text-lg" />
                 </a>
 
                 <div class="hidden sm:flex items-center gap-1">

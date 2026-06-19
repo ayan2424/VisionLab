@@ -61,16 +61,7 @@
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <!-- Logo -->
         <a href="#" class="flex items-center gap-2.5 group">
-            <div class="w-9 h-9 rounded-lg bg-orange-600 flex items-center justify-center shadow-glow-sm group-hover:shadow-glow-brand transition-all duration-300">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                </svg>
-            </div>
-            <span class="text-lg font-bold tracking-tight">
-                Vision<span class="text-gradient-brand">Code</span>
-                <span class="text-orange-400 text-sm font-medium ml-0.5">AI</span>
-            </span>
+            <x-logo size="h-9 w-9" />
         </a>
 
         <!-- Nav links -->
@@ -644,12 +635,7 @@
 <footer class="border-t border-border py-10 px-6">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-lg bg-orange-600 flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                </svg>
-            </div>
-            <span class="text-sm font-semibold text-white">VisionLab</span>
+            <x-logo size="h-7 w-7" textSize="text-sm" />
         </div>
         <p class="text-xs text-muted text-center">
             Built for Aptech Vision 2026 · Laravel {{ app()->version() }} · PHP {{ PHP_VERSION }}

@@ -134,11 +134,8 @@
 <div id="vc-topbar">
     {{-- Left --}}
     <div style="display:flex;align-items:center;gap:12px;">
-        <a href="{{ route('home') }}" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
-            <div style="width:32px;height:32px;border-radius:12px;background:linear-gradient(135deg, #f97316, #ea580c);display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(249,115,22,0.4);">
-                <svg style="width:16px;height:16px;color:#fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-            </div>
-            <span style="font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em;">Vision<span style="color:#f97316;">Lab</span></span>
+        <a href="{{ route('home') }}" style="display:flex;align-items:center;text-decoration:none;">
+            <x-logo size="h-8 w-8" textSize="text-[15px]" />
         </a>
 
         <span style="color:rgba(255,255,255,0.1);font-size:16px;margin:0 4px;">|</span>

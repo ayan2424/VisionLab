@@ -69,12 +69,8 @@
             <div class="w-full max-w-md" style="opacity:0;animation:fadeSlideUp .6s .2s ease forwards">
 
                 {{-- Logo --}}
-                <a href="/" class="flex items-center gap-2.5 mb-8">
-                    <div class="w-9 h-9 rounded-lg flex items-center justify-center"
-                         style="background:linear-gradient(135deg,#F05000,#FF8147);box-shadow:0 2px 10px rgba(240,80,0,0.3);">
-                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                    </div>
-                    <span class="text-lg font-bold" style="color:var(--vc-text);">Vision<span style="color:var(--vc-accent);">Code</span> AI</span>
+                <a href="/" class="flex items-center gap-2.5 mb-8 group">
+                    <x-logo size="h-9 w-9" textSize="text-xl" />
                 </a>
 
                 <h1 class="text-2xl font-bold mb-1" style="color:var(--vc-text);">Sign in to your account</h1>

@@ -124,11 +124,8 @@
     <div id="ide-topbar">
         {{-- Left: breadcrumb + status --}}
         <div style="display:flex;align-items:center;gap:10px;">
-            <a href="{{ route('home') }}" style="display:flex;align-items:center;gap:6px;text-decoration:none;">
-                <div style="width:24px;height:24px;border-radius:7px;background:#7c3aed;display:flex;align-items:center;justify-content:center;">
-                    <svg style="width:13px;height:13px;color:#fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                </div>
-                <span style="font-size:11px;font-weight:800;color:#fff;">Vision<span style="color:#a78bfa;">Code</span></span>
+            <a href="{{ route('home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                <x-logo size="h-6 w-6" textSize="text-xs" />
             </a>
             <span style="color:#21262d;">›</span>
             <a href="{{ route('courses.show', $course->slug) }}" style="font-size:11px;color:#64748b;text-decoration:none;hover:color:#fff;">{{ $course->title }}</a>
