@@ -103,7 +103,7 @@
       <PHASE_BLUEPRINT Phase="3b" Name="Sovereign Native IDE Compilation">
         <DETAIL>Fork `coder/code-server` locally to deeply mutate its source code for Sovereign Native Governance.</DETAIL>
         <DETAIL>Natively inject the VisionLab Agent extension into the core codebase so it cannot be removed.</DETAIL>
-        <DETAIL>Permanently disable generic upstream IDE telemetry and hide distracting default explorers via profound TypeScript UI mutations.</DETAIL>
+        <DETAIL>Permanently disable generic upstream IDE telemetry.</DETAIL>
         <DETAIL>Hardcode the VisionLab Strict `#0a0a0a` Dark Theme into the VS Code baseline registry.</DETAIL>
         <DETAIL>Compile the heavily modified source codebase on a high-end GCP compute node (e.g., e2-standard-8) to produce the proprietary `visionlab-ide` artifact.</DETAIL>
       </PHASE_BLUEPRINT>

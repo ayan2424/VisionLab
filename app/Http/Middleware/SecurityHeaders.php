@@ -28,15 +28,25 @@ class SecurityHeaders
             $response->header('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
             // Set CSP - Content Security Policy
-            // Allows scripts from self, unsafe-inline for dev, and storage.googleapis for Workbox
-            // Jitsi needs specific frame-src or script-src depending on setup
+            // Allows scripts from self, unsafe-inline for dev, storage.googleapis for Workbox, and jsdelivr/unpkg/spline for 3D graphics
+            $allowedScripts = "https://storage.googleapis.com https://15.207.144.48:8443 https://cdn.jsdelivr.net https://unpkg.com";
+            $allowedStyles = "https://fonts.googleapis.com https://unpkg.com";
+            $allowedConnect = "'self' ws: wss: https: http: https://prod.spline.design";
+
+            // Whitelist Vite Dev Server in local development environment to prevent dashboard/login styling crashes
+            if (app()->environment('local')) {
+                $allowedScripts .= " http://localhost:5173 http://127.0.0.1:5173";
+                $allowedStyles .= " http://localhost:5173 http://127.0.0.1:5173";
+                $allowedConnect .= " ws://localhost:5173 ws://127.0.0.1:5173 http://localhost:5173 http://127.0.0.1:5173";
+            }
+
             $csp = "default-src 'self'; " .
-                   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com https://15.207.144.48:8443; " .
-                   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
+                   "script-src 'self' 'unsafe-inline' 'unsafe-eval' " . $allowedScripts . "; " .
+                   "style-src 'self' 'unsafe-inline' " . $allowedStyles . "; " .
                    "font-src 'self' https://fonts.gstatic.com; " .
                    "img-src 'self' data: https: http:; " .
-                   "connect-src 'self' ws: wss: https: http:; " .
-                   "frame-src 'self' https://15.207.144.48:8443; " .
+                   "connect-src " . $allowedConnect . "; " .
+                   "frame-src 'self' https://15.207.144.48:8443 https://prod.spline.design; " .
                    "object-src 'none';";
                    
             $response->header('Content-Security-Policy', $csp);

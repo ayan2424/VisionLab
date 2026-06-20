@@ -1,120 +1,88 @@
-# VisionLab Production Runbook
+# VisionLab Enterprise Runbook
 
-This document serves as the operational runbook for deploying, managing, and troubleshooting the VisionLab platform in a production environment.
+This document details the operational procedures for deploying, maintaining, monitoring, and scaling the VisionLab Enterprise application in a production environment.
 
-## 1. Initial Production Setup
+## 1. System Architecture
 
-### Prerequisites
-- A cloud instance (e.g., GCP e2-standard-8 or equivalent)
-- Docker & Docker Compose installed
-- A valid domain name pointing to your server's IP
-- SSL Certificates (handled via Let's Encrypt or similar outside of Docker)
+VisionLab operates as a containerized microservice stack:
+- **visionlab-app**: PHP 8.3 FPM running Laravel 11.
+- **visionlab-queue**: Laravel Horizon worker for asynchronous job processing.
+- **visionlab-reverb**: WebSocket server for real-time presence and AI cursor tracking.
+- **visionlab-scheduler**: Cron job container for scheduled commands.
+- **visionlab-nginx**: Reverse proxy handling TLS 1.3 termination and serving static assets.
+- **visionlab-mysql**: MySQL 8.0 Primary Database.
+- **visionlab-redis**: Redis 7 cache and session store.
+- **visionlab-jitsi**: Embedded real-time video conferencing (JWT-authenticated).
 
-### Bootstrapping the Environment
-1. Clone the repository to `/opt/visionlab`.
-2. Copy the example `.env`:
+## 2. Deployment Procedures
+
+### 2.1 First-time Server Setup
+1. Ensure Docker and Docker Compose are installed.
+2. Clone the repository to the production server.
+3. Configure `.env` using `.env.example` as a template.
+   - **Crucial:** Set `APP_ENV=production` and `APP_DEBUG=false`.
+   - Setup Jitsi keys: `JITSI_APP_ID`, `JITSI_APP_SECRET`.
+   - Set up Anthropic Keys: `CLAUDE_API_KEY`.
+4. Generate SSL Certificates via Let's Encrypt or your Certificate Authority. Place them in `docker/nginx/ssl/server.crt` and `docker/nginx/ssl/server.key`.
+5. Run deployment:
    ```bash
-   cp .env.example .env
+   docker compose -f docker-compose.prod.yml up -d --build
+   docker compose -f docker-compose.prod.yml exec visionlab-app php artisan key:generate
+   docker compose -f docker-compose.prod.yml exec visionlab-app php artisan migrate --force
    ```
-3. Generate a secure application key:
+
+### 2.2 Routine CI/CD Deployments
+Deployment is fully automated via GitHub Actions (`.github/workflows/deploy.yml`).
+The pipeline builds the Docker image, pushes it to GHCR, and executes a remote SSH deployment script that handles:
+- Code pull.
+- Image pull.
+- `docker compose up -d`.
+- `php artisan migrate --force`.
+- Cache clearing and route optimization.
+
+### 2.3 Rollback Procedure
+If a deployment fails or introduces critical bugs:
+1. Revert the commit in GitHub to trigger a fresh CI/CD run.
+2. OR, SSH into the server and rollback manually:
    ```bash
-   docker run --rm -v $(pwd):/var/www/html php:8.3-cli php artisan key:generate
-   ```
-4. Update the `.env` file with production values:
-   ```env
-   APP_ENV=production
-   APP_DEBUG=false
-   APP_URL=https://visionlab.yourdomain.com
-   DB_HOST=db
-   DB_PASSWORD=your_secure_password
-   REDIS_HOST=redis
+   git fetch
+   git checkout <previous_commit_hash>
+   docker compose -f docker-compose.prod.yml build
+   docker compose -f docker-compose.prod.yml up -d
+   docker compose -f docker-compose.prod.yml exec visionlab-app php artisan migrate:rollback --step=1
    ```
 
-### First Deployment
-Build the production Docker images and spin up the cluster:
+## 3. Operations & Observability
+
+### 3.1 Structured Logging (ELK/Datadog)
+Laravel is configured to use the `Monolog\Formatter\JsonFormatter` for standard logs (`storage/logs/laravel.log`). This ensures that logs are structured correctly for external log aggregators.
+
+### 3.2 System Health Monitoring
+VisionLab exposes an endpoint for UptimeRobot/Datadog:
+- **Endpoint:** `GET /api/health`
+- **Output:** Returns JSON containing 6 dependency probes (Database, Redis, Reverb, Storage, AI Config, Jitsi Config).
+- **Behavior:** Returns HTTP 200 if OK, HTTP 503 if Database/Redis is down.
+
+### 3.3 Worker & Queue Health
+- Navigate to `https://<domain>/horizon` to monitor queues.
+- If Horizon is paused or failed, restart the worker container:
+  ```bash
+  docker compose -f docker-compose.prod.yml restart visionlab-queue
+  ```
+
+## 4. Disaster Recovery & Troubleshooting
+
+### 4.1 OOM Crashes (Out of Memory)
+Docker containers are configured with `restart: unless-stopped`. If `CodeServerManager` detects a child IDE crash (`SIGABRT`/OOM), the user interface will display "Workspace Connection Lost". 
+**Fix:** The backend will automatically reboot the Docker workspace. No manual intervention is needed.
+
+### 4.2 WebSockets Disconnected
+If users report they cannot see each other typing or AI patches aren't streaming:
+1. Verify `visionlab-reverb` is running: `docker compose ps`
+2. Restart it: `docker compose -f docker-compose.prod.yml restart visionlab-reverb`
+
+### 4.3 Database Backups
+Automate SQL dumps via a cronjob on the host machine:
 ```bash
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d
-```
-
-### Database Migration and Seeding
-Once the containers are running, execute the migrations:
-```bash
-docker exec -it visionlab_app php artisan migrate --force
-```
-For initial demo data (competition readiness):
-```bash
-docker exec -it visionlab_app php artisan db:seed --class=DemoSeeder --force
-```
-
-## 2. API Key and Provider Injection
-
-VisionLab requires several third-party integrations to function fully.
-
-### AI Configuration (Anthropic / Claude)
-In the `.env` file, set:
-```env
-VISIONLAB_AI_PROVIDER=anthropic
-VISIONLAB_AI_API_KEY=sk-ant-api03-...
-```
-
-### Video Configuration (Jitsi / JaaS)
-For native Jitsi integration via JaaS, set:
-```env
-JITSI_APP_ID=vpaas-magic-cookie-...
-JITSI_API_KEY_ID=vpaas-magic-cookie-.../your_key_id
-JITSI_PRIVATE_KEY_PATH=/path/to/your/jitsi_private_key.pem
-```
-
-### Push Notifications (VAPID)
-Generate VAPID keys for the PWA notifications:
-```bash
-docker exec -it visionlab_app php artisan webpush:vapid
-```
-
-## 3. Disaster Recovery & Backups
-
-### Automated Backups
-Run the provided backup script to dump the database and user storage:
-```bash
-./scripts/backup.sh
-```
-*Recommendation: Set up a cron job to run this script daily at 2:00 AM and sync the `/var/backups/visionlab` directory to off-site storage (e.g., AWS S3).*
-
-### Restoring from Backup
-To completely restore the system to a previous state:
-```bash
-./scripts/restore.sh /var/backups/visionlab/db_backup_2026-06-18.sql.gz /var/backups/visionlab/storage_backup_2026-06-18.tar.gz
-```
-*Warning: This replaces all current data!*
-
-## 4. Competition Readiness & Evaluation
-
-For a seamless live evaluation, ensure the following checklist is completed:
-1. **Fresh State**: Run `php artisan migrate:fresh --seed` (using a specific Evaluation Seeder).
-2. **User Accounts**: Note the demo accounts (Admin, Instructor, Student) generated by the seeder and test their logins.
-3. **Health Check**: Visit `https://visionlab.yourdomain.com/healthz` and verify all probes return `true`.
-4. **Offline Resilience Demo**: Open Chrome DevTools, switch Network to 'Offline', and refresh the dashboard to demonstrate the custom fallback page.
-5. **AI Sandbox Demo**: Ensure an API key is present and test an AI prompt to verify it operates and generates a pending patch.
-
-## 5. Troubleshooting and Maintenance
-
-### Disabling Development Tools
-Ensure that `config/telescope.php` relies on the `APP_ENV`. Telescope is automatically disabled in `production` to prevent overhead and data leakage.
-
-### Checking Logs
-```bash
-docker logs visionlab_app --tail 100 -f
-docker logs visionlab_queue --tail 100 -f
-docker logs visionlab_reverb --tail 100 -f
-```
-
-### Restarting Services
-If a worker gets stuck, safely restart the queue:
-```bash
-docker exec -it visionlab_app php artisan queue:restart
-```
-Or restart the whole stack:
-```bash
-docker compose -f docker-compose.prod.yml restart
+docker compose -f docker-compose.prod.yml exec -T visionlab-mysql mysqldump -u visionlab -psecret visionlab > /backup/visionlab_$(date +%F).sql
 ```
