@@ -9,22 +9,22 @@ use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
 
 /**
- * CodeServerManager — Manages code-server Docker containers per workspace.
+ * CodeServerManager — Manages VisionLab IDE Docker containers per workspace.
  *
  * In development (Docker unavailable), returns a fallback URL pointing to
  * a locally running OpenVSCode Server or shows a placeholder UI.
  *
- * In production, spawns a Docker container per workspace using codercom/code-server.
+ * In production, spawns a Docker container per workspace using visionlab/workspace (VisionLab IDE).
  * Supports: resource quotas, extension injection, heartbeat, file I/O with
  * realpath-based path traversal protection.
  */
 class CodeServerManager
 {
-    /** Port range for dynamically allocated code-server instances */
+    /** Port range for dynamically allocated VisionLab IDE instances */
     private const PORT_MIN = 9000;
     private const PORT_MAX = 9999;
 
-    /** Docker image for code-server */
+    /** Docker image for VisionLab IDE */
     private const DOCKER_IMAGE = 'visionlab/workspace:latest';
 
     /** Static cache for Docker availability */
@@ -275,7 +275,7 @@ class CodeServerManager
     }
 
     /**
-     * Check if the Code-Server HTTP interface is ready to accept connections.
+     * Check if the VisionLab IDE HTTP interface is ready to accept connections.
      */
     public function isWorkspaceReady(Workspace $workspace): bool
     {
@@ -285,7 +285,7 @@ class CodeServerManager
 
         try {
             // Fast ping to the Docker bound port.
-            // If code-server hasn't bound the internal 8080 port yet, this will fail or timeout.
+            // If visionlab-ide hasn't bound the internal 8080 port yet, this will fail or timeout.
             // Using 'localhost' instead of '127.0.0.1' for better Docker Desktop Windows compatibility
             $response = \Illuminate\Support\Facades\Http::timeout(2)
                 ->get("http://localhost:{$workspace->port}/healthz");
@@ -680,7 +680,7 @@ class CodeServerManager
             $identifierOrPath = "/var/opt/extensions/{$subPath}";
         }
 
-        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
+        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'visionlab-ide', '--install-extension', $identifierOrPath]);
         $process->run();
         
         if (!$process->isSuccessful()) {
@@ -692,7 +692,7 @@ class CodeServerManager
     public function uninstallExtension(Workspace $workspace, string $identifier): bool
     {
         $containerName = "vl_ws_{$workspace->id}";
-        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'code-server', '--uninstall-extension', $identifier]);
+        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'visionlab-ide', '--uninstall-extension', $identifier]);
         $process->run();
         
         if (!$process->isSuccessful()) {

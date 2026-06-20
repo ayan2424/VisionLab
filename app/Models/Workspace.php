@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * Workspace — Represents a code-server container workspace.
+ * Workspace — Represents a VisionLab IDE container workspace.
  *
  * Lifecycle states: pending → running → stopped | error
  * Each workspace is scoped to a course (and optionally an assignment)
