@@ -27,3 +27,8 @@ visionlab_compile.sh
 *.patch
 *.pem
 build.log
+# aaPanel specific files
+.user.ini
+public/.user.ini
+404.html
+index.html
