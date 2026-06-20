@@ -14,8 +14,9 @@ class StoreCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => 'required|string|max:120',
-            'description' => 'nullable|string|max:2000',
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string|min:10|max:5000',
+            'is_active'   => 'nullable|boolean',
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
     }
@@ -23,10 +24,12 @@ class StoreCourseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'title.required'    => 'Course title is required.',
-            'title.max'         => 'Course title must not exceed 120 characters.',
-            'cover_image.image' => 'Cover image must be a valid image file.',
-            'cover_image.max'   => 'Cover image must be under 2MB.',
+            'title.required'       => 'Course title is required.',
+            'title.max'            => 'Course title must not exceed 255 characters.',
+            'description.required' => 'Course description is strictly required.',
+            'description.min'      => 'Course description must be at least 10 characters long.',
+            'cover_image.image'    => 'Cover image must be a valid image file.',
+            'cover_image.max'      => 'Cover image must be under 2MB.',
         ];
     }
 }

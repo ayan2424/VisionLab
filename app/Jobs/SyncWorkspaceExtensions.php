@@ -49,13 +49,18 @@ class SyncWorkspaceExtensions implements ShouldQueue
                 // For now we assume identifierOrPath is either the marketplace identifier or absolute path.
                 $target = $wsExt->extension->is_builtin ? $identifier : ($wsExt->extension->artifact_path ?? $identifier);
                 
-                $success = $csm->installExtension($workspace, $target);
-                
-                if ($success) {
-                    $wsExt->update(['sync_status' => 'synced']);
-                    \Illuminate\Support\Facades\Log::info("Synced extension {$identifier} to workspace {$this->workspaceId}");
-                } else {
+                try {
+                    $success = $csm->installExtension($workspace, $target, $wsExt->extension->checksum);
+                    
+                    if ($success) {
+                        $wsExt->update(['sync_status' => 'synced']);
+                        \Illuminate\Support\Facades\Log::info("Synced extension {$identifier} to workspace {$this->workspaceId}");
+                    } else {
+                        $wsExt->update(['sync_status' => 'failed']);
+                    }
+                } catch (\App\Exceptions\ExtensionIntegrityException $e) {
                     $wsExt->update(['sync_status' => 'failed']);
+                    \Illuminate\Support\Facades\Log::error("Integrity check failed during live sync for {$identifier}");
                 }
             } else {
                 $success = $csm->uninstallExtension($workspace, $identifier);

@@ -20,7 +20,7 @@ class Workspace extends Model
     use HasFactory;
 
     protected $fillable = [
-        'course_id', 'assignment_id', 'student_id', 'name',
+        'course_id', 'assignment_id', 'student_id', 'name', 'template_id',
         'container_id', 'port', 'token', 'storage_path',
         'heartbeat_at', 'quota_data', 'proxy_url', 'container_image',
         'status', 'language', 'type', 'subscription_id', 'governance_level',
@@ -39,6 +39,11 @@ class Workspace extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(WorkspaceTemplate::class, 'template_id');
     }
 
     public function course(): BelongsTo

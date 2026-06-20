@@ -23,31 +23,44 @@
         </div>
         @endif
 
-        <div class="space-y-5">
-            <div>
-                <label class="block text-sm font-semibold mb-2" style="color:var(--vc-text);">Course Title <span style="color:var(--vc-danger);">*</span></label>
-                <input type="text" name="title" value="{{ old('title') }}" required
-                       class="vc-input"
-                       placeholder="e.g. Python & AI Fundamentals">
+        <div class="space-y-6">
+            <div class="relative">
+                <input type="text" id="title" name="title" value="{{ old('title') }}" required
+                       class="vc-input peer w-full placeholder-transparent pt-6 pb-2"
+                       placeholder="Course Title">
+                <label for="title" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Course Title <span style="color:var(--vc-danger);">*</span></label>
+            </div>
+
+            <div class="relative">
+                <textarea id="description" name="description" rows="4" required
+                          class="vc-input peer w-full placeholder-transparent pt-8 pb-2 resize-none"
+                          placeholder="Description">{{ old('description') }}</textarea>
+                <label for="description" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Description <span style="color:var(--vc-danger);">*</span></label>
+            </div>
+
+            <!-- Is Active Toggle -->
+            <div class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                <div>
+                    <label class="block text-sm font-bold text-white mb-1">Make Course Active</label>
+                    <p class="text-xs text-gray-400">If inactive, students won't be able to join or see this course yet.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="hidden" name="is_active" value="0">
+                    <input type="checkbox" name="is_active" value="1" class="sr-only peer" {{ old('is_active', true) ? 'checked' : '' }}>
+                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand" style="peer-checked:background-color: var(--vc-brand);"></div>
+                </label>
             </div>
 
             <div>
-                <label class="block text-sm font-semibold mb-2" style="color:var(--vc-text);">Description</label>
-                <textarea name="description" rows="4"
-                          class="vc-input resize-none"
-                          placeholder="What will students learn in this course?">{{ old('description') }}</textarea>
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold mb-2" style="color:var(--vc-text);">Cover Image <span style="color:var(--vc-muted);font-weight:normal;">(optional)</span></label>
+                <label class="block text-sm font-bold mb-2 text-white/80">Cover Image <span class="text-gray-500 font-normal">(optional)</span></label>
                 <div class="border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer"
                      style="border-color:var(--vc-border);"
                      onmouseover="this.style.borderColor='var(--vc-accent)'"
                      onmouseout="this.style.borderColor='var(--vc-border)'"
                      onclick="document.getElementById('cover_image').click()">
-                    <svg class="w-8 h-8 mx-auto mb-2" style="color:var(--vc-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <p class="text-sm" style="color:var(--vc-text-secondary);">Click to upload or drag & drop</p>
-                    <p class="text-xs mt-1" style="color:var(--vc-muted);">PNG, JPG up to 2MB</p>
+                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <p class="text-sm text-gray-400">Click to upload or drag & drop</p>
+                    <p class="text-xs mt-1 text-gray-500">PNG, JPG up to 2MB</p>
                 </div>
                 <input type="file" id="cover_image" name="cover_image" accept="image/*" class="hidden">
             </div>

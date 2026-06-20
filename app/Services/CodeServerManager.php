@@ -80,14 +80,25 @@ class CodeServerManager
 
         $authMode = 'none'; // Permanently disabled password auth as requested
 
+        if (!is_dir($workspacePath)) {
+            mkdir($workspacePath, 0777, true);
+            chmod($workspacePath, 0777);
+        }
+
         $extensionsPath = storage_path('app/extensions');
         if (!is_dir($extensionsPath)) {
             mkdir($extensionsPath, 0755, true);
         }
 
         $cmd = [
-            $this->dockerCmd(), 'run', '-d',
+            $this->dockerCmd(), 'run', '-d', '--init',
             '--name', $name,
+            '--security-opt', 'no-new-privileges:true',
+            '--cap-drop', 'ALL',
+            '--read-only',
+            '--tmpfs', '/tmp',
+            '--tmpfs', '/run',
+            '--network', 'visionlab-workspace-net',
             '-v', "{$workspacePath}:/home/coder/project",
             '-v', "{$extensionsPath}:/var/opt/extensions:ro",
             '-p', "{$port}:8080",
@@ -566,6 +577,19 @@ class CodeServerManager
 
     private function seedDefaultFiles(string $path, Workspace $workspace): void
     {
+        // If template has a git_url, clone it
+        if ($workspace->template_id && $workspace->template && $workspace->template->git_url) {
+            $process = new Process(['git', 'clone', $workspace->template->git_url, '.']);
+            $process->setWorkingDirectory($path);
+            $process->run();
+            
+            if ($process->isSuccessful()) {
+                $this->deleteDirectory($path . DIRECTORY_SEPARATOR . '.git');
+                return; // Successfully seeded from template
+            }
+            Log::error("Workspace template clone failed", ['url' => $workspace->template->git_url, 'error' => $process->getErrorOutput()]);
+        }
+
         $lang = $workspace->language ?? 'python';
 
         // If assignment has starter code, use that
@@ -670,17 +694,36 @@ class CodeServerManager
         return $rm->isSuccessful();
     }
 
-    public function installExtension(Workspace $workspace, string $identifierOrPath): bool
+    public function installExtension(Workspace $workspace, string $identifierOrPath, ?string $expectedChecksum = null): bool
     {
         $containerName = "vl_ws_{$workspace->id}";
         
-        // Map local path to container mount path
-        if (str_starts_with($identifierOrPath, 'extensions/')) {
-            $subPath = substr($identifierOrPath, strlen('extensions/'));
-            $identifierOrPath = "/var/opt/extensions/{$subPath}";
+        // If it is a local .vsix artifact, enforce SHA256 integrity
+        if (str_ends_with($identifierOrPath, '.vsix')) {
+            // Identifier could be 'extensions/test.vsix' or just 'test.vsix'
+            $fileName = basename($identifierOrPath);
+            $vsixPath = storage_path('app/extensions/' . $fileName);
+            
+            if (!file_exists($vsixPath)) {
+                \Illuminate\Support\Facades\Log::error("Extension artifact not found", ['target' => $identifierOrPath]);
+                return false;
+            }
+
+            if ($expectedChecksum) {
+                $actualChecksum = hash_file('sha256', $vsixPath);
+                if ($actualChecksum !== $expectedChecksum) {
+                    event(new \App\Events\ExtensionIntegrityFailed($workspace, $identifierOrPath, $expectedChecksum, $actualChecksum));
+                    throw new \App\Exceptions\ExtensionIntegrityException(
+                        "SHA256 checksum mismatch for extension {$identifierOrPath}. Expected {$expectedChecksum}, got {$actualChecksum}"
+                    );
+                }
+            }
+
+            $identifierOrPath = "/var/opt/extensions/{$fileName}";
         }
 
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'visionlab-ide', '--install-extension', $identifierOrPath]);
+        $process->setTimeout(120);
         $process->run();
         
         if (!$process->isSuccessful()) {
@@ -754,6 +797,25 @@ class CodeServerManager
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
 
+        // 1.5 Setup default VS Code settings (Theme, Workbench)
+        $vscodeSettings = [
+            "workbench.colorTheme" => "Default Dark Modern",
+            "workbench.startupEditor" => "none",
+            "window.menuBarVisibility" => "compact",
+            "workbench.activityBar.visible" => true,
+            "workbench.sideBar.location" => "left",
+            "editor.fontFamily" => "'Fira Code', 'Consolas', 'monospace'",
+            "editor.fontLigatures" => true,
+            "editor.minimap.enabled" => false,
+            "security.workspace.trust.enabled" => false
+        ];
+        $settingsJson = json_encode($vscodeSettings, JSON_UNESCAPED_SLASHES);
+        $settingsJsonForBash = str_replace("'", "'\\''", $settingsJson);
+        $settingsScript = "mkdir -p /home/coder/.local/share/code-server/User && echo '{$settingsJsonForBash}' > /home/coder/.local/share/code-server/User/settings.json";
+        
+        $settingsProcess = new Process([$this->dockerCmd(), 'exec', $containerName, 'bash', '-c', $settingsScript]);
+        $settingsProcess->run();
+
         // 2. Install enabled extensions dynamically from WorkspaceExtension pivot
         $enabledExtensions = \App\Models\WorkspaceExtension::with('extension')
             ->where('workspace_id', $workspace->id)
@@ -765,10 +827,9 @@ class CodeServerManager
             if (!$ext || !$ext->is_active) continue;
             
             $identifier = $ext->package_identifier;
-            // Use custom artifact_path if present, else identifier
             $target = $ext->is_builtin ? $identifier : ($ext->artifact_path ?? $identifier);
             
-            $this->installExtension($workspace, $target);
+            $this->installExtension($workspace, $target, $ext->checksum);
             $wsExt->update(['sync_status' => 'synced']);
         }
 
@@ -780,9 +841,11 @@ class CodeServerManager
         foreach ($globalExtensions as $ext) {
             $identifier = $ext->package_identifier;
             $target = $ext->artifact_path ?? $identifier; // Prioritize local .vsix if available
-            $this->installExtension($workspace, $target);
+            $this->installExtension($workspace, $target, $ext->checksum);
         }
     }
+
+
 
     private function devFallback(Workspace $workspace): array
     {

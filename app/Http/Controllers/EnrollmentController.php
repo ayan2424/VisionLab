@@ -112,4 +112,67 @@ class EnrollmentController extends Controller
 
         return back()->with('success', 'Student removed from course.');
     }
+
+    public function importCsv(\App\Http\Requests\ImportEnrollmentCsvRequest $request, Course $course)
+    {
+        $this->authorize('manageStudents', $course);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getRealPath(), 'r');
+        
+        $header = fgetcsv($handle);
+        if (!$header || !in_array('email', array_map('strtolower', $header))) {
+            return back()->withErrors(['csv_file' => 'CSV file must contain an "email" column.']);
+        }
+        
+        $emailIndex = array_search('email', array_map('strtolower', $header));
+        $roleIndex  = array_search('role', array_map('strtolower', $header)); // Optional
+
+        $enrolledCount = 0;
+        $createdCount = 0;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $email = $row[$emailIndex] ?? null;
+            if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+
+            $user = User::where('email', $email)->first();
+            
+            if (!$user) {
+                // Auto-create user if they don't exist
+                $role = ($roleIndex !== false && isset($row[$roleIndex])) ? strtolower($row[$roleIndex]) : 'student';
+                $user = User::create([
+                    'name' => explode('@', $email)[0],
+                    'email' => $email,
+                    'password' => \Illuminate\Support\Facades\Hash::make('VisionLab2026!'),
+                    'role' => in_array($role, ['student', 'instructor', 'admin']) ? $role : 'student',
+                ]);
+                $createdCount++;
+            }
+
+            // Enroll user
+            $existing = Enrollment::where('course_id', $course->id)
+                                  ->where('student_id', $user->id)
+                                  ->first();
+
+            if ($existing) {
+                if ($existing->status !== 'active') {
+                    $existing->update(['status' => 'active', 'enrolled_at' => now()]);
+                    $enrolledCount++;
+                }
+            } else {
+                Enrollment::create([
+                    'course_id'   => $course->id,
+                    'student_id'  => $user->id,
+                    'status'      => 'active',
+                    'enrolled_at' => now(),
+                ]);
+                $enrolledCount++;
+            }
+        }
+        fclose($handle);
+
+        return back()->with('success', "CSV Import Complete: $enrolledCount users enrolled. ($createdCount new accounts created).");
+    }
 }

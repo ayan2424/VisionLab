@@ -41,8 +41,8 @@ class AdminWorkspaceController extends Controller
             return back()->with('error', 'Workspace is not running.');
         }
 
-        $manager = new CodeServerManager($workspace);
-        $manager->stop();
+        $manager = new CodeServerManager();
+        $manager->stopWorkspace($workspace);
 
         AuditLog::create([
             'user_id' => auth()->id(),
@@ -59,8 +59,8 @@ class AdminWorkspaceController extends Controller
     public function archive(Workspace $workspace)
     {
         if ($workspace->status === 'running') {
-            $manager = new CodeServerManager($workspace);
-            $manager->stop();
+            $manager = new CodeServerManager();
+            $manager->stopWorkspace($workspace);
         }
 
         $workspace->update(['status' => 'archived']);

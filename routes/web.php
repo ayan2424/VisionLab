@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/join', [EnrollmentController::class, 'joinForm'])->name('enrollments.join');
     Route::post('/join', [EnrollmentController::class, 'joinByCode'])->name('enrollments.join.post');
     Route::post('/courses/{course:slug}/invite', [EnrollmentController::class, 'invite'])->name('enrollments.invite');
+    Route::post('/courses/{course:slug}/import-csv', [EnrollmentController::class, 'importCsv'])->name('enrollments.import_csv');
     Route::delete('/courses/{course:slug}/students/{studentId}', [EnrollmentController::class, 'remove'])->name('enrollments.remove');
 
     // ── Assignments ────────────────────────────────────────────────────

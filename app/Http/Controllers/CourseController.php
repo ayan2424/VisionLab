@@ -46,6 +46,7 @@ class CourseController extends Controller
             'instructor_id' => Auth::id(),
             'title'         => $validated['title'],
             'description'   => $validated['description'] ?? null,
+            'is_active'     => $validated['is_active'] ?? true,
             'cover_image'   => $coverPath,
         ]);
 

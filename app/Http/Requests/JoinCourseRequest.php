@@ -14,7 +14,7 @@ class JoinCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'enrollment_code' => 'required|string|alpha_num|size:6',
+            'enrollment_code' => 'required|string|alpha_num|size:8',
         ];
     }
 
@@ -23,7 +23,7 @@ class JoinCourseRequest extends FormRequest
         return [
             'enrollment_code.required'  => 'Please enter an enrollment code.',
             'enrollment_code.alpha_num' => 'Enrollment code must contain only letters and numbers.',
-            'enrollment_code.size'      => 'Enrollment code must be exactly 6 characters.',
+            'enrollment_code.size'      => 'Enrollment code must be exactly 8 characters.',
         ];
     }
 

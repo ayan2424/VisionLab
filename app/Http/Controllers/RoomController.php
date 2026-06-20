@@ -16,12 +16,9 @@ class RoomController extends Controller
      * Create a new collaborative room and redirect to it.
      * POST /rooms
      */
-    public function create(Request $request): RedirectResponse
+    public function create(\App\Http\Requests\StoreRoomRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:80',
-            'language' => 'nullable|string|max:30',
-        ]);
+        $validated = $request->validated();
 
         $room = Room::create([
             'slug'     => Room::generateSlug(),
@@ -69,13 +66,9 @@ class RoomController extends Controller
      * Broadcast a code change to all room members.
      * POST /rooms/{slug}/broadcast
      */
-    public function broadcastCode(Request $request, string $slug): JsonResponse
+    public function broadcastCode(\App\Http\Requests\BroadcastCodeRequest $request, string $slug): JsonResponse
     {
-        $validated = $request->validate([
-            'file_id' => 'required|string|max:60',
-            'content' => 'required|string|max:131072',
-            'version' => 'nullable|integer',
-        ]);
+        $validated = $request->validated();
 
         $room = Room::where('slug', $slug)->firstOrFail();
 
@@ -98,13 +91,9 @@ class RoomController extends Controller
      * Broadcast cursor position to all room members.
      * POST /rooms/{slug}/cursor
      */
-    public function broadcastCursor(Request $request, string $slug): JsonResponse
+    public function broadcastCursor(\App\Http\Requests\BroadcastCursorRequest $request, string $slug): JsonResponse
     {
-        $validated = $request->validate([
-            'file_id' => 'required|string|max:60',
-            'line'    => 'required|integer|min:1',
-            'column'  => 'required|integer|min:1',
-        ]);
+        $validated = $request->validated();
 
         $room = Room::where('slug', $slug)->firstOrFail();
         $user = Auth::user();

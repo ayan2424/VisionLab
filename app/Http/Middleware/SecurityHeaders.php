@@ -29,7 +29,7 @@ class SecurityHeaders
 
             // Set CSP - Content Security Policy
             // Allows scripts from self, unsafe-inline for dev, storage.googleapis for Workbox, and jsdelivr/unpkg/spline for 3D graphics
-            $allowedScripts = "https://storage.googleapis.com https://15.207.144.48:8443 https://cdn.jsdelivr.net https://unpkg.com https://*.spline.design";
+            $allowedScripts = "https://storage.googleapis.com https://15.207.144.48:8443 https://cdn.jsdelivr.net https://unpkg.com https://*.spline.design https://cdnjs.cloudflare.com";
             $allowedStyles = "https://fonts.googleapis.com https://unpkg.com https://api.fontshare.com";
             $allowedConnect = "'self' ws: wss: https: http: https://*.spline.design https://*.amazonaws.com";
 

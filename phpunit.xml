@@ -31,7 +31,7 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="BROADCAST_CONNECTION" value="pusher"/>
         <env name="PUSHER_APP_ID" value="12345"/>
-        <env name="PUSHER_APP_KEY" value="testing-key"/>
-        <env name="PUSHER_APP_SECRET" value="testing-secret"/>
+        <env name="PUSHER_APP_KEY" value="1234567890abcdef1234"/>
+        <env name="PUSHER_APP_SECRET" value="1234567890abcdef1234"/>
     </php>
 </phpunit>

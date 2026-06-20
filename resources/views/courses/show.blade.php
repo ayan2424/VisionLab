@@ -254,11 +254,31 @@
             </div>
 
             @if($isInstructor)
-            <form method="POST" action="{{ route('enrollments.invite', $course->slug) }}" class="flex gap-2 mb-6 pb-6" style="border-bottom:1px solid var(--vc-border);">
-                @csrf
-                <input type="email" name="email" placeholder="Student email address..." required class="vc-input flex-1 text-sm">
-                <button type="submit" class="btn-primary py-2 px-4 text-xs">Invite Student</button>
-            </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6" style="border-bottom:1px solid var(--vc-border);">
+                <!-- Single Invite -->
+                <div>
+                    <h4 class="text-xs font-bold mb-2 uppercase tracking-wide text-gray-500">Manual Invite</h4>
+                    <form method="POST" action="{{ route('enrollments.invite', $course->slug) }}" class="flex gap-2">
+                        @csrf
+                        <input type="email" name="email" placeholder="Student email address..." required class="vc-input flex-1 text-sm">
+                        <button type="submit" class="btn-primary py-2 px-4 text-xs whitespace-nowrap">Invite</button>
+                    </form>
+                </div>
+                
+                <!-- CSV Import -->
+                <div>
+                    <h4 class="text-xs font-bold mb-2 uppercase tracking-wide text-gray-500">Bulk Import via CSV</h4>
+                    <form method="POST" action="{{ route('enrollments.import_csv', $course->slug) }}" enctype="multipart/form-data" class="flex gap-2 items-center">
+                        @csrf
+                        <div class="flex-1">
+                            <input type="file" name="csv_file" accept=".csv" required 
+                                   class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all">
+                        </div>
+                        <button type="submit" class="btn-ghost py-2 px-4 text-xs whitespace-nowrap" style="color:var(--vc-accent);border-color:rgba(240,80,0,0.3);">Import CSV</button>
+                    </form>
+                    <div class="mt-1 text-[10px] text-gray-500">CSV must contain an "email" column.</div>
+                </div>
+            </div>
             @endif
 
             @forelse($students as $student)
