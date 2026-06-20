@@ -160,3 +160,19 @@ Route::middleware(['auth:sanctum'])->prefix('visionguard')->name('api.visionguar
 });
 
 Route::post('/webhook/deploy', [\App\Http\Controllers\WebhookController::class, 'deploy']);
+
+Route::middleware(['auth:sanctum'])->get('/extensions', function () {
+    return response()->json(\App\Models\Extension::where('is_active', true)->get()->map(function ($ext) {
+        return [
+            'id' => $ext->id,
+            'name' => $ext->name,
+            'identifier' => $ext->package_identifier,
+            'version' => $ext->version,
+            'sha256_checksum' => $ext->checksum,
+            'is_global' => $ext->is_global,
+            'is_builtin' => $ext->is_builtin,
+            'is_active' => $ext->is_active,
+        ];
+    }
+    ));
+});
