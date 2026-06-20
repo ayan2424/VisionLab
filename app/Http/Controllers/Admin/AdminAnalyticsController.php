@@ -76,6 +76,7 @@ class AdminAnalyticsController extends Controller
             'total_submissions' => Submission::count(),
             'pending_grading'   => Submission::where('status', 'submitted')->count(),
             'ai_actions_today'  => AiActionsLog::whereDate('created_at', today())->count(),
+            'ai_actions_total'  => AiActionsLog::count(),
             'telemetry_events'  => AnalyticsEvent::count(),
         ];
 

@@ -23,7 +23,7 @@ class Workspace extends Model
         'course_id', 'assignment_id', 'student_id', 'name',
         'container_id', 'port', 'token', 'storage_path',
         'heartbeat_at', 'quota_data', 'proxy_url', 'container_image',
-        'status', 'language',
+        'status', 'language', 'type', 'subscription_id', 'governance_level',
     ];
 
     protected function casts(): array
@@ -113,6 +113,16 @@ class Workspace extends Model
     public function isRunning(): bool
     {
         return $this->status === 'running';
+    }
+
+    public function isGoverned(): bool
+    {
+        return $this->type === 'governed';
+    }
+
+    public function isIndependent(): bool
+    {
+        return $this->type === 'independent';
     }
 
     public function isStopped(): bool

@@ -440,7 +440,7 @@
                         </span>
                     </div>
                     <div class="card-body" style="display:flex;flex-direction:column;gap:0.5rem">
-                        <a href="{{ route('workspaces.index') }}" class="action-btn">
+                        <a href="{{ route('workspace.index') }}" class="action-btn">
                             <div class="action-icon" style="background:rgba(0,229,255,0.1);color:#00e5ff">⚡</div>
                             Workspace IDE
                         </a>

@@ -102,6 +102,10 @@ Route::middleware(['auth:sanctum', 'throttle:ai'])
         ->name('execute-plan');
 });
 
+Route::middleware(['auth:sanctum'])->post('/ai/execute', function (Illuminate\Http\Request $request) {
+    return response()->json(['error' => 'Direct writing/execution is forbidden.'], 403);
+});
+
 
 /*
 |--------------------------------------------------------------------------

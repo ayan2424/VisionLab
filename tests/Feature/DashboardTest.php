@@ -13,6 +13,12 @@ class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush();
+    }
+
     public function test_student_sees_student_dashboard(): void
     {
         $student = User::factory()->student()->create();

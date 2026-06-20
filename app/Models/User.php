@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->role === 'student';
     }
 
+    public function isSubscriber(): bool
+    {
+        return $this->role === 'subscriber';
+    }
+
     public function hasRole(string|array $roles): bool
     {
         $roles = is_array($roles) ? $roles : [$roles];

@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/assignments/{assignment}/save-snapshot',  [SubmissionController::class, 'saveSnapshot'])->name('submissions.save');
     Route::post('/assignments/{assignment}/submit',         [SubmissionController::class, 'submit'])->name('submissions.submit');
     Route::get('/submissions',                              [SubmissionController::class, 'queue'])->name('submissions.queue');
+    Route::get('/grading/queue',                            [SubmissionController::class, 'queue'])->name('grading.queue');
     Route::get('/submissions/{submission}',                 [SubmissionController::class, 'show'])->name('submissions.show');
     Route::patch('/submissions/{submission}/grade',         [SubmissionController::class, 'grade'])->name('submissions.grade');
 

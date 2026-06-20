@@ -19,6 +19,8 @@ class RealtimeCollaborationTest extends TestCase
             'socket_id' => '12345.67890'
         ]);
 
+        dump($response->status());
+        dump($response->content());
         $response->assertStatus(200)
                  ->assertJsonStructure(['auth', 'channel_data']);
     }

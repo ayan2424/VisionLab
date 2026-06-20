@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('container_id')->unique()->nullable();
             $table->integer('port')->unique()->nullable();
             $table->enum('status', ['pending', 'running', 'stopped', 'error'])->default('pending');
+            $table->enum('type', ['governed', 'independent'])->default('governed');
+            $table->string('subscription_id')->nullable();
+            $table->enum('governance_level', ['strict', 'moderate', 'none'])->default('strict');
             $table->string('language', 30)->default('python');
             $table->timestamps();
 
