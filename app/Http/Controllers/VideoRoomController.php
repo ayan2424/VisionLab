@@ -51,8 +51,8 @@ class VideoRoomController extends Controller
 
         // Create DB Record
         $videoRoom = VideoRoom::create([
-            'course_id'    => $room->course_id ?? 1, // fallback
-            'workspace_id' => $room->workspace_id ?? 1, // fallback
+            'course_id'    => $room->course_id ?? null,
+            'workspace_id' => $room->workspace_id ?? null,
             'host_id'      => $user->id,
             'title'        => "Live Session: {$room->name}",
             'room_name'    => $roomName,

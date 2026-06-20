@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: VisionLab API
+  description: Enterprise REST API for VisionLab IDE and LMS platform.
+  version: 1.0.0
+servers:
+  - url: https://15.207.144.48/api
+    description: Production Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /workspaces/{id}/files:
+    get:
+      summary: Read a file from workspace
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File contents returned
+        '403':
+          description: Unauthorized access
+  /ai/execute:
+    post:
+      summary: Send command to AI Agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspace_id:
+                  type: integer
+                tool:
+                  type: string
+                path:
+                  type: string
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Pending patch created
+  /forensics/telemetry:
+    post:
+      summary: Ingest telemetry data
+      responses:
+        '200':
+          description: Successfully ingested

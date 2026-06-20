@@ -30,7 +30,7 @@ class SecurityHeaders
             // Set CSP - Content Security Policy
             // Allows scripts from self, unsafe-inline for dev, storage.googleapis for Workbox, and jsdelivr/unpkg/spline for 3D graphics
             $allowedScripts = "https://storage.googleapis.com https://15.207.144.48:8443 https://cdn.jsdelivr.net https://unpkg.com";
-            $allowedStyles = "https://fonts.googleapis.com https://unpkg.com";
+            $allowedStyles = "https://fonts.googleapis.com https://unpkg.com https://api.fontshare.com";
             $allowedConnect = "'self' ws: wss: https: http: https://prod.spline.design";
 
             // Whitelist Vite Dev Server in local development environment to prevent dashboard/login styling crashes
@@ -43,10 +43,12 @@ class SecurityHeaders
             $csp = "default-src 'self'; " .
                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' " . $allowedScripts . "; " .
                    "style-src 'self' 'unsafe-inline' " . $allowedStyles . "; " .
-                   "font-src 'self' https://fonts.gstatic.com; " .
-                   "img-src 'self' data: https: http:; " .
+                   "font-src 'self' https://fonts.gstatic.com https://cdn.fontshare.com; " .
+                   "img-src 'self' data: blob: https: http:; " .
                    "connect-src " . $allowedConnect . "; " .
                    "frame-src 'self' https://15.207.144.48:8443 https://prod.spline.design; " .
+                   "worker-src 'self' blob:; " .
+                   "child-src 'self' blob:; " .
                    "object-src 'none';";
                    
             $response->header('Content-Security-Policy', $csp);

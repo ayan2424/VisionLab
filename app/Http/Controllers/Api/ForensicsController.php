@@ -17,7 +17,8 @@ class ForensicsController extends Controller
      */
     public function sync(string $slug, Request $request): JsonResponse
     {
-        $workspace = Workspace::where('slug', $slug)->firstOrFail();
+        $id = str_replace('ws-', '', $slug);
+        $workspace = Workspace::findOrFail($id);
         
         $this->authorize('access', $workspace);
 

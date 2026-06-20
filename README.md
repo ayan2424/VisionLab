@@ -1,5 +1,6 @@
 # VisionLab — Ultimate AI-Powered Collaborative Learning Platform
 
+
 **Competition-grade ecosystem for Aptech Vision 2026**
 
 VisionLab is a revolutionary platform that replaces Google Classroom, Zoom, and GitHub Copilot with a single, unified, dark-themed ecosystem. It spawns real **VS Code (code-server) Docker containers** for every workspace, featuring real-time multiplayer collaboration, integrated video conferencing, and an autonomous AI agent directly inside the IDE.

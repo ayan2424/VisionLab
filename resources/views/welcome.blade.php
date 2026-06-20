@@ -6,7 +6,16 @@
     <meta name="description" content="The collaborative IDE built for research universities. Sandboxed, audited, and AI-assisted.">
     <title>VisionLab — Collaborative coding for universities</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.0/build/spline-viewer.js"></script>
+    <!-- Three.js via Import Map for ES Modules -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.97/build/spline-viewer.js"></script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
