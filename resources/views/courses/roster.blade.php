@@ -8,9 +8,41 @@
             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             Back to Course
         </a>
-        <h1 class="text-2xl font-bold mt-4" style="color:var(--vc-text);">{{ $course->title }} — Roster</h1>
-        <p class="text-sm mt-1" style="color:var(--vc-text-secondary);">Manage students and inspect their workspaces.</p>
+        <div class="flex items-end justify-between mt-4">
+            <div>
+                <h1 class="text-2xl font-bold" style="color:var(--vc-text);">{{ $course->title }} — Roster</h1>
+                <p class="text-sm mt-1" style="color:var(--vc-text-secondary);">Manage students and inspect their workspaces.</p>
+            </div>
+            
+            <form action="{{ route('enrollments.add_by_id', $course->slug) }}" method="POST" class="flex gap-2 items-center">
+                @csrf
+                <div class="relative">
+                    <input list="students-list" name="student_id" class="vc-input text-sm py-2 px-3 w-64" placeholder="Search by Name or ID..." autocomplete="off" required>
+                    <datalist id="students-list">
+                        @foreach($availableStudents as $student)
+                            @if($student->student_id)
+                                <option value="{{ $student->student_id }}">{{ $student->name }} ({{ $student->student_id }})</option>
+                            @endif
+                        @endforeach
+                    </datalist>
+                </div>
+                <button type="submit" class="btn-primary py-2 px-4 text-sm whitespace-nowrap">
+                    Enroll Student
+                </button>
+            </form>
+        </div>
     </div>
+
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-md text-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if($errors->any())
+        <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-md text-sm">
+            {{ $errors->first() }}
+        </div>
+    @endif
 
     <div class="vc-card overflow-hidden">
         <table class="w-full text-left text-sm">

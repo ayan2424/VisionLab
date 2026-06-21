@@ -155,19 +155,19 @@
                         </div>
                     </div>
 
-                    {{-- Institute / Enrollment Code --}}
+                    {{-- Student ID --}}
                     <div>
-                        <label for="institute_code" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color:var(--vc-text-secondary);">Institute / Course Code</label>
+                        <label for="student_id" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color:var(--vc-text-secondary);">Student ID</label>
                         <div class="relative">
                             <div class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                                <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+                                <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
                             </div>
-                            <input id="institute_code" type="text" name="institute_code" value="{{ old('institute_code') }}"
+                            <input id="student_id" type="text" name="student_id" value="{{ old('student_id') }}"
                                    class="vc-input pl-10"
-                                   placeholder="Ask your instructor for the code" required>
+                                   placeholder="e.g. APTECH-10023" required>
                         </div>
-                        <p class="mt-1 text-[10px]" style="color:var(--vc-muted);">Required to link your account to an active course.</p>
-                        @error('institute_code')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
+                        <p class="mt-1 text-[10px]" style="color:var(--vc-muted);">Your unique student identification number.</p>
+                        @error('student_id')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
                     </div>
 
                     <button type="submit" class="btn-primary w-full justify-center py-3.5 text-sm mt-2 group">

@@ -774,8 +774,22 @@ class CodeServerManager
         $config = [
             "models" => [
                 [
-                    "title" => "VisionLab Agent",
+                    "title" => "VisionLab Sonnet 3.5",
+                    "model" => "claude-3-5-sonnet-20241022",
+                    "provider" => "openai",
+                    "apiBase" => "http://host.docker.internal:8000/api/ai/v1",
+                    "apiKey" => $token
+                ],
+                [
+                    "title" => "VisionLab Opus 3",
                     "model" => "claude-3-opus-20240229",
+                    "provider" => "openai",
+                    "apiBase" => "http://host.docker.internal:8000/api/ai/v1",
+                    "apiKey" => $token
+                ],
+                [
+                    "title" => "VisionLab GPT-4o",
+                    "model" => "gpt-4o",
                     "provider" => "openai",
                     "apiBase" => "http://host.docker.internal:8000/api/ai/v1",
                     "apiKey" => $token

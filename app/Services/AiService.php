@@ -32,7 +32,7 @@ class AiService
      * Handle an OpenAI-compatible chat completion request and proxy to Anthropic.
      * Returns a generator that yields SSE strings.
      */
-    public function handleChatCompletion(Workspace $workspace, array $messages, string $mode = 'CHAT', bool $stream = true, ?int $userId = null)
+    public function handleChatCompletion(Workspace $workspace, array $messages, string $mode = 'CHAT', bool $stream = true, ?int $userId = null, string $requestedModel = 'claude-3-5-sonnet-20241022')
     {
         $apiKey = config('visionlab.ai.api_key') ?: env('ANTHROPIC_API_KEY');
 
@@ -101,7 +101,7 @@ class AiService
         $tools = $this->getToolDefinitions();
 
         // Make the API call
-        $model = config('visionlab.ai.model', 'claude-3-5-sonnet-20241022');
+        $model = $requestedModel;
         $maxTokens = config('visionlab.ai.max_tokens', 4096);
 
         $client = new Client();

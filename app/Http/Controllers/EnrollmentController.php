@@ -113,6 +113,43 @@ class EnrollmentController extends Controller
         return back()->with('success', 'Student removed from course.');
     }
 
+    public function addByStudentId(Request $request, Course $course)
+    {
+        $this->authorize('manageStudents', $course);
+
+        $request->validate([
+            'student_id' => 'required|string|exists:users,student_id'
+        ], [
+            'student_id.exists' => 'No student found with this Student ID.'
+        ]);
+
+        $user = User::where('student_id', $request->student_id)->first();
+
+        if (!$user->isStudent()) {
+            return back()->withErrors(['student_id' => 'This user is not a student.']);
+        }
+
+        $existing = Enrollment::where('course_id', $course->id)
+                              ->where('student_id', $user->id)
+                              ->first();
+
+        if ($existing) {
+            if ($existing->status === 'active') {
+                return back()->with('success', 'Student is already enrolled in this course.');
+            }
+            $existing->update(['status' => 'active', 'enrolled_at' => now()]);
+        } else {
+            Enrollment::create([
+                'course_id'   => $course->id,
+                'student_id'  => $user->id,
+                'status'      => 'active',
+                'enrolled_at' => now(),
+            ]);
+        }
+
+        return back()->with('success', "Student {$user->name} successfully enrolled.");
+    }
+
     public function importCsv(\App\Http\Requests\ImportEnrollmentCsvRequest $request, Course $course)
     {
         $this->authorize('manageStudents', $course);

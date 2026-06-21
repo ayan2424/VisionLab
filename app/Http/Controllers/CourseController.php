@@ -139,6 +139,12 @@ class CourseController extends Controller
 
         $extensions = \App\Models\Extension::all();
 
-        return view('courses.roster', compact('course', 'enrollments', 'extensions'));
+        // Get all students who are NOT enrolled in this course yet
+        $enrolledIds = $course->enrollments()->pluck('student_id');
+        $availableStudents = \App\Models\User::where('role', 'student')
+                                             ->whereNotIn('id', $enrolledIds)
+                                             ->get(['id', 'name', 'student_id']);
+
+        return view('courses.roster', compact('course', 'enrollments', 'extensions', 'availableStudents'));
     }
 }
