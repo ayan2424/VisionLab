@@ -28,7 +28,7 @@ RUN echo 'eval "$(direnv hook bash)"' >> /home/coder/.bashrc && \
 
 # ─── VisionLab Extension Installation ────────────────────────────────────────
 USER root
-COPY storage/extensions/continue-source/extensions/vscode/build/visionlab-agent-1.3.39.vsix /tmp/visionlab-agent.vsix
+COPY docker/workspace/extensions/visionlab-agent-1.3.39.vsix /tmp/visionlab-agent.vsix
 
 USER coder
 RUN code-server --install-extension /tmp/visionlab-agent.vsix --force
