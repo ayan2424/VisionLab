@@ -29,10 +29,10 @@
     <script>
         (function() {
             var t = localStorage.getItem('vc-theme');
-            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
+            if (t === 'light') {
                 document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
             }
         })();
     </script>
