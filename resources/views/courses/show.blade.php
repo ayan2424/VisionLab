@@ -122,6 +122,33 @@
                     <div class="flex justify-between" style="color:var(--vc-text-secondary);">
                         <span>Assignments</span><span style="color:var(--vc-text);">{{ $course->assignments->count() }}</span>
                     </div>
+
+                    @if($course->start_date || $course->end_date || $course->schedule_time)
+                    <div class="pt-3 space-y-2" style="border-top:1px solid var(--vc-border);">
+                        @if($course->schedule_time)
+                        <div>
+                            <span class="block text-xs" style="color:var(--vc-muted);">Schedule</span>
+                            <span class="font-semibold" style="color:var(--vc-text);">{{ $course->schedule_time }}</span>
+                        </div>
+                        @endif
+                        @if($course->start_date)
+                        <div>
+                            <span class="block text-xs" style="color:var(--vc-muted);">Duration</span>
+                            <span class="font-semibold" style="color:var(--vc-text);">
+                                {{ $course->start_date->format('M d, Y') }} - {{ $course->end_date ? $course->end_date->format('M d, Y') : 'Ongoing' }}
+                            </span>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($course->notes)
+                    <div class="pt-3" style="border-top:1px solid var(--vc-border);">
+                        <span class="block text-xs mb-1" style="color:var(--vc-muted);">Instructor Notes</span>
+                        <div class="text-xs whitespace-pre-wrap" style="color:var(--vc-text-secondary);">{{ $course->notes }}</div>
+                    </div>
+                    @endif
+
                     @if($isInstructor)
                     <div class="pt-3" style="border-top:1px solid var(--vc-border);">
                         <div class="text-xs mb-1" style="color:var(--vc-muted);">Enrollment Code</div>

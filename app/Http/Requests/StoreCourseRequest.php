@@ -19,6 +19,10 @@ class StoreCourseRequest extends FormRequest
             'is_active'   => 'nullable|boolean',
             'allow_marketplace' => 'nullable|boolean',
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'start_date'  => 'nullable|date',
+            'end_date'    => 'nullable|date|after_or_equal:start_date',
+            'schedule_time' => 'nullable|string|max:255',
+            'notes'       => 'nullable|string|max:5000',
         ];
     }
 

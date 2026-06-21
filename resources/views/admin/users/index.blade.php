@@ -5,6 +5,10 @@
 @section('content')
 <div class="flex items-center justify-between mb-6" style="opacity:0;animation:fadeSlideUp .5s .05s ease forwards">
     <h1 class="text-xl font-bold" style="color:var(--vc-text);">User Management</h1>
+    <a href="{{ route('admin.users.create') }}" class="btn-primary py-2 px-4 text-sm font-semibold flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Create New User
+    </a>
 </div>
 
 {{-- Filters --}}
@@ -31,6 +35,7 @@
         <thead>
             <tr style="border-bottom:1px solid var(--vc-border);background:rgba(0,0,0,0.02);" class="dark:bg-[#0d1117]">
                 <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">User</th>
+                <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">Student ID</th>
                 <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">Role</th>
                 <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">Status</th>
                 <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">Joined</th>
@@ -51,6 +56,9 @@
                             <div class="text-xs truncate" style="color:var(--vc-text-secondary);">{{ $user->email }}</div>
                         </div>
                     </div>
+                </td>
+                <td class="px-5 py-4 text-xs font-mono" style="color:var(--vc-text-secondary);">
+                    {{ $user->student_id ?? '-' }}
                 </td>
                 <td class="px-5 py-4">
                     <span class="px-2 py-0.5 rounded-md text-xs font-semibold border"

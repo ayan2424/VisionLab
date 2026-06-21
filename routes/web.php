@@ -149,6 +149,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Users
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
         Route::get('/users/{user}/impersonate', [AdminUserController::class, 'impersonate'])->name('users.impersonate');
         Route::get('/users/{user}/export', [AdminUserController::class, 'exportGdpr'])->name('users.export');
         Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');

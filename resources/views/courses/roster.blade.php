@@ -67,7 +67,12 @@
                                 {{ strtoupper(substr($enrollment->student->name, 0, 1)) }}
                             </div>
                             <div>
-                                <div class="font-medium" style="color:var(--vc-text);">{{ $enrollment->student->name }}</div>
+                                <div class="font-medium flex items-center gap-2" style="color:var(--vc-text);">
+                                    {{ $enrollment->student->name }}
+                                    @if($enrollment->student->student_id)
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-mono border" style="color:var(--vc-accent);background:rgba(240,80,0,0.05);border-color:rgba(240,80,0,0.2);">{{ $enrollment->student->student_id }}</span>
+                                    @endif
+                                </div>
                                 <div class="text-[11px]" style="color:var(--vc-muted);">{{ $enrollment->student->email }}</div>
                             </div>
                         </div>

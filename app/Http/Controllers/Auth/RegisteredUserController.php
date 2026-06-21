@@ -34,17 +34,19 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'student_id' => ['required', 'string', 'unique:'.User::class.',student_id'],
-        ], [
-            'student_id.unique' => 'This Student ID is already registered.',
         ]);
+
+        $studentId = null;
+        do {
+            $studentId = 'STU-' . strtoupper(\Illuminate\Support\Str::random(6));
+        } while (User::where('student_id', $studentId)->exists());
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'student', // Force student role for new signups
-            'student_id' => $request->student_id,
+            'student_id' => $studentId,
         ]);
 
         event(new Registered($user));

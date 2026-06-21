@@ -45,6 +45,11 @@
             </select>
         </div>
         <div>
+            <label class="block text-sm font-semibold text-slate-300 mb-2">Student ID <span class="text-xs text-slate-500 font-normal">(if student)</span></label>
+            <input type="text" name="student_id" value="{{ old('student_id', $user->student_id) }}"
+                   class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
+        </div>
+        <div>
             <label class="block text-sm font-semibold text-slate-300 mb-2">Status</label>
             <select name="status" class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
                 <option value="active" {{ old('status', $user->status) === 'active' ? 'selected' : '' }}>Active</option>

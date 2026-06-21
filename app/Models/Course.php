@@ -15,10 +15,13 @@ class Course extends Model
     protected $fillable = [
         'instructor_id', 'title', 'slug', 'description',
         'cover_image', 'enrollment_code', 'is_active', 'allow_marketplace',
+        'start_date', 'end_date', 'schedule_time', 'notes'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     protected static function booted(): void

@@ -24,6 +24,10 @@ class UpdateCourseRequest extends FormRequest
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active'   => 'sometimes|boolean',
             'allow_marketplace' => 'sometimes|boolean',
+            'start_date'  => 'nullable|date',
+            'end_date'    => 'nullable|date|after_or_equal:start_date',
+            'schedule_time' => 'nullable|string|max:255',
+            'notes'       => 'nullable|string|max:5000',
         ];
     }
 }

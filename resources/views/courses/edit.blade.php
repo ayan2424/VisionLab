@@ -38,6 +38,34 @@
                 <label for="description" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Description <span style="color:var(--vc-danger);">*</span></label>
             </div>
 
+            <!-- Scheduling Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="relative">
+                    <input type="date" id="start_date" name="start_date" value="{{ old('start_date', $course->start_date ? $course->start_date->format('Y-m-d') : '') }}"
+                           class="vc-input peer w-full placeholder-transparent pt-6 pb-2">
+                    <label for="start_date" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all" style="color:var(--vc-accent);">Start Date</label>
+                </div>
+                <div class="relative">
+                    <input type="date" id="end_date" name="end_date" value="{{ old('end_date', $course->end_date ? $course->end_date->format('Y-m-d') : '') }}"
+                           class="vc-input peer w-full placeholder-transparent pt-6 pb-2">
+                    <label for="end_date" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all" style="color:var(--vc-accent);">End Date</label>
+                </div>
+            </div>
+
+            <div class="relative">
+                <input type="text" id="schedule_time" name="schedule_time" value="{{ old('schedule_time', $course->schedule_time) }}"
+                       class="vc-input peer w-full placeholder-transparent pt-6 pb-2"
+                       placeholder="e.g., Mon/Wed/Fri 10:00 AM - 12:00 PM">
+                <label for="schedule_time" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Schedule / Timings</label>
+            </div>
+
+            <div class="relative">
+                <textarea id="notes" name="notes" rows="3"
+                          class="vc-input peer w-full placeholder-transparent pt-8 pb-2 resize-none"
+                          placeholder="General notes, syllabus link, or meeting info">{{ old('notes', $course->notes) }}</textarea>
+                <label for="notes" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Instructor Notes</label>
+            </div>
+
             <!-- Is Active Toggle -->
             <div class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
                 <div>

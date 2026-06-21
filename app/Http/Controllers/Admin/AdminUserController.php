@@ -32,6 +32,41 @@ class AdminUserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'role'     => 'required|in:admin,instructor,student',
+            'status'   => 'required|in:active,suspended',
+        ]);
+
+        $studentId = null;
+        if ($validated['role'] === 'student') {
+            do {
+                $studentId = 'STU-' . strtoupper(\Illuminate\Support\Str::random(6));
+            } while (User::where('student_id', $studentId)->exists());
+        }
+
+        $user = User::create([
+            'name'       => $validated['name'],
+            'email'      => $validated['email'],
+            'password'   => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'role'       => $validated['role'],
+            'status'     => $validated['status'],
+            'student_id' => $studentId,
+        ]);
+
+        return redirect()->route('admin.users.index')
+                         ->with('success', "User {$user->name} created successfully." . ($studentId ? " Assigned ID: {$studentId}" : ""));
+    }
+
     public function edit(User $user)
     {
         return view('admin.users.edit', compact('user'));
@@ -40,10 +75,11 @@ class AdminUserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name'   => 'required|string|max:100',
-            'email'  => 'required|email|unique:users,email,' . $user->id,
-            'role'   => 'required|in:admin,instructor,student',
-            'status' => 'required|in:active,suspended',
+            'name'       => 'required|string|max:100',
+            'email'      => 'required|email|unique:users,email,' . $user->id,
+            'role'       => 'required|in:admin,instructor,student',
+            'status'     => 'required|in:active,suspended',
+            'student_id' => 'nullable|string|unique:users,student_id,' . $user->id,
         ]);
 
         $user->update($validated);

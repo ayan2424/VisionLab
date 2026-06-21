@@ -48,6 +48,10 @@ class CourseController extends Controller
             'description'   => $validated['description'] ?? null,
             'is_active'     => $validated['is_active'] ?? true,
             'allow_marketplace' => $validated['allow_marketplace'] ?? true,
+            'start_date'    => $validated['start_date'] ?? null,
+            'end_date'      => $validated['end_date'] ?? null,
+            'schedule_time' => $validated['schedule_time'] ?? null,
+            'notes'         => $validated['notes'] ?? null,
             'cover_image'   => $coverPath,
         ]);
 

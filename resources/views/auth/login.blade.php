@@ -71,9 +71,15 @@
 
                 <h1 class="text-2xl font-bold mb-1" style="color:var(--vc-text);">Sign in to your account</h1>
                 <p class="text-sm mb-8" style="color:var(--vc-text-secondary);">
-                    Don't have an account?
-                    <a href="{{ route('register') }}" class="font-semibold transition-colors" style="color:var(--vc-accent);">Create one free</a>
+                    Welcome back to VisionLab
                 </p>
+
+                @if(session('status'))
+                <div class="mb-6 px-4 py-3 rounded-xl text-sm"
+                     style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);color:var(--vc-accent);">
+                    {{ session('status') }}
+                </div>
+                @endif
 
                 @if($errors->any())
                 <div class="mb-6 px-4 py-3 rounded-xl text-sm"
