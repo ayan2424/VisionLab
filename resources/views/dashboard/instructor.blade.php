@@ -245,7 +245,7 @@
                 <a href="{{ route('courses.create') }}" class="action-btn" style="border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">
                     <span style="color:#00e5ff">+</span> New Course
                 </a>
-                <a href="#" class="action-btn">
+                <a href="{{ route('submissions.queue') }}" class="action-btn">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> Grade Queue
                 </a>
             </div>

@@ -318,7 +318,7 @@
                         <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-60"></span>
                         <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald"></span>
                     </span>
-                    <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Kernel v4.0.1 · live across 38 universities</span>
+                    <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Kernel v1.0.0 · Unified Learning & Cloud IDE</span>
                 </div>
             </div>
 

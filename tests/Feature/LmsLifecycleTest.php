@@ -18,7 +18,7 @@ class LmsLifecycleTest extends TestCase
         
         $response = $this->actingAs($instructor)->post('/courses', [
             'title' => 'Web Development 101',
-            'description' => 'Learn the basics',
+            'description' => 'Learn the basics of web development in this course.',
         ]);
 
         $response->assertStatus(302);
@@ -26,12 +26,12 @@ class LmsLifecycleTest extends TestCase
         $course = Course::where('title', 'Web Development 101')->firstOrFail();
 
         $assignmentResponse = $this->actingAs($instructor)->post("/courses/{$course->slug}/assignments", [
+            'course_id' => $course->id,
             'title' => 'HTML Basics',
-            'description' => 'Build a webpage',
+            'description' => 'Build a webpage using HTML tags.',
             'due_date' => now()->addDays(7)->toDateTimeString(),
-            'max_points' => 100,
-            'starter_language' => 'python',
-            'is_published' => true
+            'max_score' => 100,
+            'status' => 'published'
         ]);
 
         $assignmentResponse->assertStatus(302);

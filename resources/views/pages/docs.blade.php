@@ -294,9 +294,9 @@ sail artisan migrate --seed</div>
                     <span>JSON</span>
                 </div>
                 <div class="code-widget-body">{
-  <span class="highlight-keyword">"target_link_uri"</span>: <span class="highlight-string">"https://visionlab.edu/lti/launch"</span>,
-  <span class="highlight-keyword">"oidc_initiation_url"</span>: <span class="highlight-string">"https://visionlab.edu/lti/login"</span>,
-  <span class="highlight-keyword">"public_jwk_url"</span>: <span class="highlight-string">"https://visionlab.edu/lti/jwks"</span>,
+  <span class="highlight-keyword">"target_link_uri"</span>: <span class="highlight-string">"https://visioncode.ai/lti/launch"</span>,
+  <span class="highlight-keyword">"oidc_initiation_url"</span>: <span class="highlight-string">"https://visioncode.ai/lti/login"</span>,
+  <span class="highlight-keyword">"public_jwk_url"</span>: <span class="highlight-string">"https://visioncode.ai/lti/jwks"</span>,
   <span class="highlight-keyword">"scopes"</span>: [
     <span class="highlight-string">"https://purl.imsglobal.org/spec/lti-ags/scope/score"</span>,
     <span class="highlight-string">"https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"</span>
@@ -417,7 +417,7 @@ pkgs.mkShell {
                     <span>GET /api/v1/workspaces</span>
                     <span>cURL</span>
                 </div>
-                <div class="code-widget-body">curl -X GET https://visionlab.edu/api/v1/workspaces \
+                <div class="code-widget-body">curl -X GET https://visioncode.ai/api/v1/workspaces \
   -H <span class="highlight-string">'Authorization: Bearer vl_sec_7a2b9...'</span> \
   -H <span class="highlight-string">'Accept: application/json'</span></div>
             </div>
