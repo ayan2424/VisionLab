@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,16 +30,16 @@
 
     <!-- Design System Styles -->
     <style>
-        /* ── Light Mode ───────────────────────────────────────────────────────────── */
+        /* ── Forced Dark Mode ───────────────────────────────────────────────────────────── */
         :root {
-            --background: #fafaf8;
-            --foreground: #1a1714;
-            --surface: rgba(0, 0, 0, 0.03);
-            --surface-2: rgba(0, 0, 0, 0.06);
-            --muted: rgba(0, 0, 0, 0.04);
-            --muted-foreground: rgba(26, 23, 20, 0.6);
-            --border: rgba(0, 0, 0, 0.08);
-            --border-hover: rgba(0, 0, 0, 0.16);
+            --background: #050507;
+            --foreground: #f4f4f5;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-2: rgba(255, 255, 255, 0.06);
+            --muted: rgba(255, 255, 255, 0.04);
+            --muted-foreground: rgba(244, 244, 245, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.16);
             --indigo: #4f46e5;
             --indigo-light: #818cf8;
             --rose: #f0426d;
@@ -52,30 +52,6 @@
             --violet: #9b5de5;
             --violet-light: #c7a6f5;
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* ── Dark Mode ────────────────────────────────────────────────────────────── */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --background: #050507;
-                --foreground: #f4f4f5;
-                --surface: rgba(255, 255, 255, 0.03);
-                --surface-2: rgba(255, 255, 255, 0.06);
-                --muted: rgba(255, 255, 255, 0.04);
-                --muted-foreground: rgba(244, 244, 245, 0.6);
-                --border: rgba(255, 255, 255, 0.08);
-                --border-hover: rgba(255, 255, 255, 0.16);
-            }
-        }
-        html.dark :root {
-            --background: #050507;
-            --foreground: #f4f4f5;
-            --surface: rgba(255, 255, 255, 0.03);
-            --surface-2: rgba(255, 255, 255, 0.06);
-            --muted: rgba(255, 255, 255, 0.04);
-            --muted-foreground: rgba(244, 244, 245, 0.6);
-            --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.16);
         }
 
         * {
@@ -95,13 +71,9 @@
             font-family: 'Geist', -apple-system, sans-serif;
             overflow-x: hidden;
             line-height: 1.6;
-            background-image: linear-gradient(-45deg, #fafaf8, #f3f1ed, #ffffff, #fafaf8);
+            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
             background-size: 400% 400%;
             animation: gradientBg 18s ease infinite;
-        }
-        
-        html.dark body {
-            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
         }
 
         @keyframes gradientBg {
