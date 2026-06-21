@@ -63,6 +63,11 @@ class Course extends Model
         return $this->hasMany(Announcement::class)->latest();
     }
 
+    public function batches(): HasMany
+    {
+        return $this->hasMany(CourseBatch::class);
+    }
+
     public function isEnrolled(User $user): bool
     {
         return $this->enrollments()

@@ -34,7 +34,9 @@ class AdminUserController extends Controller
 
     public function create()
     {
-        $courses = \App\Models\Course::where('is_active', true)->get();
+        $courses = \App\Models\Course::with(['batches' => function($q) {
+            $q->where('is_active', true);
+        }])->where('is_active', true)->get();
         return view('admin.users.create', compact('courses'));
     }
 
@@ -46,9 +48,8 @@ class AdminUserController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role'     => 'required|in:admin,instructor,student',
             'status'   => 'required|in:active,suspended',
-            'course_id'    => 'nullable|exists:courses,id',
-            'batch_timing' => 'nullable|string|max:100',
-            'start_date'   => 'nullable|date',
+            'course_id'       => 'nullable|exists:courses,id',
+            'course_batch_id' => 'nullable|exists:course_batches,id',
         ]);
 
         $studentId = null;
@@ -68,13 +69,24 @@ class AdminUserController extends Controller
         ]);
 
         if ($validated['role'] === 'student' && !empty($validated['course_id'])) {
+            $batchTiming = null;
+            $startDate = null;
+
+            if (!empty($validated['course_batch_id'])) {
+                $batch = \App\Models\CourseBatch::find($validated['course_batch_id']);
+                if ($batch) {
+                    $batchTiming = $batch->timing;
+                    $startDate = $batch->start_date;
+                }
+            }
+
             \App\Models\Enrollment::create([
                 'course_id'    => $validated['course_id'],
                 'student_id'   => $user->id,
                 'status'       => 'active',
                 'enrolled_at'  => now(),
-                'batch_timing' => $validated['batch_timing'] ?? null,
-                'start_date'   => $validated['start_date'] ?? null,
+                'batch_timing' => $batchTiming,
+                'start_date'   => $startDate,
             ]);
         }
 

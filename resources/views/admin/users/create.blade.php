@@ -62,7 +62,7 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Select Course</label>
-                    <select name="course_id" class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all">
+                    <select id="course-select" name="course_id" class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all">
                         <option value="">-- No Course Selected --</option>
                         @foreach($courses as $course)
                             <option value="{{ $course->id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>{{ $course->title }}</option>
@@ -70,17 +70,11 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Batch Timing</label>
-                        <input type="text" name="batch_timing" value="{{ old('batch_timing') }}" placeholder="e.g. 10:00 AM - 12:00 PM"
-                               class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Start Date</label>
-                        <input type="date" name="start_date" value="{{ old('start_date') }}"
-                               class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all">
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Select Batch / Timing</label>
+                    <select id="batch-select" name="course_batch_id" class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all" disabled>
+                        <option value="">-- Select a Course First --</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -104,6 +98,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         const roleSelect = document.getElementById('role-select');
         const coursePanel = document.getElementById('course-assignment-panel');
+        const courseSelect = document.getElementById('course-select');
+        const batchSelect = document.getElementById('batch-select');
+
+        // Pass PHP courses data to JS
+        const coursesData = @json($courses->keyBy('id'));
 
         roleSelect.addEventListener('change', function() {
             if (this.value === 'student') {
@@ -112,6 +111,28 @@
             } else {
                 coursePanel.classList.remove('block');
                 coursePanel.classList.add('hidden');
+            }
+        });
+
+        courseSelect.addEventListener('change', function() {
+            const courseId = this.value;
+            batchSelect.innerHTML = '<option value="">-- No Batch Selected --</option>';
+            
+            if (courseId && coursesData[courseId] && coursesData[courseId].batches.length > 0) {
+                batchSelect.disabled = false;
+                coursesData[courseId].batches.forEach(batch => {
+                    const option = document.createElement('option');
+                    option.value = batch.id;
+                    option.textContent = `${batch.title} (${batch.timing}) - Starts: ${batch.start_date.substring(0, 10)}`;
+                    batchSelect.appendChild(option);
+                });
+            } else {
+                batchSelect.disabled = true;
+                if (courseId) {
+                    batchSelect.innerHTML = '<option value="">-- No Batches Available --</option>';
+                } else {
+                    batchSelect.innerHTML = '<option value="">-- Select a Course First --</option>';
+                }
             }
         });
     });
