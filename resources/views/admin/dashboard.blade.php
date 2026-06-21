@@ -211,11 +211,15 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style="opacity:0;animation:fadeSlideUp .5s .5s ease forwards">
     <div class="vc-card p-4">
         <h3 class="text-sm font-semibold mb-4" style="color:var(--vc-text);">Platform Growth</h3>
-        <canvas id="growthChart" height="200"></canvas>
+        <div class="relative w-full h-64">
+            <canvas id="growthChart"></canvas>
+        </div>
     </div>
     <div class="vc-card p-4">
         <h3 class="text-sm font-semibold mb-4" style="color:var(--vc-text);">AI Token Usage</h3>
-        <canvas id="aiUsageChart" height="200"></canvas>
+        <div class="relative w-full h-64">
+            <canvas id="aiUsageChart"></canvas>
+        </div>
     </div>
 </div>
 

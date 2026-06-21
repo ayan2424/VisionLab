@@ -30,9 +30,9 @@
     </div>
 
     {{-- Activity Chart --}}
-    <div class="rounded-2xl border border-white/[0.07] p-6 mb-8" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-6 mb-8 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-lg font-bold text-white mb-6">Activity Trends (Last 14 Days)</h3>
-        <div class="relative h-64">
+        <div class="relative h-64 w-full">
             <canvas id="activityChart"></canvas>
         </div>
     </div>

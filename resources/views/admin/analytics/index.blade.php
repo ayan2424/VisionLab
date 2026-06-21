@@ -31,17 +31,17 @@
 {{-- Charts --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     {{-- User Registrations --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-2" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-2 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">Daily Registrations (Last 30 Days)</h3>
-        <div class="relative h-52">
+        <div class="relative h-52 w-full">
             <canvas id="userChart"></canvas>
         </div>
     </div>
 
     {{-- Role Distribution --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-5 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">Users by Role</h3>
-        <div class="relative h-52 flex items-center justify-center">
+        <div class="relative h-52 w-full flex items-center justify-center">
             @if(array_sum($roleDistribution) > 0)
             <canvas id="roleChart"></canvas>
             @else
@@ -53,17 +53,17 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     {{-- AI Actions --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-2" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-2 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">AI Actions (Last 30 Days)</h3>
-        <div class="relative h-52">
+        <div class="relative h-52 w-full">
             <canvas id="aiChart"></canvas>
         </div>
     </div>
 
     {{-- AI Mode Distribution --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-5 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">AI Mode Usage</h3>
-        <div class="relative h-52 flex items-center justify-center">
+        <div class="relative h-52 w-full flex items-center justify-center">
             @if(array_sum($aiModes) > 0)
             <canvas id="modeChart"></canvas>
             @else
@@ -75,17 +75,17 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     {{-- Submissions --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-5 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">Submissions (Last 30 Days)</h3>
-        <div class="relative h-52">
+        <div class="relative h-52 w-full">
             <canvas id="submissionChart"></canvas>
         </div>
     </div>
 
     {{-- Workspaces --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-5 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">Workspaces Started (Last 14 Days)</h3>
-        <div class="relative h-52">
+        <div class="relative h-52 w-full">
             <canvas id="workspaceChart"></canvas>
         </div>
     </div>
@@ -93,9 +93,9 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     {{-- Event Taxonomy --}}
-    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-1" style="background:#111111;">
+    <div class="rounded-2xl border border-white/[0.07] p-5 lg:col-span-1 min-w-0 min-h-0" style="background:#111111;">
         <h3 class="text-sm font-bold text-white mb-4">Top Event Taxonomy</h3>
-        <div class="relative h-52 flex items-center justify-center">
+        <div class="relative h-52 w-full flex items-center justify-center">
             @if(array_sum($eventTypes) > 0)
             <canvas id="eventChart"></canvas>
             @else
