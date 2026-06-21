@@ -51,6 +51,19 @@
                 </label>
             </div>
 
+            <!-- Allow Marketplace Toggle -->
+            <div class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                <div>
+                    <label class="block text-sm font-bold text-white mb-1">Allow Extensions Marketplace</label>
+                    <p class="text-xs text-gray-400">If disabled, students cannot access the VS Code Extension Marketplace in their governed workspaces.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="hidden" name="allow_marketplace" value="0">
+                    <input type="checkbox" name="allow_marketplace" value="1" class="sr-only peer" {{ old('allow_marketplace', true) ? 'checked' : '' }}>
+                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand" style="peer-checked:background-color: var(--vc-brand);"></div>
+                </label>
+            </div>
+
             <div>
                 <label class="block text-sm font-bold mb-2 text-white/80">Cover Image <span class="text-gray-500 font-normal">(optional)</span></label>
                 <div class="border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer"

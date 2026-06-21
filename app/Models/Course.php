@@ -14,7 +14,7 @@ class Course extends Model
     use HasFactory;
     protected $fillable = [
         'instructor_id', 'title', 'slug', 'description',
-        'cover_image', 'enrollment_code', 'is_active',
+        'cover_image', 'enrollment_code', 'is_active', 'allow_marketplace',
     ];
 
     protected $casts = [

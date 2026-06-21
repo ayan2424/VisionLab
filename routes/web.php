@@ -65,6 +65,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/workspace/{workspace}/delete-file', [\App\Http\Controllers\WorkspaceController::class, 'deleteFile'])->name('workspace.deleteFile');
     Route::post('/workspace/{workspace}/rename-file', [\App\Http\Controllers\WorkspaceController::class, 'renameFile'])->name('workspace.renameFile');
 
+    // ── Workspace Extension Manager ────────────────────────────────────
+    Route::post('/workspace/{workspace}/extensions/{extension}/install', [\App\Http\Controllers\WorkspaceExtensionManagerController::class, 'install'])->name('workspace.extensions.install');
+    Route::delete('/workspace/{workspace}/extensions/{extension}/uninstall', [\App\Http\Controllers\WorkspaceExtensionManagerController::class, 'uninstall'])->name('workspace.extensions.uninstall');
+
     // ── Collaborative Rooms & Chat ─────────────────────────────────────
     Route::post('/rooms', [\App\Http\Controllers\RoomController::class, 'create'])->name('rooms.create');
     Route::post('/workspace/{workspace}/chat', [\App\Http\Controllers\ChatController::class, 'store'])->name('workspace.chat');

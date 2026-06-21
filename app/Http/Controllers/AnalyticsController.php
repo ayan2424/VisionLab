@@ -24,68 +24,62 @@ class AnalyticsController extends Controller
 
         if ($user->role === 'student') {
             // Student view
-            $cacheKey = "student_analytics_{$user->id}";
-            $data = \Illuminate\Support\Facades\Cache::tags(['analytics', "user_{$user->id}"])->remember($cacheKey, now()->addMinutes(30), function() use ($user, $now) {
-                $executions = AnalyticsEvent::forUser($user->id)
-                    ->ofType('workspace.command_executed')
-                    ->count();
-                    
-                $aiInteractions = AiActionsLog::where('user_id', $user->id)->count();
+            $executions = AnalyticsEvent::forUser($user->id)
+                ->ofType('workspace.command_executed')
+                ->count();
                 
-                $activeSessions = Workspace::where('user_id', $user->id)
-                    ->where('status', 'running')
-                    ->count();
+            $aiInteractions = AiActionsLog::where('user_id', $user->id)->count();
+            
+            $activeSessions = Workspace::where('user_id', $user->id)
+                ->where('status', 'running')
+                ->count();
 
-                // Activity chart (Last 14 days)
-                $dailyActivity = AnalyticsEvent::forUser($user->id)
-                    ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-                    ->where('created_at', '>=', $now->copy()->subDays(13)->startOfDay())
-                    ->groupBy(DB::raw('DATE(created_at)'))
-                    ->pluck('count', 'date');
-                    
-                $activityChart = $this->fillDays(13, $dailyActivity);
+            // Activity chart (Last 14 days)
+            $dailyActivity = AnalyticsEvent::forUser($user->id)
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+                ->where('created_at', '>=', $now->copy()->subDays(13)->startOfDay())
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->pluck('count', 'date');
+                
+            $activityChart = $this->fillDays(13, $dailyActivity);
 
-                return compact('executions', 'aiInteractions', 'activeSessions', 'activityChart');
-            });
+            $data = compact('executions', 'aiInteractions', 'activeSessions', 'activityChart');
 
             return view('analytics.student', $data);
             
         } elseif ($user->role === 'instructor') {
             // Instructor view
-            $cacheKey = "instructor_analytics_{$user->id}";
-            $data = \Illuminate\Support\Facades\Cache::tags(['analytics', "user_{$user->id}"])->remember($cacheKey, now()->addMinutes(30), function() use ($user, $now) {
-                $myCourses = $user->courses()->pluck('id');
-                $studentIds = DB::table('course_user')
-                    ->whereIn('course_id', $myCourses)
-                    ->pluck('user_id');
+            $myCourses = $user->courses()->pluck('id');
+            $studentIds = DB::table('course_user')
+                ->whereIn('course_id', $myCourses)
+                ->pluck('user_id');
 
-                $executions = AnalyticsEvent::whereIn('user_id', $studentIds)
-                    ->ofType('workspace.command_executed')
-                    ->count();
-                    
-                $aiInteractions = AiActionsLog::whereIn('user_id', $studentIds)->count();
+            $executions = AnalyticsEvent::whereIn('user_id', $studentIds)
+                ->ofType('workspace.command_executed')
+                ->count();
                 
-                $pendingGrading = Submission::whereIn('course_id', $myCourses)
-                    ->where('status', 'submitted')
-                    ->count();
+            $aiInteractions = AiActionsLog::whereIn('user_id', $studentIds)->count();
+            
+            $pendingGrading = Submission::whereIn('course_id', $myCourses)
+                ->where('status', 'submitted')
+                ->count();
 
-                // Activity chart (Last 14 days)
-                $dailyActivity = AnalyticsEvent::whereIn('user_id', $studentIds)
-                    ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-                    ->where('created_at', '>=', $now->copy()->subDays(13)->startOfDay())
-                    ->groupBy(DB::raw('DATE(created_at)'))
-                    ->pluck('count', 'date');
-                    
-                $activityChart = $this->fillDays(13, $dailyActivity);
-
-                $recentEvents = AnalyticsEvent::whereIn('user_id', $studentIds)
-                    ->with('user')
-                    ->latest()
-                    ->take(10)
-                    ->get();
+            // Activity chart (Last 14 days)
+            $dailyActivity = AnalyticsEvent::whereIn('user_id', $studentIds)
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+                ->where('created_at', '>=', $now->copy()->subDays(13)->startOfDay())
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->pluck('count', 'date');
                 
-                return compact('executions', 'aiInteractions', 'pendingGrading', 'activityChart', 'recentEvents');
-            });
+            $activityChart = $this->fillDays(13, $dailyActivity);
+
+            $recentEvents = AnalyticsEvent::whereIn('user_id', $studentIds)
+                ->with('user')
+                ->latest()
+                ->take(10)
+                ->get();
+            
+            $data = compact('executions', 'aiInteractions', 'pendingGrading', 'activityChart', 'recentEvents');
 
             return view('analytics.instructor', $data);
         }

@@ -24,9 +24,15 @@
     </div>
     <div class="flex gap-2">
         @if($workspace->status === 'running')
+        <a href="{{ route('workspace.show', $workspace->id) }}" target="_blank" class="btn-primary" style="background:var(--vc-accent);border-color:var(--vc-accent);">Open Workspace</a>
         <form method="POST" action="{{ route('admin.workspaces.stop', $workspace->id) }}" onsubmit="return confirm('Force stop this workspace?');">
             @csrf
             <button class="btn-primary" style="background:#EF4444;border-color:#DC2626;">Force Stop</button>
+        </form>
+        @else
+        <form method="POST" action="{{ route('workspace.start', $workspace->id) }}">
+            @csrf
+            <button class="btn-primary" style="background:#10B981;border-color:#059669;">Start Workspace</button>
         </form>
         @endif
         @if($workspace->status !== 'archived')
@@ -80,6 +86,67 @@
         @endif
     </div>
 </div>
+</div>
+
+@if($workspace->status === 'running')
+<div class="vc-card p-5 mb-8" x-data="workspaceMonitor()">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider" style="color:var(--vc-muted);">Live Resource Monitoring</h3>
+        <div class="flex items-center gap-2 text-[10px] font-bold" :class="error ? 'text-red-500' : 'text-emerald-500'">
+            <div class="w-2 h-2 rounded-full" :class="error ? 'bg-red-500' : 'bg-emerald-500 animate-pulse'"></div>
+            <span x-text="error ? 'Offline' : 'Connected'"></span>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-black/20 rounded-lg p-4 border border-white/5">
+            <p class="text-xs mb-1" style="color:var(--vc-text-secondary);">CPU Usage</p>
+            <p class="text-xl font-bold font-mono" style="color:var(--vc-text);" x-text="stats.CPUPerc || '0.00%'"></p>
+        </div>
+        <div class="bg-black/20 rounded-lg p-4 border border-white/5">
+            <p class="text-xs mb-1" style="color:var(--vc-text-secondary);">Memory Usage</p>
+            <p class="text-xl font-bold font-mono" style="color:var(--vc-text);" x-text="stats.MemPerc || '0.00%'"></p>
+            <p class="text-[10px] mt-1" style="color:var(--vc-muted);" x-text="stats.MemUsage || '- / -'"></p>
+        </div>
+        <div class="bg-black/20 rounded-lg p-4 border border-white/5">
+            <p class="text-xs mb-1" style="color:var(--vc-text-secondary);">Network I/O</p>
+            <p class="text-sm font-bold font-mono mt-2" style="color:var(--vc-text);" x-text="stats.NetIO || '- / -'"></p>
+        </div>
+        <div class="bg-black/20 rounded-lg p-4 border border-white/5">
+            <p class="text-xs mb-1" style="color:var(--vc-text-secondary);">Block I/O</p>
+            <p class="text-sm font-bold font-mono mt-2" style="color:var(--vc-text);" x-text="stats.BlockIO || '- / -'"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+function workspaceMonitor() {
+    return {
+        stats: {},
+        error: false,
+        init() {
+            this.fetchStats();
+            setInterval(() => this.fetchStats(), 5000);
+        },
+        async fetchStats() {
+            try {
+                const res = await fetch('{{ route("workspace.status", $workspace->id) }}');
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+                if (data.stats) {
+                    this.stats = data.stats;
+                    this.error = false;
+                } else {
+                    this.error = true;
+                }
+            } catch (err) {
+                this.error = true;
+            }
+        }
+    }
+}
+</script>
+@endif
 @endsection
 
 

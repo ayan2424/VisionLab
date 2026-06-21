@@ -90,6 +90,11 @@ class CodeServerManager
             mkdir($extensionsPath, 0755, true);
         }
 
+        $disableMarketplace = false;
+        if ($workspace->course_id && $workspace->course) {
+            $disableMarketplace = !$workspace->course->allow_marketplace;
+        }
+
         $cmd = [
             $this->dockerCmd(), 'run', '-d', '--init',
             '--name', $name,
@@ -110,6 +115,14 @@ class CodeServerManager
             '-e', "VISIONCODE_API_URL=" . url('/api'),
             '-e', "OPENAI_API_BASE=" . url('/api/ai/v1'),
             '-e', "OPENAI_API_KEY=" . ($workspace->owner?->createToken('workspace')->plainTextToken ?? 'dummy_key'),
+        ];
+
+        if ($disableMarketplace) {
+            $cmd[] = '-e';
+            $cmd[] = 'EXTENSIONS_GALLERY={"serviceUrl":""}';
+        }
+
+        $cmd = array_merge($cmd, [
             '--restart', 'unless-stopped',
             '--memory', ($quota['memory_mb'] ?? 512) . 'm',
             '--cpu-shares', (string) ($quota['cpu_shares'] ?? 1024),
@@ -117,7 +130,7 @@ class CodeServerManager
             '--auth', $authMode,
             '--bind-addr', '0.0.0.0:8080',
             '--disable-telemetry',
-        ];
+        ]);
 
         $process = new Process($cmd);
         $process->setTimeout(60);
@@ -796,25 +809,6 @@ class CodeServerManager
 
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
-
-        // 1.5 Setup default VS Code settings (Theme, Workbench)
-        $vscodeSettings = [
-            "workbench.colorTheme" => "Default Dark Modern",
-            "workbench.startupEditor" => "none",
-            "window.menuBarVisibility" => "compact",
-            "workbench.activityBar.visible" => true,
-            "workbench.sideBar.location" => "left",
-            "editor.fontFamily" => "'Fira Code', 'Consolas', 'monospace'",
-            "editor.fontLigatures" => true,
-            "editor.minimap.enabled" => false,
-            "security.workspace.trust.enabled" => false
-        ];
-        $settingsJson = json_encode($vscodeSettings, JSON_UNESCAPED_SLASHES);
-        $settingsJsonForBash = str_replace("'", "'\\''", $settingsJson);
-        $settingsScript = "mkdir -p /home/coder/.local/share/code-server/User && echo '{$settingsJsonForBash}' > /home/coder/.local/share/code-server/User/settings.json";
-        
-        $settingsProcess = new Process([$this->dockerCmd(), 'exec', $containerName, 'bash', '-c', $settingsScript]);
-        $settingsProcess->run();
 
         // 2. Install enabled extensions dynamically from WorkspaceExtension pivot
         $enabledExtensions = \App\Models\WorkspaceExtension::with('extension')

@@ -23,6 +23,7 @@ class UpdateCourseRequest extends FormRequest
             'description' => 'required|string|min:10|max:5000',
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active'   => 'sometimes|boolean',
+            'allow_marketplace' => 'sometimes|boolean',
         ];
     }
 }

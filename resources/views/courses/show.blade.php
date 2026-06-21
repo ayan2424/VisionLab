@@ -251,6 +251,9 @@
         <div class="vc-card p-5">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold" style="color:var(--vc-text);">Students ({{ $students->count() }})</h3>
+                @if($isInstructor)
+                <a href="{{ route('courses.roster', $course->slug) }}" class="btn-ghost py-1 px-3 text-xs" style="color:var(--vc-accent);border-color:rgba(240,80,0,0.3);">Workspace Roster</a>
+                @endif
             </div>
 
             @if($isInstructor)

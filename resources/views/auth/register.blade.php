@@ -158,6 +158,21 @@
                         </div>
                     </div>
 
+                    {{-- Institute / Enrollment Code --}}
+                    <div>
+                        <label for="institute_code" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color:var(--vc-text-secondary);">Institute / Course Code</label>
+                        <div class="relative">
+                            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+                            </div>
+                            <input id="institute_code" type="text" name="institute_code" value="{{ old('institute_code') }}"
+                                   class="vc-input pl-10"
+                                   placeholder="Ask your instructor for the code" required>
+                        </div>
+                        <p class="mt-1 text-[10px]" style="color:var(--vc-muted);">Required to link your account to an active course.</p>
+                        @error('institute_code')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
+                    </div>
+
                     <button type="submit" class="btn-primary w-full justify-center py-3.5 text-sm mt-2 group">
                         <svg class="w-4 h-4 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>

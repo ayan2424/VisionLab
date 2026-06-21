@@ -47,6 +47,7 @@ class CourseController extends Controller
             'title'         => $validated['title'],
             'description'   => $validated['description'] ?? null,
             'is_active'     => $validated['is_active'] ?? true,
+            'allow_marketplace' => $validated['allow_marketplace'] ?? true,
             'cover_image'   => $coverPath,
         ]);
 
@@ -125,5 +126,19 @@ class CourseController extends Controller
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Course deleted.');
+    }
+
+    public function roster(string $slug)
+    {
+        $course = Course::where('slug', $slug)->firstOrFail();
+        $this->authorize('update', $course);
+
+        $enrollments = $course->enrollments()->with(['student', 'student.workspaces' => function($q) use ($course) {
+            $q->where('course_id', $course->id)->latest();
+        }])->paginate(20);
+
+        $extensions = \App\Models\Extension::all();
+
+        return view('courses.roster', compact('course', 'enrollments', 'extensions'));
     }
 }

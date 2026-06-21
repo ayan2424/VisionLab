@@ -2,18 +2,18 @@
   <style>
     :root {
       --bg-color:      #0E0E0E;
-      --color-indigo:       #4F46E5;
-      --color-indigo-light: #818CF8;
-      --color-rose:         #F0426D;
-      --color-rose-light:   #FB7C97;
-      --color-cyan:         #17C3D6;
-      --color-cyan-light:   #6EE7E0;
-      --color-amber:        #FFB400;
-      --color-amber-light:  #FFD45E;
-      --color-emerald:      #00BFA6;
-      --color-emerald-light:#5EEAC9;
-      --color-violet:       #9B5DE5;
-      --color-violet-light: #C7A6F5;
+      --color-indigo:       #8B5CF6; /* Violet */
+      --color-indigo-light: #A78BFA;
+      --color-rose:         #EC4899; /* Pink */
+      --color-rose-light:   #F472B6;
+      --color-cyan:         #3B82F6; /* Blue */
+      --color-cyan-light:   #60A5FA;
+      --color-amber:        #D946EF; /* Fuchsia */
+      --color-amber-light:  #E879F9;
+      --color-emerald:      #06B6D4; /* Cyan */
+      --color-emerald-light:#22D3EE;
+      --color-violet:       #6366F1; /* Indigo */
+      --color-violet-light: #818CF8;
     }
     .bg      { fill: none; } /* transparent by default — works on any header/footer background.
                                  For a solid backdrop (app icon/favicon), set this to var(--bg-color). */

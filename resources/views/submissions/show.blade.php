@@ -123,7 +123,9 @@
                         </div>
                     </div>
                     @if($submission->code_snapshot)
-                    <div id="monaco-viewer" style="height:500px;"></div>
+                    <div class="overflow-auto bg-black p-4" style="height:500px;">
+                        <pre><code id="code-viewer" class="language-{{ $assignment->starter_language }} text-sm font-mono text-gray-300"></code></pre>
+                    </div>
                     @else
                     <div class="flex items-center justify-center" style="height:250px;">
                         <div class="text-center text-sm font-semibold" style="color:var(--vc-muted);">
@@ -346,7 +348,8 @@
 
 {{-- Load scripts --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
 const SUBMISSION = {
     code:     @json($submission->code_snapshot ?? ''),
@@ -354,59 +357,18 @@ const SUBMISSION = {
     maxPts:   {{ $assignment->max_points }},
 };
 
-// ── Monaco read-only viewer ──────────────────────────────────────
-require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
-
 @if($submission->code_snapshot)
-require(['vs/editor/editor.main'], function() {
-    monaco.editor.defineTheme('vc-theme', {
-        base: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs',
-        inherit: true,
-        rules: [
-            { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
-            { token: 'keyword', foreground: 'F97316', fontStyle: 'bold'  },
-            { token: 'string',  foreground: '10B981' },
-            { token: 'number',  foreground: 'F59E0B' },
-        ],
-        colors: {
-            'editor.background':             '#00000000', // transparent to inherit
-            'editorLineNumber.foreground':   '#9CA3AF',
-            'editorCursor.foreground':       '#8b5cf6',
-        }
-    });
-
-    const langMap = { python:'python', javascript:'javascript', typescript:'typescript', php:'php', java:'java', c:'c', cpp:'cpp', rust:'rust', go:'go', ruby:'ruby', bash:'shell' };
-
-    const editor = monaco.editor.create(document.getElementById('monaco-viewer'), {
-        value:          SUBMISSION.code,
-        language:       langMap[SUBMISSION.language] || 'python',
-        theme:          'vc-theme',
-        readOnly:       true,
-        fontSize:       14,
-        fontFamily:     "'JetBrains Mono', Consolas, monospace",
-        fontLigatures:  true,
-        lineNumbers:    'on',
-        minimap:        { enabled: false },
-        scrollBeyondLastLine: false,
-        automaticLayout: true,
-        renderWhitespace:'none',
-        domReadOnly:    true,
-    });
-
-    // Handle theme toggle inside Monaco
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((m) => {
-            if (m.attributeName === 'class') {
-                const isDark = document.documentElement.classList.contains('dark');
-                monaco.editor.setTheme(isDark ? 'vc-theme' : 'vs');
-            }
-        });
-    });
-    observer.observe(document.documentElement, { attributes: true });
-
-    // Line count
+document.addEventListener('DOMContentLoaded', () => {
+    const viewer = document.getElementById('code-viewer');
+    if (viewer) {
+        viewer.textContent = SUBMISSION.code;
+        hljs.highlightElement(viewer);
+    }
     const lines = SUBMISSION.code.split('\n').length;
-    document.getElementById('line-count').textContent = lines + ' lines';
+    const lineCountEl = document.getElementById('line-count');
+    if (lineCountEl) {
+        lineCountEl.textContent = lines + ' lines';
+    }
 });
 @endif
 

@@ -1,5 +1,5 @@
-<header class="sticky top-0 z-30 flex items-center justify-between h-16 px-6 transition-colors duration-300 border-b backdrop-blur-md"
-        style="background:var(--vc-nav); border-color:var(--vc-border);">
+<header class="sticky top-0 z-30 flex items-center justify-between h-20 px-6 transition-colors duration-300 border-b backdrop-blur-xl"
+        style="background:color-mix(in srgb, var(--vc-nav) 70%, transparent); border-color:var(--vc-border);">
     
     <!-- Mobile Hamburger & Breadcrumbs/Title -->
     <div class="flex items-center gap-4">

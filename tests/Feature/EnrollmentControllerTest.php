@@ -28,11 +28,11 @@ class EnrollmentControllerTest extends TestCase
         $student    = User::factory()->student()->create();
         $course     = Course::factory()->create([
             'instructor_id'   => $instructor->id,
-            'enrollment_code' => 'ABC123',
+            'enrollment_code' => 'ABC12345',
         ]);
 
         $response = $this->actingAs($student)->post(route('enrollments.join.post'), [
-            'enrollment_code' => 'abc123',
+            'enrollment_code' => 'abc12345',
         ]);
 
         $response->assertRedirect();
@@ -48,7 +48,7 @@ class EnrollmentControllerTest extends TestCase
         $student = User::factory()->student()->create();
 
         $response = $this->actingAs($student)->post(route('enrollments.join.post'), [
-            'enrollment_code' => 'INVALID',
+            'enrollment_code' => 'INVALID8',
         ]);
 
         $response->assertSessionHasErrors();
@@ -60,17 +60,17 @@ class EnrollmentControllerTest extends TestCase
         $student    = User::factory()->student()->create();
         $course     = Course::factory()->create([
             'instructor_id'   => $instructor->id,
-            'enrollment_code' => 'DUP001',
+            'enrollment_code' => 'DUP00001',
         ]);
 
         // First enrollment
         $this->actingAs($student)->post(route('enrollments.join.post'), [
-            'enrollment_code' => 'DUP001',
+            'enrollment_code' => 'DUP00001',
         ]);
 
         // Second attempt
         $response = $this->actingAs($student)->post(route('enrollments.join.post'), [
-            'enrollment_code' => 'DUP001',
+            'enrollment_code' => 'DUP00001',
         ]);
 
         $response->assertRedirect();
@@ -85,11 +85,11 @@ class EnrollmentControllerTest extends TestCase
         $instructor = User::factory()->instructor()->create();
         $course     = Course::factory()->create([
             'instructor_id'   => $instructor->id,
-            'enrollment_code' => 'OWN001',
+            'enrollment_code' => 'OWN00001',
         ]);
 
         $response = $this->actingAs($instructor)->post(route('enrollments.join.post'), [
-            'enrollment_code' => 'OWN001',
+            'enrollment_code' => 'OWN00001',
         ]);
 
         // Should redirect with error or be handled gracefully

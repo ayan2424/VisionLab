@@ -135,7 +135,7 @@
     {{-- Left --}}
     <div style="display:flex;align-items:center;gap:12px;">
         <a href="{{ route('home') }}" style="display:flex;align-items:center;text-decoration:none;">
-            <x-logo size="h-8 w-8" textSize="text-[15px]" />
+            <x-logo size="h-8 w-8" textSize="text-[15px]" variant="orange" />
         </a>
 
         <span style="color:rgba(255,255,255,0.1);font-size:16px;margin:0 4px;">|</span>
@@ -149,6 +149,15 @@
 
     {{-- Right --}}
     <div style="display:flex;align-items:center;gap:10px;">
+        @if(isset($assignment))
+        <form method="POST" action="{{ route('submissions.submit', $assignment->id) }}" style="margin:0;">
+            @csrf
+            <button type="submit" class="pill-btn" style="background:rgba(124,58,237,0.1);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);" onclick="return confirm('Submit this assignment for grading?');">
+                <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Submit Assignment
+            </button>
+        </form>
+        @endif
         <div class="pill-btn" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;cursor:default;">
             <span id="reverb-dot" style="width:6px;height:6px;border-radius:50%;background:#64748b;"></span>
             Reverb Connected

@@ -27,6 +27,25 @@ class SubmissionController extends Controller
             $submission->update(['status' => 'in_progress']);
         }
 
+        // Provision a dedicated workspace for this assignment
+        $workspace = \App\Models\Workspace::firstOrCreate(
+            [
+                'student_id' => $user->id,
+                'assignment_id' => $assignment->id,
+                'course_id' => $assignment->course_id,
+            ],
+            [
+                'name' => 'assignment-' . $assignment->id . '-' . $user->id,
+                'language' => $assignment->starter_language ?? 'python',
+                'token' => \Illuminate\Support\Str::random(64),
+                'status' => 'pending',
+                'type' => 'governed', // Governed by teacher
+            ]
+        );
+
+        // We trigger the async or sync start so it's ready
+        app(\App\Services\CodeServerManager::class)->startWorkspace($workspace);
+
         return redirect()->route('submissions.ide', $assignment->id);
     }
 
@@ -80,7 +99,37 @@ class SubmissionController extends Controller
 
         $course = $assignment->course;
 
-        return view('assignments.ide', compact('assignment', 'submission', 'course', 'user'));
+        // Fetch the dedicated workspace
+        $workspace = \App\Models\Workspace::where('assignment_id', $assignment->id)
+            ->where('student_id', $user->id)
+            ->firstOrFail();
+
+        // Start workspace container
+        $serverInfo = app(\App\Services\CodeServerManager::class)->startWorkspace($workspace);
+
+        if (isset($serverInfo['port'])) {
+            $cookiePath = str_starts_with($serverInfo['url'], '/codeserver/') 
+                ? '/codeserver/' . $serverInfo['port'] 
+                : '/';
+            cookie()->queue(
+                'key',
+                $serverInfo['token'],
+                525600,
+                $cookiePath
+            );
+        }
+
+        return view('workspace', [
+            'user'            => $user,
+            'workspace'       => $workspace->fresh(),
+            'workspaceName'   => $assignment->title,
+            'roomSlug'        => 'assign-' . $assignment->id . '-' . $user->id,
+            'isCollaborative' => false,
+            'reverbConfig'    => \App\Http\Controllers\WorkspaceController::reverbConfig(),
+            'vscodeUrl'       => $serverInfo['url'],
+            'assignment'      => $assignment,
+            'submission'      => $submission,
+        ]);
     }
 
     public function show(Submission $submission)

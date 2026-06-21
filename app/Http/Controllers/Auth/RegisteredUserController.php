@@ -34,12 +34,26 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'institute_code' => ['required', 'string', 'exists:courses,enrollment_code'],
+        ], [
+            'institute_code.exists' => 'The provided Institute / Course Code is invalid.',
         ]);
+
+        $course = \App\Models\Course::where('enrollment_code', $request->institute_code)->firstOrFail();
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'student', // Force student role for new signups
+        ]);
+
+        // Auto-enroll the student in the course
+        \App\Models\Enrollment::create([
+            'course_id' => $course->id,
+            'student_id' => $user->id,
+            'status' => 'active',
+            'enrolled_at' => now(),
         ]);
 
         event(new Registered($user));

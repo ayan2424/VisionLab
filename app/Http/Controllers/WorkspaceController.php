@@ -72,7 +72,7 @@ class WorkspaceController extends Controller
             'workspaceName'   => 'My Workspace',
             'roomSlug'        => 'personal-' . $user->id,
             'isCollaborative' => false,
-            'reverbConfig'    => $this->reverbConfig(),
+            'reverbConfig'    => self::reverbConfig(),
             'vscodeUrl'       => $serverInfo['url'],
         ]);
     }
@@ -103,7 +103,7 @@ class WorkspaceController extends Controller
             'workspaceName'   => $workspace->name,
             'roomSlug'        => 'ws-' . $workspace->id,
             'isCollaborative' => $workspace->collaborators()->count() > 1,
-            'reverbConfig'    => $this->reverbConfig(),
+            'reverbConfig'    => self::reverbConfig(),
             'vscodeUrl'       => $serverInfo['url'],
         ]);
     }
@@ -293,7 +293,7 @@ class WorkspaceController extends Controller
 
     // ══════════════════════════════════════════════════════════════════════
 
-    private function reverbConfig(): array
+    public static function reverbConfig(): array
     {
         $host   = env('REVERB_HOST', 'localhost');
         $port   = (int) env('REVERB_PORT', 8080);
