@@ -106,6 +106,14 @@
         .font-serif-italic {
             font-family: "Instrument Serif", serif;
             font-style: italic;
+            -webkit-text-fill-color: transparent;
+            color: rgba(0, 0, 0, 0);
+            background-image: linear-gradient(110deg, var(--cyan) 0%, var(--violet) 25%, var(--rose) 50%, var(--indigo) 75%, var(--emerald) 100%);
+            background-size: 250% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: aurora 8s ease-in-out infinite;
+            display: inline-block;
         }
 
         /* ═══════════ TEXT EFFECTS ═══════════ */
@@ -426,12 +434,21 @@
                             <aside class="border-r border-border bg-black/30 p-4 font-mono text-[11px]">
                                 <div class="mb-3 text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Workspace</div>
                                 <ul class="space-y-1.5 list-none">
-                                    <li class="text-muted-foreground">📁 src/</li>
+                                    <li class="text-muted-foreground flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 text-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                        src/
+                                    </li>
                                     <li class="pl-4 text-cyan-light">↳ architecture.ts</li>
                                     <li class="pl-4 text-muted-foreground/70">↳ QuantumCore.tsx</li>
                                     <li class="pl-4 text-muted-foreground/70">↳ ComputeEngine.rs</li>
-                                    <li class="text-muted-foreground">📁 tests/</li>
-                                    <li class="text-muted-foreground">📄 README.md</li>
+                                    <li class="text-muted-foreground flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 text-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                        tests/
+                                    </li>
+                                    <li class="text-muted-foreground flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        README.md
+                                    </li>
                                 </ul>
                                 <div class="mt-8 text-[9px] uppercase tracking-[0.22em] text-muted-foreground">Cohort · 24 live</div>
                                 <ul class="mt-3 space-y-2 list-none">

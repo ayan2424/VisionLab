@@ -233,7 +233,10 @@
         </div>
         <div class="feature-visual">
             <div class="mock-header">
-                <span style="color:var(--rose-light);font-size:0.65rem;font-weight:700">📹 Integrated Jitsi Workspace Room</span>
+                <span style="color:var(--rose-light);font-size:0.65rem;font-weight:700" class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 inline text-rose-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    Integrated Jitsi Workspace Room
+                </span>
             </div>
             <div class="mock-body" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;height:100%">
                 <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:0.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">
@@ -280,7 +283,10 @@
         </div>
         <div class="feature-visual" style="border-color: rgba(0,191,166,0.2)">
             <div class="mock-header" style="border-bottom-color: rgba(0,191,166,0.1)">
-                <span style="color:var(--emerald);font-size:0.65rem;font-weight:700">⚙️ Security Telemetry Log</span>
+                <span style="color:var(--emerald);font-size:0.65rem;font-weight:700" class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 inline text-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Security Telemetry Log
+                </span>
             </div>
             <div class="mock-body" style="color:var(--emerald-light);font-size:0.7rem">
                 <div>[INFO] Ingesting file request: /var/workspace/src/app.py</div>

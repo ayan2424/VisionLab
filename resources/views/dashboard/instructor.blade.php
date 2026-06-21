@@ -235,7 +235,7 @@
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
             <div>
                 <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.25rem">
-                    Instructor Deck, {{ explode(' ', Auth::user()->name)[0] }} 🎓
+                    Instructor Deck, {{ explode(' ', Auth::user()->name)[0] }}
                 </h2>
                 <p style="font-size:0.8rem;color:var(--vc-text-secondary, #71717a)">
                     {{ now()->format('l, F j, Y') }} · Manage your courses and students
@@ -246,7 +246,7 @@
                     <span style="color:#00e5ff">+</span> New Course
                 </a>
                 <a href="#" class="action-btn">
-                    <span>📋</span> Grade Queue
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> Grade Queue
                 </a>
             </div>
         </div>
@@ -255,22 +255,30 @@
     <!-- Primary Stats -->
     <div class="stat-row fade-in" style="animation-delay:0.1s">
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(168,85,247,0.12)">📘</div>
+            <div class="stat-icon" style="background:rgba(168,85,247,0.12);color:#a855f7">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+            </div>
             <div class="stat-value">{{ $courses->count() }}</div>
             <div class="stat-label">My Courses</div>
         </div>
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(0,229,255,0.12)">👥</div>
+            <div class="stat-icon" style="background:rgba(0,229,255,0.12);color:#00e5ff">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </div>
             <div class="stat-value">{{ $totalStudents ?? 0 }}</div>
             <div class="stat-label">Total Students</div>
         </div>
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(245,158,11,0.12)">📝</div>
+            <div class="stat-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            </div>
             <div class="stat-value" style="{{ ($pendingGrading ?? 0) > 0 ? 'color:#fbbf24' : '' }}">{{ $pendingGrading ?? 0 }}</div>
             <div class="stat-label">Pending Grading</div>
         </div>
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(16,185,129,0.12)">📊</div>
+            <div class="stat-icon" style="background:rgba(16,185,129,0.12);color:#10b981">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            </div>
             <div class="stat-value">{{ $avgGrade ?? '—' }}%</div>
             <div class="stat-label">Avg Class Grade</div>
         </div>
@@ -331,7 +339,9 @@
                         </div>
                     @else
                         <div class="empty-state">
-                            <div class="empty-icon">📘</div>
+                            <div class="empty-icon text-purple-500/40">
+                                <svg class="w-8 h-8 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            </div>
                             <p style="font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">No courses yet</p>
                             <p style="font-size:0.75rem;margin-bottom:1rem">Create your first course</p>
                             <a href="{{ route('courses.create') }}" class="action-btn" style="display:inline-flex">Create Course</a>
@@ -371,7 +381,9 @@
                         </div>
                     @else
                         <div class="empty-state" style="padding:1.5rem">
-                            <div class="empty-icon">📬</div>
+                            <div class="empty-icon text-blue-500/40">
+                                <svg class="w-8 h-8 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            </div>
                             <p style="font-size:0.75rem">No submissions yet</p>
                         </div>
                     @endif
@@ -385,7 +397,9 @@
             @if(($pendingGrading ?? 0) > 0)
             <div class="content-card alert-card">
                 <div class="card-body" style="display:flex;gap:0.75rem;align-items:flex-start">
-                    <span style="font-size:1.25rem">⚠️</span>
+                    <div style="font-size:1.25rem;color:#fbbf24;margin-top:2px;">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    </div>
                     <div>
                         <div style="font-size:0.8rem;font-weight:700;color:#fbbf24;margin-bottom:0.25rem">Action Required</div>
                         <p style="font-size:0.7rem;color:var(--vc-text-secondary, #71717a);line-height:1.5;margin-bottom:0.75rem">
@@ -412,11 +426,15 @@
                         Deploy New Course
                     </a>
                     <a href="{{ route('grading.queue') }}" class="action-btn">
-                        <div class="action-icon" style="background:rgba(0,229,255,0.1);color:#00e5ff">📋</div>
+                        <div class="action-icon" style="background:rgba(0,229,255,0.1);color:#00e5ff">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                        </div>
                         Review Submissions
                     </a>
                     <a href="{{ route('workspace.index') }}" class="action-btn">
-                        <div class="action-icon" style="background:rgba(16,185,129,0.1);color:#10b981">⚡</div>
+                        <div class="action-icon" style="background:rgba(16,185,129,0.1);color:#10b981">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
                         Launch Master IDE
                     </a>
                 </div>

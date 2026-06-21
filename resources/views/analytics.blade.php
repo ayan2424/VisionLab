@@ -134,10 +134,10 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 @php
                 $kpis = [
-                    ['label'=>'Total Users',      'value'=>$totalUsers,      'suffix'=>'',  'icon'=>'👥', 'color'=>'#7c3aed', 'sub'=>"{$studentCount} students · {$instructorCount} instructors",  'delta'=>'+12%'],
-                    ['label'=>'Code Executions',  'value'=>$executions,      'suffix'=>'',  'icon'=>'▶', 'color'=>'#16a34a', 'sub'=>'last 30 days via Piston API',                                  'delta'=>'+34%'],
-                    ['label'=>'AI Interactions',  'value'=>$aiInteractions,  'suffix'=>'',  'icon'=>'🤖', 'color'=>'#a78bfa', 'sub'=>'CHAT · PLAN · AGENT modes',                                   'delta'=>'+56%'],
-                    ['label'=>'Avg Exec Time',    'value'=>$avgExecTime,     'suffix'=>'s', 'icon'=>'⚡', 'color'=>'#f59e0b', 'sub'=>'across all languages',                                        'delta'=>'-18%'],
+                    ['label'=>'Total Users',      'value'=>$totalUsers,      'suffix'=>'',  'icon'=>'<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>', 'color'=>'#7c3aed', 'sub'=>"{$studentCount} students · {$instructorCount} instructors",  'delta'=>'+12%'],
+                    ['label'=>'Code Executions',  'value'=>$executions,      'suffix'=>'',  'icon'=>'<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>', 'color'=>'#16a34a', 'sub'=>'last 30 days via Piston API',                                  'delta'=>'+34%'],
+                    ['label'=>'AI Interactions',  'value'=>$aiInteractions,  'suffix'=>'',  'icon'=>'<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>', 'color'=>'#a78bfa', 'sub'=>'CHAT · PLAN · AGENT modes',                                   'delta'=>'+56%'],
+                    ['label'=>'Avg Exec Time',    'value'=>$avgExecTime,     'suffix'=>'s', 'icon'=>'<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>', 'color'=>'#f59e0b', 'sub'=>'across all languages',                                        'delta'=>'-18%'],
                 ];
                 @endphp
                 @foreach($kpis as $k)
@@ -145,7 +145,7 @@
                     <div class="flex items-start justify-between mb-3">
                         <div class="w-9 h-9 rounded-xl flex items-center justify-center text-base"
                              style="background:{{ $k['color'] }}18;border:1px solid {{ $k['color'] }}33;">
-                            {{ $k['icon'] }}
+                            {!! $k['icon'] !!}
                         </div>
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
                               style="background:{{ str_starts_with($k['delta'],'+') ? 'rgba(74,222,128,.1)' : 'rgba(248,113,113,.1)' }};color:{{ str_starts_with($k['delta'],'+') ? '#4ade80' : '#f87171' }};font-family:sans-serif;">

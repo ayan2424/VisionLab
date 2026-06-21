@@ -93,6 +93,14 @@
         .font-serif-italic {
             font-family: "Instrument Serif", serif;
             font-style: italic;
+            -webkit-text-fill-color: transparent;
+            color: rgba(0, 0, 0, 0);
+            background-image: linear-gradient(110deg, var(--cyan) 0%, var(--violet) 25%, var(--rose) 50%, var(--indigo) 75%, var(--emerald) 100%);
+            background-size: 250% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: aurora 8s ease-in-out infinite;
+            display: inline-block;
         }
 
         /* Text Effects */

@@ -235,7 +235,7 @@
             <div>
                 <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem">
                     <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">
-                        Welcome back, {{ explode(' ', Auth::user()->name)[0] }} 👋
+                        Welcome back, {{ explode(' ', Auth::user()->name)[0] }}
                     </h2>
                     @if(Auth::user()->student_id)
                     <span style="background:rgba(255,255,255,0.1);color:var(--vc-text-secondary);padding:0.15rem 0.6rem;border-radius:1rem;font-size:0.7rem;font-family:monospace;font-weight:700;border:1px solid rgba(255,255,255,0.05)" title="Your Student ID">
@@ -249,10 +249,10 @@
             </div>
             <div style="display:flex;gap:0.5rem">
                 <a href="{{ route('workspace.index') }}" class="action-btn" style="border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">
-                    <span style="color:#00e5ff">⚡</span> Launch IDE
+                    <svg class="w-4 h-4" style="color:#00e5ff" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> Launch IDE
                 </a>
                 <a href="{{ route('courses.index') }}" class="action-btn">
-                    <span>📚</span> Browse Courses
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg> Browse Courses
                 </a>
             </div>
         </div>
@@ -261,27 +261,37 @@
     <!-- Stats Row -->
     <div class="stat-row fade-in" style="animation-delay:0.1s">
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(168,85,247,0.12)">📘</div>
+            <div class="stat-icon" style="background:rgba(168,85,247,0.12);color:#a855f7">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+            </div>
             <div class="stat-value" style="color:white">{{ $courses->count() }}</div>
             <div class="stat-label">Active Courses</div>
         </div>
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(0,229,255,0.12)">📝</div>
+            <div class="stat-icon" style="background:rgba(0,229,255,0.12);color:#00e5ff">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            </div>
             <div class="stat-value" style="color:white">{{ $pendingSubmissions ?? 0 }}</div>
             <div class="stat-label">Pending</div>
         </div>
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(245,158,11,0.12)">⏰</div>
+            <div class="stat-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
             <div class="stat-value" style="color:white">{{ isset($upcomingAssignments) ? $upcomingAssignments->count() : 0 }}</div>
             <div class="stat-label">Due Soon</div>
         </div>
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(236,72,153,0.12)">💬</div>
+            <div class="stat-icon" style="background:rgba(236,72,153,0.12);color:#ec4899">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+            </div>
             <div class="stat-value" style="color:white">{{ $unreadAnnouncementCount ?? 0 }}</div>
             <div class="stat-label">Unread</div>
         </div>
         <div class="stat-card-custom">
-            <div class="stat-icon" style="background:rgba(16,185,129,0.12)">🔥</div>
+            <div class="stat-icon" style="background:rgba(16,185,129,0.12);color:#10b981">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /></svg>
+            </div>
             <div class="stat-value" style="background:linear-gradient(to right,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ $streak ?? 0 }}</div>
             <div class="stat-label">Day Streak</div>
         </div>
@@ -322,7 +332,9 @@
                             </div>
                         @else
                             <div class="empty-state">
-                                <div class="empty-icon">📚</div>
+                                <div class="empty-icon text-purple-500/40">
+                                    <svg class="w-8 h-8 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                                </div>
                                 <p style="font-size:0.85rem;font-weight:600;margin-bottom:0.25rem">No courses yet</p>
                                 <p style="font-size:0.75rem;margin-bottom:1rem">Join a course to get started</p>
                                 <a href="{{ route('courses.index') }}" class="action-btn" style="display:inline-flex">Join a Course</a>
@@ -357,7 +369,9 @@
                                 </div>
                             @else
                                 <div class="empty-state" style="padding:1.5rem">
-                                    <div class="empty-icon">📢</div>
+                                    <div class="empty-icon text-cyan-500/40">
+                                        <svg class="w-8 h-8 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+                                    </div>
                                     <p style="font-size:0.75rem">No announcements</p>
                                 </div>
                             @endif
@@ -394,7 +408,9 @@
                                 </div>
                             @else
                                 <div class="empty-state" style="padding:1.5rem">
-                                    <div class="empty-icon">📊</div>
+                                    <div class="empty-icon text-emerald-500/40">
+                                        <svg class="w-8 h-8 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                                    </div>
                                     <p style="font-size:0.75rem">No grades yet</p>
                                 </div>
                             @endif
@@ -432,7 +448,9 @@
                             </div>
                         @else
                             <div class="empty-state" style="padding:1.5rem">
-                                <div class="empty-icon">✅</div>
+                                <div class="empty-icon text-amber-500/40">
+                                    <svg class="w-8 h-8 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
                                 <p style="font-size:0.75rem">All caught up!</p>
                             </div>
                         @endif
@@ -448,11 +466,15 @@
                     </div>
                     <div class="card-body" style="display:flex;flex-direction:column;gap:0.5rem">
                         <a href="{{ route('workspace.index') }}" class="action-btn">
-                            <div class="action-icon" style="background:rgba(0,229,255,0.1);color:#00e5ff">⚡</div>
+                            <div class="action-icon" style="background:rgba(0,229,255,0.1);color:#00e5ff">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            </div>
                             Workspace IDE
                         </a>
                         <a href="{{ route('courses.index') }}" class="action-btn">
-                            <div class="action-icon" style="background:rgba(168,85,247,0.1);color:#a855f7">📘</div>
+                            <div class="action-icon" style="background:rgba(168,85,247,0.1);color:#a855f7">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            </div>
                             My Courses
                         </a>
                     </div>
@@ -461,7 +483,9 @@
                 <!-- AI Tip -->
                 <div class="content-card" style="border-color:rgba(168,85,247,0.15);background:rgba(168,85,247,0.02)">
                     <div class="card-body" style="display:flex;gap:0.75rem;align-items:flex-start">
-                        <span style="font-size:1.25rem">🤖</span>
+                        <div style="font-size:1.25rem;color:#a855f7;margin-top:2px;">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </div>
                         <div>
                             <div style="font-size:0.8rem;font-weight:700;color:white;margin-bottom:0.25rem">AI Agent Tip</div>
                             <p style="font-size:0.7rem;color:var(--vc-text-secondary, #71717a);line-height:1.5">
