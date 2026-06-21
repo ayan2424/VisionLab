@@ -748,7 +748,7 @@
 
                         <!-- Spline Viewer embedding the active robot scene -->
                         <div class="absolute inset-0">
-                            <spline-viewer url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" style="width: 100%; height: 100%; display: block;"></spline-viewer>
+                            <spline-viewer url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style="width: 100%; height: 100%; display: block;"></spline-viewer>
                             <!-- Custom Modern Loader for 3D Robot -->
                             <div id="splineLoader" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#050507] transition-opacity duration-500">
                                 <div class="relative flex items-center justify-center">
