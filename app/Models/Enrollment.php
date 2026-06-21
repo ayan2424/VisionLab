@@ -10,10 +10,11 @@ class Enrollment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['course_id', 'student_id', 'status', 'enrolled_at'];
+    protected $fillable = ['course_id', 'student_id', 'status', 'enrolled_at', 'batch_timing', 'start_date'];
 
     protected $casts = [
         'enrolled_at' => 'datetime',
+        'start_date' => 'date',
     ];
 
     public function course(): BelongsTo

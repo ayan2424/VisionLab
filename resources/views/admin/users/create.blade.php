@@ -48,11 +48,41 @@
         <div class="bg-violet-500/10 border border-violet-500/20 rounded-xl p-4 mt-2 mb-2">
             <h4 class="text-sm font-bold text-violet-400 mb-1">Role Selection</h4>
             <p class="text-xs text-slate-400 mb-3">If you select "Student", the system will automatically generate and assign a unique Student ID to this account.</p>
-            <select name="role" class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
+            <select id="role-select" name="role" class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
                 <option value="student" {{ old('role', 'student') === 'student' ? 'selected' : '' }}>Student</option>
                 <option value="instructor" {{ old('role') === 'instructor' ? 'selected' : '' }}>Instructor</option>
                 <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
+        </div>
+
+        <div id="course-assignment-panel" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 mb-2 transition-all duration-300 {{ old('role', 'student') === 'student' ? 'block' : 'hidden' }}">
+            <h4 class="text-sm font-bold text-cyan-400 mb-1">Instant Course Enrollment (Optional)</h4>
+            <p class="text-xs text-slate-400 mb-4">Enroll the student in a course immediately and set their batch timing and start date.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Select Course</label>
+                    <select name="course_id" class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all">
+                        <option value="">-- No Course Selected --</option>
+                        @foreach($courses as $course)
+                            <option value="{{ $course->id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>{{ $course->title }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Batch Timing</label>
+                        <input type="text" name="batch_timing" value="{{ old('batch_timing') }}" placeholder="e.g. 10:00 AM - 12:00 PM"
+                               class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Start Date</label>
+                        <input type="date" name="start_date" value="{{ old('start_date') }}"
+                               class="w-full px-3 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-cyan-500/60 transition-all">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div>
@@ -69,4 +99,21 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.getElementById('role-select');
+        const coursePanel = document.getElementById('course-assignment-panel');
+
+        roleSelect.addEventListener('change', function() {
+            if (this.value === 'student') {
+                coursePanel.classList.remove('hidden');
+                coursePanel.classList.add('block');
+            } else {
+                coursePanel.classList.remove('block');
+                coursePanel.classList.add('hidden');
+            }
+        });
+    });
+</script>
 @endsection

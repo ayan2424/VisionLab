@@ -34,7 +34,8 @@ class AdminUserController extends Controller
 
     public function create()
     {
-        return view('admin.users.create');
+        $courses = \App\Models\Course::where('is_active', true)->get();
+        return view('admin.users.create', compact('courses'));
     }
 
     public function store(Request $request)
@@ -45,6 +46,9 @@ class AdminUserController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role'     => 'required|in:admin,instructor,student',
             'status'   => 'required|in:active,suspended',
+            'course_id'    => 'nullable|exists:courses,id',
+            'batch_timing' => 'nullable|string|max:100',
+            'start_date'   => 'nullable|date',
         ]);
 
         $studentId = null;
@@ -62,6 +66,17 @@ class AdminUserController extends Controller
             'status'     => $validated['status'],
             'student_id' => $studentId,
         ]);
+
+        if ($validated['role'] === 'student' && !empty($validated['course_id'])) {
+            \App\Models\Enrollment::create([
+                'course_id'    => $validated['course_id'],
+                'student_id'   => $user->id,
+                'status'       => 'active',
+                'enrolled_at'  => now(),
+                'batch_timing' => $validated['batch_timing'] ?? null,
+                'start_date'   => $validated['start_date'] ?? null,
+            ]);
+        }
 
         return redirect()->route('admin.users.index')
                          ->with('success', "User {$user->name} created successfully." . ($studentId ? " Assigned ID: {$studentId}" : ""));
