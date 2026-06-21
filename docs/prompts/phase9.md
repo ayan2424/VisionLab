@@ -6,7 +6,7 @@
       VisionLab should prove learning progress, responsible AI usage, collaboration quality, and engagement through real events captured by the platform.
     </PRODUCT_CONTEXT>
     <PHASE_GOAL>
-      Implement learning analytics, instructor insights, VisionGuard human-versus-AI contribution tracking, activity heatmaps, streaks, badges, and student project deployment using real platform events and governed provider integrations.
+      Implement learning analytics, instructor insights, Analytics Dashboard human-versus-AI contribution tracking, activity heatmaps, streaks, badges, and student project deployment using real platform events and governed provider integrations.
     </PHASE_GOAL>
     <DEPENDENCIES>
       Requires classroom submissions, workspace file events, collaboration activity, AI action logs, workspace storage, notification infrastructure readiness, and admin governance data from prior phases.
@@ -16,7 +16,7 @@
       <REQUIREMENT>Build admin analytics dashboards with daily active users, course activity, submissions over time, active workspaces, AI mode usage, patch approval rates, extension usage, and operational health indicators.</REQUIREMENT>
       <REQUIREMENT>Build instructor analytics for course engagement, assignment completion, pending grading, late submissions, collaboration participation, and AI assistance patterns.</REQUIREMENT>
       <REQUIREMENT>Build student analytics for personal activity, course progress, upcoming work, streaks, badges, and contribution heatmaps.</REQUIREMENT>
-      <REQUIREMENT>Implement VisionGuard forensics by classifying changes as human-authored, AI-proposed, AI-approved, pasted, or imported where the data can be reliably captured.</REQUIREMENT>
+      <REQUIREMENT>Implement Analytics Dashboard by classifying changes as human-authored, AI-proposed, AI-approved, pasted, or imported where the data can be reliably captured.</REQUIREMENT>
       <REQUIREMENT>Update the collaboration or workspace extension to report document change source metadata without collecting sensitive unnecessary content.</REQUIREMENT>
       <REQUIREMENT>Display submission forensics in grading views with transparent percentages, raw event counts, confidence notes, and links to relevant audit logs.</REQUIREMENT>
       <REQUIREMENT>Implement gamification with streaks, contribution graphs, badges, badge award rules, and student-facing explanations tied to real activity.</REQUIREMENT>

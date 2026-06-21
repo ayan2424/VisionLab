@@ -49,7 +49,7 @@ VisionLab eliminates the operational fragmentation of running separate tools for
 | Zoom / Microsoft Teams | Jitsi-powered video sessions embedded in workspaces | In-IDE video with JWT authentication and attendance tracking |
 | GitHub Copilot / Cursor AI | Governed VisionLab AI Agent with patch approval | Human-in-the-loop: AI proposes, human approves, every action audited |
 | Local IDE Setup | Authenticated code-server browser workspaces | Institutional policy applied at container level, no local config friction |
-| Disconnected analytics | VisionGuard forensics and activity analytics | AI contribution attribution with confidence display |
+| Disconnected analytics | Analytics Dashboard and activity analytics | AI contribution attribution with confidence display |
 
 ---
 
@@ -121,7 +121,7 @@ VisionLab eliminates the operational fragmentation of running separate tools for
 | G-05 | Responsible AI assistance | AI chat, plan, patch, approve, rollback flow works; all file mutations require approval | Phase 6 |
 | G-06 | Live teaching sessions | Video rooms are authorized, tokenized, and embedded in workspace experience | Phase 7 |
 | G-07 | Admin governance | Users, quotas, extensions, workspaces, audit logs available from real admin screens | Phase 8 |
-| G-08 | Learning analytics | Analytics, VisionGuard, streaks, badges use real events, not fake data | Phase 9 |
+| G-08 | Learning analytics | Analytics, Analytics Dashboard, streaks, badges use real events, not fake data | Phase 9 |
 | G-09 | Student deployment | Eligible projects deploy through governed async flow with status history | Phase 9 |
 | G-10 | PWA installation | Manifest valid, offline fallback honest, push notifications functional | Phase 10 |
 | G-11 | Production maturity | CI/CD, health checks, backups, runbooks, security matrix in place | Phase 12 |
@@ -154,7 +154,7 @@ VisionLab eliminates the operational fragmentation of running separate tools for
 | EP-06 | AI Agent | SSE streaming backend, 3 modes, 4 tools, safety filters, token budgets, cost tracking, OpenAI proxy, execute-plan bridge, patch reviewer extension, memory file, artifacts | P0 |
 | EP-07 | Video Sessions | Jitsi provider abstraction, JWT tokens, room lifecycle, attendance tracking, VideoPanel in extension, meeting notes generation | P1 |
 | EP-08 | Admin Operations | Admin shell, live dashboard, user management (GDPR export, impersonation), workspace oversight, extension CRUD, quota management, audit log viewer, feature flags, system config, maintenance mode, webhooks | P0 |
-| EP-09 | Analytics & Growth | Event taxonomy (20+ types), 7 Chart.js dashboards, VisionGuard keystroke forensics, 365-day heatmap, streaks, 10 badges | P1 |
+| EP-09 | Analytics & Growth | Event taxonomy (20+ types), 7 Chart.js dashboards, Analytics Dashboard activity analytics, 365-day heatmap, streaks, 10 badges | P1 |
 | EP-10 | Student Deployment | Provider abstraction (Vercel/Railway), queued deployment job, package exclusions, real-time status, deployment history dashboard | P1 |
 | EP-11 | PWA & Notifications | Workbox 7 manifest + icons, 5-strategy service worker, install prompt + update banner, VAPID push (3 notification classes), Background Sync | P1 |
 | EP-12 | Production Readiness | docker-compose.prod.yml (8 services), Nginx TLS 1.3, GitHub Actions CI/CD (OIDC, 3-stage), health endpoint, structured logging, monitoring, RUNBOOK.md, security verification script | P0 |
@@ -248,12 +248,12 @@ Authorized users start and join workspace-linked video sessions.
 - VideoCallStarted event broadcasts to all workspace presence channel members
 - Provider misconfiguration produces a clear failure state
 
-### PRD-009: Analytics, VisionGuard & Gamification
+### PRD-009: Analytics, Analytics Dashboard & Gamification
 Platform analytics use real events and respect role-based visibility.
 
 **Acceptance:**
 - All analytics dashboards are role-restricted (tested by negative access tests)
-- VisionGuard shows human and AI attribution percentages with confidence indicator
+- Analytics Dashboard shows human and AI attribution percentages with confidence indicator
 - Contribution heatmap uses real analytics_events data
 - Streaks are calculated from real events by the daily scheduled command
 - All 10 badges derive from real platform triggers, not synthetic data
@@ -302,7 +302,7 @@ The product includes complete production infrastructure and operational evidence
 | Collaboration | Reverb channels, presence, cursor, document sync, chat, reconnect | Color-coded cursors, collaboration API endpoints | Operational transform for conflict resolution |
 | Video | Room lifecycle, JWT tokens, collaborator join, instructor end | Attendance tracking, meeting notes AI generation | Recording capability |
 | Admin | User management, workspace oversight, extension CRUD, quota management | Audit log viewer, feature flags, system config, maintenance mode | Role permission matrix editor |
-| Analytics | Event taxonomy, role-restricted dashboards | VisionGuard forensics, heatmap, streaks, badges | Custom report builder |
+| Analytics | Event taxonomy, role-restricted dashboards | Analytics Dashboard, heatmap, streaks, badges | Custom report builder |
 | Deployment | Provider abstraction, packaging, status polling | Real-time deployment status via Reverb | Additional providers (Render, Fly.io) |
 | PWA | Manifest, service worker, offline fallback | Install prompt, push notifications, Background Sync | Share Target API, Periodic Background Sync |
 | Production | Docker Compose, Nginx TLS, GitHub Actions CI/CD, health endpoint | Structured logging, monitoring alerts, runbooks | Kubernetes orchestration |
@@ -314,7 +314,7 @@ The product includes complete production infrastructure and operational evidence
 | Priority | Scope |
 |---|---|
 | P0 — Blocking | Auth, RBAC, classroom workflows, workspace IDE with file sandbox, extension governance with VisionLab Agent build, AI patch workflow, admin operations, production health, CI/CD |
-| P1 — High Value | Collaboration, VisionGuard analytics, video sessions, notification system, student deployment, PWA, performance hardening, full test suite |
+| P1 — High Value | Collaboration, Analytics Dashboard analytics, video sessions, notification system, student deployment, PWA, performance hardening, full test suite |
 | P2 — Enhancement | Advanced gamification filters, additional deployment providers, multi-provider AI, deeper LMS integrations |
 
 ---

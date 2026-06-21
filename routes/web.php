@@ -110,6 +110,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/submissions/{submission}/grade',         [SubmissionController::class, 'grade'])->name('submissions.grade');
 
     // ── Announcements ──────────────────────────────────────────────────
+    Route::get('/announcements', [\App\Http\Controllers\GlobalAnnouncementController::class, 'index'])->name('announcements.index');
+    Route::get('/announcements/create', [\App\Http\Controllers\GlobalAnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('/announcements', [\App\Http\Controllers\GlobalAnnouncementController::class, 'store'])->name('announcements.store_global');
+    Route::delete('/announcements/global/{announcement}', [\App\Http\Controllers\GlobalAnnouncementController::class, 'destroy'])->name('announcements.destroy_global');
     Route::post('/courses/{course:slug}/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
     Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
     Route::post('/announcements/{announcement}/read', [\App\Http\Controllers\AnnouncementReadController::class, 'markAsRead'])->name('announcements.read');

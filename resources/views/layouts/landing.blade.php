@@ -26,12 +26,7 @@
     </script>
 
     {{-- Force Dark Mode Temporarily --}}
-    <script>
-        (function() {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('vc-theme', 'dark');
-        })();
-    </script>
+    
 
     <!-- Design System Styles -->
     <style>

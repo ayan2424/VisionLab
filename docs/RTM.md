@@ -110,7 +110,7 @@ Coverage Rules:
 | BR-006 | PRD-005 | FR-EXT-009 | License and Provenance | 4 | TC-EXT-005 | Must | Planned |
 | BR-006 | PRD-005 | FR-EXT-010 | VisionLab Fork Independence | 4 | TC-EXT-008 | Must | Planned |
 | BR-006 | PRD-005 | FR-EXT-011 | Strategy B Restriction | 4 | TC-EXT-009 | Must | Planned |
-| BR-007 | PRD-009 | FR-ANL-003 | VisionGuard Forensics | 9 | TC-ANL-004 | Must | Planned |
+| BR-007 | PRD-009 | FR-ANL-003 | Analytics Dashboard | 9 | TC-ANL-004 | Must | Planned |
 | BR-007 | PRD-009 | FR-ANL-004 | Instructor Grading View | 9 | TC-ANL-005 | Must | Planned |
 | BR-007 | PRD-009 | FR-ANL-001 | Analytics Events | 9 | TC-ANL-001 | Must | Planned |
 | BR-007 | PRD-009 | FR-ANL-002 | Analytics Role Restriction | 9 | TC-ANL-002, TC-ANL-003 | Must | Planned |
@@ -201,7 +201,7 @@ Coverage Rules:
 | Evaluation Scenario | BR Coverage | FR Coverage | Test ID |
 |---|---|---|---|
 | Administrator evaluates system health, users, quotas, extension policy, workspaces, audit logs, release evidence | BR-006, BR-011, BR-013 | FR-ADM-001 through FR-ADM-010, FR-OPS-001, FR-OPS-002 | TC-EVAL-001 |
-| Instructor evaluates course, assignment, announcement, gradebook, live session, VisionGuard analytics | BR-002, BR-007, BR-008 | FR-CLS-001 through FR-CLS-017, FR-VID-001, FR-ANL-003, FR-ANL-004 | TC-EVAL-002 |
+| Instructor evaluates course, assignment, announcement, gradebook, live session, Analytics Dashboard analytics | BR-002, BR-007, BR-008 | FR-CLS-001 through FR-CLS-017, FR-VID-001, FR-ANL-003, FR-ANL-004 | TC-EVAL-002 |
 | Student evaluates enrollment, workspace, file editing, AI patch, submission, feedback, deployment | BR-002, BR-003, BR-005, BR-009 | FR-CLS-002, FR-CLS-007, FR-CLS-008, FR-WSP-006, FR-AI-001, FR-DEP-001 | TC-EVAL-003 |
 | Two-user collaboration evaluation: presence, cursor, chat, reconnect, unauthorized denial | BR-004 | FR-COL-001 through FR-COL-008 | TC-EVAL-004 |
 | Reset and contingency check: accounts, seed reset, known risks, backup, fallback providers | BR-011 | FR-OPS-001 through FR-OPS-005 | TC-EVAL-005 |

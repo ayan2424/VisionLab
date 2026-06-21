@@ -151,7 +151,7 @@
         <DETAIL>Administrator analytics must include user activity, course activity, submissions, AI usage, patch approval rate, active workspaces, video usage, extension usage, failed jobs, and system health signals.</DETAIL>
         <DETAIL>Instructor analytics must include engagement by course, assignment completion, late work, grading backlog, AI assistance patterns, collaboration activity, and at-risk student indicators.</DETAIL>
         <DETAIL>Student analytics must include personal progress, activity heatmap, streak, badges, submissions, grades, AI usage transparency, and deployment history where enabled.</DETAIL>
-        <DETAIL>VisionGuard must distinguish human typing, AI-approved patches, pasted text where detectable, imported files, and system-generated starter code. It must present confidence and limitations clearly.</DETAIL>
+        <DETAIL>Analytics Dashboard must distinguish human typing, AI-approved patches, pasted text where detectable, imported files, and system-generated starter code. It must present confidence and limitations clearly.</DETAIL>
         <DETAIL>Gamification must award badges from real events and avoid encouraging insecure or low-quality behavior.</DETAIL>
         <DETAIL>Student project deployment must be an asynchronous, provider-abstracted product feature with confirmation, public exposure warning, deployment records, status polling, dashboard history, notifications, and provider failure recovery.</DETAIL>
       </PHASE_BLUEPRINT>
@@ -445,7 +445,7 @@
           <DETAIL>Define metrics and event meanings for logins, course activity, assignment starts, submissions, grading, workspace sessions, file writes, AI actions, collaboration, video, notifications, deployments, and admin actions.</DETAIL>
           <DETAIL>Build administrator, instructor, and student analytics from real events with empty states and metric definitions.</DETAIL>
         </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="9.2" name="VisionGuard Forensics">
+        <IMPLEMENTATION_STEP id="9.2" name="Analytics Dashboard">
           <DETAIL>Track human typing, AI-approved patch application, pasted or imported changes where detectable, starter code, and system-generated changes without collecting unnecessary sensitive content.</DETAIL>
           <DETAIL>Show forensics in grading with percentages, raw counts, confidence level, limitations, and audit links.</DETAIL>
         </IMPLEMENTATION_STEP>

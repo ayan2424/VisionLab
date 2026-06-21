@@ -29,8 +29,8 @@
         <div class="flex items-center gap-4">
             {{-- Theme Toggle Disabled Temporarily --}}
             <button class="hidden relative flex h-9 w-9 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.03] text-muted-foreground transition-all hover:text-foreground">
-                <svg id="theme-icon-dark" class="hidden h-4 w-4 dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                <svg id="theme-icon-light" class="block h-4 w-4 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                
+                
             </button>
             @auth
             <a href="{{ route('dashboard') }}" class="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-cyan px-6 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-background transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(23,195,214,0.8)] text-decoration-none">
@@ -48,8 +48,5 @@
 </nav>
 
 <script>
-    function toggleTheme() {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('vc-theme', isDark ? 'dark' : 'light');
-    }
+    
 </script>

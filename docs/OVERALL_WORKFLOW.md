@@ -68,7 +68,7 @@ VisionLab replaces traditional IDE sharing with a custom Laravel Reverb and TS-b
 
 - **Presence Sync**: Determines who is active in the workspace.
 - **Delta Document Sync**: Code changes are handled via CRDT or operational transformation to prevent merge conflicts.
-- **VisionGuard Telemetry**: High-frequency telemetry pushes keystroke logs vs. AI paste events into a `JSONB` column to enforce academic integrity.
+- **Analytics Dashboard**: High-frequency telemetry pushes activity logs vs. AI paste events into a `JSONB` column to enforce academic integrity.
 
 ---
 

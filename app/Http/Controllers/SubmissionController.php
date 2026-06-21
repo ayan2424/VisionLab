@@ -7,6 +7,7 @@ use App\Http\Requests\GradeSubmissionRequest;
 use App\Models\Assignment;
 use App\Models\Submission;
 use Illuminate\Http\Request;
+use App\Http\Requests\SubmitAssignmentRequest;
 use Illuminate\Support\Facades\Auth;
 
 class SubmissionController extends Controller
@@ -49,14 +50,12 @@ class SubmissionController extends Controller
         return redirect()->route('submissions.ide', $assignment->id);
     }
 
-    public function submit(Request $request, Assignment $assignment)
+    public function submit(SubmitAssignmentRequest $request, Assignment $assignment)
     {
         $user = Auth::user();
         if (!$user->isStudent()) abort(403);
 
-        $request->validate([
-            'code_snapshot' => 'nullable|string|max:50000',
-        ]);
+        $validated = $request->validated();
 
         $submission = Submission::where('assignment_id', $assignment->id)
                                 ->where('student_id', $user->id)

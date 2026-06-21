@@ -67,7 +67,7 @@ This fragmentation creates operational overhead, weak governance, invisible AI u
 | Assignment Distribution | File-based distribution loses starter context | Assignments include starter code, workspace templates, and policy-configured environments |
 | Learning Support | AI usage is invisible and uncontrolled | AI assistance is governed, auditable, mode-aware, and requires instructor-visible patch approval |
 | Live Collaboration | Help happens outside the coding context via screen share | Multiplayer cursor sync, chat, document sync, and video run inside the same workspace |
-| Submission & Assessment | Submissions lack technical context and AI transparency | Snapshots preserve workspace state; VisionGuard shows human vs AI contribution with confidence |
+| Submission & Assessment | Submissions lack technical context and AI transparency | Snapshots preserve workspace state; Analytics Dashboard shows human vs AI contribution with confidence |
 | Administration | Governance requires access to multiple disconnected systems | Admin panel controls users, quotas, extensions, workspaces, audit logs, and system health |
 | Production Evidence | Projects exist only locally | Governed one-click deployment produces live public URLs for student portfolios |
 
@@ -78,7 +78,7 @@ This fragmentation creates operational overhead, weak governance, invisible AI u
 | Stakeholder | Role | Success Need |
 |---|---|---|
 | Students | Primary users and learners | Reliable IDE, responsive assignments, collaborative tools, transparent AI, portfolio deployment |
-| Instructors | Course creators and evaluators | Full course control, real-time observation, VisionGuard forensics, video sessions, grading efficiency |
+| Instructors | Course creators and evaluators | Full course control, real-time observation, Analytics Dashboard, video sessions, grading efficiency |
 | Administrators | Governance and operations | User management, workspace quotas, extension governance, audit trails, system health visibility |
 | Engineering Team | Platform builders | Clear architecture contracts, testable requirements, traceable implementation plan |
 | Security Reviewers | Risk management | ASVS mapping, AI sandbox verification, container hardening evidence, audit coverage |
@@ -99,7 +99,7 @@ This fragmentation creates operational overhead, weak governance, invisible AI u
 | Governed AI Agent | Chat/plan/agent modes, patch approval, snapshots, rollback, audit trail, token budget |
 | Video Sessions | Jitsi provider abstraction, JWT tokens, room lifecycle, workspace integration |
 | Admin Operations | User, workspace, extension, quota, audit log, system health management |
-| Analytics & Forensics | Event taxonomy, role-restricted dashboards, VisionGuard attribution, gamification |
+| Analytics & Forensics | Event taxonomy, role-restricted dashboards, Analytics Dashboard attribution, gamification |
 | Student Deployment | Provider-abstracted async deployment with confirmation, package exclusions, status history |
 | PWA & Notifications | Manifest, Workbox service worker, VAPID push, Background Sync |
 | Production Infrastructure | Docker Compose, Nginx TLS, GitHub Actions CI/CD, health endpoints, backups, runbooks |
@@ -128,7 +128,7 @@ This fragmentation creates operational overhead, weak governance, invisible AI u
 | BR-004 | The product shall enable real-time collaborative coding through presence, cursor sync, document sync, and chat | Must | Browser + Security tests |
 | BR-005 | The product shall provide responsible AI assistance where all file mutations require explicit human approval | Must | Feature + Security tests |
 | BR-006 | The product shall allow administrators to govern extensions, marketplace access, workspace quotas, and user accounts | Must | Feature + Security tests |
-| BR-007 | The product shall surface AI contribution transparency to instructors through VisionGuard forensics | Must | Feature + Browser tests |
+| BR-007 | The product shall surface AI contribution transparency to instructors through Analytics Dashboard | Must | Feature + Browser tests |
 | BR-008 | The product shall support live video sessions in workspaces through a configurable provider abstraction | Should | Feature + Manual tests |
 | BR-009 | The product shall support student project deployment through a governed, confirmed, auditable provider flow | Should | Feature + Security tests |
 | BR-010 | The product shall support PWA installation and push notifications as a progressive enhancement layer | Should | Browser tests |

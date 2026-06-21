@@ -300,7 +300,7 @@ Each phase follows the same five-stage delivery gate without exception.
 - All 9 broadcast event classes (ShouldBroadcastNow, defined payloads)
 - CollaborationService (color assignment, collab_session management)
 - Collaboration API endpoints (chat store, chat history, presence, heartbeat, offline)
-- VisionLab-collab TypeScript extension (5 modules: RealtimeManager, DocumentSync, CursorSync, ChatPanel, VideoPanel stub)
+- VisionLab-collab TypeScript extension (5 modules: RealtimeManager, DocumentSync, DocumentSync, ChatPanel, VideoPanel stub)
 - vscode.SecretStorage token storage (read once from process.env, persist, clear reference)
 - Extension build pipeline integration (build artifact, register in extension registry)
 - IDE shell Blade presence integration (avatar stack, real-time join/leave, toast events)
@@ -435,9 +435,9 @@ Each phase follows the same five-stage delivery gate without exception.
 - Admin analytics dashboard (7 Chart.js charts with dark theme, date range filtering)
 - Instructor analytics (course-scoped views)
 - Student analytics (own data only, contribution heatmap placeholder from Phase 1)
-- VisionGuard forensics API (ForensicsController sync endpoint, accumulate deltas)
+- Analytics Dashboard API (ForensicsController sync endpoint, accumulate deltas)
 - VisionLab-collab DocumentSync forensics tagging (human vs AI source types)
-- VisionGuard display in instructor grading view (donut chart, confidence level)
+- Analytics Dashboard display in instructor grading view (donut chart, confidence level)
 - 365-day contribution heatmap (CSS Grid, 4 intensity levels from analytics_events)
 - Daily:update-streaks scheduled command (midnight UTC)
 - GamificationService with 10 badge definitions and evaluateUser method
@@ -451,7 +451,7 @@ Each phase follows the same five-stage delivery gate without exception.
 **VERIFY Checks:**
 - Analytics events recorded for login, workspace start, AI query, submission
 - Analytics role-restriction: student cannot access instructor or admin analytics endpoints
-- VisionGuard forensics sync accumulates deltas correctly
+- Analytics Dashboard sync accumulates deltas correctly
 - Badge awarded only once per user per badge_type (duplicate prevention)
 - Deployment package excludes .env, .git, vendor, node_modules (verified by ZIP inspection)
 - Provider failure stores error_summary and triggers failed status notification
@@ -473,7 +473,7 @@ Each phase follows the same five-stage delivery gate without exception.
 - 3 push notification classes (AssignmentDuePushNotification, AnnouncementPushNotification, SubmissionGradedPushNotification)
 - AssignmentDuePushNotification scheduled command (hourly)
 - AnnouncementController dispatch update (queue push on post)
-- Background Sync for offline submissions (IndexedDB queue, sync event replay)
+- Basic Caching (IndexedDB queue, sync event replay)
 
 **VERIFY Checks:**
 - Browser Application panel: manifest valid, service worker registered and activated

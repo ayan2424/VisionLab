@@ -49,9 +49,9 @@ To protect API Keys (OpenAI, Anthropic, Gemini) from being extracted by students
 
 ---
 
-## 3. VisionGuard Anti-Cheat Forensics
+## 3. Analytics Dashboard Anti-Cheat Forensics
 
-Every interaction is tracked. When the AI proposes a patch and it is applied, VisionGuard explicitly tags that block of code.
+Every interaction is tracked. When the AI proposes a patch and it is applied, Analytics Dashboard explicitly tags that block of code.
 - `keystroke_human`: Analyzed via typing speed intervals.
 - `keystroke_ai`: Registered instantly when a patch is approved.
 - **Rollback Snapshots**: Before the `AiSandbox` applies a patch, a micro-snapshot of the file is saved, enabling an instant `CTRL+Z` system architecture.

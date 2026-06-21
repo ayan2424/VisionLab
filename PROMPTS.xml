@@ -160,7 +160,7 @@
         <DETAIL>Administrator analytics must include user activity, course activity, submissions, AI usage, patch approval rate, active workspaces, video usage, extension usage, failed jobs, and system health signals.</DETAIL>
         <DETAIL>Instructor analytics must include engagement by course, assignment completion, late work, grading backlog, AI assistance patterns, collaboration activity, and at-risk student indicators.</DETAIL>
         <DETAIL>Student analytics must include personal progress, activity heatmap, streak, badges, submissions, grades, AI usage transparency, and deployment history where enabled.</DETAIL>
-        <DETAIL>VisionGuard must distinguish human typing, AI-approved patches, pasted text where detectable, imported files, and system-generated starter code. It must present confidence and limitations clearly.</DETAIL>
+        <DETAIL>Analytics Dashboard must distinguish human typing, AI-approved patches, pasted text where detectable, imported files, and system-generated starter code. It must present confidence and limitations clearly.</DETAIL>
         <DETAIL>Gamification must award badges from real events and avoid encouraging insecure or low-quality behavior.</DETAIL>
         <DETAIL>Student project deployment must be an asynchronous, provider-abstracted product feature with confirmation, public exposure warning, deployment records, status polling, dashboard history, notifications, and provider failure recovery.</DETAIL>
       </PHASE_BLUEPRINT>
@@ -471,7 +471,7 @@
           <DETAIL>Define metrics and event meanings for logins, course activity, assignment starts, submissions, grading, workspace sessions, file writes, AI actions, collaboration, video, notifications, deployments, and admin actions.</DETAIL>
           <DETAIL>Build administrator, instructor, and student analytics from real events with empty states and metric definitions.</DETAIL>
         </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="9.2" name="VisionGuard Forensics">
+        <IMPLEMENTATION_STEP id="9.2" name="Analytics Dashboard">
           <DETAIL>Track human typing, AI-approved patch application, pasted or imported changes where detectable, starter code, and system-generated changes without collecting unnecessary sensitive content.</DETAIL>
           <DETAIL>Show forensics in grading with percentages, raw counts, confidence level, limitations, and audit links.</DETAIL>
         </IMPLEMENTATION_STEP>
@@ -934,7 +934,7 @@
       VisionLab should prove learning progress, responsible AI usage, collaboration quality, and engagement through real events captured by the platform.
     </PRODUCT_CONTEXT>
     <PHASE_GOAL>
-      Implement learning analytics, instructor insights, VisionGuard human-versus-AI contribution tracking, activity heatmaps, streaks, badges, and student project deployment using real platform events and governed provider integrations.
+      Implement learning analytics, instructor insights, Analytics Dashboard human-versus-AI contribution tracking, activity heatmaps, streaks, badges, and student project deployment using real platform events and governed provider integrations.
     </PHASE_GOAL>
     <DEPENDENCIES>
       Requires classroom submissions, workspace file events, collaboration activity, AI action logs, workspace storage, notification infrastructure readiness, and admin governance data from prior phases.
@@ -944,7 +944,7 @@
       <REQUIREMENT>Build admin analytics dashboards with daily active users, course activity, submissions over time, active workspaces, AI mode usage, patch approval rates, extension usage, and operational health indicators.</REQUIREMENT>
       <REQUIREMENT>Build instructor analytics for course engagement, assignment completion, pending grading, late submissions, collaboration participation, and AI assistance patterns.</REQUIREMENT>
       <REQUIREMENT>Build student analytics for personal activity, course progress, upcoming work, streaks, badges, and contribution heatmaps.</REQUIREMENT>
-      <REQUIREMENT>Implement VisionGuard forensics by classifying changes as human-authored, AI-proposed, AI-approved, pasted, or imported where the data can be reliably captured.</REQUIREMENT>
+      <REQUIREMENT>Implement Analytics Dashboard by classifying changes as human-authored, AI-proposed, AI-approved, pasted, or imported where the data can be reliably captured.</REQUIREMENT>
       <REQUIREMENT>Update the collaboration or workspace extension to report document change source metadata without collecting sensitive unnecessary content.</REQUIREMENT>
       <REQUIREMENT>Display submission forensics in grading views with transparent percentages, raw event counts, confidence notes, and links to relevant audit logs.</REQUIREMENT>
       <REQUIREMENT>Implement gamification with streaks, contribution graphs, badges, badge award rules, and student-facing explanations tied to real activity.</REQUIREMENT>

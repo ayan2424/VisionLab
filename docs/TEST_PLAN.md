@@ -305,8 +305,8 @@
 | TC-ANL-001 | Analytics event capture | User logs in | analytics_events record created with event_type: login, user_id, ip_address, user_agent, correlation_id, created_at | Feature | Must |
 | TC-ANL-002 | Student analytics restriction | Student requests instructor analytics endpoint | HTTP 403; AnalyticsPolicy::view_instructor denies | Security | Must |
 | TC-ANL-003 | Instructor analytics restriction | Instructor requests admin platform analytics endpoint | HTTP 403; AnalyticsPolicy::view_platform denies | Security | Must |
-| TC-ANL-004 | VisionGuard forensics sync | Extension sends {humanKeystrokeDelta: 100, aiInjectedCharDelta: 20} | submission_forensics.human_keystroke_count incremented by 100; ai_injected_char_count by 20; percentages recalculated | Feature | Must |
-| TC-ANL-005 | VisionGuard instructor display | Instructor opens grading view forensics tab | Donut chart renders with correct human/AI percentages; confidence_level shown; disclaimer note present | Browser | Must |
+| TC-ANL-004 | Analytics Dashboard sync | Extension sends {humanActivityDelta: 100, aiInjectedCharDelta: 20} | submission_forensics.human_activity_count incremented by 100; ai_injected_char_count by 20; percentages recalculated | Feature | Must |
+| TC-ANL-005 | Analytics Dashboard instructor display | Instructor opens grading view forensics tab | Donut chart renders with correct human/AI percentages; confidence_level shown; disclaimer note present | Browser | Must |
 | TC-GAM-001 | Streak calculation | User has events on 5 consecutive days | daily:update-streaks command sets current_streak=5 | Feature | Should |
 | TC-GAM-002 | Streak reset | User has no event yesterday | daily:update-streaks command sets current_streak=0 (after end-of-day check) | Feature | Should |
 | TC-GAM-003 | Badge awarded — first_submission | Student submits first assignment | user_badges record created with badge_type: first_submission; BadgeEarned event broadcast | Feature | Should |
@@ -390,7 +390,7 @@
 | ID | Scenario | Expected Result | Type | Priority |
 |---|---|---|---|---|
 | TC-EVAL-001 | Administrator evaluation path | Login as admin → view health dashboard → manage users → adjust quota → view extension policy → inspect workspace → review audit log → view release evidence | All screens functional; all data from live database; no placeholder content visible | Browser | Must |
-| TC-EVAL-002 | Instructor evaluation path | Login as instructor → create course → post announcement → create assignment → grade submission → view VisionGuard forensics → start video session → view course analytics | All workflows complete end-to-end on live screens | Browser | Must |
+| TC-EVAL-002 | Instructor evaluation path | Login as instructor → create course → post announcement → create assignment → grade submission → view Analytics Dashboard → start video session → view course analytics | All workflows complete end-to-end on live screens | Browser | Must |
 | TC-EVAL-003 | Student evaluation path | Login as student → join course by code → open workspace → edit file → trigger AI patch → approve patch → submit assignment → view feedback → request deployment | All workflows complete end-to-end; submission snapshot created; deployment status updates in real-time | Browser | Must |
 | TC-EVAL-004 | Collaboration evaluation path | Two authenticated users open same workspace → verify presence → verify cursor decorations → send chat messages → disconnect one → verify reconnect behavior → verify unauthorized user denied | All collaboration features functional; denial confirmed | Browser | Must |
 | TC-EVAL-005 | Evaluation reset and contingency check | Verify: evaluation accounts present, seed data reset procedure documented and tested, known risks documented, contingency provider modes configured (AI mock, video fallback, deployment dry-run) | All verification items confirmed; contingency plan actionable without code changes | Operational | Must |

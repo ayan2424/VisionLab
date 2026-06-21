@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAssignmentRequest extends FormRequest
+class SubmitAssignmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,11 @@ class StoreAssignmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'course_id' => ['required', 'exists:courses,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'due_date' => ['required', 'date', 'after:today'],
-            'max_score' => ['required', 'integer', 'min:1', 'max:1000'],
-            'status' => ['required', 'in:draft,published,archived'],
+            'assignment_id' => ['required', 'exists:assignments,id'],
+            'workspace_snapshot_id' => ['nullable', 'string'],
+            'submission_notes' => ['nullable', 'string', 'max:5000'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'max:10240'], // Max 10MB per file
         ];
     }
 }

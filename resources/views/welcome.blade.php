@@ -28,12 +28,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     {{-- Force Dark Mode Temporarily --}}
-    <script>
-        (function() {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('vc-theme', 'dark');
-        })();
-    </script>
+    
 
     <style>
         /* ═══════════════════════════════════════════════════════════════════

@@ -1,84 +1,131 @@
 # 📊 VisionLab Enterprise Feature & Complexity Matrix
 
-This document provides a comprehensive, 100% complete breakdown of every feature, functionality, and workflow within the VisionLab platform. Use this matrix to track project completion status and communicate technical depth during reviews.
-
-## 🟢 1. Core Architecture & Infrastructure
-
-| Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
-|---|---|---|---|---|
-| **Zero-Trust API Architecture** | Har API request aur file operation ko verify karna. | Laravel Sanctum Tokens + Middleware Policies -> Request Validate -> Access Granted/Denied -> Audit Log. | High | 100% |
-| **Strict Dark Design System** | Premium, enterprise-grade dark UI/UX without generic templates. | Tailwind CSS 3 custom config -> Glassmorphism utilities -> Blade Components -> Live Browser Rendering. | Medium | 100% |
-| **Rate Limiting Engine** | Brute-force aur API spamming ko rokna. | Redis Cache -> Count user requests per minute (Auth: 10/m, AI: 30/m) -> Block IP if exceeded. | Medium | 100% |
-| **PWA & Offline Sync** | Web app ko desktop/mobile par installable banana. | Service Worker (Workbox 7) cache strategies -> App Manifest -> Install Prompt. | Medium | 100% |
-| **VAPID Push Notifications** | Real-time deadline aur grading alerts bhejna. | Browser Subscription -> Laravel Notification Channel -> WebPush Payload Delivery. | High | 100% |
+This document provides a comprehensive, 100% complete breakdown of every feature, functionality, and workflow within the VisionLab platform (covering all 12 Phases of the AGENTS.md directives). Use this matrix to track project completion status and communicate technical depth during reviews.
 
 ---
 
-## 💻 2. Immutable IDE Workspaces (The Cloud Editor)
+## 🟢 Phase 1: Foundation, Architecture & Design System
 
 | Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
 |---|---|---|---|---|
-| **Containerized Workspaces** | Har student ke liye isolated VS Code environment in the browser. | Database request -> `CodeServerManager` API -> Docker Daemon -> Spawn isolated container. | Extreme | 50% (Backend Building) |
-| **Zero-Trust Sandboxing** | Bachon ko server hack ya destroy karne se rokna. | Container spawn with `--read-only`, non-root user, `--cap-drop ALL`, isolated network namespace. | Extreme | 50% (Backend Building) |
-| **Resource Quotas & Scaling** | Memory (OOM) aur CPU limits lagana taake server crash na ho. | 5-tier priority queue -> Check server health -> Assign RAM/CPU limit to container. | High | 30% |
-| **Web Preview Proxy** | IDE ke andar live frontend applications (React/HTML) preview karna. | Container port mapping -> Simple Browser Proxy -> Render output securely inside IDE iframe. | High | 0% |
-| **Nix Declarative Environments** | Bina `apt-get` use kiye software dependencies install karna. | Parse `dev.nix` file -> Resolve packages -> Inject into container runtime. | Extreme | 0% |
+| **Laravel 11 Baseline & Schema** | 25-table database schema with relationships. | Migrations -> Eloquent Models -> Foreign Key constraints. | Medium | 100% |
+| **RBAC & Sanctum Auth** | Role Based Access Control (Admin, Instructor, Student) & Token security. | Sanctum tokens -> `Abilities` Enum -> Middleware policies. | High | 100% |
+| **Strict Dark Design System** | Premium, enterprise-grade dark UI/UX without generic templates. | Tailwind CSS 3 custom config -> Glassmorphism utilities -> Blade Components. | Medium | 100% |
+| **Landing Page** | 3D WebGL Robot, animations, and marketing UI. | Frontend Blade Layouts -> GSAP/CSS Animations. | Medium | 100% |
 
 ---
 
-## 🤖 3. Human-in-the-Loop AI Architecture
+## 📚 Phase 2: Classroom & LMS Domain
 
 | Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
 |---|---|---|---|---|
-| **Zero Direct Write Engine** | AI khud se file save nahi kar sakta (Anti-Cheating). | AI generates response -> Proxy intercepts -> Saves as "Pending Patch" in DB instead of writing to disk. | Extreme | 50% |
-| **Patch Diff Viewer** | Student ko AI ka code red/green diff mein dikhana taake wo parh kar approve kare. | Fetch pending patch -> Render side-by-side Diff UI in IDE -> User clicks 'Approve' or 'Reject'. | High | 0% |
-| **AI Audit Trail** | Pata lagana ke bachay ne kab aur kitna AI use kiya. | Patch Approved event fired -> Save telemetry to `analytics_events` -> Calculate AI contribution %. | High | 0% |
-| **Prompt Injection Defense** | AI ko malicious commands aur jailbreaks se bachana. | API Request -> Content Safety Filter -> Block commands like `eval()` / `exec()` -> Forward to Anthropic. | High | 100% |
+| **Course CRUD & Enrollment** | Create/Edit courses with 3 enrollment methods and CSV student import. | Dashboard UI -> CourseController -> CSV parsing -> DB inserts. | Medium | 100% |
+| **Assignment Lifecycle** | Draft, Publish, Start, Submit, and Grade stages. | Status enums -> Time gating -> File/Repository snapshots. | High | 50% |
+| **Bulk Grading & Export** | Mark entire class at once and export grades to Excel. | Livewire grid -> Bulk DB update -> Laravel Excel CSV export. | Medium | 0% |
+| **Global Announcements** | Markdown + HTMLPurifier based announcements for classes. | Markdown input -> Sanitization -> Broadcast notification. | Medium | 0% |
 
 ---
 
-## 📚 4. Full-Scale LMS (Learning Management)
+## 💻 Phase 3: Workspace Infrastructure & Code-Server IDE
 
 | Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
 |---|---|---|---|---|
-| **Course Lifecycle Management** | Courses banana, edit karna aur bachon ko enroll karna. | Instructor dashboard -> Create Course -> Bulk CSV Student Import -> Associate models. | Medium | 100% |
-| **Assignment Lifecycle** | Draft, Publish, Start, aur Submit stages manage karna. | Teacher creates Draft -> Publishes -> Students get Push Notification -> Student Submits repo snapshot. | High | 50% |
-| **Bulk Grading & Export** | Aik sath class ki marking karna aur Excel sheet download karna. | Instructor selects assignment -> Assigns marks via UI -> Generate CSV/Excel via Laravel Excel -> Download. | Medium | 0% |
-| **Gamification & Badges** | Bachon ko motivate karne ke liye achievements aur streaks dena. | Cron job checks daily activity -> Increment Streak -> Award Badge based on rules -> Broadcast notification. | Medium | 0% |
+| **CodeServerManager (Docker)** | Security-hardened isolated container for every workspace. | API call -> Symfony Process -> Docker spawn with `--cap-drop ALL`, non-root user. | Extreme | 30% |
+| **Workspace Quota Resolution** | Manage RAM/CPU limits using a 5-tier priority queue system. | Redis queue -> Check server load -> Assign specific container limits. | High | 0% |
+| **Full-Screen IDE Shell** | Native VS Code browser integration without external JS wrappers. | Dynamic `/healthz` polling -> Synchronized preloader removal -> iframe injection. | High | 20% |
+| **Secure File I/O API** | Read/Write operations from DB to container. | API -> `realpath()` path traversal protection -> File mutation. | High | 0% |
+| **Workspace Templates** | Pre-configured environments (e.g., Python, Laravel). | Base image selection -> Docker container initialization. | Medium | 0% |
 
 ---
 
-## 🎥 5. Live Sessions & Real-Time Collaboration
+## 🔌 Phase 4: Extension Ecosystem & Lockdown
 
 | Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
 |---|---|---|---|---|
-| **Jitsi Video Conferencing** | IDE ke andar Zoom ki tarah live video class integrate karna. | Jitsi provider abstraction -> Generate secure cryptographic JWT -> Embed Jitsi iframe in IDE panel. | High | 0% |
-| **Live Cursor & Code Sync** | Google docs jaisa real-time multi-cursor typing. | User types -> WebSockets (Laravel Reverb) whisper event -> Broadcast to all users in room -> Render remote cursor. | Extreme | 0% |
-| **Presence Channels** | Dikhana ke class mein kon kon online baitha hai. | User connects to WebSocket -> Join `presence-room` channel -> Update UI active user list in real-time. | Medium | 100% |
-| **Live Chat Engine** | Workspace ke andar real-time discussion panel. | User sends message -> WebSocket broadcasts `ChatMessageSent` event -> Append to chat UI instantly. | Medium | 0% |
+| **Extension Registry & SHA256** | Secure downloading and verification of IDE extensions. | Upload -> Generate hash -> Verify hash before `code-server` installation. | High | 0% |
+| **VisionLab Agent Compilation** | Full source audit, compile, and smoke test of native AI agent. | `vsce package` -> Native source fork modification -> VSIX generation. | Extreme | 50% |
+| **Immutable Docker Image** | Baking the IDE and extensions directly into a readonly Docker image. | Docker BuildKit -> Layer caching -> Container registry push. | Extreme | 0% |
+| **Marketplace Policy & Sync** | Dual-layer enforcement of allowed extensions. | Sync cron jobs -> DB allowed-list -> Container environment lock. | High | 0% |
 
 ---
 
-## 📈 6. Advanced Analytics & Forensics
+## 🎥 Phase 5: Real-Time Collaboration
 
 | Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
 |---|---|---|---|---|
-| **365-Day Contribution Heatmap** | GitHub jaisi profile graph banana jisme daily activity show ho. | Query `analytics_events` -> Group by Date -> Map to Chart.js heatmap calendar on student profile. | High | 0% |
-| **VisionGuard AI Forensics** | Check karna ke kitna code original hai aur kitna AI generated. | Calculate (Human Keystrokes) vs (AI Patch Insertions) -> Generate Confidence Score % -> Display to Instructor. | Extreme | 0% |
-| **Admin Observability Dashboard** | System ki health aur AI APIs ka cost monitor karna. | Laravel Pulse integration -> Monitor slow queries, queue health, Server RAM, and AI token expenses. | Medium | 50% |
+| **Reverb Presence & Channels** | Track who is online in a specific workspace or course. | Laravel Reverb -> Redis -> WebSockets presence channels. | High | 0% |
+
+| **Live Chat Panel** | In-IDE real-time chat between students and instructors. | ChatMessageSent event -> Reverb broadcast -> ChatPanel UI update. | Medium | 0% |
 
 ---
 
-## 🚀 7. Student Code Deployment
+## 🤖 Phase 6: AI Agent, Patch Review & Audit Trail
 
 | Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
 |---|---|---|---|---|
-| **One-Click Hosting** | Student ka project live internet (Vercel/Railway) par deploy karna. | Code snapshot created -> Queue Job pushed -> Call Vercel/Railway REST API -> Return live URL to dashboard. | High | 0% |
-| **Deployment Status Sync** | Deployment progress bar (building, live, failed) dikhana. | Listen to Vercel webhooks -> Update deployment status in DB -> Broadcast WebSocket event to user UI. | Medium | 0% |
+| **AI Controller & Cost Tracking** | OpenAI-compatible proxy with token budgeting and cost calculation. | SSE Stream -> Anthropic API -> DB token log -> Quota enforcement. | High | 30% |
+| **Zero Direct Write / AI Sandboxing** | AI cannot arbitrarily execute code or write to disk. | Proxy safety filters -> Block `eval()`, `system()` -> Log violations. | Extreme | 0% |
+| **Patch Reviewer Extension** | Two-pane diff viewer for students to review AI code before applying. | AI generates patch -> Queue management -> Student explicit approval via UI. | High | 0% |
+| **Memory File & Artifacts** | Persistent `.visionlab_memory.md` for AI context. | Auto-approve write permissions specifically restricted to memory file only. | Medium | 0% |
 
 ---
 
-### Understanding the Complexity Scale:
-- **Medium:** Standard CRUD operations, UI building, and basic API integrations.
-- **High:** Complex background jobs, WebSockets, algorithms, and 3rd party SDKs.
-- **Extreme:** Docker orchestration, direct OS-level commands, proxy servers, binary compilation, and custom AI logic.
+## 📹 Phase 7: Video Conferencing & Live Sessions
+
+| Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
+|---|---|---|---|---|
+| **Jitsi Video Integration** | Embedded live classes inside the dark-themed VideoPanel IDE. | Jitsi JaaS/Self-hosted -> JitsiService JWT -> Blade video button. | High | 0% |
+| **VideoRoomController** | 4 endpoints for room creation, moderation, and attendance tracking. | API -> DB Room Record -> User join event -> Analytics tracking. | Medium | 0% |
+| **AI Meeting Notes Generation** | Automated summaries of the video session. | Webhook end -> Transcript parsing -> Anthropic API -> Course notes. | High | 0% |
+
+---
+
+## 🛠️ Phase 8: Admin Operations & Governance
+
+| Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
+|---|---|---|---|---|
+| **Live Admin Dashboard** | 6+ live stat cards, queue health, and AI cost monitoring. | Laravel Pulse / Horizon -> Admin UI layout. | Medium | 0% |
+| **User & Workspace Oversight** | Manage users, force-stop runaway containers, impersonate users. | CodeServerManager API -> GDPR export JSON -> Impersonation middleware. | High | 0% |
+| **Audit Log Viewer** | See before/after diffs of every configuration or setting change. | Spatie Activitylog -> Admin diff UI. | Medium | 0% |
+| **Maintenance & Webhooks** | Feature flags, system config panel, and webhook management. | DB Config Table -> Middleware logic -> Webhook dispatch jobs. | Medium | 0% |
+
+---
+
+## 📊 Phase 9: Analytics, Forensics & Gamification
+
+| Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
+|---|---|---|---|---|
+| **Event Taxonomy & Dashboards** | Track 20+ event types with 7 Chart.js analytics charts. | Event listeners -> DB Analytics tables -> Instructor/Student UI. | High | 0% |
+
+| **365-Day Heatmap & Streaks** | GitHub-style contribution graph and 10 achievement badges. | Cron jobs -> Daily activity aggregation -> Blade UI rendering. | Medium | 0% |
+| **Student App Deployment** | Vercel/Railway provider abstraction to deploy student apps to live URLs. | Webhook/API -> CI Deployment -> Real-time status sync. | Extreme | 0% |
+
+---
+
+## 📱 Phase 10: PWA & Push Notifications
+
+| Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
+|---|---|---|---|---|
+| **Service Worker & Caching** | Workbox 7 with 5 route strategies and cache versioning. | SW.js generation. | Medium | 10% |
+| **Web App Manifest** | App shortcuts, install prompt UI, and update banner. | `manifest.json` -> Browser integration. | Medium | 100% |
+| **VAPID Push Notifications** | 3 notification classes and scheduled reminders (e.g., deadlines). | WebPush SDK -> Browser prompt -> Laravel Notifications. | High | 0% |
+
+---
+
+## 🛡️ Phase 11: Security Hardening, Testing & Performance
+
+| Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
+|---|---|---|---|---|
+| **OWASP ASVS & Security Script** | Security verification script with 7 automated checks. | Custom artisan command -> Path traversal checks -> Config audit. | High | 0% |
+| **Automated Testing Suite** | Full PHPUnit feature test suite (8 classes) and Dusk browser tests. | CI Test Runner -> SQLite/Testing DB -> Assertion results. | High | 0% |
+| **Performance & Accessibility** | Redis cache-tag invalidation, N+1 audit, WCAG 2.1 AA audit. | Laravel Telescope/Pulse profiling -> HTML structural updates. | Medium | 0% |
+
+---
+
+## 🚀 Phase 12: Production Deployment & Observability
+
+| Feature Name | Functionality Detail | Technical Workflow | Complexity | Completion Score |
+|---|---|---|---|---|
+| **Docker Compose Prod Topology** | Security-hardened 8-service `docker-compose.prod.yml`. | System architecture -> Docker networks -> Volume mounts. | Extreme | 10% |
+| **GitHub Actions CI/CD** | OIDC auth, 3-stage pipeline, and Docker BuildKit push to ghcr.io. | `.github/workflows/deploy.yml` -> Automated tests -> Deployment script. | Extreme | 0% |
+| **Nginx & Observability** | Nginx TLS 1.3 (SSL Labs A+), 6 dependency health probes, UptimeRobot. | Nginx conf -> `/healthz` endpoint -> Structured logging. | High | 0% |

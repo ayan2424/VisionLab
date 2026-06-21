@@ -58,7 +58,7 @@ Critical table for the human-in-the-loop workflow.
   ```
 
 ### `analytics_events`
-High-concurrency table for VisionGuard metrics.
+High-concurrency table for Analytics Dashboard metrics.
 - Must not use foreign key constraints that restrict inserts, as this table will handle massive throughput.
 - Uses partitioned indexing based on `created_at` for scalable read operations on instructor dashboards.
 

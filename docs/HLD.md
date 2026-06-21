@@ -384,7 +384,7 @@ Reverb Channel Structure:
   │   VideoCallStarted, VideoCallEnded, PlanExecutionProgress, SystemAlert
   │
   └─ Whispers: (client-to-client, no server storage, no DB write)
-       CursorMoved (file_path, line, col, selection, user_id, user_color)
+       DocumentUpdated (file_path, line, col, selection, user_id, user_color)
 
   private-workspace.{workspaceId}.patches (Private Channel)
   ├─ Authorization: owner_id match OR workspace_collaborators entry
@@ -411,11 +411,11 @@ Collaboration Extension Module Architecture:
   │   └─ reconnected event → full state re-sync
   ├─ DocumentSync.ts
   │   ├─ onDidChangeTextDocument listener (debounce 150ms)
-  │   ├─ sourceType tagging: 'human' or 'ai' (for VisionGuard forensics)
+  │   ├─ sourceType tagging: 'human' or 'ai' (for Analytics Dashboard)
   │   ├─ Per-file sequence number Map
   │   ├─ Echo prevention (compare event user_id vs local user_id)
   │   └─ WorkspaceEdit.replace for precise remote edit application
-  ├─ CursorSync.ts
+  ├─ DocumentSync.ts
   │   ├─ onDidChangeTextEditorSelection listener (throttle 80ms)
   │   ├─ Reverb whisper for cursor broadcast (no server storage)
   │   ├─ TextEditorDecorationType per remote user
@@ -484,7 +484,7 @@ OWASP ASVS Level 2 Coverage:
   LLM06 Sensitive Info    → Provider keys server-side only, sandbox blocks .env reads
   LLM07 Plugin Design     → Tools require server authorization before execution
   LLM08 Excessive Agency  → Human-approved patches, 20-patch safety limit, mode matrix
-  LLM09 Overreliance      → VisionGuard shows AI attribution; mode restrictions educate
+  LLM09 Overreliance      → Analytics Dashboard shows AI attribution; mode restrictions educate
   LLM10 Model Theft       → Provider keys never in client code or API responses
 
   Container Security (OWASP Docker Cheat Sheet):
@@ -510,7 +510,7 @@ OWASP ASVS Level 2 Coverage:
 | Classroom | courses, assignments, submissions, grades | Retain per academic policy; archived after completion | Student owner, instructor, admin |
 | Workspace | files, snapshots, container metadata | Retain during coursework; archive after grace period; cleanup after policy window | Owner, collaborators, instructor/admin per policy |
 | AI Records | sessions, messages, patches, snapshots | Retain for transparency with configurable cleanup; patch records preserved for rollback window | Workspace owner, instructor, admin where authorized |
-| Analytics | activity events, VisionGuard aggregates, badges | Retain with privacy boundaries per role | Role-restricted: student sees own, instructor sees course, admin sees platform |
+| Analytics | activity events, Analytics Dashboard aggregates, badges | Retain with privacy boundaries per role | Role-restricted: student sees own, instructor sees course, admin sees platform |
 | Operations | audit_logs, health reports, job logs, release evidence | Retain for compliance and incident response | Administrators and authorized operators only |
 | Extension Builds | source references, build logs, checksums, license reviews | Permanent retention; legal and security evidence | Platform engineers and security reviewers |
 
@@ -540,7 +540,7 @@ OWASP ASVS Level 2 Coverage:
 | AI SSE Stream | AiController | VisionLab Agent extension | {type: text|tool_call_start|tool_result|end, ...} |
 | OpenAI-Compatible Proxy | AiController | VisionLab Agent (Continue) extension | POST /api/v1/ai/v1/chat/completions, OpenAI SSE format |
 | PatchProposed Event | AiSandbox | VisionLab-patch-reviewer extension | {patch_id, file_path, diff, session_id} |
-| Presence Channel | Reverb | VisionLab-collab extension, Blade IDE shell | UserJoined/Left, CursorMoved whisper |
+| Presence Channel | Reverb | VisionLab-collab extension, Blade IDE shell | UserJoined/Left, DocumentUpdated whisper |
 | Health Endpoint | HealthController | UptimeRobot, load balancer, CI/CD | {database, redis, reverb, disk, queue: ok|error} |
 | Deployment Status Event | DeployWorkspaceJob | Reverb (private-notifications.{userId}) | {deployment_id, workspace_id, status, production_url} |
 | Extension Checksum | ChecksumVerificationService | CodeServerManager::startWorkspace | SHA256 hex string comparison before every install |
