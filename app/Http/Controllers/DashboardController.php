@@ -76,7 +76,7 @@ class DashboardController extends Controller
 
         // Streak and badges
         $streak = $user->current_streak ?? 0;
-        $badges = UserBadge::where('user_id', $user->id)->with('badge')->latest('earned_at')->take(5)->get();
+        $badges = UserBadge::where('user_id', $user->id)->latest('earned_at')->take(5)->get();
 
         // Active workspaces
         $activeWorkspaces = Workspace::where('student_id', $user->id)
