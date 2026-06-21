@@ -146,13 +146,20 @@
         }
 
         /* ═══════════ TEXT EFFECTS ═══════════ */
+        
         .metallic-text {
             -webkit-text-fill-color: transparent;
             color: rgba(0, 0, 0, 0);
+            background: linear-gradient(rgb(0, 0, 0) 0%, rgb(80, 80, 80) 40%, rgb(120, 120, 120) 100%) text;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+        html.dark .metallic-text {
             background: linear-gradient(rgb(255, 255, 255) 0%, rgb(229, 231, 235) 40%, rgb(148, 163, 184) 100%) text;
             -webkit-background-clip: text;
             background-clip: text;
         }
+
 
         .aurora-text {
             -webkit-text-fill-color: transparent;
@@ -377,7 +384,7 @@
                         <span class="font-mono text-[10px] opacity-70">↗</span>
                     </a>
                     @endauth
-                    <a href="{{ route('demo') }}" class="relative inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium tracking-wide transition-[background,color,box-shadow] duration-300 border border-white/15 bg-white/[0.02] text-foreground hover:bg-white/[0.06] hover:border-white/30 text-decoration-none">
+                    <a href="{{ route('demo') }}" class="relative inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium tracking-wide transition-[background,color,box-shadow] duration-300 border border-black/7 dark:border-white/15 bg-black/[0.01] dark:bg-white/[0.02] text-foreground hover:bg-black/[0.03] dark:bg-white/[0.06] hover:border-black/15 dark:border-white/30 text-decoration-none">
                         Faculty Demo
                     </a>
                 </div>
@@ -426,8 +433,8 @@
                                 <span class="font-mono text-[9px] uppercase tracking-[0.22em] text-violet-light">Neural Assistant</span>
                             </div>
                             <div class="space-y-2">
-                                <div class="h-1.5 w-full rounded-full bg-white/10"></div>
-                                <div class="h-1.5 w-4/5 rounded-full bg-white/10"></div>
+                                <div class="h-1.5 w-full rounded-full bg-black/5 dark:bg-white/10"></div>
+                                <div class="h-1.5 w-4/5 rounded-full bg-black/5 dark:bg-white/10"></div>
                                 <div class="h-1.5 w-1/2 rounded-full bg-violet/40"></div>
                             </div>
                             <div class="mt-4 flex items-center gap-1.5">
@@ -440,10 +447,10 @@
 
                     <!-- Main IDE Mock Window -->
                     <div class="glass-panel relative z-10 overflow-hidden rounded-2xl">
-                        <div class="relative flex items-center justify-between border-b border-border bg-white/[0.02] px-4 py-3">
+                        <div class="relative flex items-center justify-between border-b border-border bg-black/[0.01] dark:bg-white/[0.02] px-4 py-3">
                             <div class="flex gap-1.5">
                                 <span class="h-2.5 w-2.5 rounded-full bg-rose/60"></span>
-                                <span class="h-2.5 w-2.5 rounded-full bg-white/20"></span>
+                                <span class="h-2.5 w-2.5 rounded-full bg-black/10 dark:bg-white/20"></span>
                                 <span class="h-2.5 w-2.5 rounded-full bg-emerald/60"></span>
                             </div>
                             <div class="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">visionlab · workspace-core / architecture.ts</div>
@@ -506,7 +513,7 @@
                                             <span class="ml-0.5 inline-block h-4 w-[2px] translate-y-0.5 bg-cyan align-middle" style="animation: blink 1s steps(1) infinite;"></span>
                                             <!-- User Cursor Tag Mock -->
                                             <span class="pointer-events-none absolute -top-5 left-[120px] flex flex-col items-start">
-                                                <span class="rounded-sm px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white bg-rose">Prof. Aris</span>
+                                                <span class="rounded-sm px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-black dark:text-white bg-rose">Prof. Aris</span>
                                                 <span class="h-5 w-[2px] bg-rose" style="animation: blink 1s steps(1) infinite;"></span>
                                             </span>
                                         </span>
@@ -555,12 +562,12 @@
                                     <span class="h-7 w-7 rounded-full border-2 border-background bg-indigo"></span>
                                     <span class="h-7 w-7 rounded-full border-2 border-background bg-emerald"></span>
                                     <span class="h-7 w-7 rounded-full border-2 border-background bg-violet"></span>
-                                    <span class="grid h-7 w-7 place-items-center rounded-full border-2 border-background bg-white/10 text-[10px] font-semibold text-foreground">+20</span>
+                                    <span class="grid h-7 w-7 place-items-center rounded-full border-2 border-background bg-black/5 dark:bg-white/10 text-[10px] font-semibold text-foreground">+20</span>
                                 </div>
                                 <span class="hidden font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:inline">cohort active</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button class="grid h-8 w-8 place-items-center rounded-full border border-border bg-white/[0.04] text-emerald-light transition-colors hover:bg-emerald/15">
+                                <button class="grid h-8 w-8 place-items-center rounded-full border border-border bg-black/[0.02] dark:bg-white/[0.04] text-emerald-light transition-colors hover:bg-emerald/15">
                                     <span class="block h-2 w-2 rotate-45 bg-current"></span>
                                 </button>
                                 @auth
@@ -594,7 +601,7 @@
             <div class="grid grid-cols-1 gap-4 md:grid-cols-6">
                 <!-- Feature 1 -->
                 <div class="reveal md:col-span-3 lg:col-span-2">
-                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-white/20 h-full cursor-pointer" style="--spot-color: var(--cyan);">
+                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-black/10 dark:border-white/20 h-full cursor-pointer" style="--spot-color: var(--cyan);">
                         <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot-color) 22%, transparent), transparent 60%);"></div>
                         <div class="pointer-events-none absolute inset-x-0 top-0 h-px opacity-60 bg-gradient-to-r from-transparent via-cyan to-transparent"></div>
                         <div class="relative">
@@ -627,7 +634,7 @@
 
                 <!-- Feature 2 -->
                 <div class="reveal md:col-span-3 lg:col-span-2 lg:translate-y-8">
-                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-white/20 h-full cursor-pointer" style="--spot-color: var(--violet);">
+                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-black/10 dark:border-white/20 h-full cursor-pointer" style="--spot-color: var(--violet);">
                         <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot-color) 22%, transparent), transparent 60%);"></div>
                         <div class="pointer-events-none absolute inset-x-0 top-0 h-px opacity-60 bg-gradient-to-r from-transparent via-violet to-transparent"></div>
                         <div class="relative">
@@ -657,7 +664,7 @@
 
                 <!-- Feature 3 -->
                 <div class="reveal md:col-span-2">
-                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-white/20 h-full cursor-pointer" style="--spot-color: var(--emerald);">
+                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-black/10 dark:border-white/20 h-full cursor-pointer" style="--spot-color: var(--emerald);">
                         <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot-color) 22%, transparent), transparent 60%);"></div>
                         <div class="pointer-events-none absolute inset-x-0 top-0 h-px opacity-60 bg-gradient-to-r from-transparent via-emerald to-transparent"></div>
                         <div class="relative">
@@ -669,7 +676,7 @@
                                         <div class="relative grid h-full w-full place-items-center" style="transform-style: preserve-3d; animation: float-y 5s ease-in-out infinite;">
                                             <div class="relative h-11 w-9" style="transform: rotateY(25deg); animation: spin-soft 5s ease-in-out infinite alternate;">
                                                 <div class="absolute inset-0 bg-gradient-to-b from-emerald to-transparent" style="clip-path: polygon(50% 0px, 100% 25%, 100% 70%, 50% 100%, 0px 70%, 0px 25%); box-shadow: 0 0 20px var(--emerald);"></div>
-                                                <div class="absolute inset-1 border border-white/50" style="clip-path: polygon(50% 0px, 100% 25%, 100% 70%, 50% 100%, 0px 70%, 0px 25%);"></div>
+                                                <div class="absolute inset-1 border border-black/2 dark:border-white/50" style="clip-path: polygon(50% 0px, 100% 25%, 100% 70%, 50% 100%, 0px 70%, 0px 25%);"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -686,7 +693,7 @@
 
                 <!-- Feature 4 -->
                 <div class="reveal md:col-span-2 lg:translate-y-8">
-                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-white/20 h-full cursor-pointer" style="--spot-color: var(--rose);">
+                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-black/10 dark:border-white/20 h-full cursor-pointer" style="--spot-color: var(--rose);">
                         <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot-color) 22%, transparent), transparent 60%);"></div>
                         <div class="pointer-events-none absolute inset-x-0 top-0 h-px opacity-60 bg-gradient-to-r from-transparent via-rose to-transparent"></div>
                         <div class="relative">
@@ -718,7 +725,7 @@
 
                 <!-- Feature 5 -->
                 <div class="reveal md:col-span-2">
-                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-white/20 h-full cursor-pointer" style="--spot-color: var(--indigo);">
+                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-black/10 dark:border-white/20 h-full cursor-pointer" style="--spot-color: var(--indigo);">
                         <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot-color) 22%, transparent), transparent 60%);"></div>
                         <div class="pointer-events-none absolute inset-x-0 top-0 h-px opacity-60 bg-gradient-to-r from-transparent via-indigo to-transparent"></div>
                         <div class="relative">
@@ -825,7 +832,7 @@
                             <span class="font-mono text-[9px] uppercase tracking-[0.22em] text-emerald-light">audited</span>
                         </div>
 
-                        <div class="mb-4 self-end rounded-2xl rounded-br-sm border border-border bg-white/[0.04] px-4 py-3 text-sm">
+                        <div class="mb-4 self-end rounded-2xl rounded-br-sm border border-border bg-black/[0.02] dark:bg-white/[0.04] px-4 py-3 text-sm">
                             Explain recursion to me
                         </div>
 
@@ -843,9 +850,9 @@
                             <div class="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">try a prompt</div>
                             <div class="flex flex-wrap gap-2">
                                 <button onclick="changeMockPrompt(this)" class="group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-violet/60 bg-violet/20 text-violet-light">Explain recursion to me</button>
-                                <button onclick="changeMockPrompt(this)" class="group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground">Why does my loop crash at iteration 12?</button>
-                                <button onclick="changeMockPrompt(this)" class="group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground">Audit my latest commit for style</button>
-                                <button onclick="changeMockPrompt(this)" class="group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground">Pair-program a binary tree</button>
+                                <button onclick="changeMockPrompt(this)" class="group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-black/[0.01] dark:bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground">Why does my loop crash at iteration 12?</button>
+                                <button onclick="changeMockPrompt(this)" class="group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-black/[0.01] dark:bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground">Audit my latest commit for style</button>
+                                <button onclick="changeMockPrompt(this)" class="group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-black/[0.01] dark:bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground">Pair-program a binary tree</button>
                             </div>
                         </div>
 
@@ -872,7 +879,7 @@
     <!-- ═══════════════════════════════════════════════════════════════════
      CONTROL PLANE (GOVERNANCE)
      ═══════════════════════════════════════════════════════════════════ -->
-    <section id="governance" class="relative border-t border-border bg-white/[0.015] py-32">
+    <section id="governance" class="relative border-t border-border bg-black/[0.01] dark:bg-white/[0.015] py-32">
         <div class="mx-auto max-w-7xl px-6">
             <div class="grid items-center gap-16 lg:grid-cols-2">
                 <div class="reveal">
@@ -940,7 +947,7 @@
                                     <span class="font-mono text-[7px] uppercase tracking-wider text-muted-foreground">n-{{ sprintf('%02d', $nodeIndex++) }}</span>
                                 </div>
                                 <div class="mt-1 space-y-0.5">
-                                    <div class="h-0.5 rounded-full bg-white/10" style="width: {{ $val1 }}%;"></div>
+                                    <div class="h-0.5 rounded-full bg-black/5 dark:bg-white/10" style="width: {{ $val1 }}%;"></div>
                                     <div class="h-0.5 rounded-full" style="width: {{ $val2 }}%; background: var(--{{ $col }}); opacity: 0.5;"></div>
                                 </div>
                         </div>
@@ -1071,7 +1078,7 @@
                         Start Building
                         <span class="font-mono text-[10px] opacity-70">↗</span>
                     </a>
-                    <a href="{{ route('demo') }}" class="relative inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium tracking-wide transition-[background,color,box-shadow] duration-300 border border-white/15 bg-white/[0.02] text-foreground hover:bg-white/[0.06] hover:border-white/30 text-decoration-none">
+                    <a href="{{ route('demo') }}" class="relative inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium tracking-wide transition-[background,color,box-shadow] duration-300 border border-black/7 dark:border-white/15 bg-black/[0.01] dark:bg-white/[0.02] text-foreground hover:bg-black/[0.03] dark:bg-white/[0.06] hover:border-black/15 dark:border-white/30 text-decoration-none">
                         Faculty Demo
                     </a>
                     @endauth
@@ -1200,7 +1207,7 @@
 
             // Clear styles from siblings and highlight clicked chip
             button.parentElement.querySelectorAll('button').forEach(btn => {
-                btn.className = "group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground";
+                btn.className = "group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-border bg-black/[0.01] dark:bg-white/[0.02] text-muted-foreground hover:border-cyan/50 hover:text-foreground";
             });
             button.className = "group rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 border-violet/60 bg-violet/20 text-violet-light";
 
