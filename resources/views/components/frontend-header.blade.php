@@ -19,9 +19,6 @@
             <a href="{{ route('features') }}" class="rounded-full px-5 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-all hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground text-decoration-none">
                 Features
             </a>
-            <a href="{{ route('pricing') }}" class="rounded-full px-5 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-all hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground text-decoration-none">
-                Pricing
-            </a>
             <a href="{{ route('docs') }}" class="rounded-full px-5 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-all hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground text-decoration-none">
                 Docs
             </a>

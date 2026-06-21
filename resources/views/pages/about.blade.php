@@ -93,7 +93,6 @@
     /* Team */
     .team-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
     @media (min-width: 640px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1024px) { .team-grid { grid-template-columns: repeat(4, 1fr); } }
     .team-card { padding: 2.2rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
     .team-avatar { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; border: 2px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
     .team-name { font-size: 1.1rem; font-weight: 600; color: #fff; }
@@ -142,20 +141,20 @@
 <section class="section">
     <div class="stats-grid reveal">
         <div class="stat-item">
-            <span class="stat-val text-gradient-purple-pink" data-target="38">0</span>
-            <span class="stat-lbl">Universities</span>
+            <span class="stat-val text-gradient-purple-pink" data-target="100" data-suffix="%">0</span>
+            <span class="stat-lbl">Isolated Sandboxes</span>
         </div>
         <div class="stat-item">
-            <span class="stat-val text-gradient-cyan" data-target="15000">0</span>
-            <span class="stat-lbl">Active Students</span>
+            <span class="stat-val text-gradient-cyan" data-target="0" data-suffix="ms">0</span>
+            <span class="stat-lbl">Cursor Sync Latency</span>
         </div>
         <div class="stat-item">
-            <span class="stat-val text-gradient-purple-pink" data-target="2400000">0</span>
-            <span class="stat-lbl">Commits Compiled</span>
+            <span class="stat-val text-gradient-purple-pink" data-target="100" data-suffix="%">0</span>
+            <span class="stat-lbl">Nix Configured</span>
         </div>
         <div class="stat-item">
-            <span class="stat-val text-gradient-cyan" data-target="99">0</span>
-            <span class="stat-lbl">Uptime Target</span>
+            <span class="stat-val text-gradient-cyan" data-target="99.9" data-suffix="%">0</span>
+            <span class="stat-lbl">Target Uptime SLA</span>
         </div>
     </div>
 </section>
@@ -281,30 +280,20 @@
 <!-- TEAM -->
 <section class="section">
     <div style="text-align:center;margin-bottom:4rem" class="reveal">
-        <span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--pink);font-weight:600;display:block;margin-bottom:1rem;font-family:'JetBrains Mono',monospace;">Core Syndicate</span>
-        <h2 class="section-heading font-display metallic-text">Engineering Syndicate</h2>
+        <span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--pink);font-weight:600;display:block;margin-bottom:1rem;font-family:'JetBrains Mono',monospace;">Core Team</span>
+        <h2 class="section-heading font-display metallic-text">Platform Creators</h2>
     </div>
 
-    <div class="team-grid reveal">
+    <div class="team-grid reveal" style="max-width: 600px; margin: 0 auto;">
         <div class="card team-card glass-panel">
             <div class="team-avatar" style="background:linear-gradient(135deg, var(--purple), var(--pink))">AS</div>
             <h3 class="team-name">Ayan S.</h3>
             <span class="team-role">Principal Systems Architect</span>
         </div>
         <div class="card team-card glass-panel">
-            <div class="team-avatar" style="background:linear-gradient(135deg, var(--cyan), #3b82f6)">VK</div>
-            <h3 class="team-name">Dr. Vance</h3>
-            <span class="team-role">Head of Infrastructure Research</span>
-        </div>
-        <div class="card team-card glass-panel">
-            <div class="team-avatar" style="background:linear-gradient(135deg, var(--emerald), #059669)">SC</div>
-            <h3 class="team-name">Sarah Chen</h3>
-            <span class="team-role">Lead DevSecOps Auditor</span>
-        </div>
-        <div class="card team-card glass-panel">
-            <div class="team-avatar" style="background:linear-gradient(135deg, var(--pink), var(--purple))">LO</div>
-            <h3 class="team-name">Liam O'Connor</h3>
-            <span class="team-role">Senior Full-Stack Developer</span>
+            <div class="team-avatar" style="background:linear-gradient(135deg, var(--cyan), var(--violet))">VF</div>
+            <h3 class="team-name">VisionForge AI</h3>
+            <span class="team-role">Autonomous Engineering Agent</span>
         </div>
     </div>
 </section>

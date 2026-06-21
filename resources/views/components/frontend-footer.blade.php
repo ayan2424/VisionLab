@@ -8,7 +8,6 @@
         <div class="flex flex-wrap gap-x-8 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
             <a href="{{ route('about') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">About</a>
             <a href="{{ route('features') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Features</a>
-            <a href="{{ route('pricing') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Pricing</a>
             <a href="{{ route('docs') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Docs</a>
             <a href="{{ route('contact') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Contact</a>
             <a href="{{ route('health') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Status</a>

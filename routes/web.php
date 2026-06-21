@@ -30,7 +30,6 @@ Route::get('/offline', fn () => view('offline'))->name('offline');
 // ── SEO Public Pages ──────────────────────────────────────────────────
 Route::get('/about', fn () => view('pages.about'))->name('about');
 Route::get('/features', fn () => view('pages.features'))->name('features');
-Route::get('/pricing', fn () => view('pages.pricing'))->name('pricing');
 Route::get('/contact', fn () => view('pages.contact'))->name('contact');
 Route::get('/docs', fn () => view('pages.docs'))->name('docs');
 
