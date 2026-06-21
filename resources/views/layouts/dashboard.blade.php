@@ -49,13 +49,13 @@
     <x-sidebar />
 
     {{-- ═══ MAIN AREA ═══ --}}
-    <div class="flex-1 flex flex-col overflow-hidden md:ml-64">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden md:ml-64">
 
         {{-- ── Topbar ── --}}
         <x-topbar />
 
         {{-- ── Content ── --}}
-        <main class="flex-1 overflow-y-auto p-6 transition-colors duration-300 relative">
+        <main class="flex-1 min-h-0 overflow-y-auto p-6 transition-colors duration-300 relative">
             @if(session()->has('impersonator_id'))
             <div class="mb-4 px-4 py-3 rounded-xl text-sm flex items-center justify-between gap-4"
                  style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;">
