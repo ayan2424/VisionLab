@@ -136,7 +136,7 @@
     }
     .btn-glow:active { transform: translateY(0); }
 
-    /* ── Input field ───────────────────────────────────────────── */
+    /* ── Input field & Select ──────────────────────────────────── */
     .input-dark, .vc-input {
         @apply w-full rounded-xl px-4 py-3 text-sm transition-all duration-200;
         background: var(--vc-input);
@@ -150,6 +150,16 @@
         outline: none;
         border-color: var(--vc-input-focus);
         box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+
+    /* Global select/option fix for dark theme */
+    select {
+        color: var(--vc-text);
+        background-color: var(--vc-input);
+    }
+    select option {
+        background-color: var(--vc-bg);
+        color: var(--vc-text);
     }
 
     /* ── Gradient text ────────────────────────────────────────── */
