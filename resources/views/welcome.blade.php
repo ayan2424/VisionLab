@@ -27,15 +27,11 @@
     <!-- Three.js Global -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <!-- Theme Check Script -->
+    {{-- Force Dark Mode Temporarily --}}
     <script>
         (function() {
-            var t = localStorage.getItem('vc-theme');
-            if (t === 'light') {
-                document.documentElement.classList.remove('dark');
-            } else {
-                document.documentElement.classList.add('dark');
-            }
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('vc-theme', 'dark');
         })();
     </script>
 

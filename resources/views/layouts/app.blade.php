@@ -33,15 +33,11 @@
     <meta name="auth-user-role" content="{{ Auth::user()->role }}">
     @endif
 
-    {{-- Theme Check Script --}}
+    {{-- Force Dark Mode Temporarily --}}
     <script>
         (function() {
-            var t = localStorage.getItem('vc-theme');
-            if (t === 'light') {
-                document.documentElement.classList.remove('dark');
-            } else {
-                document.documentElement.classList.add('dark');
-            }
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('vc-theme', 'dark');
         })();
     </script>
 
