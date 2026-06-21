@@ -1,8 +1,8 @@
 <x-guest-layout>
-    <div class="min-h-screen flex">
+    <div class="h-screen w-full flex overflow-hidden">
 
         {{-- ═══ LEFT: IDE Preview Panel ═══ --}}
-        <div class="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center px-12 overflow-hidden"
+        <div class="hidden lg:flex lg:w-1/2 h-full relative flex-col items-center justify-center px-12 overflow-hidden"
              style="background:linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%);">
 
             {{-- Ambient orbs --}}
@@ -56,7 +56,7 @@
         </div>
 
         {{-- ═══ RIGHT: Login Form ═══ --}}
-        <div class="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 relative transition-colors duration-300"
+        <div class="w-full lg:w-1/2 h-full overflow-y-auto flex items-center justify-center px-6 py-12 relative transition-colors duration-300"
              style="background:var(--vc-bg);">
 
             

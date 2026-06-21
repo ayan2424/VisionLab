@@ -21,6 +21,7 @@ class UpdateCourseRequest extends FormRequest
         return [
             'title'       => 'required|string|max:255',
             'description' => 'required|string|min:10|max:5000',
+            'duration'    => 'nullable|string|max:255',
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active'   => 'sometimes|boolean',
             'allow_marketplace' => 'sometimes|boolean',

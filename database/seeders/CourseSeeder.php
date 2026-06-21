@@ -44,6 +44,7 @@ class CourseSeeder extends Seeder
             'title'           => 'Python & AI Fundamentals',
             'slug'            => 'python-ai-fundamentals-' . str_pad($instructor1->id, 3, '0', STR_PAD_LEFT),
             'description'     => 'Master Python programming from basics to advanced AI integration. Build real-world ML models and explore modern AI APIs. Perfect for students who want to break into AI/ML development.',
+            'duration'        => '12 Weeks',
             'is_active'       => true,
         ]);
 
@@ -53,6 +54,7 @@ class CourseSeeder extends Seeder
             'title'           => 'Full-Stack Web with Laravel',
             'slug'            => 'full-stack-web-laravel-' . str_pad($instructor1->id, 3, '0', STR_PAD_LEFT),
             'description'     => 'Build production-grade web applications with Laravel 11, Blade, Tailwind CSS, and MySQL. Learn RBAC, REST APIs, WebSockets with Reverb, and deployment strategies.',
+            'duration'        => '6 Months',
             'is_active'       => true,
         ]);
 
@@ -62,6 +64,7 @@ class CourseSeeder extends Seeder
             'title'           => 'Algorithms & Data Structures',
             'slug'            => 'algorithms-data-structures-' . str_pad($instructor2->id, 3, '0', STR_PAD_LEFT),
             'description'     => 'Deep dive into algorithms, complexity analysis, sorting, trees, graphs, and dynamic programming. Ace technical interviews and write efficient code.',
+            'duration'        => '8 Weeks',
             'is_active'       => true,
         ]);
 

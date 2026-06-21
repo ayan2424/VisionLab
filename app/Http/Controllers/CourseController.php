@@ -46,6 +46,7 @@ class CourseController extends Controller
             'instructor_id' => Auth::id(),
             'title'         => $validated['title'],
             'description'   => $validated['description'] ?? null,
+            'duration'      => $validated['duration'] ?? null,
             'is_active'     => $validated['is_active'] ?? true,
             'allow_marketplace' => $validated['allow_marketplace'] ?? true,
             'start_date'    => $validated['start_date'] ?? null,

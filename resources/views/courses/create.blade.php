@@ -38,6 +38,13 @@
                 <label for="description" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Description <span style="color:var(--vc-danger);">*</span></label>
             </div>
 
+            <div class="relative">
+                <input type="text" id="duration" name="duration" value="{{ old('duration') }}"
+                       class="vc-input peer w-full placeholder-transparent pt-6 pb-2"
+                       placeholder="e.g., 6 Months, 12 Weeks">
+                <label for="duration" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Course Duration</label>
+            </div>
+
             <!-- Scheduling Fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="relative">

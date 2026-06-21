@@ -123,7 +123,7 @@
                         <span>Assignments</span><span style="color:var(--vc-text);">{{ $course->assignments->count() }}</span>
                     </div>
 
-                    @if($course->start_date || $course->end_date || $course->schedule_time)
+                    @if($course->start_date || $course->end_date || $course->schedule_time || $course->duration)
                     <div class="pt-3 space-y-2" style="border-top:1px solid var(--vc-border);">
                         @if($course->schedule_time)
                         <div>
@@ -131,9 +131,15 @@
                             <span class="font-semibold" style="color:var(--vc-text);">{{ $course->schedule_time }}</span>
                         </div>
                         @endif
+                        @if($course->duration)
+                        <div>
+                            <span class="block text-xs" style="color:var(--vc-muted);">Course Duration</span>
+                            <span class="font-semibold" style="color:var(--vc-text);">{{ $course->duration }}</span>
+                        </div>
+                        @endif
                         @if($course->start_date)
                         <div>
-                            <span class="block text-xs" style="color:var(--vc-muted);">Duration</span>
+                            <span class="block text-xs" style="color:var(--vc-muted);">Dates</span>
                             <span class="font-semibold" style="color:var(--vc-text);">
                                 {{ $course->start_date->format('M d, Y') }} - {{ $course->end_date ? $course->end_date->format('M d, Y') : 'Ongoing' }}
                             </span>
