@@ -233,9 +233,16 @@
     <div class="fade-in" style="margin-bottom:2rem;animation-delay:0.05s">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
             <div>
-                <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.25rem">
-                    Welcome back, {{ explode(' ', Auth::user()->name)[0] }} 👋
-                </h2>
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem">
+                    <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">
+                        Welcome back, {{ explode(' ', Auth::user()->name)[0] }} 👋
+                    </h2>
+                    @if(Auth::user()->student_id)
+                    <span style="background:rgba(255,255,255,0.1);color:var(--vc-text-secondary);padding:0.15rem 0.6rem;border-radius:1rem;font-size:0.7rem;font-family:monospace;font-weight:700;border:1px solid rgba(255,255,255,0.05)" title="Your Student ID">
+                        {{ Auth::user()->student_id }}
+                    </span>
+                    @endif
+                </div>
                 <p style="font-size:0.8rem;color:var(--vc-text-secondary, #71717a)">
                     {{ now()->format('l, F j, Y') }} · {{ $courses->count() }} active {{ Str::plural('course', $courses->count()) }}
                 </p>
