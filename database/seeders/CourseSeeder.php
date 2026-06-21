@@ -23,16 +23,16 @@ class CourseSeeder extends Seeder
 
         $students = [];
         $studentData = [
-            ['name' => 'Student Alex',    'email' => 'student@visioncode.ai'],
-            ['name' => 'Student Sara',    'email' => 'student2@visioncode.ai'],
-            ['name' => 'Student Jordan',  'email' => 'student3@visioncode.ai'],
-            ['name' => 'Student Priya',   'email' => 'student4@visioncode.ai'],
-            ['name' => 'Student Liam',    'email' => 'student5@visioncode.ai'],
+            ['name' => 'Student Alex',    'email' => 'student@visioncode.ai',  'student_id' => 'STU-DEMO01'],
+            ['name' => 'Student Sara',    'email' => 'student2@visioncode.ai', 'student_id' => 'STU-DEMO02'],
+            ['name' => 'Student Jordan',  'email' => 'student3@visioncode.ai', 'student_id' => 'STU-DEMO03'],
+            ['name' => 'Student Priya',   'email' => 'student4@visioncode.ai', 'student_id' => 'STU-DEMO04'],
+            ['name' => 'Student Liam',    'email' => 'student5@visioncode.ai', 'student_id' => 'STU-DEMO05'],
         ];
         foreach ($studentData as $s) {
             $students[] = User::updateOrCreate(['email' => $s['email']], [
                 'name' => $s['name'], 'password' => Hash::make('Student@12345'),
-                'role' => 'student', 'theme_preference' => 'dark', 'email_verified_at' => now(), 'status' => 'active',
+                'role' => 'student', 'student_id' => $s['student_id'], 'theme_preference' => 'dark', 'email_verified_at' => now(), 'status' => 'active',
             ]);
         }
 
