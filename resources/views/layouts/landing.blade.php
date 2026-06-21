@@ -27,15 +27,16 @@
 
     <!-- Design System Styles -->
     <style>
+        /* ── Light Mode ───────────────────────────────────────────────────────────── */
         :root {
-            --background: #050507;
-            --foreground: #f4f4f5;
-            --surface: rgba(255, 255, 255, 0.03);
-            --surface-2: rgba(255, 255, 255, 0.06);
-            --muted: rgba(255, 255, 255, 0.04);
-            --muted-foreground: rgba(244, 244, 245, 0.6);
-            --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.16);
+            --background: #fafaf8;
+            --foreground: #1a1714;
+            --surface: rgba(0, 0, 0, 0.03);
+            --surface-2: rgba(0, 0, 0, 0.06);
+            --muted: rgba(0, 0, 0, 0.04);
+            --muted-foreground: rgba(26, 23, 20, 0.6);
+            --border: rgba(0, 0, 0, 0.08);
+            --border-hover: rgba(0, 0, 0, 0.16);
             --indigo: #4f46e5;
             --indigo-light: #818cf8;
             --rose: #f0426d;
@@ -48,6 +49,30 @@
             --violet: #9b5de5;
             --violet-light: #c7a6f5;
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ── Dark Mode ────────────────────────────────────────────────────────────── */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #050507;
+                --foreground: #f4f4f5;
+                --surface: rgba(255, 255, 255, 0.03);
+                --surface-2: rgba(255, 255, 255, 0.06);
+                --muted: rgba(255, 255, 255, 0.04);
+                --muted-foreground: rgba(244, 244, 245, 0.6);
+                --border: rgba(255, 255, 255, 0.08);
+                --border-hover: rgba(255, 255, 255, 0.16);
+            }
+        }
+        html.dark :root {
+            --background: #050507;
+            --foreground: #f4f4f5;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-2: rgba(255, 255, 255, 0.06);
+            --muted: rgba(255, 255, 255, 0.04);
+            --muted-foreground: rgba(244, 244, 245, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.16);
         }
 
         * {

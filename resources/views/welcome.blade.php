@@ -31,15 +31,17 @@
         /* ═══════════════════════════════════════════════════════════════════
            DESIGN SYSTEM — 100% Lovable Reference Colors + Fonts
            ═══════════════════════════════════════════════════════════════════ */
+        /* ── Light Mode ───────────────────────────────────────────────────────────── */
         :root {
-            --background: #050507;
-            --foreground: #f4f4f5;
-            --surface: #ffffff08;
-            --surface-2: #ffffff0f;
-            --muted: #ffffff0a;
-            --muted-foreground: #f4f4f58c;
-            --border: #ffffff14;
-            --line: #ffffff0d;
+            --background: #fafaf8;
+            --foreground: #1a1714;
+            --surface: rgba(0, 0, 0, 0.03);
+            --surface-2: rgba(0, 0, 0, 0.06);
+            --muted: rgba(0, 0, 0, 0.04);
+            --muted-foreground: rgba(26, 23, 20, 0.6);
+            --border: rgba(0, 0, 0, 0.08);
+            --line: rgba(0, 0, 0, 0.05);
+            /* Brand Colors (Static across themes) */
             --indigo: #4f46e5;
             --indigo-light: #818cf8;
             --rose: #f0426d;
@@ -53,6 +55,30 @@
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* ── Dark Mode ────────────────────────────────────────────────────────────── */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #050507;
+                --foreground: #f4f4f5;
+                --surface: #ffffff08;
+                --surface-2: #ffffff0f;
+                --muted: #ffffff0a;
+                --muted-foreground: #f4f4f58c;
+                --border: #ffffff14;
+                --line: #ffffff0d;
+            }
+        }
+        html.dark :root {
+            --background: #050507;
+            --foreground: #f4f4f5;
+            --surface: #ffffff08;
+            --surface-2: #ffffff0f;
+            --muted: #ffffff0a;
+            --muted-foreground: #f4f4f58c;
+            --border: #ffffff14;
+            --line: #ffffff0d;
+        }
+        
         * {
             margin: 0;
             padding: 0;
