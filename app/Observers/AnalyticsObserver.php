@@ -17,9 +17,9 @@ class AnalyticsObserver
     protected function logEvent($model, string $action)
     {
         $userId = null;
-        if (isset($model->student_id)) $userId = $model->student_id;
+        if ($model instanceof \App\Models\User) $userId = $model->id;
         elseif (isset($model->user_id)) $userId = $model->user_id;
-        elseif ($model instanceof \App\Models\User) $userId = $model->id;
+        elseif (isset($model->student_id)) $userId = $model->student_id;
 
         if ($userId) {
             $eventType = strtolower(class_basename($model)) . '_' . $action;
