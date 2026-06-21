@@ -16,17 +16,7 @@
         padding: 8rem 2rem 4rem;
         overflow: hidden;
     }
-    .canvas-container {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-    }
-    .canvas-container canvas {
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
+
     .hero-headline {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
         font-weight: 700;
@@ -121,7 +111,7 @@
 
 <!-- HERO -->
 <section class="hero">
-    <div class="canvas-container" id="aboutHeroCanvas"></div>
+
     <div style="position:relative;z-index:10;max-width:900px;margin:0 auto" class="reveal">
         <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5">
             <span class="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">our mission</span>
@@ -218,22 +208,30 @@
 
     <div class="grid-4 reveal">
         <div class="card value-card glass-panel">
-            <div class="value-icon" style="background:rgba(168,85,247,0.1);color:var(--purple)">🔒</div>
+            <div class="value-icon" style="background:rgba(168,85,247,0.1);color:var(--purple)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg>
+            </div>
             <h3 class="value-title text-white">Absolute Isolation</h3>
             <p class="value-desc">Strict OS-level sandboxing on student workspaces. Drop all standard Docker privileges and bind custom resource quotas per student priority.</p>
         </div>
         <div class="card value-card glass-panel">
-            <div class="value-icon" style="background:rgba(0,229,255,0.1);color:var(--cyan)">🌐</div>
+            <div class="value-icon" style="background:rgba(0,229,255,0.1);color:var(--cyan)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
+            </div>
             <h3 class="value-title text-white">Open Nix Systems</h3>
             <p class="value-desc">No proprietary vendor locks. Package configurations are defined declaratively in Nix files, allowing identical builds across all university clusters.</p>
         </div>
         <div class="card value-card glass-panel">
-            <div class="value-icon" style="background:rgba(240,66,109,0.1);color:var(--pink)">🛡️</div>
+            <div class="value-icon" style="background:rgba(240,66,109,0.1);color:var(--pink)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
             <h3 class="value-title text-white">FERPA & GDPR Compliance</h3>
             <p class="value-desc">Zero telemetry tracking leaks. Workspace files, databases, and AI audit trails are stored inside your university GCP node boundary.</p>
         </div>
         <div class="card value-card glass-panel">
-            <div class="value-icon" style="background:rgba(0,191,166,0.1);color:var(--emerald)">🎓</div>
+            <div class="value-icon" style="background:rgba(0,191,166,0.1);color:var(--emerald)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
+            </div>
             <h3 class="value-title text-white">Socratic Guardrails</h3>
             <p class="value-desc">AI agents must ask guiding questions rather than direct copy-paste solutions, helping students develop critical logical thinking.</p>
         </div>
@@ -248,13 +246,34 @@
         <p class="section-sub" style="margin:0 auto">A highly resilient core built with proven open-source technologies.</p>
         
         <div class="tech-grid">
-            <div class="tech-badge"><span>🐘</span> Laravel 11</div>
-            <div class="tech-badge"><span>🐳</span> Docker Compose</div>
-            <div class="tech-badge"><span>⚡</span> Reverb WebSockets</div>
-            <div class="tech-badge"><span>📦</span> Redis Cache</div>
-            <div class="tech-badge"><span>💾</span> MySQL 8.0</div>
-            <div class="tech-badge"><span>❄️</span> Nix Package Manager</div>
-            <div class="tech-badge"><span>📐</span> WebGL / Three.js</div>
+            <div class="tech-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M16.5 9.4 7.55 4.24a1.79 1.79 0 0 0-2.5 1.55v12.42a1.79 1.79 0 0 0 2.5 1.55l8.95-5.16a1.79 1.79 0 0 0 0-3.1Z"></path></svg>
+                Laravel 11
+            </div>
+            <div class="tech-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="2" y1="14" x2="22" y2="14"></line><line x1="12" y1="10" x2="12" y2="22"></line></svg>
+                Docker Compose
+            </div>
+            <div class="tech-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Reverb WebSockets
+            </div>
+            <div class="tech-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                Redis Cache
+            </div>
+            <div class="tech-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path></svg>
+                MySQL 8.0
+            </div>
+            <div class="tech-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Nix Packages
+            </div>
+            <div class="tech-badge">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M21.17 19.17l-15-15A2 2 0 0 0 3 5.6v12.8a2 2 0 0 0 2 2h12.8a2 2 0 0 0 1.37-.56L21.17 19.17z"></path></svg>
+                WebGL / Three.js
+            </div>
         </div>
     </div>
 </section>
@@ -353,106 +372,6 @@
         }
     });
 
-    // ── Three.js Hero Scene (Icosahedrons & Particles) ──
-    (function initHeroScene() {
-        const container = document.getElementById('aboutHeroCanvas');
-        if (!container) return;
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 15);
-
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        // Lighting
-        scene.add(new THREE.AmbientLight(0x404060, 0.5));
-        const pl1 = new THREE.PointLight(0x9b5de5, 2, 40); pl1.position.set(5, 5, 8); scene.add(pl1);
-        const pl2 = new THREE.PointLight(0x17c3d6, 2, 40); pl2.position.set(-5, -5, 8); scene.add(pl2);
-
-        // Floating Icosahedrons
-        const count = 8;
-        const floaters = [];
-        for (let i = 0; i < count; i++) {
-            const geo = new THREE.IcosahedronGeometry(Math.random() * 0.8 + 0.4, 1);
-            const color = Math.random() > 0.5 ? 0x9b5de5 : 0x17c3d6;
-            const mat = new THREE.MeshStandardMaterial({
-                color: color,
-                emissive: color,
-                emissiveIntensity: 0.15,
-                metalness: 0.8,
-                roughness: 0.2,
-                wireframe: Math.random() > 0.4
-            });
-            const m = new THREE.Mesh(geo, mat);
-            m.position.set(
-                (Math.random() - 0.5) * 16,
-                (Math.random() - 0.5) * 10,
-                (Math.random() - 0.5) * 6 - 2
-            );
-            m.userData = {
-                speed: Math.random() * 0.005 + 0.002,
-                floatSpeed: Math.random() * 0.002 + 0.001,
-                offset: Math.random() * Math.PI
-            };
-            scene.add(m);
-            floaters.push(m);
-        }
-
-        // Particle field
-        const pCount = 300;
-        const pGeo = new THREE.BufferGeometry();
-        const pPos = new Float32Array(pCount * 3);
-        for (let i = 0; i < pCount; i++) {
-            pPos[i*3] = (Math.random() - 0.5) * 30;
-            pPos[i*3+1] = (Math.random() - 0.5) * 20;
-            pPos[i*3+2] = (Math.random() - 0.5) * 15;
-        }
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-        const pMat = new THREE.PointsMaterial({
-            color: 0x9b5de5,
-            size: 0.04,
-            transparent: true,
-            opacity: 0.4,
-            blending: THREE.AdditiveBlending
-        });
-        const particles = new THREE.Points(pGeo, pMat);
-        scene.add(particles);
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', e => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            const t = clock.getElapsedTime();
-
-            floaters.forEach(f => {
-                f.rotation.x += f.userData.speed;
-                f.rotation.y += f.userData.speed * 0.7;
-                f.position.y += Math.sin(t * 1.5 + f.userData.offset) * 0.002;
-            });
-
-            particles.rotation.y = t * 0.01;
-
-            camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
-            camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.02;
-            camera.lookAt(0, 0, 0);
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-    })();
 </script>
 @endsection

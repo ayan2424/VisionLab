@@ -208,17 +208,7 @@
         padding: 8rem 2rem 4rem;
         overflow: hidden;
     }
-    .canvas-container {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-    }
-    .canvas-container canvas {
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
+
     .hero-headline {
         font-size: clamp(2.5rem, 5vw, 4.5rem);
         font-weight: 700;
@@ -231,7 +221,7 @@
 @section('content')
 <!-- HERO SECTION -->
 <section class="hero">
-    <div class="canvas-container" id="contactHeroCanvas"></div>
+
     <div style="position:relative;z-index:10;max-width:900px;margin:0 auto">
         <h1 class="hero-headline reveal text-gradient-hero">
             Let's <span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">collaborate.</span>
@@ -329,89 +319,4 @@
 </div>
 @endsection
 
-@section('scripts')
-<script type="module">
-    import * as THREE from 'three';
 
-    // ── Three.js Hero Scene (Envelopes / Floating wireframe boxes) ──
-    (function initHeroScene() {
-        const container = document.getElementById('contactHeroCanvas');
-        if (!container) return;
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 10);
-
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        scene.add(new THREE.AmbientLight(0x404060, 0.5));
-        const pl = new THREE.PointLight(0xa855f7, 2, 25); pl.position.set(4, 2, 5); scene.add(pl);
-        const pl2 = new THREE.PointLight(0x00e5ff, 2, 25); pl2.position.set(-4, -2, 5); scene.add(pl2);
-
-        // Abstract Envelopes (Boxes deformed)
-        const count = 6;
-        const floaters = [];
-        for (let i = 0; i < count; i++) {
-            const geo = new THREE.BoxGeometry(1.6, 1.0, 0.1);
-            const color = Math.random() > 0.5 ? 0xa855f7 : 0xec4899;
-            const mat = new THREE.MeshStandardMaterial({
-                color: color,
-                emissive: color,
-                emissiveIntensity: 0.15,
-                metalness: 0.7,
-                roughness: 0.3,
-                wireframe: Math.random() > 0.6
-            });
-            const m = new THREE.Mesh(geo, mat);
-            m.position.set(
-                (Math.random() - 0.5) * 14,
-                (Math.random() - 0.5) * 8,
-                (Math.random() - 0.5) * 6 - 2
-            );
-            m.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-            m.userData = {
-                rx: Math.random() * 0.008 + 0.002,
-                ry: Math.random() * 0.008 + 0.002,
-                speedY: Math.random() * 0.002 + 0.001,
-                offset: Math.random() * Math.PI
-            };
-            scene.add(m);
-            floaters.push(m);
-        }
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', e => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            const t = clock.getElapsedTime();
-
-            floaters.forEach(f => {
-                f.rotation.x += f.userData.rx;
-                f.rotation.y += f.userData.ry;
-                f.position.y += Math.sin(t * 1.2 + f.userData.offset) * 0.002;
-            });
-
-            camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.02;
-            camera.position.y += (-mouseY * 1.0 - camera.position.y) * 0.02;
-            camera.lookAt(0, 0, 0);
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-    })();
-</script>
-@endsection

@@ -193,17 +193,7 @@
         padding: 8rem 2rem 4rem;
         overflow: hidden;
     }
-    .canvas-container {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-    }
-    .canvas-container canvas {
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
+
     .hero-headline {
         font-size: clamp(2.5rem, 5vw, 4.5rem);
         font-weight: 700;
@@ -216,7 +206,7 @@
 @section('content')
 <!-- HERO SECTION -->
 <section class="hero">
-    <div class="canvas-container" id="docsHeroCanvas"></div>
+
     <div style="position:relative;z-index:10;max-width:900px;margin:0 auto">
         <h1 class="hero-headline reveal text-gradient-hero">
             Architectural <br><span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">developer guide.</span>
@@ -482,79 +472,6 @@ pkgs.mkShell {
         el.classList.add('active');
     };
 
-    // ── Three.js Hero Scene (Matrix-like falling particles) ──
-    (function initHeroScene() {
-        const container = document.getElementById('docsHeroCanvas');
-        if (!container) return;
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 10);
-
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        scene.add(new THREE.AmbientLight(0x404060, 0.5));
-        const pl = new THREE.PointLight(0x00e5ff, 2, 25); pl.position.set(4, 2, 5); scene.add(pl);
-        const pl2 = new THREE.PointLight(0xa855f7, 2, 25); pl2.position.set(-4, -2, 5); scene.add(pl2);
-
-        // Falling code particles
-        const pCount = 200;
-        const pGeo = new THREE.BufferGeometry();
-        const pPos = new Float32Array(pCount * 3);
-        const speeds = [];
-        for (let i = 0; i < pCount; i++) {
-            pPos[i*3] = (Math.random() - 0.5) * 20;
-            pPos[i*3+1] = (Math.random() - 0.5) * 12;
-            pPos[i*3+2] = (Math.random() - 0.5) * 8 - 2;
-            speeds.push(Math.random() * 0.02 + 0.005);
-        }
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-        const pMat = new THREE.PointsMaterial({
-            color: 0xa855f7,
-            size: 0.06,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending
-        });
-        const particles = new THREE.Points(pGeo, pMat);
-        scene.add(particles);
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', e => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Falling animation
-            const pos = particles.geometry.attributes.position.array;
-            for (let i = 0; i < pCount; i++) {
-                pos[i*3+1] -= speeds[i];
-                if (pos[i*3+1] < -6) {
-                    pos[i*3+1] = 6;
-                }
-            }
-            particles.geometry.attributes.position.needsUpdate = true;
-
-            camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.02;
-            camera.position.y += (-mouseY * 1.0 - camera.position.y) * 0.02;
-            camera.lookAt(0, 0, 0);
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-    })();
 </script>
 @endsection

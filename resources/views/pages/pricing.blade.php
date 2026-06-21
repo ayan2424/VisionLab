@@ -16,17 +16,7 @@
         padding: 8rem 2rem 4rem;
         overflow: hidden;
     }
-    .canvas-container {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-    }
-    .canvas-container canvas {
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
+
     .hero-headline {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
         font-weight: 700;
@@ -125,7 +115,7 @@
 
 <!-- HERO -->
 <section class="hero">
-    <div class="canvas-container" id="pricingHeroCanvas"></div>
+
     <div style="position:relative;z-index:10;max-width:900px;margin:0 auto" class="reveal">
         <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5">
             <span class="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">transparent scaling</span>
@@ -376,85 +366,6 @@
         });
     });
 
-    // ── Three.js Hero Scene (Drifting Torus & Octahedron) ──
-    (function initHeroScene() {
-        const container = document.getElementById('pricingHeroCanvas');
-        if (!container) return;
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 10);
-
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        // Lighting
-        scene.add(new THREE.AmbientLight(0x404060, 0.5));
-        const pl = new THREE.PointLight(0x9b5de5, 2.5, 30); pl.position.set(5, 5, 8); scene.add(pl);
-        const pl2 = new THREE.PointLight(0x17c3d6, 2, 30); pl2.position.set(-5, -5, 8); scene.add(pl2);
-
-        // Torus Wireframe
-        const torusGeo = new THREE.TorusGeometry(2.5, 0.6, 12, 48);
-        const torusMat = new THREE.MeshStandardMaterial({
-            color: 0x9b5de5,
-            emissive: 0x9b5de5,
-            emissiveIntensity: 0.1,
-            metalness: 0.9,
-            roughness: 0.2,
-            wireframe: true
-        });
-        const torus = new THREE.Mesh(torusGeo, torusMat);
-        torus.position.set(-3, 1, -1);
-        scene.add(torus);
-
-        // Octahedron Wireframe
-        const octGeo = new THREE.OctahedronGeometry(1.6, 1);
-        const octMat = new THREE.MeshStandardMaterial({
-            color: 0x17c3d6,
-            emissive: 0x17c3d6,
-            emissiveIntensity: 0.15,
-            metalness: 0.8,
-            roughness: 0.2,
-            wireframe: true
-        });
-        const octahedron = new THREE.Mesh(octGeo, octMat);
-        octahedron.position.set(3, -1, 1);
-        scene.add(octahedron);
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', e => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            const t = clock.getElapsedTime();
-
-            torus.rotation.x = t * 0.15;
-            torus.rotation.y = t * 0.2;
-            torus.position.y += Math.sin(t * 1.2) * 0.0015;
-
-            octahedron.rotation.x = -t * 0.25;
-            octahedron.rotation.z = t * 0.15;
-            octahedron.position.y += Math.cos(t * 1.5) * 0.002;
-
-            camera.position.x += (mouseX * 1.8 - camera.position.x) * 0.02;
-            camera.position.y += (-mouseY * 1.2 - camera.position.y) * 0.02;
-            camera.lookAt(0, 0, 0);
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-    })();
 </script>
 @endsection

@@ -16,17 +16,7 @@
         padding: 8rem 2rem 4rem;
         overflow: hidden;
     }
-    .canvas-container {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-    }
-    .canvas-container canvas {
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
+
     .hero-headline {
         font-size: clamp(2.5rem, 6vw, 4.5rem);
         font-weight: 700;
@@ -133,7 +123,7 @@
 
 <!-- HERO -->
 <section class="hero">
-    <div class="canvas-container" id="featuresHeroCanvas"></div>
+
     <div style="position:relative;z-index:10;max-width:900px;margin:0 auto" class="reveal">
         <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5">
             <span class="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">Capabilities Matrix</span>
@@ -215,7 +205,10 @@
         </div>
         <div class="feature-visual">
             <div class="mock-header">
-                <span style="color:var(--violet-light);font-size:0.65rem;font-weight:700">🤖 Kernel AI Copilot</span>
+                <span style="color:var(--violet-light);font-size:0.65rem;font-weight:700">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4M8 16h.01M16 16h.01"></path></svg>
+                    Kernel AI Copilot
+                </span>
             </div>
             <div class="mock-body" style="display:flex;flex-direction:column;gap:0.75rem;">
                 <div style="background:rgba(255,255,255,0.02);padding:8px 12px;border-radius:8px;">
@@ -381,27 +374,39 @@
 
     <div class="integration-grid reveal">
         <div class="integration-card">
-            <span class="integration-icon">🎨</span>
+            <span class="integration-icon" style="color:var(--purple)">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.02107 19.1625 5.09703 19.3905 5.06019 19.6174C5.00843 19.9366 5.00007 20.2599 5.00007 20.5882C5.00007 21.3679 5.63214 22 6.41177 22H12Z"></path></svg>
+            </span>
             <span class="integration-name">Canvas LMS</span>
         </div>
         <div class="integration-card">
-            <span class="integration-icon">🎓</span>
+            <span class="integration-icon" style="color:var(--cyan)">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
+            </span>
             <span class="integration-name">Moodle LMS</span>
         </div>
         <div class="integration-card">
-            <span class="integration-icon">🗂️</span>
+            <span class="integration-icon" style="color:var(--pink)">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            </span>
             <span class="integration-name">Blackboard</span>
         </div>
         <div class="integration-card">
-            <span class="integration-icon">🐙</span>
+            <span class="integration-icon" style="color:var(--emerald)">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" style="width:24px; height:24px;"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            </span>
             <span class="integration-name">GitHub API</span>
         </div>
         <div class="integration-card">
-            <span class="integration-icon">⚡</span>
+            <span class="integration-icon" style="color:var(--cyan)">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" style="width:24px; height:24px;"><path d="M24 22.525H0L12 1.475L24 22.525Z"/></svg>
+            </span>
             <span class="integration-name">Vercel Deploy</span>
         </div>
         <div class="integration-card">
-            <span class="integration-icon">🚂</span>
+            <span class="integration-icon" style="color:var(--violet-light)">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M7 11h10M11 7v10"></path></svg>
+            </span>
             <span class="integration-name">Railway Deploy</span>
         </div>
     </div>
@@ -420,90 +425,4 @@
 </section>
 @endsection
 
-@section('scripts')
-<script type="module">
-    import * as THREE from 'three';
 
-    // ── Three.js Hero Scene (Particle Sphere) ──
-    (function initHeroScene() {
-        const container = document.getElementById('featuresHeroCanvas');
-        if (!container) return;
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 10);
-
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        // Lighting
-        scene.add(new THREE.AmbientLight(0x404060, 0.5));
-        const pl = new THREE.PointLight(0x17c3d6, 2, 30); pl.position.set(4, 4, 6); scene.add(pl);
-        const pl2 = new THREE.PointLight(0xf0426d, 1.5, 30); pl2.position.set(-4, -4, 6); scene.add(pl2);
-
-        // Particle Sphere
-        const pCount = 500;
-        const pGeo = new THREE.BufferGeometry();
-        const pPos = new Float32Array(pCount * 3);
-        const radius = 3.5;
-        for (let i = 0; i < pCount; i++) {
-            const u = Math.random();
-            const v = Math.random();
-            const theta = u * 2.0 * Math.PI;
-            const phi = Math.acos(2.0 * v - 1.0);
-            
-            pPos[i*3] = radius * Math.sin(phi) * Math.cos(theta);
-            pPos[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
-            pPos[i*3+2] = radius * Math.cos(phi);
-        }
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-        const pMat = new THREE.PointsMaterial({
-            color: 0x17c3d6,
-            size: 0.05,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending
-        });
-        const sphere = new THREE.Points(pGeo, pMat);
-        scene.add(sphere);
-
-        // Orbiting rings
-        const ringGeo = new THREE.TorusGeometry(radius + 0.5, 0.015, 8, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x9b5de5, transparent: true, opacity: 0.3 });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.x = Math.PI / 3;
-        scene.add(ring);
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', e => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            const t = clock.getElapsedTime();
-
-            sphere.rotation.y = t * 0.05;
-            sphere.rotation.x = t * 0.02;
-            ring.rotation.z = -t * 0.1;
-
-            camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.02;
-            camera.position.y += (-mouseY * 1.0 - camera.position.y) * 0.02;
-            camera.lookAt(0, 0, 0);
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-    })();
-</script>
-@endsection
