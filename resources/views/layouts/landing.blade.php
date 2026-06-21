@@ -233,54 +233,15 @@
     <div class="cursor-ring" id="cursorRing"></div>
 
     <!-- Navigation -->
-    <nav class="nav" id="mainNav">
-        <div class="nav-inner">
-            <a href="{{ route('home') }}" class="flex items-center gap-2.5 text-decoration-none text-foreground" style="text-decoration:none;">
-                <img src="{{ asset('icons/logo.svg') }}" alt="VisionLab Logo" style="height:26px; width:26px; object-fit:contain;">
-                <span class="font-display text-[15px] font-semibold tracking-tight text-white">VisionLab</span>
-                <span class="hidden font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:inline">/ edu</span>
-            </a>
-            <div class="nav-links">
-                <a href="{{ route('about') }}" class="{{ Route::currentRouteName() == 'about' ? 'active' : '' }}">About</a>
-                <a href="{{ route('features') }}" class="{{ Route::currentRouteName() == 'features' ? 'active' : '' }}">Features</a>
-                <a href="{{ route('pricing') }}" class="{{ Route::currentRouteName() == 'pricing' ? 'active' : '' }}">Pricing</a>
-                <a href="{{ route('docs') }}" class="{{ Route::currentRouteName() == 'docs' ? 'active' : '' }}">Docs</a>
-                <a href="{{ route('contact') }}" class="{{ Route::currentRouteName() == 'contact' ? 'active' : '' }}">Contact</a>
-            </div>
-            <div style="display:flex;align-items:center;gap:1rem">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="btn btn-primary" style="padding:0.5rem 1.4rem; font-size:10px;">Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-secondary" style="padding:0.5rem 1.4rem; font-size:10px;">Sign In</a>
-                    <a href="{{ route('register') }}" class="btn btn-primary" style="padding:0.5rem 1.4rem; font-size:10px;">Deploy</a>
-                @endauth
-            </div>
-        </div>
-    </nav>
+    <x-frontend-header />
 
     <!-- Main Content Yield -->
-    <div class="relative min-h-screen">
+    <div class="relative min-h-screen pt-20">
         @yield('content')
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-                <img src="{{ asset('icons/logo.svg') }}" alt="VisionLab Logo" style="height:22px; width:22px; object-fit:contain;">
-                <span class="font-display text-sm font-semibold text-white">VisionLab</span>
-                <span class="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">© 2026 · APTECH VISION</span>
-            </div>
-            <div class="footer-links">
-                <a href="{{ route('about') }}">About</a>
-                <a href="{{ route('features') }}">Features</a>
-                <a href="{{ route('pricing') }}">Pricing</a>
-                <a href="{{ route('docs') }}">Docs</a>
-                <a href="{{ route('contact') }}">Contact</a>
-                <a href="{{ route('health') }}">Status</a>
-            </div>
-        </div>
-    </footer>
+    <x-frontend-footer />
 
     <!-- Global Scripts -->
     <script>

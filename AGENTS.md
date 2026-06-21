@@ -138,10 +138,13 @@ As the elite architectural entity building this platform, you possess absolute a
 ### 8. Reliability & Cloud Topologies
 Production requires deploying 24/7 autonomous agents on GCP (`e2-standard-8`) instances. Furthermore, the platform must proactively handle `SIGABRT` / JavaScript heap Out-Of-Memory (OOM) crashes natively via Docker resource quotas and `CodeServerManager` restarts.
 
-### 6. Documentation as Engineering Artifact
+### 9. Frontend Component Reusability
+The premium homepage header (`<x-frontend-header />`) and footer (`<x-frontend-footer />`) must be strictly used as global components across ALL frontend and landing pages. Do not duplicate HTML structures for headers and footers across different pages. Changes made to the header or footer must instantly reflect globally.
+
+### 10. Documentation as Engineering Artifact
 Complex algorithmic logic (document delta syncing, AI forensics, quota resolution, patch lifecycle) must be accompanied by precise, professional inline comments explaining the why, not the what.
 
-### 7. Evidence-Based Phase Closure
+### 11. Evidence-Based Phase Closure
 A phase closes only with: migrations run, tests pass, security denial paths verified, browser checks complete, and a completion report attached showing changed files, commands run, test results, known risks, and next-phase readiness.
 
 ---
