@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth dark">
 
 <head>
     <meta charset="utf-8">
@@ -34,16 +34,16 @@
         /* ═══════════════════════════════════════════════════════════════════
            DESIGN SYSTEM — 100% Lovable Reference Colors + Fonts
            ═══════════════════════════════════════════════════════════════════ */
-        /* ── Light Mode ───────────────────────────────────────────────────────────── */
+        /* ── Forced Dark Mode ───────────────────────────────────────────────────────────── */
         :root {
-            --background: #fafaf8;
-            --foreground: #1a1714;
-            --surface: rgba(0, 0, 0, 0.03);
-            --surface-2: rgba(0, 0, 0, 0.06);
-            --muted: rgba(0, 0, 0, 0.04);
-            --muted-foreground: rgba(26, 23, 20, 0.6);
-            --border: rgba(0, 0, 0, 0.08);
-            --line: rgba(0, 0, 0, 0.05);
+            --background: #050507;
+            --foreground: #f4f4f5;
+            --surface: #ffffff08;
+            --surface-2: #ffffff0f;
+            --muted: #ffffff0a;
+            --muted-foreground: #f4f4f58c;
+            --border: #ffffff14;
+            --line: #ffffff0d;
             /* Brand Colors (Static across themes) */
             --indigo: #4f46e5;
             --indigo-light: #818cf8;
@@ -56,30 +56,6 @@
             --violet: #9b5de5;
             --violet-light: #c7a6f5;
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* ── Dark Mode ────────────────────────────────────────────────────────────── */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --background: #050507;
-                --foreground: #f4f4f5;
-                --surface: #ffffff08;
-                --surface-2: #ffffff0f;
-                --muted: #ffffff0a;
-                --muted-foreground: #f4f4f58c;
-                --border: #ffffff14;
-                --line: #ffffff0d;
-            }
-        }
-        html.dark :root {
-            --background: #050507;
-            --foreground: #f4f4f5;
-            --surface: #ffffff08;
-            --surface-2: #ffffff0f;
-            --muted: #ffffff0a;
-            --muted-foreground: #f4f4f58c;
-            --border: #ffffff14;
-            --line: #ffffff0d;
         }
         
         * {
@@ -100,13 +76,9 @@
             overflow-x: hidden;
             line-height: 1.6;
             /* Animated gradient background */
-            background-image: linear-gradient(-45deg, #fafaf8, #f3f1ed, #ffffff, #fafaf8);
+            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
             background-size: 400% 400%;
             animation: gradientBg 18s ease infinite;
-        }
-
-        html.dark body {
-            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
         }
 
         @keyframes gradientBg {
@@ -141,11 +113,6 @@
         .metallic-text {
             -webkit-text-fill-color: transparent;
             color: rgba(0, 0, 0, 0);
-            background: linear-gradient(rgb(0, 0, 0) 0%, rgb(80, 80, 80) 40%, rgb(120, 120, 120) 100%) text;
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-        html.dark .metallic-text {
             background: linear-gradient(rgb(255, 255, 255) 0%, rgb(229, 231, 235) 40%, rgb(148, 163, 184) 100%) text;
             -webkit-background-clip: text;
             background-clip: text;
