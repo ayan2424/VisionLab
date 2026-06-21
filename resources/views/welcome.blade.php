@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth dark">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="utf-8">
@@ -26,6 +26,18 @@
 
     <!-- Three.js Global -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Theme Check Script -->
+    <script>
+        (function() {
+            var t = localStorage.getItem('vc-theme');
+            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
 
     <style>
         /* ═══════════════════════════════════════════════════════════════════
@@ -97,9 +109,13 @@
             overflow-x: hidden;
             line-height: 1.6;
             /* Animated gradient background */
-            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
+            background-image: linear-gradient(-45deg, #fafaf8, #f3f1ed, #ffffff, #fafaf8);
             background-size: 400% 400%;
             animation: gradientBg 18s ease infinite;
+        }
+
+        html.dark body {
+            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
         }
 
         @keyframes gradientBg {

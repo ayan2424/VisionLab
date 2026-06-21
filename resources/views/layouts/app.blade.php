@@ -33,11 +33,15 @@
     <meta name="auth-user-role" content="{{ Auth::user()->role }}">
     @endif
 
-    {{-- Enforce Strict Dark Theme --}}
+    {{-- Prevent flash of wrong theme --}}
     <script>
         (function() {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('vc-theme', 'dark');
+            var t = localStorage.getItem('vc-theme');
+            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         })();
     </script>
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth dark">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,6 +23,18 @@
             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
         }
     }
+    </script>
+
+    <!-- Theme Check Script -->
+    <script>
+        (function() {
+            var t = localStorage.getItem('vc-theme');
+            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
     </script>
 
     <!-- Design System Styles -->
@@ -92,9 +104,13 @@
             font-family: 'Geist', -apple-system, sans-serif;
             overflow-x: hidden;
             line-height: 1.6;
-            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
+            background-image: linear-gradient(-45deg, #fafaf8, #f3f1ed, #ffffff, #fafaf8);
             background-size: 400% 400%;
             animation: gradientBg 18s ease infinite;
+        }
+        
+        html.dark body {
+            background-image: linear-gradient(-45deg, #050507, #0b0716, #050a12, #050507);
         }
 
         @keyframes gradientBg {
