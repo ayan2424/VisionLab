@@ -19,11 +19,14 @@ class User extends Authenticatable
         'name', 'email', 'password', 'role', 'status', 'student_id',
         'avatar_url', 'theme_preference',
         'last_activity_at', 'current_streak', 'longest_streak',
+        'vercel_token', 'railway_token',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'vercel_token',
+        'railway_token',
     ];
 
     protected function casts(): array
@@ -34,6 +37,8 @@ class User extends Authenticatable
             'last_activity_at'  => 'datetime',
             'current_streak'    => 'integer',
             'longest_streak'    => 'integer',
+            'vercel_token'      => 'encrypted',
+            'railway_token'     => 'encrypted',
         ];
     }
 

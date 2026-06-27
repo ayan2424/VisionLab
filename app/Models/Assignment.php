@@ -14,12 +14,14 @@ class Assignment extends Model
     protected $fillable = [
         'course_id', 'title', 'description', 'max_points',
         'due_date', 'starter_code', 'starter_language', 'auto_workspace',
+        'mode', 'allow_ai',
     ];
 
     protected $casts = [
-        'due_date'      => 'datetime',
+        'due_date'       => 'datetime',
         'auto_workspace' => 'boolean',
-        'max_points'    => 'integer',
+        'max_points'     => 'integer',
+        'allow_ai'       => 'boolean',
     ];
 
     public function course(): BelongsTo

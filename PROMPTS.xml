@@ -16,6 +16,7 @@
       <BASIS>PWA behavior must improve reliability without misleading users: service workers are optional enhancement layers, offline fallbacks must be explicit, and online-only capabilities such as live IDE workspaces must fail honestly.</BASIS>
       <BASIS>Extension & IDE Modifications: AI must strictly use source-level compilation (e.g., Docker) for both IDE extensions AND the core `code-server` engine. Shortcuts like regex-patching compiled JS bundles to hide UI elements or bypass proper telemetry removal are strictly forbidden. Unwanted components must be eradicated natively at the source level.</BASIS>
       <BASIS>Container environments are fundamentally Nix-based. Using `apt` or `apt-get` to install packages is strictly non-viable and forbidden. All package resolution must occur via `dev.nix`.</BASIS>
+      <BASIS>LOCAL ARTIFACT BACKUP CONFIRMED: The successfully compiled `visionlab-ide-1.0.0-linux-amd64.tar.gz` (with full native branding, nix integration, and preserved File Explorer/Welcome page) has been securely downloaded to the local workspace root.</BASIS>
     </RESEARCH_BASIS>
     <SOURCE_REFERENCES>
       <REFERENCE name="OpenAI Prompt Engineering" url="https://developers.openai.com/api/docs/guides/prompt-engineering"/>

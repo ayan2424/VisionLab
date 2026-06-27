@@ -851,7 +851,37 @@ class CodeServerManager
         }
     }
 
+    /**
+     * Run a terminal command inside the workspace container (or local fallback).
+     */
+    public function runTerminalCommand(Workspace $workspace, string $command): string
+    {
+        if (!$this->isDockerAvailable()) {
+            $workspacePath = $this->workspacePath($workspace);
+            if (!is_dir($workspacePath)) {
+                mkdir($workspacePath, 0755, true);
+            }
+            try {
+                $process = Process::fromShellCommandline($command);
+                $process->setWorkingDirectory($workspacePath);
+                $process->setTimeout(15);
+                $process->run();
+                return $process->getOutput() ?: $process->getErrorOutput() ?: 'Command completed with no output.';
+            } catch (\Throwable $e) {
+                return 'Error executing local fallback: ' . $e->getMessage();
+            }
+        }
 
+        $containerName = 'vl_ws_' . $workspace->id;
+        $process = new Process([
+            $this->dockerCmd(), 'exec', '-w', '/home/coder/project', $containerName,
+            'timeout', '15', 'bash', '-c', $command
+        ]);
+        $process->setTimeout(20);
+        $process->run();
+
+        return $process->getOutput() ?: $process->getErrorOutput() ?: 'Command completed with no output.';
+    }
 
     private function devFallback(Workspace $workspace): array
     {

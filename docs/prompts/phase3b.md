@@ -14,10 +14,10 @@
     <IMPLEMENTATION_REQUIREMENTS>
       <REQUIREMENT>Clone the `coder/code-server` repository to the local filesystem and initialize the `lib/vscode` submodule to expose the core VS Code source code.</REQUIREMENT>
       <REQUIREMENT>Profoundly rebrand the application by modifying `package.json`, `product.json`, and core window title mechanisms in `src/vs/workbench` to strictly display "VisionLab IDE" instead of Code-Server or VS Code.</REQUIREMENT>
-      <REQUIREMENT>Execute "UI Mutilation & Lockdown" at the source level: Identify and permanently disable/hide the generic file explorer, default welcome screens, activity bar sections, and extraneous telemetry that distract from the unified VisionLab shell.</REQUIREMENT>
+      <REQUIREMENT>Execute "UI Customization & Rebranding" at the source level: Rebrand and customize the Welcome/Getting Started page to display VisionLab branding and tutorials. Remove only extraneous upstream telemetry endpoints and update checkers. CRITICAL: Do NOT remove or disable native VS Code IDE components (File Explorer sidebar, Welcome/Getting Started page, Activity Bar, Terminal panel, Extensions sidebar). These are core IDE features — only rebrand and customize them.</REQUIREMENT>
       <REQUIREMENT>Inject the VisionLab Strict `#0a0a0a` Dark Theme directly into the default theme registry of the VS Code source, ensuring the IDE boots instantly into the required aesthetic without layout shifts or theme flashes.</REQUIREMENT>
       <REQUIREMENT>Bake the custom VisionLab AI Agent and Collaboration extensions natively into the source code's `extensions/` payload so they are fundamentally immovable and inseparable from the IDE binary.</REQUIREMENT>
-      <REQUIREMENT>Do NOT use CSS hacks (e.g., `display: none`) or runtime regex replacements on compiled bundles. If a UI element must be removed, it must be eradicated from the TypeScript UI layout definitions.</REQUIREMENT>
+      <REQUIREMENT>Do NOT use CSS hacks (e.g., `display: none`) or runtime regex replacements on compiled bundles. Branding changes (product name, logos, colors) should be made via `product.json`, theme JSON files, and HTML templates. Do NOT comment out or delete TypeScript registration calls for core IDE features (ViewContainers, Contributions, etc.) as this breaks the compilation.</REQUIREMENT>
       <REQUIREMENT>After local source mutations are complete, orchestrate the transfer (`rsync`/`scp`) of the modified codebase to the GCP high-end compilation server.</REQUIREMENT>
       <REQUIREMENT>Execute `yarn` and `yarn release` on the GCP server to produce the standalone `visionlab-ide-linux-amd64.tar.gz` artifact.</REQUIREMENT>
     </IMPLEMENTATION_REQUIREMENTS>
@@ -29,7 +29,7 @@
       <CRITERION>The compiled `visionlab-ide` binary boots natively as VisionLab IDE with no references to upstream Coder or Microsoft in the UI.</CRITERION>
       <CRITERION>The `#0a0a0a` dark mode is the unchangeable native default.</CRITERION>
       <CRITERION>The VisionLab AI Agent is natively present and cannot be uninstalled via the IDE's extension manager.</CRITERION>
-      <CRITERION>Extraneous UI elements (e.g., generic file explorers, telemetry opt-ins) are completely absent from the DOM.</CRITERION>
+      <CRITERION>Upstream telemetry endpoints and update checkers are removed. Native IDE components (File Explorer, Welcome page, Activity Bar, Terminal) are preserved and rebranded for VisionLab.</CRITERION>
     </ACCEPTANCE_CRITERIA>
     <EXECUTION_PROTOCOL>
       <STEP>Clone `code-server` and its submodules locally.</STEP>

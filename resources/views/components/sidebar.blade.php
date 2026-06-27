@@ -183,6 +183,16 @@
                 </svg>
                 Webhooks
             </a>
+            @php $stActive = request()->routeIs('admin.status'); @endphp
+            <a href="{{ route('admin.status') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
+               style="{{ $stActive ? 'color:#EF4444;background:rgba(239,68,68,0.08);font-weight:600;' : 'color:var(--vc-text-secondary);' }}">
+                @if($stActive)<span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-red-500"></span>@endif
+                <svg class="w-[18px] h-[18px]" style="{{ $stActive ? 'color:#EF4444;' : 'color:var(--vc-muted);' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                System Status
+            </a>
         </div>
         @endif
 

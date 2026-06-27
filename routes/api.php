@@ -11,19 +11,6 @@ Route::middleware(['auth:sanctum', 'throttle:push'])->post('/push-subscriptions'
 
 /*
 |--------------------------------------------------------------------------
-| Code Execution API
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:sanctum', 'throttle:api'])
-    ->prefix('code')->name('api.code.')->group(function () {
-    Route::post('/run',     [\App\Http\Controllers\CodeExecutionController::class, 'run'])
-        ->name('run');
-    Route::get('/runtimes', [\App\Http\Controllers\CodeExecutionController::class, 'runtimes'])
-        ->name('runtimes');
-});
-
-/*
-|--------------------------------------------------------------------------
 | Real-Time Collaboration API (Phase 4 â€” Reverb)
 |--------------------------------------------------------------------------
 */

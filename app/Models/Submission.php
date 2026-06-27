@@ -13,11 +13,14 @@ class Submission extends Model
     protected $fillable = [
         'assignment_id', 'student_id', 'workspace_snapshot_path',
         'code_snapshot', 'status', 'submitted_at', 'grade', 'feedback', 'graded_by',
+        'grade_published', 'draft_grade',
     ];
 
     protected $casts = [
-        'submitted_at' => 'datetime',
-        'grade'        => 'integer',
+        'submitted_at'    => 'datetime',
+        'grade'           => 'integer',
+        'grade_published' => 'boolean',
+        'draft_grade'     => 'float',
     ];
 
     public function assignment(): BelongsTo

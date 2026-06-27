@@ -18,24 +18,6 @@ class WorkspaceController extends Controller
         $this->codeServerManager = $codeServerManager;
     }
 
-    public static function pistonLanguage(string $lang): array
-    {
-        return match ($lang) {
-            'python'     => ['language' => 'python',     'version' => '3.10.0'],
-            'javascript' => ['language' => 'javascript', 'version' => '18.15.0'],
-            'typescript' => ['language' => 'typescript', 'version' => '5.0.3'],
-            'php'        => ['language' => 'php',        'version' => '8.2.3'],
-            'java'       => ['language' => 'java',       'version' => '15.0.2'],
-            'c'          => ['language' => 'c',          'version' => '10.2.0'],
-            'cpp'        => ['language' => 'c++',        'version' => '10.2.0'],
-            'rust'       => ['language' => 'rust',       'version' => '1.50.0'],
-            'go'         => ['language' => 'go',         'version' => '1.16.2'],
-            'ruby'       => ['language' => 'ruby',       'version' => '3.0.1'],
-            'bash'       => ['language' => 'bash',       'version' => '5.2.0'],
-            default      => ['language' => 'python',     'version' => '3.10.0'],
-        };
-    }
-
     /** Personal workspace — auto-provisions */
     public function index(Request $request)
     {
@@ -102,7 +84,7 @@ class WorkspaceController extends Controller
             'workspace'       => $workspace->fresh(),
             'workspaceName'   => $workspace->name,
             'roomSlug'        => 'ws-' . $workspace->id,
-            'isCollaborative' => $workspace->collaborators()->count() > 1,
+            'isCollaborative' => $workspace->collaborators()->count() > 1 && (!$workspace->assignment || $workspace->assignment->mode !== 'exam'),
             'reverbConfig'    => self::reverbConfig(),
             'vscodeUrl'       => $serverInfo['url'],
         ]);

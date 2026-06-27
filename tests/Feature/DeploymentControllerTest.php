@@ -71,7 +71,7 @@ class DeploymentControllerTest extends TestCase
             'provider'      => 'vercel',
             'status'        => 'deployed',
             'deployment_id' => 'dpl_12345abcde',
-            'public_url'    => 'visionlab-test.vercel.app',
+            'public_url'    => 'https://visionlab-test.vercel.app',
         ]);
     }
 
@@ -108,7 +108,7 @@ class DeploymentControllerTest extends TestCase
             'provider'      => 'railway',
             'status'        => 'deployed',
             'deployment_id' => 'railway-dep-123',
-            'public_url'    => 'https://railway-dep-123.railway.app',
+            'public_url'    => 'https://railway-dep-123.up.railway.app',
         ]);
     }
 
@@ -118,21 +118,17 @@ class DeploymentControllerTest extends TestCase
         $workspace = $data['workspace'];
         $student = $data['student'];
 
-        // Vercel token is NOT configured
+        // Ensure neither user token nor system token exists
+        $student->update(['vercel_token' => null]);
         config(['visionlab.deploy.vercel_token' => null]);
 
         $response = $this->actingAs($student)->postJson(route('workspace.deploy', $workspace->id), [
             'provider' => 'vercel',
         ]);
 
-        $response->assertOk()
-                 ->assertJsonPath('status', 'queued'); // Still returns queued but updates status in DB to failed
-
-        $this->assertDatabaseHas('deployments', [
-            'workspace_id'  => $workspace->id,
-            'status'        => 'failed',
-            'error_summary' => 'Vercel token not configured.',
-        ]);
+        // Controller now validates token presence early and returns 422
+        $response->assertStatus(422)
+                 ->assertJsonStructure(['error']);
     }
 
     public function test_non_owner_cannot_deploy_workspace(): void
@@ -153,6 +149,9 @@ class DeploymentControllerTest extends TestCase
         $data = $this->createWorkspaceForStudent();
         $workspace = $data['workspace'];
         $student = $data['student'];
+
+        // Provide a valid token so we pass the token check and hit the duplicate check
+        config(['visionlab.deploy.vercel_token' => 'mock-vercel-token']);
 
         // Setup an active build
         Deployment::create([

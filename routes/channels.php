@@ -29,11 +29,20 @@ Broadcast::channel('collab.{roomSlug}', function ($user, $roomSlug) {
         if (!$workspace) return false;
         
         // Authorization: Must be owner, collaborator, or instructor of the course
-        $canAccess = $workspace->user_id === $user->id || 
+        $canAccess = $workspace->student_id === $user->id || 
                      $workspace->collaborators()->where('user_id', $user->id)->exists() ||
                      ($workspace->course && $workspace->course->instructor_id === $user->id);
                      
         if (!$canAccess) return false;
+
+        // Exam Mode check: Block other students if it is an exam
+        if ($workspace->assignment && $workspace->assignment->mode === 'exam') {
+            $isOwner = $workspace->student_id === $user->id;
+            $isInstructor = $workspace->course && $workspace->course->instructor_id === $user->id;
+            if (!$isOwner && !$isInstructor) {
+                return false;
+            }
+        }
     }
 
     $colors = ['#7c3aed', '#2563eb', '#0891b2', '#16a34a', '#dc2626', '#d97706', '#db2777'];

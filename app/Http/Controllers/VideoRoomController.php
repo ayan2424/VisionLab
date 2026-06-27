@@ -189,21 +189,34 @@ class VideoRoomController extends Controller
      */
     private function generateAiMeetingNotes(VideoRoom $videoRoom, string $slug)
     {
-        // For demonstration, we'll just query chat messages in the room during the session
-        // and create a mock summary. In production, this uses AiService to hit Anthropic.
-        $messagesCount = \Illuminate\Support\Facades\DB::table('collab_chat_messages')
-            ->where('workspace_ref', "ws-{$videoRoom->workspace_id}")
+        $messages = \App\Models\ChatMessage::with('user')
+            ->where('workspace_id', $videoRoom->workspace_id)
             ->where('created_at', '>=', $videoRoom->started_at)
-            ->where('created_at', '<=', $videoRoom->ended_at)
-            ->count();
+            ->where('created_at', '<=', $videoRoom->ended_at ?: now())
+            ->get();
 
-        $notes = "### AI Meeting Summary\n\n";
-        $notes .= "- **Room**: {$videoRoom->title}\n";
-        $notes .= "- **Duration**: " . $videoRoom->started_at->diffInMinutes($videoRoom->ended_at) . " minutes\n";
-        $notes .= "- **Chat Activity**: {$messagesCount} messages exchanged.\n\n";
-        $notes .= "*(AI Note: The collaborative session focused on debugging and real-time pair programming. No direct audio transcription is available for this session.)*";
+        if ($messages->isEmpty()) {
+            $notes = "### AI Meeting Summary\n\n";
+            $notes .= "- **Room**: {$videoRoom->title}\n";
+            $notes .= "- **Duration**: " . $videoRoom->started_at->diffInMinutes($videoRoom->ended_at ?: now()) . " minutes\n";
+            $notes .= "- **Chat Activity**: No messages exchanged.\n\n";
+            $notes .= "*(AI Note: The collaborative session had no chat messages exchanged. No direct meeting summary could be generated.)*";
+            $videoRoom->update(['meeting_notes' => $notes]);
+            return;
+        }
 
-        $videoRoom->update(['meeting_notes' => $notes]);
+        $transcript = "";
+        foreach ($messages as $msg) {
+            $userName = $msg->user ? $msg->user->name : 'Unknown User';
+            $transcript .= "{$userName}: {$msg->message}\n";
+        }
+
+        $systemPrompt = "You are an expert AI meeting assistant for VisionLab. Summarize the following chat log of a live collaborative pair-programming session. Focus on what topics were discussed, what code was written/edited, what bugs were resolved, and any action items. Make the summary structured, professional, and concise in Markdown format under a '### AI Meeting Summary' header.";
+
+        $aiService = app(\App\Services\AiService::class);
+        $summary = $aiService->getDirectCompletion($systemPrompt, $transcript);
+
+        $videoRoom->update(['meeting_notes' => $summary]);
     }
 
     /**

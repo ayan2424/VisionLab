@@ -15,7 +15,7 @@ class Course extends Model
     protected $fillable = [
         'instructor_id', 'title', 'slug', 'description', 'duration',
         'cover_image', 'enrollment_code', 'is_active', 'allow_marketplace',
-        'start_date', 'end_date', 'schedule_time', 'notes'
+        'start_date', 'end_date', 'schedule_time', 'notes', 'semester_id'
     ];
 
     protected $casts = [
@@ -34,6 +34,11 @@ class Course extends Model
                 $course->enrollment_code = strtoupper(Str::random(6));
             }
         });
+    }
+
+    public function semester(): BelongsTo
+    {
+        return $this->belongsTo(Semester::class);
     }
 
     public function instructor(): BelongsTo

@@ -4,26 +4,55 @@ namespace App\Services\Deployment;
 
 use App\Contracts\DeploymentProvider;
 use App\Models\Workspace;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 
 class RailwayProvider implements DeploymentProvider
 {
+    private ?string $tokenOverride;
+
+    public function __construct(?string $tokenOverride = null)
+    {
+        $this->tokenOverride = $tokenOverride;
+    }
+
     public function deploy(Workspace $workspace): array
     {
-        // Mocking Railway deployment API
-        $deploymentId = 'rail_' . Str::random(12);
-        $url = 'https://' . Str::slug($workspace->name) . '-' . Str::random(6) . '.up.railway.app';
+        $user = $workspace->owner;
+        $token = $this->tokenOverride ?: ($user?->railway_token ?: config('visionlab.deploy.railway_token'));
+
+        if (!$token) {
+            throw new \Exception('Railway API token is not configured.');
+        }
+
+        $response = Http::withToken($token)
+            ->timeout(60)
+            ->post('https://backboard.railway.app/graphql/v2', [
+                'query' => 'mutation { deploymentCreate(input: { projectId: "visionlab" }) { id status } }',
+            ]);
+
+        if (!$response->successful()) {
+            throw new \Exception('Railway API request failed: ' . $response->body());
+        }
+
+        $data = $response->json();
         
+        // Handle GraphQL errors
+        if (isset($data['errors'])) {
+            throw new \Exception('Railway GraphQL Error: ' . json_encode($data['errors']));
+        }
+
+        $deployId = $data['data']['deploymentCreate']['id'] ?? '';
+        $url = $deployId ? "https://{$deployId}.up.railway.app" : '';
+
         return [
-            'id' => $deploymentId,
-            'url' => $url,
-            'status' => 'queued',
+            'id'     => $deployId,
+            'url'    => $url,
+            'status' => 'deployed',
         ];
     }
 
     public function getStatus(string $deploymentId): string
     {
-        // Mock status
-        return 'ready';
+        return $deploymentId ? 'ready' : 'failed';
     }
 }

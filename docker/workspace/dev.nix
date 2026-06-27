@@ -8,6 +8,7 @@ pkgs.mkShell {
     pkgs.direnv
     pkgs.bash
     pkgs.nano
+    pkgs.php
   ];
   
   shellHook = ''

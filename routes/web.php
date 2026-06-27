@@ -190,6 +190,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Webhooks
         Route::resource('webhooks', \App\Http\Controllers\Admin\AdminWebhookController::class)->except(['show']);
+
+        // System Status (infrastructure probe dashboard — admin-only)
+        Route::get('/status', [\App\Http\Controllers\HealthController::class, 'status'])->name('status');
     });
 });
 

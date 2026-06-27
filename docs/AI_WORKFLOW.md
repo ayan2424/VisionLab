@@ -8,7 +8,7 @@ This document mandates how artificial intelligence interacts with the VisionLab 
 The in-product AI Agent operates within the codebase to assist, refactor, and build components. However, **the agent has zero autonomous write access** to critical files without explicit human authorization.
 
 > [!CAUTION]
-> **Builder AI Override:** This Zero-Write policy applies ONLY to the deployed product. The Builder AI (VisionForge) has full, aggressive autonomy to delete legacy UI components (such as floating HTML chat panels, redundant file explorers) and decouple upstream extensions to build an independent ecosystem.
+> **Builder AI Override:** This Zero-Write policy applies ONLY to the deployed product. The Builder AI (VisionForge) has full, aggressive autonomy to delete legacy **external** UI components (such as floating HTML chat panels or standalone JavaScript file-tree panels that exist **outside** the IDE iframe) and decouple upstream extensions to build an independent ecosystem. **NEVER remove or disable native VS Code IDE components (File Explorer sidebar, Welcome/Getting Started page, Activity Bar, Terminal, etc.)** — these are core IDE features that must be preserved and can only be rebranded/customized.
 
 ### The Patch Approval Sequence (`ai_pending_patches`)
 

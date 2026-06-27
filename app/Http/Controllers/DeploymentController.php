@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Deployment;
 use App\Models\Workspace;
-use App\Services\CodeServerManager;
+use App\Jobs\DeployWorkspaceJob;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 /**
  * DeploymentController — One-click cloud deployment for student workspaces.
@@ -32,6 +30,14 @@ class DeploymentController extends Controller
         $user     = Auth::user();
         $provider = $request->input('provider');
 
+        // Check if student has configured personal credentials
+        $token = $provider === 'vercel' ? $user->vercel_token : $user->railway_token;
+        if (!$token && !config("visionlab.deploy.{$provider}_token")) {
+            return response()->json([
+                'error' => "You must configure your " . ucfirst($provider) . " API token in your settings before deploying.",
+            ], 422);
+        }
+
         // Check for active deployment
         $existing = Deployment::where('workspace_id', $workspace->id)
             ->where('provider', $provider)
@@ -45,7 +51,7 @@ class DeploymentController extends Controller
             ], 409);
         }
 
-        // Create deployment record (fields match Deployment model $fillable)
+        // Create deployment record
         $deployment = Deployment::create([
             'workspace_id'  => $workspace->id,
             'user_id'       => $user->id,
@@ -56,12 +62,9 @@ class DeploymentController extends Controller
             'job_metadata'  => ['name' => $request->input('name', 'visionlab-' . $workspace->id)],
         ]);
 
-        // Dispatch the deployment (async via queue in production)
         try {
-            match ($provider) {
-                'vercel'  => $this->deployToVercel($workspace, $deployment),
-                'railway' => $this->deployToRailway($workspace, $deployment),
-            };
+            // Dispatch background deployment job
+            DeployWorkspaceJob::dispatch($deployment->id);
 
             return response()->json([
                 'status'     => 'queued',
@@ -109,146 +112,5 @@ class DeploymentController extends Controller
         $deployment->update(['status' => 'failed', 'error_summary' => 'Cancelled by user']);
 
         return response()->json(['status' => 'cancelled']);
-    }
-
-    // ══════════════════════════════════════════════════════════════════════
-    // Provider-specific deployment logic
-    // ══════════════════════════════════════════════════════════════════════
-
-    private function deployToVercel(Workspace $workspace, Deployment $deployment): void
-    {
-        $token = config('visionlab.deploy.vercel_token');
-
-        if (!$token) {
-            $deployment->update([
-                'status'        => 'failed',
-                'error_summary' => 'Vercel token not configured.',
-            ]);
-            return;
-        }
-
-        $deployment->update(['status' => 'building']);
-
-        // Prepare deployment payload
-        $csm = app(CodeServerManager::class);
-        $files = $csm->listFiles($workspace);
-
-        $vercelFiles = [];
-        foreach ($this->flattenFiles($files) as $file) {
-            $content = $csm->readFile($workspace, $file['path']);
-            if ($content !== null) {
-                $vercelFiles[] = [
-                    'file'     => $file['path'],
-                    'data'     => base64_encode($content),
-                    'encoding' => 'base64',
-                ];
-            }
-        }
-
-        try {
-            $response = Http::withToken($token)
-                ->timeout(60)
-                ->post('https://api.vercel.com/v13/deployments', [
-                    'name'  => $deployment->job_metadata['name'] ?? 'visionlab-deploy',
-                    'files' => $vercelFiles,
-                    'projectSettings' => [
-                        'framework' => null,
-                    ],
-                ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $deployment->update([
-                    'status'        => 'deployed',
-                    'deployment_id' => $data['id'] ?? null,
-                    'public_url'    => $data['url'] ?? null,
-                    'deployed_at'   => now(),
-                    'job_metadata'  => array_merge($deployment->job_metadata ?? [], [
-                        'vercel_response' => $data,
-                    ]),
-                ]);
-
-                // Phase 9: Gamification - Award Cloud Pioneer Badge
-                \App\Models\UserBadge::awardOnce(
-                    $deployment->user_id,
-                    'first_deployment',
-                    'Cloud Pioneer',
-                    'Successfully deployed a project to the cloud.',
-                    '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>'
-                );
-            } else {
-                $deployment->update([
-                    'status'        => 'failed',
-                    'error_summary' => $response->body(),
-                ]);
-            }
-        } catch (\Exception $e) {
-            $deployment->update([
-                'status'        => 'failed',
-                'error_summary' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    private function deployToRailway(Workspace $workspace, Deployment $deployment): void
-    {
-        $token = config('visionlab.deploy.railway_token');
-
-        if (!$token) {
-            $deployment->update([
-                'status'        => 'failed',
-                'error_summary' => 'Railway token not configured.',
-            ]);
-            return;
-        }
-
-        $deployment->update(['status' => 'building']);
-
-        try {
-            $response = Http::withToken($token)
-                ->timeout(60)
-                ->post('https://backboard.railway.app/graphql/v2', [
-                    'query' => 'mutation { deploymentCreate(input: { projectId: "visionlab" }) { id status } }',
-                ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $deployId = $data['data']['deploymentCreate']['id'] ?? null;
-                $deployment->update([
-                    'status'        => 'deployed',
-                    'deployment_id' => $deployId,
-                    'public_url'    => "https://{$deployId}.railway.app",
-                    'deployed_at'   => now(),
-                    'job_metadata'  => array_merge($deployment->job_metadata ?? [], [
-                        'railway_response' => $data,
-                    ]),
-                ]);
-            } else {
-                $deployment->update([
-                    'status'        => 'failed',
-                    'error_summary' => $response->body(),
-                ]);
-            }
-        } catch (\Exception $e) {
-            $deployment->update([
-                'status'        => 'failed',
-                'error_summary' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    /** Flatten nested file tree from listFiles into a flat array */
-    private function flattenFiles(array $tree, string $prefix = ''): array
-    {
-        $result = [];
-        foreach ($tree as $entry) {
-            $path = $prefix ? $prefix . '/' . $entry['name'] : $entry['name'];
-            if ($entry['type'] === 'file') {
-                $result[] = ['name' => $entry['name'], 'path' => $path];
-            } elseif (isset($entry['children'])) {
-                $result = array_merge($result, $this->flattenFiles($entry['children'], $path));
-            }
-        }
-        return $result;
     }
 }

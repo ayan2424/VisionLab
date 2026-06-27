@@ -53,6 +53,16 @@ class AiService
             return;
         }
 
+        // Exam Mode & AI allowed checks
+        if ($workspace->assignment) {
+            $assignment = $workspace->assignment;
+            if ($assignment->mode === 'exam' || !$assignment->allow_ai) {
+                yield "data: " . json_encode(['choices' => [['delta' => ['content' => "⚠️ AI assistance is disabled for this exam or assignment."]]]]) . "\n\n";
+                yield "data: [DONE]\n\n";
+                return;
+            }
+        }
+
         if (empty($apiKey)) {
             // Demo mode — simulate response for development
             yield "data: " . json_encode(['choices' => [['delta' => ['content' => "I'm in demo mode! I've analyzed your workspace. I'll propose a patch now."]]]]) . "\n\n";
@@ -83,8 +93,8 @@ class AiService
         }
 
         // Build Anthropic messages
-        $anthropicMessages = [];
         $systemPrompt = $this->getSystemPrompt($mode);
+        $anthropicMessages = [];
 
         foreach ($messages as $msg) {
             if ($msg['role'] === 'system') {
@@ -99,109 +109,205 @@ class AiService
 
         // Define tools the AI can use
         $tools = $this->getToolDefinitions();
-
-        // Make the API call
         $model = $requestedModel;
         $maxTokens = config('visionlab.ai.max_tokens', 4096);
 
         $client = new Client();
-        $requestData = [
-            'model'      => $model,
-            'max_tokens' => $maxTokens,
-            'system'     => $systemPrompt,
-            'messages'   => $anthropicMessages,
-            'tools'      => $tools,
-            'stream'     => $stream,
-        ];
+        $loopSafetyLimit = 10;
+        $currentTurn = 0;
+
+        while ($currentTurn < $loopSafetyLimit) {
+            $currentTurn++;
+
+            $requestData = [
+                'model'      => $model,
+                'max_tokens' => $maxTokens,
+                'system'     => $systemPrompt,
+                'messages'   => $anthropicMessages,
+                'tools'      => $tools,
+            ];
+
+            try {
+                $response = $client->post('https://api.anthropic.com/v1/messages', [
+                    'headers' => [
+                        'x-api-key'         => $apiKey,
+                        'anthropic-version' => '2023-06-01',
+                        'content-type'      => 'application/json',
+                    ],
+                    'json'   => $requestData,
+                ]);
+
+                $body = json_decode($response->getBody()->getContents(), true);
+                $stopReason = $body['stop_reason'] ?? '';
+                $content = $body['content'] ?? [];
+
+                // Append assistant response to history
+                $anthropicMessages[] = [
+                    'role'    => 'assistant',
+                    'content' => $content,
+                ];
+
+                // Yield text delta chunks of this turn
+                foreach ($content as $block) {
+                    if ($block['type'] === 'text') {
+                        $openaiChunk = [
+                            'id'      => 'chatcmpl-vl-' . uniqid(),
+                            'object'  => 'chat.completion.chunk',
+                            'created' => time(),
+                            'model'   => $model,
+                            'choices' => [[
+                                'index'         => 0,
+                                'delta'         => ['content' => $block['text']],
+                                'finish_reason' => null,
+                            ]],
+                        ];
+                        yield "data: " . json_encode($openaiChunk) . "\n\n";
+                    }
+                }
+
+                // If stop reason is not tool_use, we have reached the end of the chain
+                if ($stopReason !== 'tool_use') {
+                    yield "data: [DONE]\n\n";
+                    return;
+                }
+
+                // Run tools sequentially
+                $toolResults = [];
+                foreach ($content as $block) {
+                    if ($block['type'] === 'tool_use') {
+                        $toolName = $block['name'];
+                        $toolId   = $block['id'];
+                        $input    = $block['input'];
+
+                        // Yield status updates to user
+                        yield "data: " . json_encode([
+                            'choices' => [[
+                                'delta' => ['content' => "\n⚙️ *[Running tool: {$toolName}...]*\n"],
+                                'finish_reason' => null
+                            ]]
+                        ]) . "\n\n";
+
+                        $toolOutput = '';
+                        try {
+                            switch ($toolName) {
+                                case 'read_file':
+                                    $path = $input['path'] ?? '';
+                                    $toolOutput = $this->sandbox->readFile($workspace, $path) ?? "Error: File not found or access denied: '{$path}'";
+                                    break;
+                                case 'list_directory':
+                                    $path = $input['path'] ?? '';
+                                    $items = $this->sandbox->listDirectory($workspace, $path);
+                                    $toolOutput = json_encode($items, JSON_PRETTY_PRINT);
+                                    break;
+                                case 'search_codebase':
+                                    $query = $input['query'] ?? '';
+                                    $items = $this->sandbox->searchCodebase($workspace, $query);
+                                    $toolOutput = json_encode($items, JSON_PRETTY_PRINT);
+                                    break;
+                                case 'run_terminal':
+                                    $command = $input['command'] ?? '';
+                                    $toolOutput = app(CodeServerManager::class)->runTerminalCommand($workspace, $command);
+                                    break;
+                                case 'propose_patch':
+                                    $filePath = $input['file_path'] ?? '';
+                                    $search = $input['search_block'] ?? '';
+                                    $replace = $input['replace_block'] ?? '';
+                                    $res = $this->sandbox->preparePatch($workspace, null, $filePath, $search, $replace);
+                                    if (isset($res['error'])) {
+                                        $toolOutput = "Error preparing patch: " . $res['error'];
+                                    } else {
+                                        $toolOutput = "Patch prepared successfully with ID " . $res['patch_id'] . ". User will review it via the diff viewer.";
+                                        
+                                        // Broadcast PatchProposed event for UI update
+                                        event(new \App\Events\PatchProposed('ws-' . $workspace->id, [
+                                            'patch_id'         => $res['patch_id'],
+                                            'file_path'        => $filePath,
+                                            'diff'             => $res['diff'],
+                                            'original_content' => $search,
+                                            'patched_content'  => $replace,
+                                        ]));
+                                    }
+                                    break;
+                                default:
+                                    $toolOutput = "Error: Tool '{$toolName}' is not supported.";
+                            }
+                        } catch (\Throwable $err) {
+                            $toolOutput = "Exception during tool execution: " . $err->getMessage();
+                        }
+
+                        $toolResults[] = [
+                            'type'        => 'tool_result',
+                            'tool_use_id' => $toolId,
+                            'content'     => $toolOutput,
+                        ];
+
+                        yield "data: " . json_encode([
+                            'choices' => [[
+                                'delta' => ['content' => "✅ *[{$toolName} output captured]*\n\n"],
+                                'finish_reason' => null
+                            ]]
+                        ]) . "\n\n";
+                    }
+                }
+
+                // Add tool results as a user turn
+                $anthropicMessages[] = [
+                    'role'    => 'user',
+                    'content' => $toolResults,
+                ];
+
+            } catch (\Exception $e) {
+                Log::error("AiService error: " . $e->getMessage());
+                yield "data: " . json_encode(['choices' => [['delta' => ['content' => "API Error: " . $e->getMessage()]]]]) . "\n\n";
+                yield "data: [DONE]\n\n";
+                return;
+            }
+        }
+
+        yield "data: " . json_encode(['choices' => [['delta' => ['content' => "⚠️ Safety recursion limit reached."]]]]) . "\n\n";
+        yield "data: [DONE]\n\n";
+    }
+
+    /**
+     * Get a direct single-turn text completion from Anthropic's Claude API.
+     */
+    public function getDirectCompletion(string $systemPrompt, string $userPrompt, string $requestedModel = 'claude-3-5-sonnet-20241022'): string
+    {
+        $apiKey = config('visionlab.ai.api_key') ?: env('ANTHROPIC_API_KEY');
+
+        if (empty($apiKey)) {
+            return "Demo Mode: AI Meeting summary placeholder. Add your Anthropic API key to generate a real meeting summary.";
+        }
 
         try {
+            $client = new Client();
             $response = $client->post('https://api.anthropic.com/v1/messages', [
                 'headers' => [
                     'x-api-key'         => $apiKey,
-                    'anthropic-version'  => '2023-06-01',
-                    'content-type'       => 'application/json',
+                    'anthropic-version' => '2023-06-01',
+                    'content-type'      => 'application/json',
                 ],
-                'json'   => $requestData,
-                'stream' => $stream,
+                'json' => [
+                    'model'      => $requestedModel,
+                    'max_tokens' => 1000,
+                    'system'     => $systemPrompt,
+                    'messages'   => [
+                        ['role' => 'user', 'content' => $userPrompt]
+                    ],
+                ],
             ]);
 
-            if (!$stream) {
-                $body = json_decode($response->getBody()->getContents(), true);
-                yield $this->handleAnthropicResponse($workspace, $body, $userId);
-                return;
-            }
-
-            // Stream SSE response, translating Anthropic → OpenAI format
-            $body = $response->getBody();
-            $buffer = '';
-
-            while (!$body->eof()) {
-                $chunk = $body->read(1024);
-                $buffer .= $chunk;
-
-                while (($pos = strpos($buffer, "\n\n")) !== false) {
-                    $eventStr = substr($buffer, 0, $pos);
-                    $buffer = substr($buffer, $pos + 2);
-
-                    if (str_starts_with($eventStr, 'event: ')) {
-                        $eventLines = explode("\n", $eventStr);
-                        $eventName = substr($eventLines[0], 7);
-                        $dataLine = $eventLines[1] ?? '';
-
-                        if (str_starts_with($dataLine, 'data: ')) {
-                            $data = json_decode(substr($dataLine, 6), true);
-
-                            // Map Anthropic content_block_delta to OpenAI format
-                            if ($eventName === 'content_block_delta' && isset($data['delta']['text'])) {
-                                $openaiChunk = [
-                                    'id'      => 'chatcmpl-vl-' . uniqid(),
-                                    'object'  => 'chat.completion.chunk',
-                                    'created' => time(),
-                                    'model'   => $model,
-                                    'choices' => [[
-                                        'index'         => 0,
-                                        'delta'         => ['content' => $data['delta']['text']],
-                                        'finish_reason' => null,
-                                    ]],
-                                ];
-                                yield "data: " . json_encode($openaiChunk) . "\n\n";
-                            }
-
-                            // Handle tool call blocks
-                            if ($eventName === 'content_block_start' && isset($data['content_block']['type']) && $data['content_block']['type'] === 'tool_use') {
-                                $toolName = $data['content_block']['name'];
-                                yield "data: " . json_encode(['choices' => [['delta' => ['content' => "\n\n*[Running {$toolName}...]*\n"]]]]) . "\n\n";
-
-                                if ($toolName === 'propose_patch') {
-                                    $patch = AiPendingPatch::create([
-                                        'workspace_id'     => $workspace->id,
-                                        'file_path'        => 'pending',
-                                        'diff'             => '+ // AI Proposed Change',
-                                        'original_content' => '',
-                                        'patched_content'  => '// AI Proposed Change',
-                                        'status'           => 'pending',
-                                    ]);
-
-                                    event(new \App\Events\PatchProposed('ws-' . $workspace->id, [
-                                        'patch_id'         => $patch->id,
-                                        'file_path'        => $patch->file_path,
-                                        'diff'             => $patch->diff,
-                                        'original_content' => $patch->original_content,
-                                        'patched_content'  => $patch->patched_content,
-                                    ]));
-                                }
-                            }
-                        }
-                    }
+            $body = json_decode($response->getBody()->getContents(), true);
+            $content = $body['content'] ?? [];
+            foreach ($content as $block) {
+                if ($block['type'] === 'text') {
+                    return $block['text'];
                 }
             }
-
-            yield "data: [DONE]\n\n";
-
-        } catch (\Exception $e) {
-            Log::error("AiService error: " . $e->getMessage());
-            yield "data: " . json_encode(['choices' => [['delta' => ['content' => "API Error: " . $e->getMessage()]]]]) . "\n\n";
-            yield "data: [DONE]\n\n";
+            return 'No summary generated.';
+        } catch (\Throwable $e) {
+            Log::error("AiService::getDirectCompletion error: " . $e->getMessage());
+            return "Error generating summary: " . $e->getMessage();
         }
     }
 
@@ -299,27 +405,6 @@ class AiService
             'PLAN'  => $base . " You are a strategic coding planner. Analyze, outline steps, mention files, but do not write code modifications. At the very end of your plan, output: \n\n[🚀 Start Implementation](command:visioncode.startImplementation)",
             default => $base . " You are a helpful coding assistant. You can read and search the codebase but never modify files.",
         };
-    }
-
-    private function handleAnthropicResponse(Workspace $workspace, array $body, ?int $userId)
-    {
-        // Handle non-streamed response — process tool calls
-        if (isset($body['content'])) {
-            foreach ($body['content'] as $block) {
-                if ($block['type'] === 'tool_use' && $block['name'] === 'propose_patch') {
-                    $input = $block['input'];
-                    AiPendingPatch::create([
-                        'workspace_id'     => $workspace->id,
-                        'file_path'        => $input['file_path'] ?? 'unknown',
-                        'diff'             => "- " . ($input['search_block'] ?? '') . "\n+ " . ($input['replace_block'] ?? ''),
-                        'original_content' => $input['search_block'] ?? '',
-                        'patched_content'  => $input['replace_block'] ?? '',
-                        'status'           => 'pending',
-                    ]);
-                }
-            }
-        }
-        return $body;
     }
 
     private function logAction(Workspace $workspace, ?int $userId, string $action, array $context): void

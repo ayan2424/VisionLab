@@ -10,7 +10,6 @@
             <a href="{{ route('features') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Features</a>
             <a href="{{ route('docs') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Docs</a>
             <a href="{{ route('contact') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Contact</a>
-            <a href="{{ route('health') }}" class="hover:text-foreground text-decoration-none text-muted-foreground">Status</a>
         </div>
     </div>
 </footer>

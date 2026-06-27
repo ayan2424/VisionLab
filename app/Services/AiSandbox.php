@@ -36,7 +36,7 @@ class AiSandbox
     }
 
     /**
-     * Search the codebase securely using grep.
+     * Search the codebase securely using grep, with a native PHP fallback.
      */
     public function searchCodebase(Workspace $workspace, string $query): array
     {
@@ -46,36 +46,80 @@ class AiSandbox
             return [];
         }
 
-        // Use ripgrep or grep recursively
-        // -r = recursive, -n = line numbers, -i = ignore case, -I = ignore binaries
-        $process = new Process(['grep', '-rniI', $query, $basePath]);
-        $process->setTimeout(10);
-        $process->run();
+        // 1. Try using command-line grep
+        try {
+            // -r = recursive, -n = line numbers, -i = ignore case, -I = ignore binaries
+            $process = new Process(['grep', '-rniI', $query, $basePath]);
+            $process->setTimeout(10);
+            $process->run();
 
-        if (!$process->isSuccessful() && $process->getExitCode() !== 1) { // 1 means no match, other codes are errors
-            return [];
-        }
+            if ($process->isSuccessful()) {
+                $output = $process->getOutput();
+                $lines = explode("\n", trim($output));
+                $results = [];
 
-        $output = $process->getOutput();
-        $lines = explode("\n", trim($output));
-        $results = [];
-
-        foreach ($lines as $line) {
-            if (empty($line)) continue;
-            
-            // Format: /path/to/file:line:content
-            $parts = explode(':', $line, 3);
-            if (count($parts) >= 3) {
-                $filePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $parts[0]);
-                $results[] = [
-                    'file'    => $filePath,
-                    'line'    => $parts[1],
-                    'content' => $parts[2],
-                ];
+                foreach ($lines as $line) {
+                    if (empty($line)) continue;
+                    
+                    // Format: /path/to/file:line:content
+                    $parts = explode(':', $line, 3);
+                    if (count($parts) >= 3) {
+                        $filePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $parts[0]);
+                        $results[] = [
+                            'file'    => str_replace('\\', '/', $filePath),
+                            'line'    => $parts[1],
+                            'content' => $parts[2],
+                        ];
+                    }
+                }
+                return $results;
             }
+        } catch (\Throwable $e) {
+            Log::info("Command-line grep failed or is not available, falling back to native search.");
         }
 
-        return $results;
+        // 2. Native PHP Search Fallback (Windows Dev Compatibility)
+        $results = [];
+        try {
+            $directory = new \RecursiveDirectoryIterator($basePath);
+            $iterator = new \RecursiveIteratorIterator($directory);
+            foreach ($iterator as $file) {
+                if ($file->isFile()) {
+                    $filePath = $file->getPathname();
+                    $relPath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $filePath);
+                    $normalized = strtolower(str_replace('\\', '/', $relPath));
+                    
+                    // Skip non-project folders
+                    $blocked = ['vendor/', 'storage/', 'bootstrap/', 'node_modules/', '.git/'];
+                    $isBlocked = false;
+                    foreach ($blocked as $pattern) {
+                        if (str_contains($normalized, $pattern)) {
+                            $isBlocked = true;
+                            break;
+                        }
+                    }
+                    if ($isBlocked) continue;
+
+                    $content = file_get_contents($filePath);
+                    if ($content !== false && str_contains(strtolower($content), strtolower($query))) {
+                        $lines = explode("\n", $content);
+                        foreach ($lines as $index => $lineContent) {
+                            if (str_contains(strtolower($lineContent), strtolower($query))) {
+                                $results[] = [
+                                    'file'    => str_replace('\\', '/', $relPath),
+                                    'line'    => $index + 1,
+                                    'content' => trim($lineContent),
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::error("Native search fallback failed: " . $e->getMessage());
+        }
+
+        return array_slice($results, 0, 50); // Cap results at 50 matching lines
     }
 
     /**
@@ -94,7 +138,6 @@ class AiSandbox
 
         $currentContent = $this->readFile($workspace, $relativePath);
         if ($currentContent === null) {
-            // File might not exist. If searchBlock is empty, it's a new file.
             if (empty($searchBlock)) {
                 $currentContent = '';
             } else {
@@ -102,33 +145,40 @@ class AiSandbox
             }
         }
 
-        // Extremely naive patch replacement for the MVP.
-        // A real system would use a diff library to handle fuzzy matching.
         $patchedContent = str_replace($searchBlock, $replaceBlock, $currentContent);
 
         if ($patchedContent === $currentContent && !empty($searchBlock)) {
             return ['error' => "Could not find the exact search block in the file. Context might have changed."];
         }
 
-        // Generate a unified diff preview using diff command
-        $tmpOriginal = tempnam(sys_get_temp_dir(), 'orig_');
-        $tmpPatched = tempnam(sys_get_temp_dir(), 'patch_');
-        file_put_contents($tmpOriginal, $currentContent);
-        file_put_contents($tmpPatched, $patchedContent);
+        // Generate unified diff
+        $diffOutput = '';
+        try {
+            $tmpOriginal = tempnam(sys_get_temp_dir(), 'orig_');
+            $tmpPatched = tempnam(sys_get_temp_dir(), 'patch_');
+            file_put_contents($tmpOriginal, $currentContent);
+            file_put_contents($tmpPatched, $patchedContent);
 
-        $process = new Process(['diff', '-u', $tmpOriginal, $tmpPatched]);
-        $process->run();
-        $diffOutput = $process->getOutput();
+            $process = new Process(['diff', '-u', $tmpOriginal, $tmpPatched]);
+            $process->run();
+            $diffOutput = $process->getOutput();
 
-        unlink($tmpOriginal);
-        unlink($tmpPatched);
+            unlink($tmpOriginal);
+            unlink($tmpPatched);
+        } catch (\Throwable $e) {
+            Log::info("Command-line diff failed, falling back to native diffing.");
+        }
+
+        if (empty($diffOutput)) {
+            $diffOutput = $this->getPhpNativeDiff($currentContent, $patchedContent);
+        }
 
         // Store snapshot
         $snapshot = AiSnapshot::create([
             'workspace_id' => $workspace->id,
             'file_path'    => $relativePath,
             'content'      => $currentContent,
-            'created_by'   => Auth::id() ?? 1,
+            'created_by'   => Auth::id() ?? $workspace->student_id ?? 1,
         ]);
 
         // Store pending patch
@@ -140,7 +190,7 @@ class AiSandbox
             'patched_content'  => $patchedContent,
             'diff'             => $diffOutput,
             'status'           => 'pending',
-            'created_by'       => Auth::id() ?? 1,
+            'created_by'       => Auth::id() ?? $workspace->student_id ?? 1,
         ]);
 
         return [
@@ -167,7 +217,7 @@ class AiSandbox
             $patch->update(['status' => 'approved']);
 
             AiActionsLog::create([
-                'user_id'       => Auth::id() ?? 1,
+                'user_id'       => Auth::id() ?? $workspace->student_id ?? 1,
                 'workspace_ref' => 'ws-' . $workspace->id,
                 'action_type'   => 'apply_patch',
                 'file_path'     => $patch->file_path,
@@ -203,7 +253,7 @@ class AiSandbox
             $patch->update(['status' => 'rejected']);
             
             AiActionsLog::create([
-                'user_id'       => Auth::id() ?? 1,
+                'user_id'       => Auth::id() ?? $workspace->student_id ?? 1,
                 'workspace_ref' => 'ws-' . $workspace->id,
                 'action_type'   => 'rollback_patch',
                 'file_path'     => $patch->file_path,
@@ -213,5 +263,34 @@ class AiSandbox
         }
 
         return $success;
+    }
+
+    /**
+     * Generate native line-by-line diff.
+     */
+    private function getPhpNativeDiff(string $old, string $new): string
+    {
+        $oldLines = explode("\n", $old);
+        $newLines = explode("\n", $new);
+        $diff = [];
+        
+        $i = 0; $j = 0;
+        while ($i < count($oldLines) || $j < count($newLines)) {
+            if (isset($oldLines[$i]) && isset($newLines[$j]) && trim($oldLines[$i]) === trim($newLines[$j])) {
+                $diff[] = ' ' . $oldLines[$i];
+                $i++;
+                $j++;
+            } else {
+                if (isset($oldLines[$i])) {
+                    $diff[] = '-' . $oldLines[$i];
+                    $i++;
+                }
+                if (isset($newLines[$j])) {
+                    $diff[] = '+' . $newLines[$j];
+                    $j++;
+                }
+            }
+        }
+        return implode("\n", $diff);
     }
 }
