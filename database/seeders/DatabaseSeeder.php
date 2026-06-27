@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             RolesAndUsersSeeder::class,
             ExtensionSeeder::class,
             CourseSeeder::class,
+            WorkspaceTemplateSeeder::class,
         ]);
     }
 }
