@@ -30,7 +30,7 @@ COPY visionlab-ide-1.0.0-linux-amd64.tar.gz /tmp/visionlab-ide.tar.gz
 RUN mkdir -p /usr/lib/visionlab-ide && \
     tar -xzf /tmp/visionlab-ide.tar.gz -C /usr/lib/visionlab-ide --strip-components=1 && \
     rm /tmp/visionlab-ide.tar.gz && \
-    ln -s /usr/lib/visionlab-ide/bin/visionlab-server /usr/bin/visionlab-server && \
+    ln -s /usr/lib/visionlab-ide/bin/code-server /usr/bin/visionlab-server && \
     chown -R coder:coder /usr/lib/visionlab-ide
 
 USER coder

@@ -213,7 +213,7 @@
                     </div>
                     <div class="step-item" id="step-3">
                         <div style="width:16px;height:16px;"></div>
-                        <span>Starting code-server</span>
+                        <span>Starting VisionLab IDE</span>
                     </div>
                     <div class="step-item" id="step-4">
                         <div style="width:16px;height:16px;"></div>
