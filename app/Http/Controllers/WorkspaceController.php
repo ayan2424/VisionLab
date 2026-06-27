@@ -37,8 +37,8 @@ class WorkspaceController extends Controller
         $serverInfo = $this->codeServerManager->startWorkspace($workspace);
 
         if (isset($serverInfo['port'])) {
-            $cookiePath = str_starts_with($serverInfo['url'], '/codeserver/') 
-                ? '/codeserver/' . $serverInfo['port'] 
+            $cookiePath = str_starts_with($serverInfo['url'], '/ide/') 
+                ? '/ide/' . $serverInfo['port'] 
                 : '/';
             cookie()->queue(
                 'key',
@@ -68,8 +68,8 @@ class WorkspaceController extends Controller
         $serverInfo = $this->codeServerManager->startWorkspace($workspace);
 
         if (isset($serverInfo['port'])) {
-            $cookiePath = str_starts_with($serverInfo['url'], '/codeserver/') 
-                ? '/codeserver/' . $serverInfo['port'] 
+            $cookiePath = str_starts_with($serverInfo['url'], '/ide/') 
+                ? '/ide/' . $serverInfo['port'] 
                 : '/';
             cookie()->queue(
                 'key',

@@ -107,8 +107,8 @@ class SubmissionController extends Controller
         $serverInfo = app(\App\Services\CodeServerManager::class)->startWorkspace($workspace);
 
         if (isset($serverInfo['port'])) {
-            $cookiePath = str_starts_with($serverInfo['url'], '/codeserver/') 
-                ? '/codeserver/' . $serverInfo['port'] 
+            $cookiePath = str_starts_with($serverInfo['url'], '/ide/') 
+                ? '/ide/' . $serverInfo['port'] 
                 : '/';
             cookie()->queue(
                 'key',

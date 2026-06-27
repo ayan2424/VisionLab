@@ -76,7 +76,7 @@ class CodeServerManager
         $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
         $proxyUrl = $isLocalhost 
             ? "http://localhost:{$port}/?folder=/home/coder/project" 
-            : "/codeserver/{$port}/?folder=/home/coder/project";
+            : "/ide/{$port}/?folder=/home/coder/project";
 
         $authMode = 'none'; // Permanently disabled password auth as requested
 
@@ -261,7 +261,7 @@ class CodeServerManager
         $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
         $iframeUrl = $isLocalhost 
             ? "http://localhost:{$port}/?folder=/home/coder/project" 
-            : "/codeserver/{$port}/?folder=/home/coder/project";
+            : "/ide/{$port}/?folder=/home/coder/project";
 
         return [
             'running'      => true,
