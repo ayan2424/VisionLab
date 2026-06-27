@@ -27,11 +27,20 @@ USER root
 
 # Extract VisionLab IDE
 COPY visionlab-ide-1.0.0-linux-amd64.tar.gz /tmp/visionlab-ide.tar.gz
+COPY patch_origin.js /tmp/patch_origin.js
 RUN mkdir -p /usr/lib/visionlab-ide && \
     tar -xzf /tmp/visionlab-ide.tar.gz -C /usr/lib/visionlab-ide --strip-components=1 && \
     rm /tmp/visionlab-ide.tar.gz && \
+    /usr/lib/visionlab-ide/lib/node /tmp/patch_origin.js && \
+    rm /tmp/patch_origin.js && \
     ln -s /usr/lib/visionlab-ide/bin/code-server /usr/bin/visionlab-server && \
+    sed -i 's/"Code - OSS"/"VisionLab Sovereign IDE"/g' /usr/lib/visionlab-ide/lib/vscode/resources/server/manifest.json && \
+    sed -i 's/"Code- OSS"/"VisionLab"/g' /usr/lib/visionlab-ide/lib/vscode/resources/server/manifest.json && \
     chown -R coder:coder /usr/lib/visionlab-ide
+
+COPY code-192.png /usr/lib/visionlab-ide/lib/vscode/resources/server/code-192.png
+COPY code-512.png /usr/lib/visionlab-ide/lib/vscode/resources/server/code-512.png
+COPY favicon.ico /usr/lib/visionlab-ide/lib/vscode/resources/server/favicon.ico
 
 USER coder
 

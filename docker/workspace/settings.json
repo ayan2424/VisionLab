@@ -9,5 +9,23 @@
     "workbench.activityBar.visible": true,
     "editor.minimap.enabled": false,
     "editor.fontSize": 14,
-    "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace"
+    "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace",
+    "workbench.colorCustomizations": {
+        "[Default Dark Modern]": {
+            "activityBar.background": "#0a0a0a",
+            "activityBar.foreground": "#f97316",
+            "activityBarBadge.background": "#ea580c",
+            "sideBar.background": "#121212",
+            "sideBarTitle.foreground": "#f97316",
+            "editor.background": "#0a0a0a",
+            "statusBar.background": "#0a0a0a",
+            "statusBar.foreground": "#f97316",
+            "titleBar.activeBackground": "#0a0a0a",
+            "titleBar.activeForeground": "#f97316",
+            "tab.activeBackground": "#121212",
+            "tab.activeBorderTop": "#f97316",
+            "tab.inactiveBackground": "#0a0a0a",
+            "focusBorder": "#f97316"
+        }
+    }
 }
