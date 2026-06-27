@@ -14,7 +14,7 @@ class Assignment extends Model
     protected $fillable = [
         'course_id', 'title', 'description', 'max_points',
         'due_date', 'starter_code', 'starter_language', 'auto_workspace',
-        'mode', 'allow_ai',
+        'mode', 'allow_ai', 'template_id',
     ];
 
     protected $casts = [
@@ -27,6 +27,11 @@ class Assignment extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(WorkspaceTemplate::class, 'template_id');
     }
 
     public function submissions(): HasMany

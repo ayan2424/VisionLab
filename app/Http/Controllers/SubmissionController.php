@@ -38,6 +38,7 @@ class SubmissionController extends Controller
             [
                 'name' => 'assignment-' . $assignment->id . '-' . $user->id,
                 'language' => $assignment->starter_language ?? 'python',
+                'template_id' => $assignment->template_id,
                 'token' => \Illuminate\Support\Str::random(64),
                 'status' => 'pending',
                 'type' => 'governed', // Governed by teacher

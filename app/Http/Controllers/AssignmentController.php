@@ -13,7 +13,8 @@ class AssignmentController extends Controller
     public function create(Course $course)
     {
         $this->authorize('update', $course);
-        return view('assignments.create', compact('course'));
+        $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
+        return view('assignments.create', compact('course', 'templates'));
     }
 
     public function store(StoreAssignmentRequest $request, Course $course)
@@ -48,7 +49,8 @@ class AssignmentController extends Controller
     public function edit(Assignment $assignment)
     {
         $this->authorize('update', $assignment);
-        return view('assignments.edit', compact('assignment'));
+        $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
+        return view('assignments.edit', compact('assignment', 'templates'));
     }
 
     public function update(UpdateAssignmentRequest $request, Assignment $assignment)

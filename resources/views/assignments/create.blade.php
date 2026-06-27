@@ -46,13 +46,31 @@
             </div>
         </div>
 
-        <div>
-            <label class="block text-sm font-semibold mb-2" style="color:var(--vc-text);">Starter Language</label>
-            <select name="starter_language" class="vc-input">
-                @foreach(['python','javascript','typescript','php','java','c','cpp','rust','go','ruby','bash'] as $lang)
-                <option value="{{ $lang }}" {{ old('starter_language') === $lang ? 'selected' : '' }}>{{ ucfirst($lang) }}</option>
-                @endforeach
-            </select>
+        <div class="grid grid-cols-2 gap-5">
+            <div>
+                <label class="block text-sm font-semibold mb-2" style="color:var(--vc-text);">Starter Language</label>
+                <select name="starter_language" class="vc-input">
+                    @foreach(['python','javascript','typescript','php','java','c','cpp','rust','go','ruby','bash'] as $lang)
+                    <option value="{{ $lang }}" {{ old('starter_language') === $lang ? 'selected' : '' }}>{{ ucfirst($lang) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-2 flex items-center justify-between" style="color:var(--vc-text);">
+                    Workspace Template
+                    <span class="text-xs font-normal" style="color:var(--vc-muted);">(Optional)</span>
+                </label>
+                <select name="template_id" class="vc-input">
+                    <option value="">-- No Template (Default Env) --</option>
+                    @if(isset($templates))
+                        @foreach($templates as $template)
+                        <option value="{{ $template->id }}" {{ old('template_id') == $template->id ? 'selected' : '' }}>
+                            {{ $template->name }} ({{ $template->language }})
+                        </option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
         </div>
 
         <div>

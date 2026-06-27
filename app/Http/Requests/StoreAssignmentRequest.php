@@ -22,12 +22,12 @@ class StoreAssignmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'course_id' => ['required', 'exists:courses,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'due_date' => ['required', 'date', 'after:today'],
-            'max_score' => ['required', 'integer', 'min:1', 'max:1000'],
-            'status' => ['required', 'in:draft,published,archived'],
+            'title'            => 'required|string|max:150',
+            'description'      => 'nullable|string|max:5000',
+            'max_points'       => 'required|integer|min:1|max:1000',
+            'due_date'         => 'nullable|date',
+            'starter_code'     => 'nullable|string|max:20000',
+            'starter_language' => 'required|string|in:python,javascript,typescript,php,java,c,cpp,rust,go,ruby,bash',
+            'template_id'      => 'nullable|exists:workspace_templates,id',
         ];
-    }
 }
