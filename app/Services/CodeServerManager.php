@@ -82,7 +82,7 @@ class CodeServerManager
 
         if (!is_dir($workspacePath)) {
             mkdir($workspacePath, 0777, true);
-            chmod($workspacePath, 0777);
+            exec('chmod -R 0777 ' . escapeshellarg($workspacePath));
             
             // Inject dev.nix if a template is assigned
             if ($workspace->template_id && $workspace->template) {
@@ -137,6 +137,7 @@ class CodeServerManager
             '--bind-addr', '0.0.0.0:8080',
             '--disable-telemetry',
             '--trusted-origins', 'https://visionlab.ayan24.me',
+            '--extra-extensions-dir', '/var/opt/extensions',
         ]);
 
         $process = new Process($cmd);
