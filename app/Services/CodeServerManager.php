@@ -128,7 +128,7 @@ class CodeServerManager
             '--auth', $authMode,
             '--bind-addr', '0.0.0.0:8080',
             '--disable-telemetry',
-            '--trusted-origins', '*',
+            '--trusted-origins', 'https://visionlab.ayan24.me',
         ]);
 
         $process = new Process($cmd);
