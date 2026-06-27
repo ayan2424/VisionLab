@@ -137,7 +137,6 @@ class CodeServerManager
             '--bind-addr', '0.0.0.0:8080',
             '--disable-telemetry',
             '--trusted-origins', 'https://visionlab.ayan24.me',
-            '--extra-extensions-dir', '/var/opt/extensions',
         ]);
 
         $process = new Process($cmd);
@@ -743,7 +742,7 @@ class CodeServerManager
             $identifierOrPath = "/var/opt/extensions/{$fileName}";
         }
 
-        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'visionlab-ide', '--install-extension', $identifierOrPath]);
+        $process = new Process([$this->dockerCmd(), 'exec', '-u', '1000', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
         $process->setTimeout(120);
         $process->run();
         
@@ -756,7 +755,7 @@ class CodeServerManager
     public function uninstallExtension(Workspace $workspace, string $identifier): bool
     {
         $containerName = "vl_ws_{$workspace->id}";
-        $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'visionlab-ide', '--uninstall-extension', $identifier]);
+        $process = new Process([$this->dockerCmd(), 'exec', '-u', '1000', $containerName, 'code-server', '--uninstall-extension', $identifier]);
         $process->run();
         
         if (!$process->isSuccessful()) {
