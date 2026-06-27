@@ -310,8 +310,18 @@ class CodeServerManager
      */
     public function isWorkspaceReady(Workspace $workspace): bool
     {
-        if (!$workspace->port || !$this->isDockerAvailable()) {
+        if (!$this->isDockerAvailable()) {
             return false;
+        }
+
+        // PERMANENT FIX: If port is missing in DB but container is running, fetch it dynamically.
+        if (!$workspace->port) {
+            $status = $this->getStatus($workspace);
+            if (!empty($status['port'])) {
+                $workspace->update(['port' => $status['port']]);
+            } else {
+                return false;
+            }
         }
 
         try {
