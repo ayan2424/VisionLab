@@ -15,9 +15,12 @@ RUN curl -L https://nixos.org/nix/install | sh -s -- --no-daemon
 RUN echo '. /home/coder/.nix-profile/etc/profile.d/nix.sh' >> /home/coder/.bashrc && \
     echo '. /home/coder/.nix-profile/etc/profile.d/nix.sh' >> /home/coder/.profile
 
+ENV PATH="/home/coder/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}"
+SHELL ["/bin/bash", "-c"]
+
 # Install dev.nix packages
 COPY --chown=coder:coder dev.nix /home/coder/dev.nix
-RUN . /home/coder/.nix-profile/etc/profile.d/nix.sh && \
+RUN source /home/coder/.nix-profile/etc/profile.d/nix.sh && \
     nix-env -f /home/coder/dev.nix -i
 
 USER root
