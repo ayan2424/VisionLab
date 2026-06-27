@@ -128,7 +128,7 @@ class CodeServerManager
             '--auth', $authMode,
             '--bind-addr', '0.0.0.0:8080',
             '--disable-telemetry',
-            '--trusted-origins', request()->getSchemeAndHttpHost() ?: url('/'),
+            '--trusted-origins', '*',
         ]);
 
         $process = new Process($cmd);
