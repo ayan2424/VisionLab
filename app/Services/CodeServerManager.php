@@ -860,6 +860,40 @@ class CodeServerManager
         }
     }
 
+    private function installExtension(Workspace $workspace, string $target, ?string $checksum = null): void
+    {
+        $containerName = 'vl_ws_' . $workspace->id;
+        
+        // If it's a local .vsix file path
+        if (str_ends_with($target, '.vsix')) {
+            // First we need to copy the VSIX to the container
+            $filename = basename($target);
+            $tmpPath = "/tmp/{$filename}";
+            
+            // Assuming $target is a local path on the host. In production, we might need to fetch from S3
+            if (file_exists($target)) {
+                $process = new Process([$this->dockerCmd(), 'cp', $target, "{$containerName}:{$tmpPath}"]);
+                $process->run();
+                
+                // Then install it
+                $installProcess = new Process([
+                    $this->dockerCmd(), 'exec', $containerName,
+                    'code-server', '--install-extension', $tmpPath, '--force'
+                ]);
+                $installProcess->run();
+            } else {
+                Log::error("VSIX file not found on host", ['path' => $target]);
+            }
+        } else {
+            // Install from marketplace
+            $process = new Process([
+                $this->dockerCmd(), 'exec', $containerName,
+                'code-server', '--install-extension', $target, '--force'
+            ]);
+            $process->run();
+        }
+    }
+
     /**
      * Run a terminal command inside the workspace container (or local fallback).
      */
