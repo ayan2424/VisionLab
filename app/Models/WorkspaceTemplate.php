@@ -13,6 +13,7 @@ class WorkspaceTemplate extends Model
         'language',
         'start_command',
         'is_active',
+        'nix_config',
     ];
 
     protected function casts(): array

@@ -83,6 +83,14 @@ class CodeServerManager
         if (!is_dir($workspacePath)) {
             mkdir($workspacePath, 0777, true);
             chmod($workspacePath, 0777);
+            
+            // Inject dev.nix if a template is assigned
+            if ($workspace->template_id && $workspace->template) {
+                if (!empty($workspace->template->nix_config)) {
+                    file_put_contents($workspacePath . '/dev.nix', $workspace->template->nix_config);
+                    chmod($workspacePath . '/dev.nix', 0666);
+                }
+            }
         }
 
         $extensionsPath = storage_path('app/extensions');

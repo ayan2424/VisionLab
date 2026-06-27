@@ -132,6 +132,16 @@
                 </svg>
                 Workspaces
             </a>
+            @php $tmplActive = request()->routeIs('admin.templates.*'); @endphp
+            <a href="{{ route('admin.templates.index') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
+               style="{{ $tmplActive ? 'color:#EF4444;background:rgba(239,68,68,0.08);font-weight:600;' : 'color:var(--vc-text-secondary);' }}">
+                @if($tmplActive)<span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-red-500"></span>@endif
+                <svg class="w-[18px] h-[18px]" style="{{ $tmplActive ? 'color:#EF4444;' : 'color:var(--vc-muted);' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                </svg>
+                Templates
+            </a>
             @php $qActive = request()->routeIs('admin.quotas.*'); @endphp
             <a href="{{ route('admin.quotas.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"

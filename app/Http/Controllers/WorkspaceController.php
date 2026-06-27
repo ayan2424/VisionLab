@@ -18,21 +18,19 @@ class WorkspaceController extends Controller
         $this->codeServerManager = $codeServerManager;
     }
 
-    /** Personal workspace — auto-provisions */
+    /** Personal workspace — auto-provisions or shows creation form */
     public function index(Request $request)
     {
         $user = Auth::user();
 
-        $workspace = Workspace::firstOrCreate(
-            ['student_id' => $user->id, 'name' => 'personal-' . $user->id],
-            [
-                'course_id' => null,
-                'language'  => 'python',
-                'port'      => null,
-                'token'     => Str::random(64),
-                'status'    => 'pending',
-            ]
-        );
+        $workspace = Workspace::where('student_id', $user->id)
+            ->where('name', 'personal-' . $user->id)
+            ->first();
+
+        if (!$workspace) {
+            $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
+            return view('workspaces.create', compact('templates', 'user'));
+        }
 
         $serverInfo = $this->codeServerManager->startWorkspace($workspace);
 
@@ -57,6 +55,31 @@ class WorkspaceController extends Controller
             'reverbConfig'    => self::reverbConfig(),
             'vscodeUrl'       => $serverInfo['url'],
         ]);
+    }
+
+    /** Create personal workspace */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'template_id' => 'required|exists:workspace_templates,id',
+        ]);
+
+        $user = Auth::user();
+        
+        $template = \App\Models\WorkspaceTemplate::find($request->template_id);
+
+        $workspace = Workspace::create([
+            'student_id'  => $user->id,
+            'name'        => 'personal-' . $user->id,
+            'course_id'   => null,
+            'language'    => $template->language,
+            'template_id' => $template->id,
+            'port'        => null,
+            'token'       => Str::random(64),
+            'status'      => 'pending',
+        ]);
+
+        return redirect()->route('workspace.index')->with('success', 'Workspace provisioning started!');
     }
 
     /** Named workspace by ID */

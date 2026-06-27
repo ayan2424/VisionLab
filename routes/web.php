@@ -48,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── Workspace ──────────────────────────────────────────────────────
     Route::get('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'index'])->name('workspace.index');
+    Route::post('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'store'])->name('workspace.store');
     Route::get('/workspace/{workspace}', [\App\Http\Controllers\WorkspaceController::class, 'show'])->name('workspace.show');
     Route::post('/workspace/{workspace}/start', [\App\Http\Controllers\WorkspaceController::class, 'start'])->name('workspace.start');
     Route::post('/workspace/{workspace}/stop', [\App\Http\Controllers\WorkspaceController::class, 'stop'])->name('workspace.stop');
@@ -172,6 +173,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/workspaces/{workspace}', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'show'])->name('workspaces.show');
         Route::post('/workspaces/{workspace}/stop', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'stop'])->name('workspaces.stop');
         Route::post('/workspaces/{workspace}/archive', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'archive'])->name('workspaces.archive');
+
+        // Workspace Templates
+        Route::resource('templates', \App\Http\Controllers\Admin\AdminTemplateController::class)->except(['show']);
 
         // Quotas
         Route::get('/quotas', [\App\Http\Controllers\Admin\AdminQuotaController::class, 'index'])->name('quotas.index');
