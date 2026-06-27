@@ -277,19 +277,9 @@ class WorkspaceController extends Controller
 
     public static function reverbConfig(): array
     {
-        $host   = env('REVERB_HOST', 'localhost');
-        $port   = (int) env('REVERB_PORT', 8080);
-        $scheme = env('REVERB_SCHEME', 'http');
-
-        if (isset($_SERVER['HTTP_HOST']) && str_contains($_SERVER['HTTP_HOST'], '.replit.dev')) {
-            $host   = $_SERVER['HTTP_HOST'];
-            $port   = 443;
-            $scheme = 'https';
-        } elseif ($envDomain = env('REPLIT_DEV_DOMAIN')) {
-            $host   = $envDomain;
-            $port   = 443;
-            $scheme = 'https';
-        }
+        $host   = request()->getHost() ?: env('REVERB_HOST', 'localhost');
+        $scheme = request()->isSecure() ? 'https' : env('REVERB_SCHEME', 'http');
+        $port   = request()->isSecure() ? 443 : (int) env('REVERB_PORT', 8080);
 
         $key = env('REVERB_APP_KEY', 'visioncode-key');
 
