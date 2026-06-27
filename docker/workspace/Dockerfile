@@ -1,4 +1,4 @@
-FROM buildpack-deps:jammy-curl
+FROM buildpack-deps:jammy
 
 USER root
 
