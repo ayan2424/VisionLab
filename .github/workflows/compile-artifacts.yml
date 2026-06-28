@@ -1,0 +1,74 @@
+name: Compile VisionLab IDE & Agent
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'visionlab-ide/**'
+      - 'storage/extensions/continue-source/**'
+  workflow_dispatch:
+
+jobs:
+  build-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install System Dependencies
+        run: sudo apt-get update && sudo apt-get install -y python3 build-essential jq libsecret-1-dev unzip
+
+      - name: Install & Package Agent
+        run: |
+          cd storage/extensions/continue-source/extensions/vscode
+          npm install
+          npm run package
+          # Find the generated vsix file
+          VSIX_FILE=$(ls *.vsix | head -n 1)
+          cp $VSIX_FILE ../../../../visionlab-agent-latest.vsix
+
+      - name: Upload Agent Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: visionlab-agent
+          path: visionlab-agent-latest.vsix
+          retention-days: 7
+
+  build-ide:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install System Dependencies
+        run: sudo apt-get update && sudo apt-get install -y python3 build-essential jq pkg-config libx11-dev libxkbfile-dev libsecret-1-dev fakeroot rpm
+
+      - name: Build IDE (Code-Server)
+        run: |
+          cd visionlab-ide
+          yarn install --frozen-lockfile
+          yarn build
+          yarn build:vscode
+          yarn release
+
+      - name: Rename Release Tarball
+        run: |
+          cd visionlab-ide/release
+          TARBALL=$(ls *.tar.gz | head -n 1)
+          mv $TARBALL visionlab-ide-latest-linux-amd64.tar.gz
+
+      - name: Upload IDE Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: visionlab-ide
+          path: visionlab-ide/release/visionlab-ide-latest-linux-amd64.tar.gz
+          retention-days: 7
