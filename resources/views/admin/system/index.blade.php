@@ -18,6 +18,7 @@
                 $aiEnabled = \App\Models\SystemConfig::getVal('flag_ai_enabled', true);
                 $videoEnabled = \App\Models\SystemConfig::getVal('flag_video_calls_enabled', true);
                 $regOpen = \App\Models\SystemConfig::getVal('flag_registration_open', true);
+                $marketplaceOpen = \App\Models\SystemConfig::getBool('global_allow_marketplace', true);
             @endphp
 
             <div class="space-y-4 mb-6">
@@ -42,6 +43,14 @@
                     <div>
                         <div class="text-sm font-semibold" style="color:var(--vc-text);">Registration Open</div>
                         <div class="text-xs" style="color:var(--vc-muted);">Allow new users to register on the platform.</div>
+                    </div>
+                </label>
+
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" name="flags[]" value="global_allow_marketplace" {{ $marketplaceOpen ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-600 bg-black/20 text-[#3b82f6] focus:ring-[#3b82f6]">
+                    <div>
+                        <div class="text-sm font-semibold" style="color:var(--vc-text);">Global Extensions Marketplace</div>
+                        <div class="text-xs" style="color:var(--vc-muted);">If disabled, the VS Code Marketplace will be blocked across ALL workspaces.</div>
                     </div>
                 </label>
             </div>

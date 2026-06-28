@@ -127,6 +127,8 @@
 </head>
 <body class="h-full">
 
+<x-exam-lockdown :is-exam-mode="isset($assignment) && $assignment->mode === 'exam'" />
+
 {{-- Toast Container --}}
 <div id="toast-container"></div>
 

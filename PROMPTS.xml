@@ -108,6 +108,12 @@
         <DETAIL>Hardcode the VisionLab Strict `#0a0a0a` Dark Theme into the VS Code baseline registry.</DETAIL>
         <DETAIL>Compile the heavily modified source codebase on a high-end GCP compute node (e.g., e2-standard-8) to produce the proprietary `visionlab-ide` artifact.</DETAIL>
       </PHASE_BLUEPRINT>
+      <PHASE_BLUEPRINT Phase="3c" Name="Workspace Governance, Isolated Storage &amp; Exam Lockdown">
+        <DETAIL>Refactor the backend file system architecture to use Isolated User Storage (e.g., storage/users/user_{id}/workspaces/), ensuring each user has their own dedicated drive.</DETAIL>
+        <DETAIL>Provide teachers and global admins with granular control over whether students can install external VS Code marketplace extensions, using Code-Server environment injection (-e EXTENSIONS_GALLERY='{"serviceUrl":""}').</DETAIL>
+        <DETAIL>Lock down native Admin-provided extensions (like VisionLab Agent) by installing them as Built-In System Extensions inside the container so they can never be uninstalled by students.</DETAIL>
+        <DETAIL>Implement an Absolute Lockdown (Kiosk) Mode for exams (Workspaces, MCQs, etc.) that enforces maximum browser security limits (Fullscreen, keyboard trapping, tab-switch prevention, onbeforeunload) to make cheating virtually impossible.</DETAIL>
+      </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="4" Name="Extension and Lockdown Specifics">
         <DETAIL>Maintain an extension manifest with package identifier, display name, version, category, source, checksum, built-in status, required status, global availability, course availability, workspace overrides, and rollout state.</DETAIL>
         <DETAIL>Build custom VisionLab extensions from source with versioned artifacts and checksums. Approved third-party extensions must have documented source, license review, version pinning, and integrity verification.</DETAIL>

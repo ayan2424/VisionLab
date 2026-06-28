@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AiConfigController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -152,18 +153,30 @@ Route::middleware(['auth:sanctum'])->prefix('visionguard')->name('api.visionguar
 
 Route::post('/webhook/deploy', [\App\Http\Controllers\WebhookController::class, 'deploy']);
 
-Route::middleware(['auth:sanctum'])->get('/extensions', function () {
-    return response()->json(\App\Models\Extension::where('is_active', true)->get()->map(function ($ext) {
-        return [
-            'id' => $ext->id,
-            'name' => $ext->name,
-            'identifier' => $ext->package_identifier,
-            'version' => $ext->version,
-            'sha256_checksum' => $ext->checksum,
-            'is_global' => $ext->is_global,
-            'is_builtin' => $ext->is_builtin,
-            'is_active' => $ext->is_active,
-        ];
-    }
-    ));
+/*
+|--------------------------------------------------------------------------
+| Extension Registry API (Phase 4)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth:sanctum'])->prefix('extensions')->name('api.extensions.')->group(function () {
+    Route::get('/', function () {
+        return response()->json(\App\Models\Extension::where('is_active', true)->get()->map(function ($ext) {
+            return [
+                'id' => $ext->id,
+                'name' => $ext->name,
+                'identifier' => $ext->package_identifier,
+                'version' => $ext->version,
+                'sha256_checksum' => $ext->checksum,
+                'is_global' => $ext->is_global,
+                'is_builtin' => $ext->is_builtin,
+                'is_active' => $ext->is_active,
+            ];
+        }));
+    })->name('index');
+
+    Route::get('/{packageIdentifier}/download', [\App\Http\Controllers\ExtensionRegistryController::class, 'download'])
+        ->name('download');
+        
+    Route::get('/{packageIdentifier}/metadata', [\App\Http\Controllers\ExtensionRegistryController::class, 'metadata'])
+        ->name('metadata');
 });

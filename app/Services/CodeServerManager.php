@@ -99,7 +99,11 @@ class CodeServerManager
         }
 
         $disableMarketplace = false;
-        if ($workspace->course_id && $workspace->course) {
+        // Global override check
+        $globalAllowMarketplace = \App\Models\SystemConfig::getBool('global_allow_marketplace', true);
+        if (!$globalAllowMarketplace) {
+            $disableMarketplace = true;
+        } elseif ($workspace->course_id && $workspace->course) {
             $disableMarketplace = !$workspace->course->allow_marketplace;
         }
 
@@ -552,7 +556,7 @@ class CodeServerManager
 
     private function workspacePath(Workspace $workspace): string
     {
-        return storage_path('workspaces' . DIRECTORY_SEPARATOR . 'ws-' . $workspace->id);
+        return storage_path('users' . DIRECTORY_SEPARATOR . 'user_' . $workspace->student_id . DIRECTORY_SEPARATOR . 'workspaces' . DIRECTORY_SEPARATOR . 'ws-' . $workspace->id);
     }
 
     public function resolveSecurePath(Workspace $workspace, string $relativePath): ?string
@@ -749,10 +753,15 @@ class CodeServerManager
                 }
             }
 
-            $identifierOrPath = "/var/opt/extensions/{$fileName}";
+        if (str_ends_with($identifierOrPath, '.vsix')) {
+            $extDirName = "built-in-" . pathinfo($fileName, PATHINFO_FILENAME);
+            $cmdStr = "mkdir -p /tmp/$extDirName && unzip -q /var/opt/extensions/$fileName -d /tmp/$extDirName && rm -rf /usr/lib/code-server/lib/vscode/extensions/$extDirName && mv /tmp/$extDirName/extension /usr/lib/code-server/lib/vscode/extensions/$extDirName && rm -rf /tmp/$extDirName";
+            
+            $process = new Process([$this->dockerCmd(), 'exec', '-u', '1000', $containerName, 'sh', '-c', $cmdStr]);
+        } else {
+            $process = new Process([$this->dockerCmd(), 'exec', '-u', '1000', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
         }
 
-        $process = new Process([$this->dockerCmd(), 'exec', '-u', '1000', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
         $process->setTimeout(120);
         $process->run();
         

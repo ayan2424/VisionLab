@@ -20,6 +20,7 @@ class Course extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'allow_marketplace' => 'boolean',
         'start_date' => 'date',
         'end_date' => 'date',
     ];

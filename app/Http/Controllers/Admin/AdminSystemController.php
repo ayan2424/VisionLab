@@ -28,6 +28,8 @@ class AdminSystemController extends Controller
             SystemConfig::setVal("flag_{$flag}", in_array($flag, $flags), 'boolean');
         }
 
+        SystemConfig::setVal('global_allow_marketplace', in_array('global_allow_marketplace', $flags), 'boolean');
+
         return back()->with('success', 'Feature flags updated successfully.');
     }
 
