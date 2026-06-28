@@ -1,7 +1,9 @@
 import os
 import json
+import shutil
 
-repo_dir = r"c:\Users\ayans\OneDrive\Documents\A Projects\Aptech\Vision2026\VisionLab\storage\extensions\continue-source"
+repo_dir = r"storage\extensions\continue-source"
+logo_src = r"public\icons\logo-orange.svg"
 
 print("1. Updating package.json...")
 pkg_path = os.path.join(repo_dir, "extensions", "vscode", "package.json")
@@ -10,7 +12,7 @@ if os.path.exists(pkg_path):
         pkg = json.load(f)
     pkg["name"] = "visionlab-agent"
     pkg["displayName"] = "VisionLab Agent"
-    pkg["publisher"] = "VisionLab"
+    pkg["publisher"] = "visionlab"
     pkg["author"] = "Aptech Vision 2026"
     pkg["description"] = "VisionLab Autonomous Collaborative Agent"
     pkg["repository"] = {"type": "git", "url": "https://visionlab.local"}
@@ -24,13 +26,18 @@ if os.path.exists(pkg_path):
 else:
     print("package.json not found!")
 
-print("2. Recursively replacing API endpoints and telemetry across the codebase...")
+print("2. Replacing API endpoints and strings...")
+# Be careful to not replace variable names or command IDs
 targets = {
     "api.continue.dev": "host.docker.internal:8000/api/ai",
     "https://api.continue.dev": "http://host.docker.internal:8000/api/ai",
     "continue.shareSession": "visionlab.disabled",
     "continue.enterEnterpriseLicenseKey": "visionlab.disabled",
-    "telemetry.continue.dev": "localhost:9999/null"
+    "telemetry.continue.dev": "localhost:9999/null",
+    '"Continue"': '"VisionLab Agent"',
+    "'Continue'": "'VisionLab Agent'",
+    ">Continue<": ">VisionLab Agent<",
+    "Continue Console": "VisionLab Agent Console",
 }
 
 modified_files = 0
@@ -58,3 +65,17 @@ for root, _, files in os.walk(repo_dir):
                 pass
 
 print(f"Deep surgical replacement complete. Modified {modified_files} files.")
+
+print("3. Replacing logos...")
+# Common logo paths in Continue source
+logo_paths = [
+    os.path.join(repo_dir, "extensions", "vscode", "media", "continue.svg"),
+    os.path.join(repo_dir, "extensions", "vscode", "media", "continue-logo.png"), 
+    os.path.join(repo_dir, "gui", "public", "continue_logo.png"),
+    os.path.join(repo_dir, "gui", "public", "continue_logo.svg"),
+]
+
+for lp in logo_paths:
+    if os.path.exists(lp):
+        shutil.copy(logo_src, lp)
+        print(f"Replaced logo at {lp}")

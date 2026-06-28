@@ -159,6 +159,13 @@ class CodeServerManager
 
         $containerId = trim($process->getOutput());
 
+        // Enforce removal of GitHub Copilot to maintain VisionLab AI Agent sovereignty
+        $purgeCopilotCmd = [
+            'docker', 'exec', $containerId, 'sh', '-c', 
+            'rm -rf /home/coder/.local/share/code-server/extensions/github.copilot*'
+        ];
+        (new Process($purgeCopilotCmd))->run();
+
         // Update workspace record
         $workspace->update([
             'container_id'    => $containerId,
