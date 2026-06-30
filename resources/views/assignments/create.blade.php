@@ -79,6 +79,19 @@
                       placeholder="# Starter code for students…">{{ old('starter_code') }}</textarea>
         </div>
 
+        <div class="vc-card p-4 rounded-xl border border-[var(--vc-border)] mt-6">
+            <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color:var(--vc-accent);">
+                <i class="ri-lock-2-line"></i> Assignment Lockdown
+            </h3>
+            <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" name="is_locked" value="1" {{ old('is_locked') ? 'checked' : '' }} class="mt-1 w-4 h-4 text-accent border-[var(--vc-border)] rounded bg-[var(--vc-bg)] focus:ring-accent">
+                <span class="text-sm">
+                    <span class="block font-semibold" style="color:var(--vc-text);">Enable Strict Lockdown (Exam Mode)</span>
+                    <span class="block mt-1" style="color:var(--vc-muted);">Requires students to remain in fullscreen. Switching tabs or exiting fullscreen will be blocked/logged as violations.</span>
+                </span>
+            </label>
+        </div>
+
         <div class="flex items-center justify-end gap-3 pt-2">
             <a href="{{ route('courses.show', [$course->slug, 'tab' => 'assignments']) }}" class="btn-secondary">Cancel</a>
             <button type="submit" class="btn-primary">

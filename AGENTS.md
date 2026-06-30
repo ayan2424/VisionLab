@@ -178,3 +178,7 @@ This master directive must be parsed alongside and integrated with:
 
 ---
 **LOCAL ARTIFACT BACKUP CONFIRMED:** The successfully compiled `visionlab-ide-1.0.0-linux-amd64.tar.gz` (with full native branding, nix integration, and preserved File Explorer/Welcome page) has been securely downloaded to the local workspace root as of Phase 3b closure.
+
+
+### 12. Mandatory Skill & MCP Server Utilization
+It is absolutely mandatory to utilize installed MCP servers (notebooklm, github, memory, etc.) and global skills (laravel-specialist, frontend-design, ui-ux-pro-max) during the execution of all tasks, especially for architectural design and implementation. Do not rely solely on base knowledge; proactively query skills and MCPs to enforce enterprise-grade quality and strict guidelines.

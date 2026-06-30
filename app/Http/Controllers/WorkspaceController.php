@@ -110,6 +110,7 @@ class WorkspaceController extends Controller
             'isCollaborative' => $workspace->collaborators()->count() > 1 && (!$workspace->assignment || $workspace->assignment->mode !== 'exam'),
             'reverbConfig'    => self::reverbConfig(),
             'vscodeUrl'       => $serverInfo['url'],
+            'isAssignmentLocked' => $workspace->assignment ? $workspace->assignment->is_locked : false,
         ]);
     }
 

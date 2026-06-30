@@ -23,6 +23,7 @@ class UpdateAssignmentRequest extends FormRequest
             'starter_code'     => 'nullable|string|max:20000',
             'starter_language' => 'required|string|in:python,javascript,typescript,php,java,c,cpp,rust,go,ruby,bash',
             'template_id'      => 'nullable|exists:workspace_templates,id',
+            'is_locked'        => 'nullable|boolean',
         ];
     }
 }

@@ -76,6 +76,19 @@
             <textarea name="starter_code" rows="8" class="vc-input resize-y font-mono">{{ old('starter_code', $assignment->starter_code) }}</textarea>
         </div>
 
+        <div class="vc-card p-4 rounded-xl border border-[var(--vc-border)] mt-6">
+            <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color:var(--vc-accent);">
+                <i class="ri-lock-2-line"></i> Assignment Lockdown
+            </h3>
+            <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" name="is_locked" value="1" {{ old('is_locked', $assignment->is_locked) ? 'checked' : '' }} class="mt-1 w-4 h-4 text-accent border-[var(--vc-border)] rounded bg-[var(--vc-bg)] focus:ring-accent">
+                <span class="text-sm">
+                    <span class="block font-semibold" style="color:var(--vc-text);">Enable Strict Lockdown (Exam Mode)</span>
+                    <span class="block mt-1" style="color:var(--vc-muted);">Requires students to remain in fullscreen. Switching tabs or exiting fullscreen will be blocked/logged as violations.</span>
+                </span>
+            </label>
+        </div>
+
         <div class="flex items-center justify-between pt-2">
             <form method="POST" action="{{ route('assignments.destroy', $assignment->id) }}" onsubmit="return confirm('Delete this assignment? All submissions will be lost.')">
                 @csrf @method('DELETE')

@@ -100,7 +100,7 @@ class CodeServerManager
 
         $disableMarketplace = false;
         // Global override check
-        $globalAllowMarketplace = \App\Models\SystemConfig::getBool('global_allow_marketplace', true);
+        $globalAllowMarketplace = (bool) \App\Models\SystemConfig::getVal('global_allow_marketplace', true);
         if (!$globalAllowMarketplace) {
             $disableMarketplace = true;
         } elseif ($workspace->course_id && $workspace->course) {
@@ -563,7 +563,9 @@ class CodeServerManager
 
     private function workspacePath(Workspace $workspace): string
     {
-        return storage_path('users' . DIRECTORY_SEPARATOR . 'user_' . $workspace->student_id . DIRECTORY_SEPARATOR . 'workspaces' . DIRECTORY_SEPARATOR . 'ws-' . $workspace->id);
+        $role = $workspace->owner?->role ?? 'student';
+        $prefix = ($role === 'instructor' || $role === 'admin') ? 'teacher' : 'student';
+        return storage_path('users' . DIRECTORY_SEPARATOR . $prefix . '_' . $workspace->student_id . DIRECTORY_SEPARATOR . 'workspaces' . DIRECTORY_SEPARATOR . 'ws-' . $workspace->id);
     }
 
     public function resolveSecurePath(Workspace $workspace, string $relativePath): ?string

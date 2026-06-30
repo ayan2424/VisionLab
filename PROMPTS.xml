@@ -377,6 +377,11 @@
           <DETAIL>Test required extension immutability, marketplace restriction, extension sync jobs, policy precedence, unauthorized admin access, and active workspace behavior after policy changes.</DETAIL>
           <DETAIL>Produce an extension rollout report with artifact checksums and compatibility status.</DETAIL>
         </IMPLEMENTATION_STEP>
+        <IMPLEMENTATION_STEP id="4.5" name="Governance &amp; Deep Integration">
+          <DETAIL>Implement strict Assignment Lockdown (Exam Mode) enforcing fullscreen and disabling tab switching via JavaScript in the workspace Blade view.</DETAIL>
+          <DETAIL>Implement Global and Course-level Extension Marketplace controls, injecting EXTENSIONS_GALLERY overrides into the Docker container via CodeServerManager.</DETAIL>
+          <DETAIL>Segregate file storage paths in CodeServerManager into teacher_ID and student_ID directories to prevent cross-contamination between roles.</DETAIL>
+        </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
       <PHASE_STEPS Phase="5" Name="Real-Time Collaboration">
         <IMPLEMENTATION_STEP id="5.1" name="Reverb Channels and Event Contracts">

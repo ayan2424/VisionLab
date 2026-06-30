@@ -624,7 +624,86 @@
         document.getElementById('deploy-text').style.color = '#EF4444'; // Error Red
         document.getElementById('deploy-spinner').style.display = 'none';
         document.getElementById('deploy-buttons').style.display = 'flex';
-    }
+    // ── Phase 4.5: Assignment Lockdown Logic ──
+    @if(isset($isAssignmentLocked) && $isAssignmentLocked)
+    (function() {
+        let isLocked = false;
+        let violations = 0;
+
+        function enforceLockdown() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            }
+            isLocked = true;
+            document.getElementById('lockdown-overlay').style.display = 'none';
+        }
+
+        // Show overlay demanding fullscreen if not fullscreen
+        function checkFullscreen() {
+            if (!document.fullscreenElement) {
+                isLocked = false;
+                document.getElementById('lockdown-overlay').style.display = 'flex';
+                violations++;
+                if (violations > 1) {
+                    showToast('Violation Recorded', 'You exited fullscreen during a locked exam.', 'error');
+                    // We can also send this to the server via analytics_events API later
+                }
+            } else {
+                document.getElementById('lockdown-overlay').style.display = 'none';
+            }
+        }
+
+        // Listen for visibility changes (tab switching)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isLocked) {
+                showToast('Exam Violation', 'You switched tabs. This action has been logged.', 'error');
+                violations++;
+            }
+        });
+
+        // Listen for fullscreen exits
+        document.addEventListener('fullscreenchange', checkFullscreen);
+
+        // Auto-enforce on first click anywhere
+        document.addEventListener('click', () => {
+            if (!isLocked) enforceLockdown();
+        }, { once: true });
+
+        // Build the overlay UI
+        const overlay = document.createElement('div');
+        overlay.id = 'lockdown-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.backgroundColor = 'rgba(10, 10, 10, 0.95)';
+        overlay.style.zIndex = '999999';
+        overlay.style.display = 'flex';
+        overlay.style.flexDirection = 'column';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.color = '#fff';
+        
+        overlay.innerHTML = `
+            <i class="ri-lock-2-line" style="font-size: 4rem; color: #EF4444; margin-bottom: 1rem;"></i>
+            <h1 style="font-size: 2rem; margin-bottom: 1rem;">Exam Lockdown Active</h1>
+            <p style="font-size: 1.2rem; color: #94a3b8; text-align: center; max-width: 600px; margin-bottom: 2rem;">
+                This assignment requires a locked workspace. You must remain in fullscreen mode and cannot switch tabs.
+            </p>
+            <button id="btn-enter-lockdown" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">
+                Enter Fullscreen & Begin
+            </button>
+        `;
+        
+        document.body.appendChild(overlay);
+
+        document.getElementById('btn-enter-lockdown').addEventListener('click', enforceLockdown);
+    })();
+    @endif
 
 </script>
 

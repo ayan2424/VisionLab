@@ -18,7 +18,7 @@
                 $aiEnabled = \App\Models\SystemConfig::getVal('flag_ai_enabled', true);
                 $videoEnabled = \App\Models\SystemConfig::getVal('flag_video_calls_enabled', true);
                 $regOpen = \App\Models\SystemConfig::getVal('flag_registration_open', true);
-                $marketplaceOpen = \App\Models\SystemConfig::getBool('global_allow_marketplace', true);
+                $marketplaceOpen = (bool) \App\Models\SystemConfig::getVal('global_allow_marketplace', true);
             @endphp
 
             <div class="space-y-4 mb-6">

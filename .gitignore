@@ -32,3 +32,4 @@ build.log
 public/.user.ini
 404.html
 index.html
+*.tar.gz
