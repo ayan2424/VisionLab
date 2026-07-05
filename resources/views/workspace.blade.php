@@ -624,6 +624,7 @@
         document.getElementById('deploy-text').style.color = '#EF4444'; // Error Red
         document.getElementById('deploy-spinner').style.display = 'none';
         document.getElementById('deploy-buttons').style.display = 'flex';
+    }
     // ── Phase 4.5: Assignment Lockdown Logic ──
     @if(isset($isAssignmentLocked) && $isAssignmentLocked)
     (function() {
