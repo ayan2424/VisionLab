@@ -75,7 +75,7 @@ class CodeServerManager
         
         $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
         $proxyUrl = $isLocalhost 
-            ? "http://localhost:{$port}/?folder=/home/coder/project" 
+            ? "http://127.0.0.1:{$port}/?folder=/home/coder/project" 
             : "/ide/{$port}/?folder=/home/coder/project";
 
         $authMode = 'none'; // Permanently disabled password auth as requested
@@ -279,7 +279,7 @@ class CodeServerManager
 
         $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
         $iframeUrl = $isLocalhost 
-            ? "http://localhost:{$port}/?folder=/home/coder/project" 
+            ? "http://127.0.0.1:{$port}/?folder=/home/coder/project" 
             : "/ide/{$port}/?folder=/home/coder/project";
 
         return [
@@ -340,7 +340,7 @@ class CodeServerManager
             // If visionlab-ide hasn't bound the internal 8080 port yet, this will fail or timeout.
             // Using 'localhost' instead of '127.0.0.1' for better Docker Desktop Windows compatibility
             $response = \Illuminate\Support\Facades\Http::timeout(2)
-                ->get("http://localhost:{$workspace->port}/healthz");
+                ->get("http://127.0.0.1:{$workspace->port}/healthz");
 
             return $response->successful();
         } catch (\Throwable $e) {
@@ -761,6 +761,7 @@ class CodeServerManager
                     );
                 }
             }
+        }
 
         if (str_ends_with($identifierOrPath, '.vsix')) {
             $extDirName = "built-in-" . pathinfo($fileName, PATHINFO_FILENAME);
@@ -925,7 +926,7 @@ class CodeServerManager
     private function devFallback(Workspace $workspace): array
     {
         $devPort = (int) env('VSCODE_SERVER_PORT', 8099);
-        $devUrl  = env('VSCODE_SERVER_URL', "http://localhost:{$devPort}/");
+        $devUrl  = env('VSCODE_SERVER_URL', "http://127.0.0.1:{$devPort}/");
 
         return [
             'url'          => $devUrl,
