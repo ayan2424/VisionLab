@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#7c3aed">
     <meta name="description" content="VisionLab — Collaborative coding platform for universities.">
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" href="/icon-192.png">
     
     <title>{{ isset($title) ? $title . ' — VisionLab' : 'VisionLab' }}</title>
 

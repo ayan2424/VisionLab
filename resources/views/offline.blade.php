@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0a0a0a">
     <title>Offline — VisionLab</title>
-    <link rel="icon" href="/icons/icon-192.png">
+    <link rel="icon" href="/icon-192.png">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0a0a;font-family:system-ui,-apple-system,sans-serif;color:#f1f5f9;overflow:hidden;}

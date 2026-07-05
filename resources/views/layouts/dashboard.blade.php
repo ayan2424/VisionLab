@@ -11,7 +11,9 @@
     <meta name="description" content="VisionLab — Collaborative coding platform for universities.">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/icons/logo.svg">
     <script src="/pwa.js" defer></script>
     <meta name="vapid-public-key" content="{{ config('webpush.vapid.public_key') }}">
     <title>@yield('title', 'Dashboard') — VisionLab</title>

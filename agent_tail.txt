@@ -1,0 +1,25 @@
+Copied gui build to VSCode extension
+[timer] VSCode copy completed in 92ms
+[timer] Starting onnxruntime copy at 2026-06-28T21:22:55.817Z
+[timer] onnxruntime copy completed in 86ms
+[info] Copied onnxruntime-node
+[info] Copied tree-sitter.wasm
+[info] Copied llamaTokenizerWorkerPool.mjs
+[info] Copied llamaTokenizer.mjs
+[info] Copied tiktokenWorkerPool.mjs
+[info] Copied start_ollama.sh
+[info] LanceDB binary already present for linux-x64 at /www/wwwroot/visionlab.ayan24.me/storage/extensions/continue-source/extensions/vscode/node_modules/@lancedb/vectordb-linux-x64-gnu
+[info] Downloading pre-built sqlite3 binary
+[info] Copying sqlite node binding from core
+[info] Copied workerpool
+[info] Copied @vscode/ripgrep
+[info] Copied @lancedb
+[info] Copied @lancedb, @vscode/ripgrep, workerpool
+[info] LanceDB binary already copied at /www/wwwroot/visionlab.ayan24.me/storage/extensions/continue-source/extensions/vscode/out/node_modules/@lancedb/vectordb-linux-x64-gnu/index.node
+All paths exist
+[timer] Prepackage completed in 15309ms - finished at 2026-06-28T21:22:56.721Z
+
+> visionlab-agent@1.3.39 package
+> node scripts/package.js
+
+vsce package completed - extension created at extensions/vscode/build/continue-1.3.39.vsix

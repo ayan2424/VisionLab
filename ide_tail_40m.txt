@@ -1,0 +1,50 @@
+yarn run v1.22.22
+$ ./ci/build/build-release.sh
+npm notice created a lockfile as npm-shrinkwrap.json with version 3
+npm notice created a lockfile as npm-shrinkwrap.json with version 3
+npm notice created a lockfile as npm-shrinkwrap.json with version 3
+rsync: [sender] link_stat "/www/wwwroot/visionlab.ayan24.me/visionlab-ide/out" failed: No such file or directory (2)
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1356) [sender=3.2.7]
+error Command failed with exit code 23.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.75kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:experimental
+#2 DONE 0.9s
+
+#3 docker-image://docker.io/docker/dockerfile:experimental@sha256:600e5c62eedff338b3f7a0850beb7c05866e0ef27b2d2e8c02aa468e78496ff5
+#3 resolve docker.io/docker/dockerfile:experimental@sha256:600e5c62eedff338b3f7a0850beb7c05866e0ef27b2d2e8c02aa468e78496ff5 0.0s done
+#3 CACHED
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.75kB done
+#1 DONE 0.0s
+
+#4 [internal] load build definition from Dockerfile
+#4 DONE 0.0s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 65B done
+#5 DONE 0.0s
+
+#6 [internal] load metadata for docker.io/library/debian:12
+#6 DONE 1.4s
+
+#7 [internal] load build context
+#7 transferring context: 1.09kB done
+#7 DONE 0.0s
+
+#8 [packages 1/1] COPY release-packages/code-server*.deb /tmp/
+#8 ERROR: lstat /release-packages: no such file or directory
+
+#9 [stage-1 1/8] FROM docker.io/library/debian:12@sha256:30482e873082e906a4908c10529180aefb6f77620aea7404b909829fadc5d168
+#9 resolve docker.io/library/debian:12@sha256:30482e873082e906a4908c10529180aefb6f77620aea7404b909829fadc5d168 0.0s done
+#9 CANCELED
+------
+ > [packages 1/1] COPY release-packages/code-server*.deb /tmp/:
+------
+ERROR: failed to build: failed to solve: lstat /release-packages: no such file or directory

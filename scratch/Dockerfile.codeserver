@@ -1,0 +1,44 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip \
+    nodejs npm \
+    php-cli php-mbstring \
+    git curl wget sudo unzip \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -s /bin/bash -u 1000 coder && \
+    echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+COPY visionlab-ide-1.0.0-linux-amd64-FINAL.tar.gz /tmp/visionlab-ide.tar.gz
+
+RUN mkdir -p /usr/lib/code-server && \
+    tar -xzf /tmp/visionlab-ide.tar.gz -C /usr/lib/code-server --strip-components=1 && \
+    rm /tmp/visionlab-ide.tar.gz && \
+    ln -s /usr/lib/code-server/bin/code-server /usr/local/bin/code-server && \
+    chown -R 1000:1000 /usr/lib/code-server
+
+USER coder
+
+RUN mkdir -p /home/coder/.local/share/code-server/User && \
+    echo '{ \
+        "workbench.colorTheme": "VisionLab Dark", \
+        "editor.fontFamily": "JetBrains Mono, Fira Code, monospace", \
+        "editor.fontSize": 14, \
+        "editor.minimap.enabled": false, \
+        "terminal.integrated.fontSize": 13, \
+        "workbench.startupEditor": "none", \
+        "extensions.autoUpdate": false, \
+        "chat.commandCenter.enabled": false, \
+        "telemetry.telemetryLevel": "off" \
+    }' > /home/coder/.local/share/code-server/User/settings.json
+
+RUN mkdir -p /home/coder/project
+WORKDIR /home/coder/project
+
+EXPOSE 8080
+
+ENTRYPOINT ["code-server", "--bind-addr", "0.0.0.0:8080"]
