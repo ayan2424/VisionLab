@@ -173,6 +173,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/workspaces/{workspace}', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'show'])->name('workspaces.show');
         Route::post('/workspaces/{workspace}/stop', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'stop'])->name('workspaces.stop');
         Route::post('/workspaces/{workspace}/archive', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'archive'])->name('workspaces.archive');
+        Route::patch('/workspaces/{workspace}/extensions/{extension}/toggle', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'toggleExtension'])->name('workspaces.extensions.toggle');
 
         // Workspace Templates
         Route::resource('templates', \App\Http\Controllers\Admin\AdminTemplateController::class)->except(['show']);

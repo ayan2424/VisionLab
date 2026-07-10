@@ -88,6 +88,86 @@
 </div>
 </div>
 
+{{-- Per-Workspace Extensions Management --}}
+<div class="vc-card p-5 mb-8">
+    <h3 class="text-sm font-bold uppercase tracking-wider mb-4" style="color:var(--vc-muted);">Extensions (Per-Workspace)</h3>
+    <p class="text-xs mb-4" style="color:var(--vc-text-secondary);">Toggle individual extensions for this workspace. Changes sync to the container automatically if the workspace is running.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        @foreach($allExtensions as $ext)
+            @php
+                $pivot = $workspaceExtMap->get($ext->id);
+                $isEnabled = $pivot ? $pivot->is_enabled : false;
+                $syncStatus = $pivot ? $pivot->sync_status : 'not_assigned';
+            @endphp
+            <div class="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-black/20" id="ext-row-{{ $ext->id }}">
+                <div class="flex-1 min-w-0 mr-3">
+                    <p class="text-sm font-medium truncate" style="color:var(--vc-text);">{{ $ext->name }}</p>
+                    <p class="text-[10px] font-mono truncate" style="color:var(--vc-muted);">{{ $ext->package_identifier }}</p>
+                    <span class="text-[9px] px-1.5 py-0.5 rounded mt-1 inline-block 
+                        {{ $syncStatus === 'synced' ? 'bg-emerald-500/10 text-emerald-500' : ($syncStatus === 'failed' ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500') }}"
+                        id="sync-badge-{{ $ext->id }}">
+                        {{ $syncStatus }}
+                    </span>
+                </div>
+                <button 
+                    onclick="toggleWorkspaceExt({{ $workspace->id }}, {{ $ext->id }}, this)"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none flex-shrink-0"
+                    style="background: {{ $isEnabled ? 'var(--vc-accent, #3b82f6)' : '#374151' }};"
+                    data-enabled="{{ $isEnabled ? 'true' : 'false' }}"
+                >
+                    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ $isEnabled ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                </button>
+            </div>
+        @endforeach
+    </div>
+    
+    @if($allExtensions->isEmpty())
+        <p class="text-sm text-center py-4" style="color:var(--vc-muted);">No active extensions found in the registry.</p>
+    @endif
+</div>
+
+<script>
+async function toggleWorkspaceExt(workspaceId, extensionId, btn) {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    
+    try {
+        const res = await fetch(`/admin/workspaces/${workspaceId}/extensions/${extensionId}/toggle`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+            const isEnabled = data.is_enabled;
+            btn.style.background = isEnabled ? 'var(--vc-accent, #3b82f6)' : '#374151';
+            btn.dataset.enabled = isEnabled ? 'true' : 'false';
+            
+            const dot = btn.querySelector('span');
+            dot.classList.toggle('translate-x-6', isEnabled);
+            dot.classList.toggle('translate-x-1', !isEnabled);
+            
+            const badge = document.getElementById(`sync-badge-${extensionId}`);
+            if (badge) {
+                badge.textContent = 'pending';
+                badge.className = 'text-[9px] px-1.5 py-0.5 rounded mt-1 inline-block bg-yellow-500/10 text-yellow-500';
+            }
+        }
+    } catch (err) {
+        console.error('Toggle failed:', err);
+    } finally {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+}
+</script>
+
 @if($workspace->status === 'running')
 <div class="vc-card p-5 mb-8" x-data="workspaceMonitor()">
     <div class="flex items-center justify-between mb-4">

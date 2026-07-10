@@ -25,14 +25,20 @@ class AdminWorkspaceController extends Controller
 
     public function show(Workspace $workspace)
     {
-        $workspace->load(['owner', 'course', 'collaborators']);
+        $workspace->load(['owner', 'course', 'collaborators', 'extensions.extension']);
         $auditLogs = AuditLog::where('workspace_id', $workspace->id)
             ->with('actor')
             ->latest()
             ->take(20)
             ->get();
-            
-        return view('admin.workspaces.show', compact('workspace', 'auditLogs'));
+
+        // All available extensions for the toggle UI
+        $allExtensions = \App\Models\Extension::where('is_active', true)->orderBy('name')->get();
+
+        // Map of extension_id => WorkspaceExtension pivot for this workspace
+        $workspaceExtMap = $workspace->extensions->keyBy('extension_id');
+
+        return view('admin.workspaces.show', compact('workspace', 'auditLogs', 'allExtensions', 'workspaceExtMap'));
     }
 
     public function stop(Workspace $workspace)
@@ -75,5 +81,36 @@ class AdminWorkspaceController extends Controller
         ]);
 
         return back()->with('success', 'Workspace archived successfully.');
+    }
+
+    /**
+     * Toggle a specific extension on/off for a specific workspace.
+     */
+    public function toggleExtension(Workspace $workspace, \App\Models\Extension $extension)
+    {
+        $pivot = \App\Models\WorkspaceExtension::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'extension_id' => $extension->id],
+            ['is_enabled' => false, 'policy_source' => 'admin_manual', 'sync_status' => 'pending']
+        );
+
+        // Toggle the enabled state
+        $pivot->update([
+            'is_enabled'    => !$pivot->is_enabled,
+            'sync_status'   => 'pending',
+            'policy_source' => 'admin_manual',
+        ]);
+
+        // If workspace is running, dispatch sync job
+        if ($workspace->isRunning()) {
+            \App\Jobs\SyncWorkspaceExtensions::dispatch($workspace->id);
+        }
+
+        $action = $pivot->is_enabled ? 'enabled' : 'disabled';
+
+        return response()->json([
+            'success'    => true,
+            'is_enabled' => $pivot->is_enabled,
+            'message'    => "Extension {$extension->name} {$action} for this workspace.",
+        ]);
     }
 }
