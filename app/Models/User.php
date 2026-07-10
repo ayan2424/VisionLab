@@ -18,6 +18,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password', 'role', 'status', 'student_id',
         'avatar_url', 'theme_preference',
+        'campus_id', 'department_id', 'phone', 'date_of_birth', 'address', 'guardian_name', 'guardian_phone',
         'last_activity_at', 'current_streak', 'longest_streak',
         'vercel_token', 'railway_token',
     ];
@@ -173,6 +174,21 @@ class User extends Authenticatable
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class, 'actor_id');
+    }
+
+    public function latestSnapshot(): HasOne
+    {
+        return $this->hasOne(AiSnapshot::class)->latestOfMany();
+    }
+
+    public function campus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Campus::class);
+    }
+
+    public function department(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 
     // ── Attributes ──────────────────────────────────────────────────

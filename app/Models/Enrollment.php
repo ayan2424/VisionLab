@@ -10,7 +10,7 @@ class Enrollment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['course_id', 'student_id', 'status', 'enrolled_at', 'batch_timing', 'start_date'];
+    protected $fillable = ['course_id', 'student_id', 'batch_id', 'status', 'fee_status', 'enrolled_at', 'batch_timing', 'start_date'];
 
     protected $casts = [
         'enrolled_at' => 'datetime',
@@ -25,6 +25,11 @@ class Enrollment extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function batch(): BelongsTo
+    {
+        return $this->belongsTo(CourseBatch::class, 'batch_id');
     }
 
     public function scopeActive($query)

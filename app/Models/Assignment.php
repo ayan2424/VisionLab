@@ -12,16 +12,17 @@ class Assignment extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'course_id', 'title', 'description', 'max_points',
-        'due_date', 'starter_code', 'starter_language', 'auto_workspace',
+        'course_id', 'grade_item_id', 'title', 'description', 'max_points',
+        'due_date', 'time_limit_minutes', 'starter_code', 'starter_language', 'auto_workspace',
         'mode', 'allow_ai', 'template_id',
     ];
 
     protected $casts = [
-        'due_date'       => 'datetime',
-        'auto_workspace' => 'boolean',
-        'max_points'     => 'integer',
-        'allow_ai'       => 'boolean',
+        'due_date'           => 'datetime',
+        'auto_workspace'     => 'boolean',
+        'max_points'         => 'integer',
+        'allow_ai'           => 'boolean',
+        'time_limit_minutes' => 'integer',
     ];
 
     public function course(): BelongsTo
@@ -47,6 +48,22 @@ class Assignment extends Model
     public function isOverdue(): bool
     {
         return $this->due_date && $this->due_date->isPast();
+    }
+
+    public function isPastDue(): bool
+    {
+        if (!$this->due_date) return false;
+        return Carbon::now()->gt($this->due_date);
+    }
+
+    public function gradeItem(): BelongsTo
+    {
+        return $this->belongsTo(GradeItem::class);
+    }
+
+    public function rubric(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Rubric::class);
     }
 
     public function getDueSoonAttribute(): bool

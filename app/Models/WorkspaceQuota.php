@@ -89,7 +89,7 @@ class WorkspaceQuota extends Model
         // Hard platform fallback — no database record needed
         $fallback = new static();
         $fallback->name = 'Platform Default';
-        $fallback->memory_mb = 512;
+        $fallback->memory_mb = 2048;
         $fallback->cpu_shares = 1024;
         $fallback->disk_mb = 1024;
         $fallback->timeout_minutes = 120;

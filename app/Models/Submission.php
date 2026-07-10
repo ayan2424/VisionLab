@@ -11,9 +11,9 @@ class Submission extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'assignment_id', 'student_id', 'workspace_snapshot_path',
+        'assignment_id', 'student_id', 'workspace_id', 'workspace_snapshot_path',
         'code_snapshot', 'status', 'submitted_at', 'grade', 'feedback', 'graded_by',
-        'grade_published', 'draft_grade',
+        'grade_published', 'draft_grade', 'rubric_scores',
     ];
 
     protected $casts = [
@@ -21,6 +21,7 @@ class Submission extends Model
         'grade'           => 'integer',
         'grade_published' => 'boolean',
         'draft_grade'     => 'float',
+        'rubric_scores'   => 'json',
     ];
 
     public function assignment(): BelongsTo

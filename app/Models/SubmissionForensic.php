@@ -15,6 +15,8 @@ class SubmissionForensic extends Model
         'submission_id', 'workspace_id', 'human_keystrokes',
         'ai_patches_applied', 'pasted_count', 'imported_count',
         'human_pct', 'ai_pct', 'confidence', 'last_synced_at',
+        'paste_event_count', 'paste_char_total', 'focus_loss_count',
+        'total_idle_seconds', 'keystroke_count', 'flagged', 'flag_reason',
     ];
 
     protected function casts(): array
@@ -27,6 +29,12 @@ class SubmissionForensic extends Model
             'human_pct'         => 'decimal:2',
             'ai_pct'            => 'decimal:2',
             'last_synced_at'    => 'datetime',
+            'paste_event_count' => 'integer',
+            'paste_char_total'  => 'integer',
+            'focus_loss_count'  => 'integer',
+            'total_idle_seconds'=> 'integer',
+            'keystroke_count'   => 'integer',
+            'flagged'           => 'boolean',
         ];
     }
 
