@@ -66,10 +66,32 @@ class ExtensionController extends Controller
     {
         $extension->update(['is_active' => !$extension->is_active]);
 
+        // Sync to all running workspaces: update their pivot tables and dispatch sync jobs
+        $runningWorkspaces = \App\Models\Workspace::where('status', 'running')->get();
+
+        foreach ($runningWorkspaces as $workspace) {
+            $pivot = \App\Models\WorkspaceExtension::firstOrCreate(
+                ['workspace_id' => $workspace->id, 'extension_id' => $extension->id],
+                ['is_enabled' => $extension->is_active, 'policy_source' => 'admin_toggle', 'sync_status' => 'pending']
+            );
+
+            // Update existing pivot to match the new state
+            $pivot->update([
+                'is_enabled'    => $extension->is_active,
+                'sync_status'   => 'pending',
+                'policy_source' => 'admin_toggle',
+            ]);
+
+            // Dispatch sync job for this workspace
+            \App\Jobs\SyncWorkspaceExtensions::dispatch($workspace->id);
+        }
+
         return response()->json([
             'success'   => true,
             'is_active' => $extension->is_active,
-            'message'   => $extension->is_active ? 'Extension enabled globally.' : 'Extension disabled.',
+            'message'   => $extension->is_active
+                ? "Extension enabled globally. Syncing to {$runningWorkspaces->count()} running workspace(s)."
+                : "Extension disabled. Removing from {$runningWorkspaces->count()} running workspace(s).",
         ]);
     }
 

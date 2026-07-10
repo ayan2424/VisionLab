@@ -134,7 +134,7 @@ class CodeServerManager
 
         $cmd = array_merge($cmd, [
             '--restart', 'unless-stopped',
-            '--memory', ($quota['memory_mb'] ?? 512) . 'm',
+            '--memory', ($quota['memory_mb'] ?? 2048) . 'm',
             '--cpu-shares', (string) ($quota['cpu_shares'] ?? 1024),
             $image,
             '--auth', $authMode,
@@ -611,7 +611,7 @@ class CodeServerManager
         $quota = WorkspaceQuota::resolveFor($workspace->student_id, $workspace->course_id);
 
         return [
-            'memory_mb'       => $quota->memory_mb ?? 512,
+            'memory_mb'       => $quota->memory_mb ?? 2048,
             'cpu_shares'      => $quota->cpu_shares ?? 1024,
             'disk_mb'         => $quota->disk_mb ?? 1024,
             'timeout_minutes' => $quota->timeout_minutes ?? 120,
@@ -860,7 +860,29 @@ class CodeServerManager
         $process = new Process([$this->dockerCmd(), 'exec', $containerName, 'bash', '-c', $script]);
         $process->run();
 
-        // 2. Install enabled extensions dynamically from WorkspaceExtension pivot
+        // 2. Auto-populate workspace_extensions pivot if empty (first boot)
+        $existingPivots = \App\Models\WorkspaceExtension::where('workspace_id', $workspace->id)->count();
+
+        if ($existingPivots === 0) {
+            // First boot: assign all active global extensions to this workspace
+            $globalExtensions = \App\Models\Extension::where('is_global', true)
+                ->where('is_active', true)
+                ->get();
+
+            foreach ($globalExtensions as $ext) {
+                \App\Models\WorkspaceExtension::create([
+                    'workspace_id'  => $workspace->id,
+                    'extension_id'  => $ext->id,
+                    'is_enabled'    => true,
+                    'policy_source' => 'global_auto',
+                    'sync_status'   => 'pending',
+                ]);
+            }
+
+            Log::info("Auto-populated {$globalExtensions->count()} global extensions for workspace {$workspace->id}");
+        }
+
+        // 3. Install all enabled extensions from the pivot table
         $enabledExtensions = \App\Models\WorkspaceExtension::with('extension')
             ->where('workspace_id', $workspace->id)
             ->where('is_enabled', true)
@@ -871,22 +893,17 @@ class CodeServerManager
             if (!$ext || !$ext->is_active) continue;
             
             $identifier = $ext->package_identifier;
-            $target = $ext->is_builtin ? $identifier : ($ext->artifact_path ?? $identifier);
+            $target = $ext->artifact_path ?? $identifier;
             
-            $this->installExtension($workspace, $target, $ext->checksum);
-            $wsExt->update(['sync_status' => 'synced']);
+            try {
+                $this->installExtension($workspace, $target, $ext->checksum);
+                $wsExt->update(['sync_status' => 'synced']);
+            } catch (\Throwable $e) {
+                $wsExt->update(['sync_status' => 'failed']);
+                Log::warning("Failed to install extension {$identifier}: " . $e->getMessage());
+            }
         }
 
-        // 3. Always install global builtin extensions (e.g. VisionLab Agent)
-        $globalExtensions = \App\Models\Extension::where('is_global', true)
-            ->where('is_active', true)
-            ->get();
-
-        foreach ($globalExtensions as $ext) {
-            $identifier = $ext->package_identifier;
-            $target = $ext->artifact_path ?? $identifier; // Prioritize local .vsix if available
-            $this->installExtension($workspace, $target, $ext->checksum);
-        }
     }
 
 
