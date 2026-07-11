@@ -62,10 +62,10 @@
                             <button class="btn-ghost text-yellow-500 py-1 px-3 text-xs">Stop</button>
                         </form>
                     @endif
-                    <form method="POST" action="{{ route('admin.workspaces.destroy', $ws->slug) }}" class="inline" onsubmit="return confirm('WARNING: This will permanently delete the workspace and all its local physical files. This cannot be undone. Continue?');">
+                    <form method="POST" action="{{ route('admin.workspaces.destroy', $ws->slug) }}" class="inline">
                         @csrf
                         @method('DELETE')
-                        <button class="btn-ghost text-red-500 py-1 px-3 text-xs">Delete</button>
+                        <button type="submit" class="btn-ghost text-red-500 py-1 px-3 text-xs">Delete</button>
                     </form>
                 </td>
             </tr>

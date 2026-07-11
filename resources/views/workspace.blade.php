@@ -186,7 +186,7 @@
         </div>
 
         {{-- Destroy Workspace --}}
-        <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:8px;" onsubmit="return confirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?');">
+        <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:8px;">
             @csrf
             @method('DELETE')
             <button type="submit" class="pill-btn" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">
