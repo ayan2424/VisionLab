@@ -30,7 +30,7 @@
         {{-- Tabs --}}
         <div class="flex gap-1 mt-6" style="border-bottom:1px solid var(--vc-border);">
             @php
-                $availableTabs = ['stream' => 'Stream', 'assignments' => 'Assignments', 'people' => 'People'];
+                $availableTabs = ['stream' => 'Stream', 'modules' => 'Curriculum', 'assignments' => 'Assignments', 'quizzes' => 'Quizzes', 'forums' => 'Forums', 'people' => 'People'];
                 if ($isInstructor) {
                     $availableTabs['extensions'] = 'Extensions';
                 }
@@ -195,6 +195,114 @@
                     <div class="text-xs" style="color:var(--vc-muted);">VS Code + AI sidebar</div>
                 </div>
             </a>
+        </div>
+    </div>
+
+    {{-- CURRICULUM (MODULES) TAB --}}
+    @elseif($tab === 'modules')
+    <div style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
+        @if($isInstructor)
+        <div class="flex justify-end mb-5">
+            <a href="#" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-indigo-500 flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Module
+            </a>
+        </div>
+        @endif
+
+        <div class="space-y-4">
+            @forelse($course->modules as $module)
+                <div class="vc-card overflow-hidden">
+                    <div class="p-4 bg-slate-50 flex justify-between items-center cursor-pointer border-b border-slate-200">
+                        <div>
+                            <h3 class="font-bold text-gray-900">Module {{ $module->order_index + 1 }}: {{ $module->title }}</h3>
+                            @if($module->description)
+                                <p class="text-sm text-gray-500 mt-1">{{ $module->description }}</p>
+                            @endif
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="p-4 bg-white space-y-2">
+                        @forelse($module->lessons as $lesson)
+                            <div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    @if($lesson->type === 'video')
+                                        <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    @elseif($lesson->type === 'pdf')
+                                        <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                    @else
+                                        <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    @endif
+                                    <span class="font-medium text-gray-700">{{ $lesson->title }}</span>
+                                </div>
+                                <div class="text-sm text-gray-400">
+                                    {{ $lesson->duration_minutes ? $lesson->duration_minutes . ' mins' : '' }}
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500 text-center py-2">No lessons in this module yet.</p>
+                        @endforelse
+                        
+                        @if($isInstructor)
+                        <div class="mt-3 text-right">
+                            <a href="#" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">+ Add Lesson</a>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="vc-card p-10 flex flex-col items-center justify-center text-center">
+                    <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900">No Modules Yet</h3>
+                    <p class="text-sm text-gray-500 mt-1">Get started by creating the first curriculum module.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- QUIZZES TAB --}}
+    @elseif($tab === 'quizzes')
+    <div style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
+        @if($isInstructor)
+        <div class="flex justify-end mb-5">
+            <a href="#" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-indigo-500 flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Create Quiz
+            </a>
+        </div>
+        @endif
+        <div class="vc-card p-10 flex flex-col items-center justify-center text-center">
+            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900">No Quizzes Available</h3>
+            <p class="text-sm text-gray-500 mt-1">This course currently has no active quizzes.</p>
+        </div>
+    </div>
+
+    {{-- FORUMS TAB --}}
+    @elseif($tab === 'forums')
+    <div style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="text-lg font-bold text-gray-900">Discussion Forum</h3>
+            <a href="#" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-indigo-500 flex items-center gap-2 transition-colors">
+                New Topic
+            </a>
+        </div>
+        <div class="vc-card p-10 flex flex-col items-center justify-center text-center">
+            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900">No Discussions Yet</h3>
+            <p class="text-sm text-gray-500 mt-1">Start a conversation by creating the first topic.</p>
         </div>
     </div>
 

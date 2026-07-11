@@ -189,6 +189,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Extended ERP & LMS
         Route::resource('challans', \App\Http\Controllers\Admin\AdminFeeChallanController::class);
+        Route::resource('employees', \App\Http\Controllers\Admin\AdminEmployeeController::class);
+        Route::resource('library', \App\Http\Controllers\Admin\AdminLibraryController::class);
 
         // Audit Logs
         Route::get('/audits', [\App\Http\Controllers\Admin\AdminAuditController::class, 'index'])->name('audits.index');

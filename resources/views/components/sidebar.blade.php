@@ -145,6 +145,26 @@
                 </svg>
                 Fee Challans
             </a>
+            @php $empActive = request()->routeIs('admin.employees.*'); @endphp
+            <a href="{{ route('admin.employees.index') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
+               style="{{ $empActive ? 'color:#EF4444;background:rgba(239,68,68,0.08);font-weight:600;' : 'color:var(--vc-text-secondary);' }}">
+                @if($empActive)<span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-red-500"></span>@endif
+                <svg class="w-[18px] h-[18px]" style="{{ $empActive ? 'color:#EF4444;' : 'color:var(--vc-muted);' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                HR (Employees)
+            </a>
+            @php $libActive = request()->routeIs('admin.library.*'); @endphp
+            <a href="{{ route('admin.library.index') }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
+               style="{{ $libActive ? 'color:#EF4444;background:rgba(239,68,68,0.08);font-weight:600;' : 'color:var(--vc-text-secondary);' }}">
+                @if($libActive)<span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-red-500"></span>@endif
+                <svg class="w-[18px] h-[18px]" style="{{ $libActive ? 'color:#EF4444;' : 'color:var(--vc-muted);' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                Library
+            </a>
 
             @php $tmplActive = request()->routeIs('admin.templates.*'); @endphp
             <a href="{{ route('admin.templates.index') }}"

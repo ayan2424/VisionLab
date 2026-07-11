@@ -63,7 +63,7 @@ class CourseController extends Controller
     public function show(string $slug)
     {
         $course = Course::where('slug', $slug)
-                        ->with(['instructor', 'announcements.author', 'assignments'])
+                        ->with(['instructor', 'announcements.author', 'assignments', 'modules.lessons', 'modules.quizzes'])
                         ->firstOrFail();
 
         $user = Auth::user();
