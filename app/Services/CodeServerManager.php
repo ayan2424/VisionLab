@@ -146,7 +146,7 @@ class CodeServerManager
         usleep(500000); 
 
         // Update database with running container details
-        $containerId = trim($this->getContainerId($name));
+        $containerId = trim($process->getOutput());
         $workspace->update([
             'port'         => $port,
             'status'       => 'running',
