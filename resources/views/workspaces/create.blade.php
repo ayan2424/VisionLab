@@ -22,7 +22,14 @@
     @else
         <form method="POST" action="{{ route('workspace.store') }}">
             @csrf
-            
+            <div class="mb-8">
+                <label class="block text-sm font-bold mb-2" style="color:var(--vc-text);">Workspace Name</label>
+                <input type="text" name="name" value="{{ old('name', 'personal-' . $user->id) }}" required placeholder="e.g. personal-project-1"
+                       class="w-full px-4 py-3 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[var(--vc-accent)] transition-all"
+                       style="background:var(--vc-surface-dark); color:var(--vc-text);">
+                <p class="text-xs mt-2" style="color:var(--vc-text-secondary);">Give your workspace a unique, memorable name (only letters, numbers, hyphens, and spaces).</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 @foreach($templates as $index => $template)
                 <label class="block cursor-pointer group relative">

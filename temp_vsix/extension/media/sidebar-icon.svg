@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" width="32" height="32"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF8A00"/><stop offset="100%" stop-color="#FF5E00"/></linearGradient><linearGradient id="b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD54A"/><stop offset="100%" stop-color="#FFB300"/></linearGradient><linearGradient id="c" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF5E00"/><stop offset="100%" stop-color="#c2410c"/></linearGradient><linearGradient id="d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF176"/><stop offset="100%" stop-color="#FFC107"/></linearGradient><linearGradient id="e" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FBC02D"/><stop offset="100%" stop-color="#F57F17"/></linearGradient><linearGradient id="f" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF7043"/><stop offset="100%" stop-color="#D84315"/></linearGradient>
-<linearGradient id="darkNeonAI" x1="0%" y1="0%" x2="100%" y2="100%">
-<stop offset="0%" stop-color="#00F5FF"/>
-<stop offset="35%" stop-color="#00A3FF"/>
-<stop offset="70%" stop-color="#7B61FF"/>
-<stop offset="100%" stop-color="#EC4899"/>
-</linearGradient>
-</defs><path d="m11.3 33.3 43.3 77.2h8.8l15.5-27.3H63.2l-4.1 6.7-31.8-56.6Z" style="fill:url(#a)"/><path d="m44.2 48.9 7.5 13.6 9.6-15h57.1l8-14.2H54.7Z" style="fill:url(#b)"/><path d="m62.8 57.4-2.3 2.2 6.7 6.5-6.6 7.2 2.3 2.2 9-9.4Z" style="fill:url(#c)"/><path d="M105.7 55.7H89.8l7.2 13-23.5 42h16l23.8-41.8Z" style="fill:url(#d)"/><path d="M90.1 110.6h36.2l8.2-14.4H98.1Z" style="fill:url(#e)"/><path d="M72.3 72.5h13.5v3.1H72.3Z" style="fill:url(#f)"/></svg>

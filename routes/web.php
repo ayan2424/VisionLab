@@ -182,6 +182,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/quotas', [\App\Http\Controllers\Admin\AdminQuotaController::class, 'index'])->name('quotas.index');
         Route::post('/quotas', [\App\Http\Controllers\Admin\AdminQuotaController::class, 'updateGlobal'])->name('quotas.updateGlobal');
 
+        // Institute ERP (Campus, Department, Course Batch)
+        Route::resource('campuses', \App\Http\Controllers\Admin\AdminCampusController::class);
+        Route::resource('departments', \App\Http\Controllers\Admin\AdminDepartmentController::class);
+        Route::resource('batches', \App\Http\Controllers\Admin\AdminCourseBatchController::class);
+
         // Audit Logs
         Route::get('/audits', [\App\Http\Controllers\Admin\AdminAuditController::class, 'index'])->name('audits.index');
 

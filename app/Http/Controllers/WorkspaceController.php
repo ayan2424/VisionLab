@@ -61,6 +61,7 @@ class WorkspaceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name'        => 'required|string|max:100|regex:/^[a-zA-Z0-9\-_ ]+$/',
             'template_id' => 'required|exists:workspace_templates,id',
         ]);
 
@@ -70,7 +71,7 @@ class WorkspaceController extends Controller
 
         $workspace = Workspace::create([
             'student_id'  => $user->id,
-            'name'        => 'personal-' . $user->id,
+            'name'        => trim($request->name),
             'course_id'   => null,
             'language'    => $template->language,
             'template_id' => $template->id,

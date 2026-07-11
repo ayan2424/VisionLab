@@ -144,7 +144,7 @@
                             <div class="relative w-48 h-48 mx-auto">
                                 <canvas id="forensicsChart"></canvas>
                                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                    <div class="text-3xl font-black" style="color:var(--vc-text);">{{ $submission->forensic->human_percentage }}%</div>
+                                    <div class="text-3xl font-black" style="color:var(--vc-text);">{{ $submission->forensic->human_pct }}%</div>
                                     <div class="text-xs font-bold" style="color:var(--vc-muted);">Human</div>
                                 </div>
                             </div>
@@ -155,18 +155,18 @@
                                         <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
                                         <span class="text-sm font-semibold" style="color:var(--vc-text-secondary);">Human Typed</span>
                                     </div>
-                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->human_keystroke_count) }} chars</span>
+                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->human_keystrokes) }} chars</span>
                                 </div>
                                 <div class="flex justify-between items-center p-3 rounded-lg border" style="background:var(--vc-bg);border-color:var(--vc-border);">
                                     <div class="flex items-center gap-2">
                                         <div class="w-3 h-3 rounded-full bg-purple-500"></div>
                                         <span class="text-sm font-semibold" style="color:var(--vc-text-secondary);">AI / Pasted</span>
                                     </div>
-                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->ai_injected_char_count + $submission->forensic->pasted_char_count) }} chars</span>
+                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->ai_patches_applied + $submission->forensic->pasted_count) }} chars</span>
                                 </div>
                                 <div class="pt-2">
                                     <span class="text-xs font-semibold px-2 py-1 rounded" style="background:rgba(99,102,241,0.1);color:#818cf8;">
-                                        Confidence: {{ ucfirst($submission->forensic->confidence_level) }}
+                                        Confidence: {{ ucfirst($submission->forensic->confidence ?? 'high') }}
                                     </span>
                                 </div>
                             </div>
@@ -439,7 +439,7 @@ function renderForensicsChart() {
         data: {
             labels: ['Human Typed', 'AI / Pasted'],
             datasets: [{
-                data: [{{ $submission->forensic->human_percentage }}, {{ $submission->forensic->ai_percentage }}],
+                data: [{{ $submission->forensic->human_pct }}, {{ $submission->forensic->ai_pct }}],
                 backgroundColor: ['#10B981', '#8B5CF6'],
                 borderWidth: 0,
                 hoverOffset: 4

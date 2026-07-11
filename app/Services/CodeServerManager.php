@@ -84,11 +84,19 @@ class CodeServerManager
             mkdir($workspacePath, 0777, true);
             exec('chmod -R 0777 ' . escapeshellarg($workspacePath));
             
-            // Inject dev.nix if a template is assigned
+            // Inject declarative Nix configuration and bootstrap script
             if ($workspace->template_id && $workspace->template) {
+                $idxPath = $workspacePath . '/.vision';
+                if (!is_dir($idxPath)) mkdir($idxPath, 0777, true);
+                
                 if (!empty($workspace->template->nix_config)) {
-                    file_put_contents($workspacePath . '/dev.nix', $workspace->template->nix_config);
-                    chmod($workspacePath . '/dev.nix', 0666);
+                    file_put_contents($idxPath . '/dev.nix', $workspace->template->nix_config);
+                    chmod($idxPath . '/dev.nix', 0666);
+                }
+                
+                if (!empty($workspace->template->bootstrap_script)) {
+                    file_put_contents($idxPath . '/bootstrap.sh', $workspace->template->bootstrap_script);
+                    chmod($idxPath . '/bootstrap.sh', 0777);
                 }
             }
         }
@@ -165,6 +173,24 @@ class CodeServerManager
             'rm -rf /home/coder/.local/share/code-server/extensions/github.copilot*'
         ];
         (new Process($purgeCopilotCmd))->run();
+
+        // Run Nix bootstrap if it exists (Phase 3: Declarative Workspace Build)
+        if ($workspace->template_id && $workspace->template && !empty($workspace->template->bootstrap_script)) {
+            $bootstrapCmd = [
+                $this->dockerCmd(), 'exec', '-u', '1000', $containerId, 'sh', '-c', 
+                'cd /home/coder/project && if [ -f .vision/bootstrap.sh ]; then dos2unix .vision/bootstrap.sh 2>/dev/null; sh .vision/bootstrap.sh; fi'
+            ];
+            $bootstrapProcess = new Process($bootstrapCmd);
+            $bootstrapProcess->setTimeout(300); // 5 mins for heavy installs
+            $bootstrapProcess->run();
+            
+            if (!$bootstrapProcess->isSuccessful()) {
+                Log::warning("CodeServerManager: Nix bootstrap script failed", [
+                    'workspace' => $workspace->id,
+                    'error'     => $bootstrapProcess->getErrorOutput()
+                ]);
+            }
+        }
 
         // Update workspace record
         $workspace->update([

@@ -14,6 +14,8 @@ class WorkspaceTemplate extends Model
         'start_command',
         'is_active',
         'nix_config',
+        'bootstrap_script',
+        'ui_parameters',
     ];
 
     protected function casts(): array

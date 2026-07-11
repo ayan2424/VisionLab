@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Extension;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ExtensionController extends Controller
 {
@@ -35,11 +36,28 @@ class ExtensionController extends Controller
             'version'            => 'required|string|max:20',
             'description'        => 'nullable|string|max:500',
             'is_global'          => 'sometimes|boolean',
+            'artifact'           => 'required|file|mimes:zip|max:51200', // vsix is a zip
         ]);
 
-        Extension::create(array_merge($validated, ['is_builtin' => false, 'is_active' => true]));
+        $artifactPath = null;
+        $checksum = null;
 
-        return redirect()->route('admin.extensions.index')->with('success', 'Extension added.');
+        if ($request->hasFile('artifact')) {
+            $file = $request->file('artifact');
+            // Store as original name or a safe hashed name
+            $filename = "{$validated['package_identifier']}-{$validated['version']}-" . uniqid() . '.vsix';
+            $artifactPath = $file->storeAs('extensions', $filename, 'local');
+            $checksum = hash_file('sha256', Storage::disk('local')->path($artifactPath));
+        }
+
+        Extension::create(array_merge($validated, [
+            'is_builtin' => false, 
+            'is_active' => true,
+            'artifact_path' => $artifactPath,
+            'checksum' => $checksum
+        ]));
+
+        return redirect()->route('admin.extensions.index')->with('success', 'Extension added successfully.');
     }
 
     public function edit(Extension $extension)
@@ -54,12 +72,27 @@ class ExtensionController extends Controller
             'version'     => 'required|string|max:20',
             'description' => 'nullable|string|max:500',
             'is_global'   => 'sometimes|boolean',
+            'artifact'    => 'nullable|file|mimes:zip|max:51200', // vsix is a zip
         ]);
 
         $validated['is_global'] = $request->boolean('is_global');
+
+        if ($request->hasFile('artifact')) {
+            $file = $request->file('artifact');
+            $filename = "{$extension->package_identifier}-{$validated['version']}-" . uniqid() . '.vsix';
+            $artifactPath = $file->storeAs('extensions', $filename, 'local');
+            $validated['artifact_path'] = $artifactPath;
+            $validated['checksum'] = hash_file('sha256', Storage::disk('local')->path($artifactPath));
+
+            // Optional: delete old artifact
+            if ($extension->artifact_path && Storage::disk('local')->exists($extension->artifact_path)) {
+                Storage::disk('local')->delete($extension->artifact_path);
+            }
+        }
+
         $extension->update($validated);
 
-        return redirect()->route('admin.extensions.index')->with('success', 'Extension updated.');
+        return redirect()->route('admin.extensions.index')->with('success', 'Extension updated successfully.');
     }
 
     public function toggleGlobal(Extension $extension)

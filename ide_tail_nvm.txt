@@ -1,1 +1,0 @@
-/tmp/native_ide.sh: line 6: nvm: command not found
