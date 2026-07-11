@@ -217,7 +217,7 @@ return new class extends Migration
         if (Schema::hasTable('submission_forensics')) {
             Schema::table('submission_forensics', function (Blueprint $table) {
                 if (! Schema::hasColumn('submission_forensics', 'paste_event_count')) {
-                    $table->unsignedInteger('paste_event_count')->default(0)->after('similarity_score');
+                    $table->unsignedInteger('paste_event_count')->default(0)->after('confidence');
                 }
                 if (! Schema::hasColumn('submission_forensics', 'paste_char_total')) {
                     $table->unsignedInteger('paste_char_total')->default(0)->after('paste_event_count');
