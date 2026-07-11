@@ -75,8 +75,8 @@ class CodeServerManager
         
         $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
         $proxyUrl = $isLocalhost 
-            ? "http://127.0.0.1:{$port}/?folder=/home/coder/project" 
-            : "/ide/{$port}/?folder=/home/coder/project";
+            ? "http://127.0.0.1:{$port}/?folder=/home/coder/{$workspace->slug}" 
+            : "/ide/{$port}/?folder=/home/coder/{$workspace->slug}";
 
         $authMode = 'none'; // Permanently disabled password auth as requested
 
@@ -328,8 +328,8 @@ class CodeServerManager
 
         $isLocalhost = app()->environment('local', 'testing') || (in_array(request()->getHost(), ['localhost', '127.0.0.1']) && request()->getPort() !== 80 && request()->getPort() !== 443);
         $iframeUrl = $isLocalhost 
-            ? "http://127.0.0.1:{$port}/?folder=/home/coder/project" 
-            : "/ide/{$port}/?folder=/home/coder/project";
+            ? "http://127.0.0.1:{$port}/?folder=/home/coder/{$workspace->slug}" 
+            : "/ide/{$port}/?folder=/home/coder/{$workspace->slug}";
 
         return [
             'running'      => true,
@@ -439,8 +439,8 @@ class CodeServerManager
             // Handle directory commands like 'cd .'
             foreach ($command as $index => $arg) {
                 if ($arg === '.') $command[$index] = $basePath;
-                if (is_string($arg) && str_contains($arg, '/home/coder/project')) {
-                    $command[$index] = str_replace('/home/coder/project', $basePath, $arg);
+                if (is_string($arg) && str_contains($arg, '/home/coder/' . $workspace->slug)) {
+                    $command[$index] = str_replace('/home/coder/' . $workspace->slug, $basePath, $arg);
                 }
             }
 
@@ -451,8 +451,8 @@ class CodeServerManager
             
             foreach ($command as $index => $arg) {
                 if ($arg === '.') $command[$index] = $basePath;
-                if (is_string($arg) && str_contains($arg, '/home/coder/project')) {
-                    $command[$index] = str_replace('/home/coder/project', $basePath, $arg);
+                if (is_string($arg) && str_contains($arg, '/home/coder/' . $workspace->slug)) {
+                    $command[$index] = str_replace('/home/coder/' . $workspace->slug, $basePath, $arg);
                 }
             }
             
@@ -473,7 +473,7 @@ class CodeServerManager
      */
     public function listFiles(Workspace $workspace, string $relativePath = ''): array
     {
-        $path = '/home/coder/project' . ($relativePath ? '/' . ltrim($relativePath, '/') : '');
+        $path = '/home/coder/' . $workspace->slug . ($relativePath ? '/' . ltrim($relativePath, '/') : '');
         $process = $this->executeDockerFileCommand($workspace, ['sh', '-c', "cd '$path' 2>/dev/null && find . -mindepth 1 -printf '%P|%y\\n'"]);
 
         if (!$process->isSuccessful()) {
@@ -532,7 +532,7 @@ class CodeServerManager
      */
     public function readFile(Workspace $workspace, string $relativePath): ?string
     {
-        $path = '/home/coder/project/' . ltrim(str_replace('\\', '/', $relativePath), '/');
+        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
         $process = $this->executeDockerFileCommand($workspace, ['cat', $path]);
         
         if ($process->isSuccessful()) {
@@ -546,7 +546,7 @@ class CodeServerManager
      */
     public function writeFile(Workspace $workspace, string $relativePath, string $content): bool
     {
-        $path = '/home/coder/project/' . ltrim(str_replace('\\', '/', $relativePath), '/');
+        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
         $dir = dirname($path);
         
         // Ensure directory exists
@@ -566,7 +566,7 @@ class CodeServerManager
      */
     public function deleteFile(Workspace $workspace, string $relativePath): bool
     {
-        $path = '/home/coder/project/' . ltrim(str_replace('\\', '/', $relativePath), '/');
+        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
         $process = $this->executeDockerFileCommand($workspace, ['rm', '-rf', $path]);
         return $process->isSuccessful();
     }
@@ -576,7 +576,7 @@ class CodeServerManager
      */
     public function createFile(Workspace $workspace, string $relativePath, bool $isDirectory = false): bool
     {
-        $path = '/home/coder/project/' . ltrim(str_replace('\\', '/', $relativePath), '/');
+        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
         if ($isDirectory) {
             $process = $this->executeDockerFileCommand($workspace, ['mkdir', '-p', $path]);
         } else {
@@ -592,8 +592,8 @@ class CodeServerManager
      */
     public function renameFile(Workspace $workspace, string $oldPath, string $newPath): bool
     {
-        $oldP = '/home/coder/project/' . ltrim(str_replace('\\', '/', $oldPath), '/');
-        $newP = '/home/coder/project/' . ltrim(str_replace('\\', '/', $newPath), '/');
+        $oldP = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $oldPath), '/');
+        $newP = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $newPath), '/');
         $process = $this->executeDockerFileCommand($workspace, ['mv', $oldP, $newP]);
         return $process->isSuccessful();
     }
@@ -960,7 +960,7 @@ class CodeServerManager
 
         $containerName = 'vl_ws_' . $workspace->id;
         $process = new Process([
-            $this->dockerCmd(), 'exec', '-w', '/home/coder/project', $containerName,
+            $this->dockerCmd(), 'exec', '-w', '/home/coder/' . $workspace->slug, $containerName,
             'timeout', '15', 'bash', '-c', $command
         ]);
         $process->setTimeout(20);
