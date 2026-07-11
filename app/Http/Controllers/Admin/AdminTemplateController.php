@@ -28,10 +28,20 @@ class AdminTemplateController extends Controller
             'language' => 'required|string|max:50',
             'start_command' => 'nullable|string|max:255',
             'nix_config' => 'nullable|string',
+            'bootstrap_script' => 'nullable|string',
+            'ui_parameters' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        if (!empty($validated['ui_parameters'])) {
+            $decoded = json_decode($validated['ui_parameters'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $validated['ui_parameters'] = $decoded;
+            } else {
+                return back()->withInput()->withErrors(['ui_parameters' => 'Invalid JSON format for UI Parameters.']);
+            }
+        }
 
         WorkspaceTemplate::create($validated);
 
@@ -52,10 +62,22 @@ class AdminTemplateController extends Controller
             'language' => 'required|string|max:50',
             'start_command' => 'nullable|string|max:255',
             'nix_config' => 'nullable|string',
+            'bootstrap_script' => 'nullable|string',
+            'ui_parameters' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        if (!empty($validated['ui_parameters'])) {
+            $decoded = json_decode($validated['ui_parameters'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $validated['ui_parameters'] = $decoded;
+            } else {
+                return back()->withInput()->withErrors(['ui_parameters' => 'Invalid JSON format for UI Parameters.']);
+            }
+        } else {
+            $validated['ui_parameters'] = null;
+        }
 
         $template->update($validated);
 

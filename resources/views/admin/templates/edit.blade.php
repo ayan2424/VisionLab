@@ -59,9 +59,23 @@
                 <span>Nix Configuration (`dev.nix`)</span>
                 <a href="https://nix.dev" target="_blank" class="text-xs hover:underline" style="color:var(--vc-accent);">Nix Documentation &nearr;</a>
             </label>
-            <textarea name="nix_config" rows="12" class="w-full rounded-md px-3 py-2 text-sm border focus:ring-1 focus:outline-none transition-colors font-mono" style="background:#0a0a0a;border-color:var(--vc-border);color:#e5e7eb;">{{ old('nix_config', $template->nix_config) }}</textarea>
+            <textarea name="nix_config" rows="10" class="w-full rounded-md px-3 py-2 text-sm border focus:ring-1 focus:outline-none transition-colors font-mono" style="background:#0a0a0a;border-color:var(--vc-border);color:#e5e7eb;">{{ old('nix_config', $template->nix_config) }}</textarea>
             <p class="text-xs mt-2" style="color:var(--vc-text-secondary);">This raw Nix configuration will be injected as <code>dev.nix</code> into the student's workspace root.</p>
             @error('nix_config')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium mb-2" style="color:var(--vc-text);">Bootstrap Script (`bootstrap.sh`)</label>
+            <textarea name="bootstrap_script" rows="6" class="w-full rounded-md px-3 py-2 text-sm border focus:ring-1 focus:outline-none transition-colors font-mono" style="background:#0a0a0a;border-color:var(--vc-border);color:#e5e7eb;" placeholder="#!/bin/sh&#10;# Run initial setup...">{{ old('bootstrap_script', $template->bootstrap_script) }}</textarea>
+            <p class="text-xs mt-2" style="color:var(--vc-text-secondary);">This shell script will be executed once the container is created, before it's marked as fully running.</p>
+            @error('bootstrap_script')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium mb-2" style="color:var(--vc-text);">UI Parameters (JSON)</label>
+            <textarea name="ui_parameters" rows="4" class="w-full rounded-md px-3 py-2 text-sm border focus:ring-1 focus:outline-none transition-colors font-mono" style="background:#0a0a0a;border-color:var(--vc-border);color:#e5e7eb;" placeholder='[{"name": "framework", "label": "Framework Version", "type": "select", "options": ["Laravel 10", "Laravel 11"]}]'>{{ old('ui_parameters', is_array($template->ui_parameters) ? json_encode($template->ui_parameters) : $template->ui_parameters) }}</textarea>
+            <p class="text-xs mt-2" style="color:var(--vc-text-secondary);">Define UI parameters to prompt students before creating a workspace. Must be valid JSON array.</p>
+            @error('ui_parameters')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
         </div>
 
         <div class="mb-8">

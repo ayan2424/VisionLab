@@ -22,6 +22,7 @@ class WorkspaceTemplate extends Model
     {
         return [
             'is_active' => 'boolean',
+            'ui_parameters' => 'array',
         ];
     }
 }
