@@ -238,9 +238,7 @@
         <iframe id="vscode-frame"
             data-src="{{ $vscodeUrl ?? '' }}"
             allow="clipboard-read; clipboard-write"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox"
-            onload="onVsCodeLoad()"
-            onerror="onVsCodeError()">
+            sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox">
         </iframe>
     </div>
 </div>
@@ -416,6 +414,10 @@
 
     // Start boot sequence
     startWorkspace();
+
+    // Attach event listeners
+    document.getElementById('vscode-frame').addEventListener('load', onVsCodeLoad);
+    document.getElementById('vscode-frame').addEventListener('error', onVsCodeError);
 
     // ─────────────────────────────────────────────────────────────
     // COLLABORATION (Reverb Presence & Chat)
