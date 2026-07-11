@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             ExtensionSeeder::class,
             CourseSeeder::class,
             WorkspaceTemplateSeeder::class,
+            InstituteErpSeeder::class,
         ]);
     }
 }
