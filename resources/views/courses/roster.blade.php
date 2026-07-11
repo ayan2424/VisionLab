@@ -113,7 +113,7 @@
                     </td>
                     <td class="px-4 py-3 text-right">
                         @if($workspace)
-                            <a href="{{ route('workspace.show', $workspace->id) }}" target="_blank" class="btn-ghost py-1 px-3 text-xs mr-2 text-indigo-400">Open IDE</a>
+                            <a href="{{ route('workspace.show', $workspace->slug) }}" target="_blank" class="btn-ghost py-1 px-3 text-xs mr-2 text-indigo-400">Open IDE</a>
                             @if($workspace->status === 'running')
                                 <form method="POST" action="{{ route('workspace.stop', $workspace->id) }}" class="inline" onsubmit="return confirm('Stop this workspace?');">
                                     @csrf

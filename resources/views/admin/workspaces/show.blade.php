@@ -24,7 +24,7 @@
     </div>
     <div class="flex gap-2">
         @if($workspace->status === 'running')
-        <a href="{{ route('workspace.show', $workspace->id) }}" target="_blank" class="btn-primary" style="background:var(--vc-accent);border-color:var(--vc-accent);">Open Workspace</a>
+        <a href="{{ route('workspace.show', $workspace->slug) }}" target="_blank" class="btn-primary" style="background:var(--vc-accent);border-color:var(--vc-accent);">Open Workspace</a>
         <form method="POST" action="{{ route('admin.workspaces.stop', $workspace->id) }}" onsubmit="return confirm('Force stop this workspace?');">
             @csrf
             <button class="btn-primary" style="background:#EF4444;border-color:#DC2626;">Force Stop</button>

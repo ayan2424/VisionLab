@@ -74,7 +74,7 @@ class WorkspaceController extends Controller
             'status'      => 'pending',
         ]);
 
-        return redirect()->route('workspace.show', $workspace->id)->with('success', 'Workspace provisioning started! Connecting to IDE...');
+        return redirect()->route('workspace.show', $workspace->slug)->with('success', 'Workspace provisioning started! Connecting to IDE...');
     }
 
     /** Named workspace by ID */
