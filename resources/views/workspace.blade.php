@@ -186,7 +186,7 @@
         </div>
 
         {{-- Destroy Workspace --}}
-        <form method="POST" action="{{ route('workspace.destroy', $workspace->id) }}" style="margin:0;margin-left:8px;" onsubmit="return confirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?');">
+        <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:8px;" onsubmit="return confirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?');">
             @csrf
             @method('DELETE')
             <button type="submit" class="pill-btn" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">
@@ -315,7 +315,7 @@
         }
 
         try {
-            const startUrl = "{{ route('workspace.start', $workspace->id) }}";
+            const startUrl = "{{ route('workspace.start', $workspace->slug) }}";
             const response = await fetch(startUrl, {
                 method: 'POST',
                 headers: {
@@ -349,7 +349,7 @@
     function startPolling() {
         pollInterval = setInterval(async () => {
             try {
-                const pingUrl = "{{ route('workspace.ping', $workspace->id) }}";
+                const pingUrl = "{{ route('workspace.ping', $workspace->slug) }}";
                 const response = await fetch(pingUrl, {
                     headers: {
                         'Accept': 'application/json',
@@ -613,7 +613,7 @@
         statusLink.style.display = 'none';
 
         try {
-            const res = await fetch(`/workspace/{{ $workspace->id }}/deploy`, {
+            const res = await fetch(`/workspace/{{ $workspace->slug }}/deploy`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

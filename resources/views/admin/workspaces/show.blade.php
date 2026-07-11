@@ -25,18 +25,18 @@
     <div class="flex gap-2">
         @if($workspace->status === 'running')
         <a href="{{ route('workspace.show', $workspace->slug) }}" target="_blank" class="btn-primary" style="background:var(--vc-accent);border-color:var(--vc-accent);">Open Workspace</a>
-        <form method="POST" action="{{ route('admin.workspaces.stop', $workspace->id) }}" onsubmit="return confirm('Force stop this workspace?');">
+        <form method="POST" action="{{ route('admin.workspaces.stop', $workspace->slug) }}" onsubmit="return confirm('Force stop this workspace?');">
             @csrf
             <button class="btn-primary" style="background:#EF4444;border-color:#DC2626;">Force Stop</button>
         </form>
         @else
-        <form method="POST" action="{{ route('workspace.start', $workspace->id) }}">
+        <form method="POST" action="{{ route('workspace.start', $workspace->slug) }}">
             @csrf
             <button class="btn-primary" style="background:#10B981;border-color:#059669;">Start Workspace</button>
         </form>
         @endif
         @if($workspace->status !== 'archived')
-        <form method="POST" action="{{ route('admin.workspaces.archive', $workspace->id) }}" onsubmit="return confirm('Archive this workspace?');">
+        <form method="POST" action="{{ route('admin.workspaces.archive', $workspace->slug) }}" onsubmit="return confirm('Archive this workspace?');">
             @csrf
             <button class="btn-ghost text-red-400">Archive</button>
         </form>
@@ -111,7 +111,7 @@
                     </span>
                 </div>
                 <button 
-                    onclick="toggleWorkspaceExt({{ $workspace->id }}, {{ $ext->id }}, this)"
+                    onclick="toggleWorkspaceExt('{{ $workspace->slug }}', {{ $ext->id }}, this)"
                     class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none flex-shrink-0"
                     style="background: {{ $isEnabled ? 'var(--vc-accent, #3b82f6)' : '#374151' }};"
                     data-enabled="{{ $isEnabled ? 'true' : 'false' }}"
@@ -210,7 +210,7 @@ function workspaceMonitor() {
         },
         async fetchStats() {
             try {
-                const res = await fetch('{{ route("workspace.status", $workspace->id) }}');
+                const res = await fetch('{{ route("workspace.status", $workspace->slug) }}');
                 if (!res.ok) throw new Error('Network error');
                 const data = await res.json();
                 if (data.stats) {

@@ -96,9 +96,9 @@
                     <td class="px-4 py-3 text-center">
                         @if($workspace)
                             <div class="flex items-center justify-center gap-2">
-                                <form method="POST" action="{{ route('workspace.extensions.install', ['workspace' => $workspace->id, 'extension' => 1]) }}" class="inline" id="form-install-{{$workspace->id}}">
+                                <form method="POST" action="{{ route('workspace.extensions.install', ['workspace' => $workspace->slug, 'extension' => 1]) }}" class="inline" id="form-install-{{$workspace->id}}">
                                     @csrf
-                                    <select name="extension" class="vc-input py-1 px-2 text-[10px] w-32" onchange="this.form.action='/workspace/{{$workspace->id}}/extensions/'+this.value+'/install';">
+                                    <select name="extension" class="vc-input py-1 px-2 text-[10px] w-32" onchange="this.form.action='/workspace/{{$workspace->slug}}/extensions/'+this.value+'/install';">
                                         <option value="">Select Extension</option>
                                         @foreach($extensions as $ext)
                                             <option value="{{ $ext->id }}">{{ $ext->name }}</option>
@@ -115,12 +115,12 @@
                         @if($workspace)
                             <a href="{{ route('workspace.show', $workspace->slug) }}" target="_blank" class="btn-ghost py-1 px-3 text-xs mr-2 text-indigo-400">Open IDE</a>
                             @if($workspace->status === 'running')
-                                <form method="POST" action="{{ route('workspace.stop', $workspace->id) }}" class="inline" onsubmit="return confirm('Stop this workspace?');">
+                                <form method="POST" action="{{ route('workspace.stop', $workspace->slug) }}" class="inline" onsubmit="return confirm('Stop this workspace?');">
                                     @csrf
-                                    <button class="btn-ghost text-red-400 py-1 px-3 text-xs">Stop</button>
+                                    <button class="btn-ghost py-1 px-2 text-[10px] text-yellow-500 hover:bg-yellow-500/10">Stop</button>
                                 </form>
                             @else
-                                <form method="POST" action="{{ route('workspace.start', $workspace->id) }}" class="inline">
+                                <form method="POST" action="{{ route('workspace.start', $workspace->slug) }}" class="inline">
                                     @csrf
                                     <button class="btn-ghost text-emerald-400 py-1 px-3 text-xs">Start</button>
                                 </form>
