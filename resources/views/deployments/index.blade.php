@@ -97,7 +97,7 @@
                 <select id="deployWorkspace" class="w-full bg-black/50 border border-white/[0.1] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
                     <option value="">-- Choose a Workspace --</option>
                     @foreach($workspaces as $ws)
-                    <option value="{{ $ws->id }}">{{ $ws->name }}</option>
+                    <option value="{{ $ws->slug }}">{{ $ws->name }}</option>
                     @endforeach
                 </select>
             </div>
