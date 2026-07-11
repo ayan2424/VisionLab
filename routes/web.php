@@ -48,11 +48,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── Workspace ──────────────────────────────────────────────────────
     Route::get('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'index'])->name('workspace.index');
+    Route::get('/workspace/create', [\App\Http\Controllers\WorkspaceController::class, 'create'])->name('workspace.create');
     Route::post('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'store'])->name('workspace.store');
     Route::get('/workspace/{workspace}', [\App\Http\Controllers\WorkspaceController::class, 'show'])->name('workspace.show');
     Route::post('/workspace/{workspace}/start', [\App\Http\Controllers\WorkspaceController::class, 'start'])->name('workspace.start');
     Route::post('/workspace/{workspace}/stop', [\App\Http\Controllers\WorkspaceController::class, 'stop'])->name('workspace.stop');
     Route::post('/workspace/{workspace}/restart', [\App\Http\Controllers\WorkspaceController::class, 'restart'])->name('workspace.restart');
+    Route::delete('/workspace/{workspace}', [\App\Http\Controllers\WorkspaceController::class, 'destroy'])->name('workspace.destroy');
     Route::get('/workspace/{workspace}/status', [\App\Http\Controllers\WorkspaceController::class, 'status'])->name('workspace.status');
     Route::get('/workspace/{workspace}/ping', [\App\Http\Controllers\WorkspaceController::class, 'ping'])->name('workspace.ping');
 
@@ -173,6 +175,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/workspaces/{workspace}', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'show'])->name('workspaces.show');
         Route::post('/workspaces/{workspace}/stop', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'stop'])->name('workspaces.stop');
         Route::post('/workspaces/{workspace}/archive', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'archive'])->name('workspaces.archive');
+        Route::delete('/workspaces/{workspace}', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'destroy'])->name('workspaces.destroy');
         Route::patch('/workspaces/{workspace}/extensions/{extension}/toggle', [\App\Http\Controllers\Admin\AdminWorkspaceController::class, 'toggleExtension'])->name('workspaces.extensions.toggle');
 
         // Workspace Templates

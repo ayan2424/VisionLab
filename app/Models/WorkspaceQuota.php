@@ -14,7 +14,7 @@ class WorkspaceQuota extends Model
 {
     protected $fillable = [
         'name', 'memory_mb', 'cpu_shares', 'disk_mb',
-        'timeout_minutes', 'scope', 'scope_id', 'is_active',
+        'timeout_minutes', 'max_workspaces', 'scope', 'scope_id', 'is_active',
     ];
 
     protected function casts(): array
@@ -24,6 +24,7 @@ class WorkspaceQuota extends Model
             'cpu_shares'      => 'integer',
             'disk_mb'         => 'integer',
             'timeout_minutes' => 'integer',
+            'max_workspaces'  => 'integer',
             'is_active'       => 'boolean',
         ];
     }
@@ -93,6 +94,7 @@ class WorkspaceQuota extends Model
         $fallback->cpu_shares = 1024;
         $fallback->disk_mb = 1024;
         $fallback->timeout_minutes = 120;
+        $fallback->max_workspaces = 3;
         $fallback->scope = 'global';
         $fallback->is_active = true;
 

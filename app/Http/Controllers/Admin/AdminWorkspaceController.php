@@ -83,6 +83,26 @@ class AdminWorkspaceController extends Controller
         return back()->with('success', 'Workspace archived successfully.');
     }
 
+    public function destroy(Workspace $workspace)
+    {
+        $manager = new CodeServerManager();
+        $manager->deleteWorkspace($workspace);
+
+        $workspaceId = $workspace->id;
+        $workspace->delete();
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'admin_deleted_workspace',
+            'resource_type' => 'Workspace',
+            'resource_id' => $workspaceId,
+            'details' => ['reason' => 'Admin permanent deletion (files wiped)'],
+            'ip_address' => request()->ip(),
+        ]);
+
+        return back()->with('success', 'Workspace and its physical files permanently deleted.');
+    }
+
     /**
      * Toggle a specific extension on/off for a specific workspace.
      */

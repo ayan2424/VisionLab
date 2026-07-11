@@ -20,7 +20,7 @@ class Workspace extends Model
     use HasFactory;
 
     protected $fillable = [
-        'course_id', 'assignment_id', 'student_id', 'name', 'template_id',
+        'course_id', 'assignment_id', 'student_id', 'name', 'slug', 'template_id',
         'container_id', 'port', 'token', 'storage_path',
         'heartbeat_at', 'quota_data', 'proxy_url', 'container_image',
         'status', 'language', 'type', 'subscription_id', 'governance_level',
@@ -32,6 +32,29 @@ class Workspace extends Model
             'quota_data'   => 'array',
             'heartbeat_at' => 'datetime',
         ];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($workspace) {
+            if (empty($workspace->slug)) {
+                $slug = \Illuminate\Support\Str::slug($workspace->name);
+                $originalSlug = $slug;
+                $count = 1;
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = $originalSlug . '-' . $count;
+                    $count++;
+                }
+                $workspace->slug = $slug;
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 
     // ── Relationships ───────────────────────────────────────────────

@@ -184,6 +184,15 @@
         <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #f97316, #fb923c);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.4);margin-left:4px;">
             {{ $user->avatar_initials ?? 'U' }}
         </div>
+
+        {{-- Destroy Workspace --}}
+        <form method="POST" action="{{ route('workspace.destroy', $workspace->id) }}" style="margin:0;margin-left:8px;" onsubmit="return confirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="pill-btn" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">
+                Delete Workspace
+            </button>
+        </form>
     </div>
 </div>
 

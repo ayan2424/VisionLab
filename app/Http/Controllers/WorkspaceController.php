@@ -18,43 +18,27 @@ class WorkspaceController extends Controller
         $this->codeServerManager = $codeServerManager;
     }
 
-    /** Personal workspace — auto-provisions or shows creation form */
+    /** List all student workspaces */
     public function index(Request $request)
     {
         $user = Auth::user();
+        
+        $workspaces = Workspace::where('student_id', $user->id)
+            ->where('status', '!=', 'archived')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        $quota = \App\Models\WorkspaceQuota::resolveFor($user->id);
 
-        $workspace = Workspace::where('student_id', $user->id)
-            ->where('name', 'personal-' . $user->id)
-            ->first();
+        return view('workspaces.index', compact('workspaces', 'quota', 'user'));
+    }
 
-        if (!$workspace) {
-            $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
-            return view('workspaces.create', compact('templates', 'user'));
-        }
-
-        $serverInfo = $this->codeServerManager->startWorkspace($workspace);
-
-        if (isset($serverInfo['port'])) {
-            $cookiePath = str_starts_with($serverInfo['url'], '/ide/') 
-                ? '/ide/' . $serverInfo['port'] 
-                : '/';
-            cookie()->queue(
-                'key',
-                $serverInfo['token'],
-                525600, // 1 year in minutes
-                $cookiePath
-            );
-        }
-
-        return view('workspace', [
-            'user'            => $user,
-            'workspace'       => $workspace->fresh(),
-            'workspaceName'   => 'My Workspace',
-            'roomSlug'        => 'personal-' . $user->id,
-            'isCollaborative' => false,
-            'reverbConfig'    => self::reverbConfig(),
-            'vscodeUrl'       => $serverInfo['url'],
-        ]);
+    /** Show workspace creation form */
+    public function create()
+    {
+        $user = Auth::user();
+        $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
+        return view('workspaces.create', compact('templates', 'user'));
     }
 
     /** Create personal workspace */
@@ -67,6 +51,16 @@ class WorkspaceController extends Controller
 
         $user = Auth::user();
         
+        // Enforce Workspace Limits
+        $quota = \App\Models\WorkspaceQuota::resolveFor($user->id);
+        $activeWorkspacesCount = Workspace::where('student_id', $user->id)
+            ->where('status', '!=', 'archived')
+            ->count();
+            
+        if ($activeWorkspacesCount >= $quota->max_workspaces) {
+            return redirect()->back()->with('error', "You have reached your limit of {$quota->max_workspaces} active workspaces. Please delete an existing workspace to create a new one.");
+        }
+
         $template = \App\Models\WorkspaceTemplate::find($request->template_id);
 
         $workspace = Workspace::create([
@@ -80,7 +74,7 @@ class WorkspaceController extends Controller
             'status'      => 'pending',
         ]);
 
-        return redirect()->route('workspace.index')->with('success', 'Workspace provisioning started!');
+        return redirect()->route('workspace.show', $workspace->id)->with('success', 'Workspace provisioning started! Connecting to IDE...');
     }
 
     /** Named workspace by ID */
@@ -149,6 +143,17 @@ class WorkspaceController extends Controller
         $this->codeServerManager->stopWorkspace($workspace);
 
         return response()->json(['status' => 'stopped']);
+    }
+
+    /** Destroy a workspace container and its persistent storage */
+    public function destroy(Workspace $workspace)
+    {
+        $this->authorize('manage', $workspace);
+
+        $this->codeServerManager->deleteWorkspace($workspace);
+        $workspace->delete();
+
+        return redirect()->route('workspace.index')->with('success', 'Workspace and its files have been permanently deleted.');
     }
 
     /** Restart a workspace container */

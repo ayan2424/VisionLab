@@ -59,9 +59,14 @@
                     @if($ws->status === 'running')
                         <form method="POST" action="{{ route('admin.workspaces.stop', $ws->id) }}" class="inline" onsubmit="return confirm('Force stop this workspace? Data not pushed may be lost.');">
                             @csrf
-                            <button class="btn-ghost text-red-500 py-1 px-3 text-xs">Stop</button>
+                            <button class="btn-ghost text-yellow-500 py-1 px-3 text-xs">Stop</button>
                         </form>
                     @endif
+                    <form method="POST" action="{{ route('admin.workspaces.destroy', $ws->id) }}" class="inline" onsubmit="return confirm('WARNING: This will permanently delete the workspace and all its local physical files. This cannot be undone. Continue?');">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn-ghost text-red-500 py-1 px-3 text-xs">Delete</button>
+                    </form>
                 </td>
             </tr>
             @empty
