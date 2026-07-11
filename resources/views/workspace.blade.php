@@ -306,6 +306,46 @@
         }
     }
 
+    async function startWorkspace() {
+        const needsBoot = {{ $needsBoot ? 'true' : 'false' }};
+        if (!needsBoot) {
+            // Already running, start checking if code-server is ready
+            startPolling();
+            return;
+        }
+
+        try {
+            const startUrl = "{{ route('workspace.start', $workspace->id) }}";
+            const response = await fetch(startUrl, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+
+            if (!response.ok) {
+                onVsCodeError();
+                console.error("Boot failed:", response.status);
+                return;
+            }
+
+            const data = await response.json();
+            
+            if (data.status === 'running') {
+                // Now start polling until ping succeeds
+                document.getElementById('vscode-frame').setAttribute('data-src', data.url);
+                startPolling();
+            } else {
+                onVsCodeError();
+            }
+        } catch (err) {
+            console.error("Boot network error", err);
+            onVsCodeError();
+        }
+    }
+
     function startPolling() {
         pollInterval = setInterval(async () => {
             try {
@@ -374,8 +414,8 @@
         document.getElementById('vsc-label').textContent = 'Failed to Boot';
     }
 
-    // Start checking if container is ready
-    startPolling();
+    // Start boot sequence
+    startWorkspace();
 
     // ─────────────────────────────────────────────────────────────
     // COLLABORATION (Reverb Presence & Chat)

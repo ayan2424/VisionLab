@@ -82,21 +82,6 @@ class WorkspaceController extends Controller
     {
         $this->authorize('view', $workspace);
 
-        $user = Auth::user();
-        $serverInfo = $this->codeServerManager->startWorkspace($workspace);
-
-        if (isset($serverInfo['port'])) {
-            $cookiePath = str_starts_with($serverInfo['url'], '/ide/') 
-                ? '/ide/' . $serverInfo['port'] 
-                : '/';
-            cookie()->queue(
-                'key',
-                $serverInfo['token'],
-                525600, // 1 year in minutes
-                $cookiePath
-            );
-        }
-
         return view('workspace', [
             'user'            => $user,
             'workspace'       => $workspace->fresh(),
@@ -104,7 +89,8 @@ class WorkspaceController extends Controller
             'roomSlug'        => 'ws-' . $workspace->id,
             'isCollaborative' => $workspace->collaborators()->count() > 1 && (!$workspace->assignment || $workspace->assignment->mode !== 'exam'),
             'reverbConfig'    => self::reverbConfig(),
-            'vscodeUrl'       => $serverInfo['url'],
+            'vscodeUrl'       => $workspace->status === 'running' ? $workspace->proxy_url : null,
+            'needsBoot'       => $workspace->status !== 'running',
             'isAssignmentLocked' => $workspace->assignment ? $workspace->assignment->is_locked : false,
         ]);
     }
@@ -114,13 +100,27 @@ class WorkspaceController extends Controller
     {
         $this->authorize('access', $workspace);
 
+        // Extend execution time to 10 minutes to allow heavy Nix bootstrap scripts to complete
+        set_time_limit(600);
+
         $result = $this->codeServerManager->startWorkspace($workspace);
+
+        if (!$result) {
+            return response()->json(['status' => 'error', 'message' => 'Failed to start workspace'], 500);
+        }
+
+        // Send authentication cookie along with the response headers
+        $cookiePath = str_starts_with($result['url'], '/ide/') 
+            ? '/ide/' . $result['port'] 
+            : '/';
+            
+        $cookie = cookie('key', $result['token'], 525600, $cookiePath);
 
         return response()->json([
             'status' => 'running',
             'url'    => $result['url'],
             'port'   => $result['port'],
-        ]);
+        ])->cookie($cookie);
     }
 
     /** Ping workspace status */
