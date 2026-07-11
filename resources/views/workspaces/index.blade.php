@@ -41,7 +41,7 @@
                     @elseif($ws->status === 'stopped')
                         <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-gray-500/10 text-gray-400">Stopped</span>
                     @else
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500">{{ ucfirst(->status) }}</span>
+                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500">{{ ucfirst($ws->status) }}</span>
                     @endif
                 </div>
 
@@ -58,20 +58,20 @@
 
                 <div class="mt-auto flex items-center gap-2 pt-4 border-t" style="border-color:var(--vc-border);">
                     @if($ws->status === 'running')
-                        <a href="{{ route('workspace.show', $ws->id) }}" class="btn-primary py-1.5 px-4 rounded text-xs font-bold flex-1 text-center">Open IDE</a>
-                        <form method="POST" action="{{ route('workspace.stop', $ws->id) }}" class="inline">
+                        <a href="{{ route('workspace.show', $ws->slug) }}" class="btn-primary py-1.5 px-4 rounded text-xs font-bold flex-1 text-center">Open IDE</a>
+                        <form method="POST" action="{{ route('workspace.stop', $ws->slug) }}" class="inline">
                             @csrf
                             <button type="submit" class="btn-ghost py-1.5 px-3 rounded text-xs text-yellow-500" title="Stop Workspace">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('workspace.show', $ws->id) }}" class="btn-primary py-1.5 px-4 rounded text-xs font-bold flex-1 text-center flex items-center justify-center gap-1 bg-opacity-80">
+                        <a href="{{ route('workspace.show', $ws->slug) }}" class="btn-primary py-1.5 px-4 rounded text-xs font-bold flex-1 text-center flex items-center justify-center gap-1 bg-opacity-80">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Boot Workspace
                         </a>
                     @endif
-                    <form method="POST" action="{{ route('workspace.destroy', $ws->id) }}" class="inline" onsubmit="return confirm('WARNING: This will permanently delete your workspace and all its data. Continue?');">
+                    <form method="POST" action="{{ route('workspace.destroy', $ws->slug) }}" class="inline" onsubmit="return confirm('WARNING: This will permanently delete your workspace and all its data. Continue?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-ghost py-1.5 px-3 rounded text-xs text-red-500 hover:bg-red-500/10" title="Delete Workspace">
