@@ -703,9 +703,14 @@ JS;
 
     private function seedDefaultFiles(Workspace $workspace): void
     {
-        // Check if main file or README already exists to prevent re-seeding
-        $existing = $this->readFile($workspace, 'README.md');
-        if ($existing !== null) return;
+        // Check if directory is not empty to prevent re-seeding
+        $path = '/home/coder/' . $workspace->slug;
+        $process = $this->executeDockerFileCommand($workspace, ['sh', '-c', "ls -A '$path' 2>/dev/null"]);
+        
+        // If the command succeeds and output is NOT empty, it means files exist -> already seeded.
+        if ($process->isSuccessful() && trim($process->getOutput()) !== '') {
+            return;
+        }
 
         // If template has a git_url, clone it
         if ($workspace->template_id && $workspace->template && $workspace->template->git_url) {
