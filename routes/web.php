@@ -51,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/workspace/create', [\App\Http\Controllers\WorkspaceController::class, 'create'])->name('workspace.create');
     Route::post('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'store'])->name('workspace.store');
     Route::get('/workspace/{workspace}/rebuild', [\App\Http\Controllers\WorkspaceController::class, 'rebuildView'])->name('workspace.rebuild');
-    Route::post('/workspace/{workspace}/rebuild/process', [\App\Http\Controllers\WorkspaceController::class, 'processRebuild'])->name('workspace.process_rebuild');
+    Route::post('/workspace/{workspace:slug}/rebuild/process', [\App\Http\Controllers\WorkspaceController::class, 'processRebuild'])->name('workspace.process_rebuild');
     Route::get('/workspace/{workspace}', [\App\Http\Controllers\WorkspaceController::class, 'show'])->name('workspace.show');
     Route::post('/workspace/{workspace}/start', [\App\Http\Controllers\WorkspaceController::class, 'start'])->name('workspace.start');
     Route::post('/workspace/{workspace}/stop', [\App\Http\Controllers\WorkspaceController::class, 'stop'])->name('workspace.stop');
