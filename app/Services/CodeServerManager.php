@@ -293,7 +293,7 @@ JS;
         $result = $this->removeContainer($name);
 
         if ($result) {
-            $workspace->update(['status' => 'stopped', 'heartbeat_at' => null]);
+            $workspace->update(['status' => 'stopped', 'heartbeat_at' => null, 'port' => null]);
         }
 
         return $result;
@@ -806,7 +806,6 @@ JS;
     {
         // Check DB for used ports first
         $usedPorts = Workspace::whereNotNull('port')
-            ->whereIn('status', ['running', 'pending'])
             ->pluck('port')
             ->toArray();
 
