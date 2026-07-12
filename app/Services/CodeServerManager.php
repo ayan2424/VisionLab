@@ -137,12 +137,15 @@ class CodeServerManager
             '--restart', 'unless-stopped',
             '--memory', ($quota['memory_mb'] ?? 2048) . 'm',
             '--cpu-shares', (string) ($quota['cpu_shares'] ?? 1024),
+            '--entrypoint', 'sh',
             $image,
-            '--auth', $authMode,
-            '--bind-addr', '0.0.0.0:8080',
-            '--disable-telemetry',
-            '--trusted-origins', 'https://visionlab.ayan24.me',
-            '/home/coder/' . $workspace->slug
+            '-c',
+            'if [ -f /home/coder/' . escapeshellarg($workspace->slug) . '/.vision/dev.nix ]; then ' .
+            'export NIXPKGS_ALLOW_INSECURE=1; ' .
+            'exec nix-shell /home/coder/' . escapeshellarg($workspace->slug) . '/.vision/dev.nix --run "/usr/bin/entrypoint.sh --auth ' . escapeshellarg($authMode) . ' --bind-addr 0.0.0.0:8080 --disable-telemetry --trusted-origins https://visionlab.ayan24.me /home/coder/' . escapeshellarg($workspace->slug) . '"; ' .
+            'else ' .
+            'exec /usr/bin/entrypoint.sh --auth ' . escapeshellarg($authMode) . ' --bind-addr 0.0.0.0:8080 --disable-telemetry --trusted-origins https://visionlab.ayan24.me /home/coder/' . escapeshellarg($workspace->slug) . '; ' .
+            'fi'
         ]);
 
         $process = new Process($cmd);
