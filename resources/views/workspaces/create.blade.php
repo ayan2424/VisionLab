@@ -30,17 +30,28 @@
                 <p class="text-xs mt-2" style="color:var(--vc-text-secondary);">Give your workspace a unique, memorable name (only letters, numbers, hyphens, and spaces).</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="mb-6">
+                <div class="relative">
+                    <svg class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="templateSearch" placeholder="Search templates (e.g. React, Python, Laravel)..."
+                           class="w-full pl-12 pr-4 py-3 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[var(--vc-accent)] transition-all"
+                           style="background:var(--vc-surface-dark); color:var(--vc-text);">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" id="templatesGrid">
                 @foreach($templates as $index => $template)
-                <label class="block cursor-pointer group relative">
+                <label class="block cursor-pointer group relative template-card">
                     <input type="radio" name="template_id" value="{{ $template->id }}" class="peer sr-only" {{ $index === 0 ? 'checked' : '' }} required>
                     
                     <div class="vc-card h-full border-2 transition-all duration-200 peer-checked:ring-2" 
                          style="border-color:transparent; peer-checked:border-color:var(--vc-accent); peer-checked:ring-color:rgba(var(--vc-accent-rgb),0.2);">
                         
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold" style="color:var(--vc-text);">{{ $template->name }}</h3>
-                            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" style="background:var(--vc-surface-dark);color:var(--vc-accent);">
+                            <h3 class="text-lg font-bold template-title" style="color:var(--vc-text);">{{ $template->name }}</h3>
+                            <span class="template-language px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" style="background:var(--vc-surface-dark);color:var(--vc-accent);">
                                 {{ $template->language }}
                             </span>
                         </div>
@@ -68,4 +79,30 @@
         </form>
     @endif
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('templateSearch');
+    const templateCards = document.querySelectorAll('.template-card');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            
+            templateCards.forEach(card => {
+                const title = card.querySelector('.template-title').textContent.toLowerCase();
+                const language = card.querySelector('.template-language').textContent.toLowerCase();
+                
+                if (title.includes(query) || language.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+@endpush
 @endsection
