@@ -57,7 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/workspace/{workspace}', [\App\Http\Controllers\WorkspaceController::class, 'show'])->name('workspace.show');
     Route::post('/workspace/{workspace}/start', [\App\Http\Controllers\WorkspaceController::class, 'start'])->name('workspace.start');
     Route::post('/workspace/{workspace}/stop', [\App\Http\Controllers\WorkspaceController::class, 'stop'])->name('workspace.stop');
-    Route::post('/workspace/{workspace}/restart', [\App\Http\Controllers\WorkspaceController::class, 'restart'])->name('workspace.restart');
+
     Route::delete('/workspace/{workspace}', [\App\Http\Controllers\WorkspaceController::class, 'destroy'])->name('workspace.destroy');
     Route::get('/workspace/{workspace}/status', [\App\Http\Controllers\WorkspaceController::class, 'status'])->name('workspace.status');
     Route::get('/workspace/{workspace}/ping', [\App\Http\Controllers\WorkspaceController::class, 'ping'])->name('workspace.ping');
