@@ -116,6 +116,7 @@ class CodeServerManager
             '--tmpfs', '/run',
             '--network', 'visionlab-workspace-net',
             '-v', "vl_ws_{$workspace->id}_data:/home/coder/{$workspace->slug}",
+            '-v', "visionlab_nix_store:/nix",
             '-v', "{$extensionsPath}:/var/opt/extensions:ro",
             '-p', "{$port}:8080",
             '-e', "PASSWORD={$token}",
