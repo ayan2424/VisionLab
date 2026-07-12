@@ -83,16 +83,6 @@ class Workspace extends Model
         return $this->belongsTo(Assignment::class);
     }
 
-    public function collaborators(): HasMany
-    {
-        return $this->hasMany(WorkspaceCollaborator::class);
-    }
-
-    public function collabSessions(): HasMany
-    {
-        return $this->hasMany(CollabSession::class);
-    }
-
     public function aiSessions(): HasMany
     {
         return $this->hasMany(AiChatSession::class);
@@ -111,11 +101,6 @@ class Workspace extends Model
     public function extensions(): HasMany
     {
         return $this->hasMany(WorkspaceExtension::class);
-    }
-
-    public function deployments(): HasMany
-    {
-        return $this->hasMany(Deployment::class);
     }
 
     public function forensics(): HasOne
@@ -176,9 +161,4 @@ class Workspace extends Model
         return $this->student_id === $user->id;
     }
 
-    public function hasCollaborator(User $user): bool
-    {
-        return $this->isOwnedBy($user)
-            || $this->collaborators()->where('user_id', $user->id)->exists();
-    }
 }

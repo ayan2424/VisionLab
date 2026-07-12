@@ -1,7 +1,7 @@
 @extends('layouts.landing')
 
 @section('title', 'System Walkthrough & Demo Script — VisionLab')
-@section('meta_description', 'Interactive 3-minute walkthrough script detailing VisionLab role-based access, sandboxed IDE, Reverb presence sync, and admin dashboards.')
+@section('meta_description', 'Interactive 3-minute walkthrough script detailing VisionLab role-based access, sandboxed IDE, and admin dashboards.')
 
 @section('styles')
 <style>
@@ -226,7 +226,7 @@
 
         <!-- Progress Tracking -->
         <div style="display:flex; align-items:center; gap:1rem; max-width:360px; margin:2rem auto 0;">
-            <span class="font-mono text-xs text-muted-foreground">Step <span id="cur-step">0</span>/8</span>
+            <span class="font-mono text-xs text-muted-foreground">Step <span id="cur-step">0</span>/5</span>
             <div class="progress-bar-container">
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
@@ -273,7 +273,7 @@
                 'title' => 'Unified Landing & Navigation',
                 'role' => null,
                 'tags' => ['Landing', 'CSS Grids', 'Design System'],
-                'script' => "Begin by navigating to the root URL. Explain to the evaluator that VisionLab consolidates previously disjointed systems (LMS, Video Rooms, AI Editors, and Local Sandboxes) into a unified, dark cyber aesthetics interface. Point out the official logo monogram in the header.",
+                'script' => "Begin by navigating to the root URL. Explain to the evaluator that VisionLab consolidates previously disjointed systems (LMS, AI Editors, and Local Sandboxes) into a unified, dark cyber aesthetics interface. Point out the official logo monogram in the header.",
                 'actions' => [
                     "Verify the active layout uses the unified <code class='font-mono'>icons/logo.svg</code> asset.",
                     "Scroll through the grid floor design and notice the smooth cursor ring tracking.",
@@ -321,32 +321,6 @@
                 'tip' => "All code mutations are quarantined in `ai_pending_patches` and must receive manual approval, safeguarding codebase integrity."
             ],
             [
-                'time' => '1:30',
-                'title' => 'WebSockets Collaboration & Connection states',
-                'role' => 'Student / Instructor',
-                'tags' => ['Laravel Reverb', 'Presence Channel', 'Echo Primitives'],
-                'script' => "Click the collaboration action in the workspace toolbar. Explain that this registers the workspace inside a Laravel Reverb presence channel. Open two browser windows side-by-side to show typing sync.",
-                'actions' => [
-                    "Verify that the Reverb presence indicators appear in the workspace header.",
-                    "Type in window A and observe changes synchronizing to window B in real time.",
-                    "Move your cursor in window A and observe the highlighted name badge matching coordinates in window B."
-                ],
-                'tip' => "Echo listens for whispers and updates local cursors dynamically every 80ms over WebSockets without database writes."
-            ],
-            [
-                'time' => '1:55',
-                'title' => 'Integrated Jitsi Conferences',
-                'role' => 'All',
-                'tags' => ['Jitsi API', 'JWT tokens', 'Moderator Tiers'],
-                'script' => "Initiate a class video session. Show that instead of redirecting users to Microsoft Teams or Zoom, VisionLab embeds a secured, Jitsi-powered conference panel directly inside the workspace.",
-                'actions' => [
-                    "Click the <strong>Video Session</strong> action to open the meeting drawer.",
-                    "Verify that the moderator tier registers matching privileges (instructors can mute/exclude students).",
-                    "Observe the sleek dark room background maintaining consistency with the theme."
-                ],
-                'tip' => "Secure JWT tokens authenticate users and determine moderator hierarchies, eliminating unauthorized room intrusions."
-            ],
-            [
                 'time' => '2:20',
                 'title' => 'System Governance & Pulse metrics',
                 'role' => 'Admin',
@@ -358,19 +332,7 @@
                     "Verify slow request logs and memory usage details from Laravel Pulse."
                 ],
                 'tip' => "Administrative oversight maps workspace actions directly to a Spatie audit trail, recording before/after model diffs."
-            ],
-            [
-                'time' => '2:45',
-                'title' => 'Nix blueprints & Deployment Pipelines',
-                'role' => 'All',
-                'tags' => ['Deployment', 'Nix Blueprints', 'GitHub Actions'],
-                'script' => "Conclude the demo by summarizing the stack. State that the platform is ready for deployment: containers build via Nix blueprints, GitHub Actions run the integration suite, and students can deploy assignments to Vercel/Railway with a single click.",
-                'actions' => [
-                    "Show the Nix package manager configurations and container blueprint tabs.",
-                    "Demonstrate the one-click student deployment panel.",
-                    "Verify that all test checks are green."
-                ],
-                'tip' => "Declaring the dev environment via Nix ensures that local machines, CI/CD runners, and cloud instances compile using identical binaries."
+
             ]
         ];
         @endphp
@@ -472,7 +434,7 @@
     }
 
     function nextStep() {
-        if (currentStep < 7) {
+        if (currentStep < 4) {
             activateStep(currentStep + 1);
             const card = document.getElementById('step-' + currentStep);
             if (card) {
@@ -521,7 +483,7 @@
     }
 
     function updateProgress() {
-        const total = 8;
+        const total = 5;
         const done = currentStep + 1;
         const pct = (done / total) * 100;
         document.getElementById('progress-fill').style.width = pct + '%';

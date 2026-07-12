@@ -25,13 +25,13 @@ class AiActionPolicy
         return $user->isActive();
     }
 
-    /** Only workspace owner or collaborator with write role can approve a patch. */
+    /** Only workspace owner can approve a patch. */
     public function approvePatch(User $user, AiPendingPatch $patch): bool
     {
         if ($user->isAdmin()) {
             return true;
         }
-        return $patch->workspace->hasCollaborator($user);
+        return $patch->workspace->isOwnedBy($user);
     }
 
     /** Same as approve — only workspace participants can reject. */

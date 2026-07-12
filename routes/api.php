@@ -10,20 +10,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware(['auth:sanctum', 'throttle:push'])->post('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'store']);
 
-/*
-|--------------------------------------------------------------------------
-| Real-Time Collaboration API (Phase 4 â€” Reverb)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:sanctum', 'throttle:api'])
-    ->prefix('rooms')->name('api.rooms.')->group(function () {
-    Route::post('/{slug}/join',      [\App\Http\Controllers\RoomController::class, 'join'])
-        ->name('join');
-    Route::post('/{slug}/broadcast', [\App\Http\Controllers\RoomController::class, 'broadcastCode'])
-        ->name('broadcast');
-    Route::post('/{slug}/cursor',    [\App\Http\Controllers\RoomController::class, 'broadcastCursor'])
-        ->name('cursor');
-});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -60,22 +47,7 @@ Route::post('/workspace/{slug}/trigger-rebuild', function(Request $request, $slu
     return response()->json(['status' => 'triggered']);
 })->name('api.workspace.trigger-rebuild');
 
-/*
-|--------------------------------------------------------------------------
-| Video Conferencing API (Phase 6)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:sanctum', 'throttle:video'])
-    ->prefix('workspace/{slug}/video')->name('api.video.')->group(function () {
-    Route::post('/start',  [\App\Http\Controllers\VideoRoomController::class, 'start'])
-        ->name('start');
-    Route::get('/status',  [\App\Http\Controllers\VideoRoomController::class, 'status'])
-        ->name('status');
-    Route::post('/attendance', [\App\Http\Controllers\VideoRoomController::class, 'attendance'])
-        ->name('attendance');
-    Route::post('/end',    [\App\Http\Controllers\VideoRoomController::class, 'end'])
-        ->name('end');
-});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -105,30 +77,7 @@ Route::middleware(['auth:sanctum'])->post('/ai/execute', function (Illuminate\Ht
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| Recording API (Video Call Recording)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:sanctum', 'throttle:video'])
-    ->prefix('workspace/{roomSlug}/recording')->name('api.recording.')->group(function () {
-    Route::post('/start', [\App\Http\Controllers\RecordingController::class, 'start'])
-        ->name('start');
-    Route::post('/stop',  [\App\Http\Controllers\RecordingController::class, 'stop'])
-        ->name('stop');
-});
 
-Route::middleware(['auth:sanctum', 'throttle:video'])
-    ->prefix('recording')->name('api.recording.')->group(function () {
-    Route::get('/list',                         [\App\Http\Controllers\RecordingController::class, 'index'])
-        ->name('index');
-    Route::get('/{recording}/playback',         [\App\Http\Controllers\RecordingController::class, 'playback'])
-        ->name('playback');
-    Route::post('/{recording}/approve',         [\App\Http\Controllers\RecordingController::class, 'approve'])
-        ->name('approve');
-    Route::post('/{recording}/reject',          [\App\Http\Controllers\RecordingController::class, 'reject'])
-        ->name('reject');
-});
 
 /*
 |--------------------------------------------------------------------------

@@ -103,12 +103,11 @@
 
 
 {{-- Infrastructure & Security Row --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6" style="opacity:0;animation:fadeSlideUp .4s .5s ease forwards">
+<div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6" style="opacity:0;animation:fadeSlideUp .4s .5s ease forwards">
     @foreach([
         ['label'=>'Suspended Users','value'=>$stats['suspended_users'] ?? 0,'color'=>'#ef4444','icon'=>'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636'],
         ['label'=>'Running Workspaces','value'=>$stats['active_workspaces'] ?? 0,'color'=>'#10b981','icon'=>'M5 12h14M12 5l7 7-7 7'],
         ['label'=>'AI Patches Pending','value'=>$stats['ai_patches_pending'] ?? 0,'color'=>'#f59e0b','icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
-        ['label'=>'Deployments','value'=>$stats['deployments_active'] ?? 0,'color'=>'#8b5cf6','icon'=>'M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12'],
     ] as $i => $s)
     <div class="vc-card p-3 flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:{{ $s['color'] }}12;">

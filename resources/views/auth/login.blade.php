@@ -23,7 +23,7 @@
                     Your Intelligent<br>
                     <span style="background:linear-gradient(135deg,#818cf8,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Coding Workspace</span>
                 </h2>
-                <p class="text-slate-300 text-sm leading-relaxed mb-10">Full VS Code IDE in the browser with AI pair programming, real-time collaboration, and smart classroom management.</p>
+                <p class="text-slate-300 text-sm leading-relaxed mb-10">Full VS Code IDE in the browser with AI pair programming and smart classroom management.</p>
 
                 {{-- IDE preview --}}
                 <div class="rounded-xl border border-white/10 overflow-hidden" style="background:rgba(15,23,42,0.8);box-shadow:0 16px 64px rgba(0,0,0,0.4);">
@@ -48,7 +48,7 @@
 
                 {{-- Feature pills --}}
                 <div class="flex flex-wrap gap-2 mt-6">
-                    @foreach(['VS Code IDE', 'AI Agent', 'Live Collab', 'Video Classes'] as $f)
+                    @foreach(['VS Code IDE', 'AI Agent', 'Smart Classrooms', 'Autograding'] as $f)
                     <span class="px-3 py-1 rounded-full text-[10px] font-medium text-slate-300 border border-white/10 bg-white/[0.03]">{{ $f }}</span>
                     @endforeach
                 </div>

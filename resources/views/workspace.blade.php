@@ -26,10 +26,6 @@
         }
         .pill-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 
-        .btn-collab { background: rgba(34,211,238,0.1); color: #22d3ee; border: 1px solid rgba(34,211,238,0.3); }
-        .btn-deploy { background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-        .btn-video  { background: rgba(16,185,129,0.1); color: #4ade80; border: 1px solid rgba(16,185,129,0.3); }
-
         /* Workspace Area */
         .workspace-container { display:flex; height:calc(100vh - 56px); width:100%; position:relative; overflow:hidden; }
         .center-pane { flex:1; min-width:0; position:relative; display:flex; flex-direction:column; }
@@ -98,16 +94,6 @@
         }
         .modal-overlay.open .modal-content { transform: scale(1); }
 
-        /* Collaborators */
-        .collab-avatar {
-            width: 28px; height: 28px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: 700; color: #fff;
-            border: 2px solid #050505; margin-left: -8px; z-index: 1;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .collab-avatar:first-child { margin-left: 0; }
-
         /* Toast Notifications */
         #toast-container {
             position: fixed; bottom: 20px; right: 20px; z-index: 9999;
@@ -172,26 +158,6 @@
             </button>
         </form>
         @endif
-        <div class="pill-btn" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;cursor:default;">
-            <span id="reverb-dot" style="width:6px;height:6px;border-radius:50%;background:#64748b;"></span>
-            Reverb Connected
-        </div>
-
-        <button onclick="document.getElementById('collab-modal').classList.add('open')" class="pill-btn btn-collab">
-            Collaborate
-        </button>
-
-        <button onclick="document.getElementById('deploy-modal').classList.add('open')" class="pill-btn btn-deploy">
-            Deploy
-        </button>
-
-        <button id="video-btn" onclick="startVideoCall()" class="pill-btn btn-video">
-            Video Call
-        </button>
-
-        {{-- Collaborators Container --}}
-        <div id="collaborators-container" style="display:flex;align-items:center;gap:-8px;margin-left:8px;"></div>
-
         {{-- User Menu --}}
         <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #f97316, #fb923c);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.4);margin-left:4px;">
             {{ $user->avatar_initials ?? 'U' }}
@@ -261,35 +227,6 @@
             allow="clipboard-read; clipboard-write"
             sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox">
         </iframe>
-    </div>
-</div>
-
-{{-- MODALS (Kept minimal structure, classes handled via JS) --}}
-<div id="collab-modal" class="modal-overlay" onclick="if(event.target===this) this.classList.remove('open')">
-    <div class="modal-content" style="padding:24px;">
-        <h3 style="color:#f1f5f9;margin:0 0 8px 0;">Collaborate</h3>
-        <p style="color:#64748b;font-size:13px;margin:0 0 20px 0;">Share this link to collaborate in real-time.</p>
-        <div style="background:#161b22;padding:12px;border-radius:16px;color:#a78bfa;font-family:monospace;font-size:12px;text-align:center;border:1px solid rgba(255,255,255,0.05);">
-            {{ $roomSlug ?? 'personal-room' }}
-        </div>
-    </div>
-</div>
-
-<div id="deploy-modal" class="modal-overlay" onclick="if(event.target===this) this.classList.remove('open')">
-    <div class="modal-content" style="padding:24px;">
-        <h3 style="color:#f1f5f9;margin:0 0 8px 0;">Deploy Workspace</h3>
-        <p style="color:#64748b;font-size:13px;margin:0 0 20px 0;">Push your code to the cloud instantly.</p>
-        <div id="deploy-buttons" style="display:flex;gap:12px;">
-            <button onclick="deployWorkspace('vercel')" class="pill-btn" style="flex:1;justify-content:center;background:#fff;color:#000;">Vercel</button>
-            <button onclick="deployWorkspace('railway')" class="pill-btn" style="flex:1;justify-content:center;background:#0b0d14;color:#fff;border:1px solid #333;">Railway</button>
-        </div>
-        <div id="deploy-status" style="display:none;margin-top:20px;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                <div id="deploy-spinner" class="spinner"></div>
-                <span id="deploy-text" style="color:#f1f5f9;font-size:13px;font-weight:600;">Queuing deployment...</span>
-            </div>
-            <a id="deploy-link" href="#" target="_blank" style="display:none;color:#38bdf8;font-size:12px;text-decoration:none;">View Deployment &rarr;</a>
-        </div>
     </div>
 </div>
 
@@ -499,267 +436,11 @@
     document.getElementById('vscode-frame').addEventListener('load', onVsCodeLoad);
     document.getElementById('vscode-frame').addEventListener('error', onVsCodeError);
 
-    // ─────────────────────────────────────────────────────────────
-    // COLLABORATION (Reverb Presence & Chat)
-    // ─────────────────────────────────────────────────────────────
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof window.initEcho === 'function') {
-            const reverbConfig = @json($reverbConfig);
-            const echo = window.initEcho(reverbConfig);
-            const roomSlug = "{{ $roomSlug }}";
-            const currentUserId = {{ auth()->id() ?? 'null' }};
-            
-            document.getElementById('reverb-dot').style.background = '#10b981'; // Green dot
-            
-            // Join Presence Channel
-            const channel = echo.join(`collab.${roomSlug}`);
-            
-            channel.here((users) => {
-                updateCollaboratorsUI(users);
-            })
-            .joining((user) => {
-                addCollaborator(user);
-            })
-            .leaving((user) => {
-                removeCollaborator(user);
-            })
-            .listen('ChatMessageSent', (e) => {
-                appendChatMessage(e);
-            })
-            .listen('WorkspaceRebuildingEvent', (e) => {
-                console.log('Rebuilding workspace...', e);
-                triggerRestart(true);
-            });
-            
-            let activeUsers = [];
-            
-            function updateCollaboratorsUI(users) {
-                activeUsers = users;
-                renderCollaborators();
-            }
-            
-            function addCollaborator(user) {
-                if (!activeUsers.find(u => u.id === user.id)) {
-                    activeUsers.push(user);
-                    renderCollaborators();
-                }
-            }
-            
-            function removeCollaborator(user) {
-                activeUsers = activeUsers.filter(u => u.id !== user.id);
-                renderCollaborators();
-            }
-            
-            function renderCollaborators() {
-                const container = document.getElementById('collaborators-container');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                // Render up to 3 avatars
-                const displayUsers = activeUsers.slice(0, 3);
-                displayUsers.forEach(user => {
-                    const div = document.createElement('div');
-                    div.className = 'collab-avatar';
-                    div.style.background = user.color || '#4f46e5';
-                    div.title = user.name;
-                    div.textContent = user.initials;
-                    container.appendChild(div);
-                });
-                
-                if (activeUsers.length > 3) {
-                    const div = document.createElement('div');
-                    div.className = 'collab-avatar';
-                    div.style.background = '#334155';
-                    div.textContent = '+' + (activeUsers.length - 3);
-                    container.appendChild(div);
-                }
-            }
-            
-            function appendChatMessage(e) {
-                // Ignore our own messages from toast
-                if (e.user_id === currentUserId) return;
-                
-                showToast(e.user_name, e.message);
-            }
 
-            function showToast(title, message) {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                
-                toast.innerHTML = `
-                    <div style="width:24px;height:24px;background:rgba(249,115,22,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8b5cf6;">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                    </div>
-                    <div>
-                        <div class="toast-title">${title}</div>
-                        <div style="color:#cbd5e1;">${message}</div>
-                    </div>
-                `;
-                
-                container.appendChild(toast);
-                
-                // Trigger animation
-                requestAnimationFrame(() => toast.classList.add('show'));
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 300);
-                }, 4000);
-            }
-            
-            // Expose the channel globally for iframe (extension) to hook into if needed
-            window.workspaceChannel = channel;
-            window.workspaceUserId = currentUserId;
-        }
-    });
 
-    // ─────────────────────────────────────────────────────────────
-    // VIDEO CALL (Phase 7 - Jitsi Meet)
-    // ─────────────────────────────────────────────────────────────
-    let activeCall = false;
 
-    async function checkVideoStatus() {
-        try {
-            const res = await fetch(`/api/workspace/{{ $roomSlug }}/video/status`, {
-                headers: { 'Authorization': `Bearer {{ $workspace->owner?->createToken('workspace')->plainTextToken ?? '' }}`, 'Accept': 'application/json' }
-            });
-            const data = await res.json();
-            
-            const btn = document.getElementById('video-btn');
-            if (data.active) {
-                activeCall = true;
-                btn.textContent = 'Join Call';
-                btn.style.background = 'rgba(239, 68, 68, 0.1)';
-                btn.style.color = '#ef4444';
-                btn.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-                btn.onclick = joinVideoCall;
-            } else {
-                activeCall = false;
-                btn.textContent = 'Video Call';
-                btn.style.background = 'rgba(16,185,129,0.1)';
-                btn.style.color = '#4ade80';
-                btn.style.borderColor = 'rgba(16,185,129,0.3)';
-                btn.onclick = startVideoCall;
-            }
-        } catch (e) {
-            console.error('Failed to fetch video status', e);
-        }
-    }
 
-    async function startVideoCall() {
-        try {
-            const res = await fetch(`/api/workspace/{{ $roomSlug }}/video/start`, {
-                method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer {{ $workspace->owner?->createToken('workspace')->plainTextToken ?? '' }}`, 
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await res.json();
-            if (data.active) {
-                // Ping attendance
-                await fetch(`/api/workspace/{{ $roomSlug }}/video/attendance`, {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer {{ $workspace->owner?->createToken('workspace')->plainTextToken ?? '' }}`, 
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ action: 'join' })
-                });
-                checkVideoStatus();
-            }
-        } catch (e) {
-            alert('Failed to start video call.');
-        }
-    }
 
-    async function joinVideoCall() {
-        // Just trigger the start endpoint again to get details, the extension handles rendering.
-        startVideoCall();
-    }
-
-    // Initial check
-    checkVideoStatus();
-
-    // ── Phase 9: Deployment Logic ──
-    async function deployWorkspace(provider) {
-        document.getElementById('deploy-buttons').style.display = 'none';
-        const statusDiv = document.getElementById('deploy-status');
-        const statusText = document.getElementById('deploy-text');
-        const statusSpinner = document.getElementById('deploy-spinner');
-        const statusLink = document.getElementById('deploy-link');
-        
-        statusDiv.style.display = 'block';
-        statusText.textContent = `Queuing deployment to ${provider}...`;
-        statusText.style.color = '#f1f5f9';
-        statusSpinner.style.display = 'block';
-        statusLink.style.display = 'none';
-
-        try {
-            const res = await fetch(`/workspace/{{ $workspace->slug }}/deploy`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ provider: provider })
-            });
-            const data = await res.json();
-            
-            if (res.ok) {
-                pollDeployment(data.deployment.id);
-            } else {
-                showDeployError(data.error || 'Failed to queue deployment.');
-            }
-        } catch (e) {
-            showDeployError(e.message);
-        }
-    }
-
-    async function pollDeployment(deploymentId) {
-        const statusText = document.getElementById('deploy-text');
-        const statusSpinner = document.getElementById('deploy-spinner');
-        const statusLink = document.getElementById('deploy-link');
-
-        const interval = setInterval(async () => {
-            try {
-                const res = await fetch(`/deployments/${deploymentId}/status`, {
-                    headers: { 'Accept': 'application/json' }
-                });
-                const data = await res.json();
-
-                if (data.status === 'building') {
-                    statusText.textContent = 'Building project...';
-                } else if (data.status === 'deployed') {
-                    clearInterval(interval);
-                    statusText.textContent = 'Deployed Successfully!';
-                    statusText.style.color = '#10B981'; // Success Green
-                    statusSpinner.style.display = 'none';
-                    if (data.public_url) {
-                        statusLink.href = data.public_url;
-                        statusLink.style.display = 'block';
-                    }
-                    showToast('Deployment Successful', 'Your project is live.', 'success');
-                } else if (data.status === 'failed') {
-                    clearInterval(interval);
-                    showDeployError(data.error_summary || 'Deployment failed.');
-                }
-            } catch (e) {
-                // Ignore temporary fetch failures
-            }
-        }, 3000);
-    }
-
-    function showDeployError(msg) {
-        document.getElementById('deploy-text').textContent = 'Error: ' + msg;
-        document.getElementById('deploy-text').style.color = '#EF4444'; // Error Red
-        document.getElementById('deploy-spinner').style.display = 'none';
-        document.getElementById('deploy-buttons').style.display = 'flex';
-    }
     // ── Phase 4.5: Assignment Lockdown Logic ──
     @if(isset($isAssignmentLocked) && $isAssignmentLocked)
     (function() {

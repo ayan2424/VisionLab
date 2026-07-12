@@ -75,9 +75,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/workspace/{workspace}/extensions/{extension}/install', [\App\Http\Controllers\WorkspaceExtensionManagerController::class, 'install'])->name('workspace.extensions.install');
     Route::delete('/workspace/{workspace}/extensions/{extension}/uninstall', [\App\Http\Controllers\WorkspaceExtensionManagerController::class, 'uninstall'])->name('workspace.extensions.uninstall');
 
-    // ── Collaborative Rooms & Chat ─────────────────────────────────────
-    Route::post('/rooms', [\App\Http\Controllers\RoomController::class, 'create'])->name('rooms.create');
-    Route::post('/workspace/{workspace}/chat', [\App\Http\Controllers\ChatController::class, 'store'])->name('workspace.chat');
 
     // ── Courses ────────────────────────────────────────────────────────
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
@@ -131,17 +128,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ── Contributions (Heatmap) ────────────────────────────────────────
     Route::get('/api/contributions', [\App\Http\Controllers\ContributionController::class, 'heatmap'])->name('contributions.heatmap');
 
-    // ── Deployments ────────────────────────────────────────────────────
-    Route::post('/workspace/{workspace}/deploy', [\App\Http\Controllers\DeploymentController::class, 'deploy'])->name('workspace.deploy');
-    Route::get('/workspace/{workspace}/deployments', [\App\Http\Controllers\DeploymentController::class, 'index'])->name('workspace.deployments');
-    Route::get('/deployments/{deployment}/status', [\App\Http\Controllers\DeploymentController::class, 'status'])->name('deployments.status');
-    Route::delete('/deployments/{deployment}', [\App\Http\Controllers\DeploymentController::class, 'destroy'])->name('deployments.destroy');
-    Route::get('/my-deployments', function() {
-        return view('deployments.index', [
-            'deployments' => \App\Models\Deployment::where('user_id', auth()->id())->latest()->get(),
-            'workspaces' => \App\Models\Workspace::where('user_id', auth()->id())->get()
-        ]);
-    })->name('deployments.index');
 
     // ── Profile ────────────────────────────────────────────────────────
     Route::get('/profile/dashboard', [ProfileController::class, 'index'])  ->name('profile.index');

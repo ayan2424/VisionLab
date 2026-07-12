@@ -18,16 +18,10 @@
     <title>{{ isset($title) ? $title . ' — VisionLab' : 'VisionLab' }}</title>
 
     @php
-        $reverbKey    = env('REVERB_APP_KEY', '');
-        $reverbHost   = env('REVERB_HOST', 'localhost');
-        $reverbPort   = (int) env('REVERB_PORT', 8080);
-        $reverbScheme = env('REVERB_SCHEME', 'http');
+
     @endphp
 
-    <meta name="reverb-key"    content="{{ $reverbKey }}">
-    <meta name="reverb-host"   content="{{ $reverbHost }}">
-    <meta name="reverb-port"   content="{{ $reverbPort }}">
-    <meta name="reverb-scheme" content="{{ $reverbScheme }}">
+
 
     @if(Auth::check())
     <meta name="auth-user-id"   content="{{ Auth::id() }}">
@@ -133,20 +127,6 @@
 
 
     @if(Auth::check())
-    (function initGlobalEcho() {
-        const key    = document.querySelector('meta[name="reverb-key"]')?.content;
-        const host   = document.querySelector('meta[name="reverb-host"]')?.content;
-        const port   = parseInt(document.querySelector('meta[name="reverb-port"]')?.content || '8080');
-        const scheme = document.querySelector('meta[name="reverb-scheme"]')?.content || 'http';
-        if (!key) return;
-
-        window.addEventListener('load', () => {
-            if (typeof window.initEcho === 'function') {
-                window.initEcho({ key, host, port, scheme });
-                initUserNotifications();
-            }
-        });
-    })();
 
     function initUserNotifications() {
         if (!window.Echo) return;

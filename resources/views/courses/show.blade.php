@@ -164,25 +164,7 @@
                 </div>
             </div>
 
-            {{-- Collaborative Workspace --}}
-            <div class="rounded-2xl p-5 border" style="background:rgba(6,182,212,0.05);border-color:rgba(6,182,212,0.2);">
-                <div class="flex items-center gap-2 mb-3">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center border" style="background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.2);">
-                        <svg class="w-4 h-4" style="color:#06B6D4;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold" style="color:var(--vc-text);">Live Workspace</div>
-                        <div class="text-xs" style="color:var(--vc-muted);">Real-time collaboration</div>
-                    </div>
-                </div>
-                <a href="{{ route('workspace.show', 'course-' . $course->id) }}"
-                   class="flex items-center justify-center gap-2 w-full py-2 rounded-xl text-xs font-bold border transition-all"
-                   style="color:#06B6D4;border-color:rgba(6,182,212,0.3);" onmouseover="this.style.background='rgba(6,182,212,0.1)'" onmouseout="this.style.background='transparent'">
-                    <span style="width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;"></span>
-                    Open Collaborative Room
-                </a>
-                <div class="mt-2 text-xs text-center" style="color:var(--vc-muted);">Powered by Laravel Reverb</div>
-            </div>
+
 
             {{-- My Workspace --}}
             <a href="{{ route('workspace.index') }}" class="vc-card flex items-center gap-3 p-4 hover:-translate-y-1 transition-all">

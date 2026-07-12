@@ -330,7 +330,7 @@
                     @php
                     $stack = [
                         ['Laravel 11','#f9322c'],['SQLite','#003b57'],['Tailwind CSS','#06b6d4'],
-                        ['VisionLab IDE','#007acc'],['Laravel Reverb','#7c3aed'],['Alpine.js','#8bc0d0'],
+                        ['VisionLab IDE','#007acc'],['Alpine.js','#8bc0d0'],
                         ['Piston API','#16a34a'],['ApexCharts','#00b1f2'],['Gemini 2.0 Flash','#4285f4'],
                         ['Pusher JS','#300d4f'],['Vite','#646cff'],['PHP 8.3','#8892bf'],
                     ];

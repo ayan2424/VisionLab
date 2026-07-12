@@ -333,7 +333,7 @@
 
             <div class="reveal" style="transition-delay: 200ms;">
                 <p class="mx-auto mt-8 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-                    Sandboxed workspaces, real-time multi-cursor collaboration, and responsible AI assistance — engineered for research universities.
+                    Sandboxed workspaces and responsible AI assistance — engineered for research universities.
                 </p>
             </div>
 
@@ -666,37 +666,7 @@
                     </div>
                 </div>
 
-                <!-- Feature 4 -->
-                <div class="reveal md:col-span-2 lg:translate-y-8">
-                    <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-black/10 dark:border-white/20 h-full cursor-pointer" style="--spot-color: var(--rose);">
-                        <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot-color) 22%, transparent), transparent 60%);"></div>
-                        <div class="pointer-events-none absolute inset-x-0 top-0 h-px opacity-60 bg-gradient-to-r from-transparent via-rose to-transparent"></div>
-                        <div class="relative">
-                            <div class="flex h-full min-h-[280px] flex-col">
-                                <div class="flex items-start justify-between">
-                                    <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-rose">04 //</span>
-                                    <div class="relative h-16 w-16 shrink-0" style="perspective: 600px;">
-                                        <div class="absolute inset-0 rounded-full opacity-60 blur-xl bg-rose"></div>
-                                        <div class="relative grid h-full w-full place-items-center" style="transform-style: preserve-3d; animation: float-y 5s ease-in-out infinite;">
-                                            <div class="flex h-10 items-end gap-1">
-                                                <div class="w-1.5 rounded-full bg-rose" style="height: 100%; box-shadow: 0 0 8px var(--rose); animation: wave-bar 1.4s ease-in-out infinite;"></div>
-                                                <div class="w-1.5 rounded-full bg-rose" style="height: 100%; box-shadow: 0 0 8px var(--rose); animation: wave-bar 1.4s ease-in-out 0.15s infinite;"></div>
-                                                <div class="w-1.5 rounded-full bg-rose" style="height: 100%; box-shadow: 0 0 8px var(--rose); animation: wave-bar 1.4s ease-in-out 0.30s infinite;"></div>
-                                                <div class="w-1.5 rounded-full bg-rose" style="height: 100%; box-shadow: 0 0 8px var(--rose); animation: wave-bar 1.4s ease-in-out 0.45s infinite;"></div>
-                                                <div class="w-1.5 rounded-full bg-rose" style="height: 100%; box-shadow: 0 0 8px var(--rose); animation: wave-bar 1.4s ease-in-out 0.60s infinite;"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h3 class="mt-6 font-display text-2xl font-semibold tracking-tight">Live Sessions</h3>
-                                <p class="mt-3 text-sm leading-relaxed text-muted-foreground">WebRTC voice &amp; video stitched into the editor — office hours, anywhere.</p>
-                                <div class="mt-auto pt-8">
-                                    <div class="h-px w-full bg-gradient-to-r from-transparent via-rose to-transparent opacity-40"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- Feature 5 -->
                 <div class="reveal md:col-span-2">
@@ -885,7 +855,7 @@
                                 <span class="grid h-9 w-9 shrink-0 place-items-center border border-border font-mono text-xs font-semibold transition-colors" style="color: var(--emerald);">C</span>
                                 <div>
                                     <div class="font-display text-base font-semibold">Session Replay</div>
-                                    <div class="mt-1 text-sm text-muted-foreground">Scrub through any session like a video. Diff every commit.</div>
+                                    <div class="mt-1 text-sm text-muted-foreground">Diff every commit.</div>
                                 </div>
                             </li>
                         </ul>

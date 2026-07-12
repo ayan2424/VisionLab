@@ -126,15 +126,6 @@ class User extends Authenticatable
         return $this->hasMany(Workspace::class, 'student_id');
     }
 
-    public function collaborations(): HasMany
-    {
-        return $this->hasMany(WorkspaceCollaborator::class);
-    }
-
-    public function collabSessions(): HasMany
-    {
-        return $this->hasMany(CollabSession::class);
-    }
 
     // ── Relationships: AI ───────────────────────────────────────────
 
@@ -143,12 +134,6 @@ class User extends Authenticatable
         return $this->hasMany(AiChatSession::class);
     }
 
-    // ── Relationships: Deployments ──────────────────────────────────
-
-    public function deployments(): HasMany
-    {
-        return $this->hasMany(Deployment::class);
-    }
 
     // ── Relationships: Notifications / Prefs ────────────────────────
 

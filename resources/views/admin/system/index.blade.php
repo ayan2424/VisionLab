@@ -16,7 +16,6 @@
             
             @php
                 $aiEnabled = \App\Models\SystemConfig::getVal('flag_ai_enabled', true);
-                $videoEnabled = \App\Models\SystemConfig::getVal('flag_video_calls_enabled', true);
                 $regOpen = \App\Models\SystemConfig::getVal('flag_registration_open', true);
                 $marketplaceOpen = (bool) \App\Models\SystemConfig::getVal('global_allow_marketplace', true);
             @endphp
@@ -27,14 +26,6 @@
                     <div>
                         <div class="text-sm font-semibold" style="color:var(--vc-text);">AI Agent Enabled</div>
                         <div class="text-xs" style="color:var(--vc-muted);">Allow users to interact with Claude AI in IDE workspaces.</div>
-                    </div>
-                </label>
-
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" name="flags[]" value="video_calls_enabled" {{ $videoEnabled ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-600 bg-black/20 text-[#3b82f6] focus:ring-[#3b82f6]">
-                    <div>
-                        <div class="text-sm font-semibold" style="color:var(--vc-text);">Video Calls Enabled</div>
-                        <div class="text-xs" style="color:var(--vc-muted);">Allow Jitsi video conferencing inside workspaces.</div>
                     </div>
                 </label>
 

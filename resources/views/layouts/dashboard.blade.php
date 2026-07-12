@@ -19,15 +19,9 @@
     <title>@yield('title', 'Dashboard') — VisionLab</title>
 
     @php
-        $reverbKey    = env('REVERB_APP_KEY', '');
-        $reverbHost   = env('REVERB_HOST', 'localhost');
-        $reverbPort   = (int) env('REVERB_PORT', 8080);
-        $reverbScheme = env('REVERB_SCHEME', 'http');
+
     @endphp
-    <meta name="reverb-key"    content="{{ $reverbKey }}">
-    <meta name="reverb-host"   content="{{ $reverbHost }}">
-    <meta name="reverb-port"   content="{{ $reverbPort }}">
-    <meta name="reverb-scheme" content="{{ $reverbScheme }}">
+
 
     @if(Auth::check())
     <meta name="auth-user-id"   content="{{ Auth::id() }}">

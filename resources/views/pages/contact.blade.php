@@ -1,7 +1,7 @@
 @extends('layouts.landing')
 
 @section('title', 'Contact Us — VisionLab Support & Partnerships')
-@section('meta_description', 'Contact the VisionLab engineering syndicate for deployments, SLAs, developer support, and institutional partnerships.')
+@section('meta_description', 'Contact the VisionLab engineering syndicate for developer support and institutional partnerships.')
 
 @section('styles')
 <style>
@@ -227,7 +227,7 @@
             Let's <span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">collaborate.</span>
         </h1>
         <p class="section-sub reveal reveal-delay-1" style="margin: 2rem auto 0; text-align:center;">
-            Have questions regarding deployment SLAs, server specs, LTI configuration, or cohort licensing? Speak to our engineering syndicate.
+            Have questions regarding server specs, LTI configuration, or cohort licensing? Speak to our engineering syndicate.
         </p>
     </div>
 </section>
@@ -252,7 +252,7 @@
                 <div class="form-group">
                     <label class="form-label" for="subject">Inquiry Sector</label>
                     <select id="subject" class="form-control" required>
-                        <option value="Enterprise Deployment">Enterprise SLA & Deployments</option>
+
                         <option value="Academic Licensing">Academic Cohort Licensing</option>
                         <option value="LMS LTI Setup">LMS LTI 1.3 Integrations</option>
                         <option value="Security Audit">Security & Vulnerability Audits</option>

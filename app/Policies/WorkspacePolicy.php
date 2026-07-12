@@ -16,7 +16,7 @@ class WorkspacePolicy
         if ($user->isInstructor() && $workspace->course && $workspace->course->instructor_id === $user->id) {
             return true;
         }
-        return $workspace->hasCollaborator($user);
+        return $workspace->isOwnedBy($user);
     }
 
     /** Owner, collaborator, course instructor, or admin can access a workspace. */
@@ -28,7 +28,7 @@ class WorkspacePolicy
         if ($user->isInstructor() && $workspace->course && $workspace->course->instructor_id === $user->id) {
             return true;
         }
-        return $workspace->hasCollaborator($user);
+        return $workspace->isOwnedBy($user);
     }
 
     /** Only students can create workspaces. */
@@ -43,26 +43,22 @@ class WorkspacePolicy
         return $user->isAdmin() || $workspace->isOwnedBy($user);
     }
 
-    /** Only owner/collaborator with write role can write files. */
+    /** Only owner or admin can write files. */
     public function writeFiles(User $user, Workspace $workspace): bool
     {
         if ($user->isAdmin()) {
             return true;
         }
-        if ($workspace->isOwnedBy($user)) {
-            return true;
-        }
-        $collab = $workspace->collaborators()->where('user_id', $user->id)->first();
-        return $collab && $collab->canWrite();
+        return $workspace->isOwnedBy($user);
     }
 
-    /** Only owner/collaborator/instructor/admin can read files. */
+    /** Only owner/instructor/admin can read files. */
     public function readFiles(User $user, Workspace $workspace): bool
     {
         if ($user->isAdmin() || $user->isInstructor()) {
             return true;
         }
-        return $workspace->hasCollaborator($user);
+        return $workspace->isOwnedBy($user);
     }
 
     /** Only owner or admin can delete a workspace. */

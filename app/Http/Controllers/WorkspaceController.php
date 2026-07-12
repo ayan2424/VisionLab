@@ -88,7 +88,6 @@ class WorkspaceController extends Controller
             'workspace'       => $workspace->fresh(),
             'workspaceName'   => $workspace->name,
             'roomSlug'        => 'ws-' . $workspace->id,
-            'isCollaborative' => $workspace->collaborators()->count() > 1 && (!$workspace->assignment || $workspace->assignment->mode !== 'exam'),
             'reverbConfig'    => self::reverbConfig(),
             'vscodeUrl'       => $workspace->status === 'running' ? $workspace->proxy_url : null,
             'needsBoot'       => $workspace->status !== 'running',

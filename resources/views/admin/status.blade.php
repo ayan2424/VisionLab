@@ -22,10 +22,8 @@
     $services = [
         'database'     => ['label' => 'Database',          'icon' => 'database',   'description' => 'MySQL primary node connectivity and query availability'],
         'redis'        => ['label' => 'Cache & Queues',    'icon' => 'server',     'description' => 'Redis session store, job queue, and rate-limiter bus'],
-        'reverb'       => ['label' => 'Real-Time Engine',  'icon' => 'zap',        'description' => 'Laravel Reverb WebSocket broadcast driver'],
         'storage'      => ['label' => 'File Storage',      'icon' => 'hard-drive', 'description' => 'Local disk write access for uploads and artifacts'],
         'ai_config'    => ['label' => 'AI Agent',          'icon' => 'cpu',        'description' => 'Anthropic Claude API credentials and provider configuration'],
-        'jitsi_config' => ['label' => 'Video Sessions',    'icon' => 'video',      'description' => 'Jitsi Meet application ID and JWT configuration'],
     ];
 @endphp
 
@@ -96,7 +94,7 @@
             $statusLabel = $up ? 'Operational' : 'Unavailable';
             $statusBg    = $up ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)';
             $statusBdr   = $up ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.25)';
-            $delay       = ['database'=>'.12s','redis'=>'.17s','reverb'=>'.22s','storage'=>'.27s','ai_config'=>'.32s','jitsi_config'=>'.37s'][$key];
+            $delay       = ['database'=>'.12s','redis'=>'.17s','storage'=>'.27s','ai_config'=>'.32s'][$key];
         @endphp
         <div class="rounded-xl p-5 transition-all duration-200"
              style="opacity:0;animation:fadeSlideUp .5s {{ $delay }} ease forwards;
@@ -143,12 +141,7 @@
                                 <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                             @break
-                        @case('video')
-                            <svg class="w-4 h-4" style="color:var(--vc-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <rect x="2" y="6" width="14" height="12" rx="2" stroke-width="2"/>
-                                <path d="M16 10l5-3v10l-5-3V10z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            @break
+
                     @endswitch
                 </div>
 

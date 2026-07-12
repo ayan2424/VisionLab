@@ -118,8 +118,7 @@
         <h1 class="hero-headline text-gradient-hero font-display">
             Built for the <br><span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">next generation</span> of computer science.
         </h1>
-        <p class="section-sub mt-8 mx-auto text-center">
-            VisionLab was engineered to bridge the gap between academic theory and real-world software engineering practice. We consolidate containerized sandbox environments, socratic AI tools, and multi-cursor collaboration into a unified, secure infrastructure.
+            VisionLab was engineered to bridge the gap between academic theory and real-world software engineering practice. We consolidate containerized sandbox environments and socratic AI tools into a unified, secure infrastructure.
         </p>
     </div>
 </section>
@@ -131,8 +130,7 @@
     <div style="max-width:800px;margin:0 auto;text-align:center" class="reveal">
         <span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--purple);font-weight:600;display:block;margin-bottom:1rem;font-family:'JetBrains Mono',monospace;">System Architecture</span>
         <h2 class="section-heading font-display metallic-text">Democratizing CS Infrastructure</h2>
-        <p class="section-sub" style="margin:0 auto">
-            Traditionally, universities suffer from configuration drift, local setup blockages, and excessive cloud server runtime bills. VisionLab replaces this fragmented workflow. We supply student-isolated containers powered by Nix, and real-time collaboration engines managed through secure enterprise policies.
+            Traditionally, universities suffer from configuration drift, local setup blockages, and excessive cloud server runtime bills. VisionLab replaces this fragmented workflow. We supply student-isolated containers powered by Nix managed through secure enterprise policies.
         </p>
     </div>
 </section>
@@ -144,10 +142,7 @@
             <span class="stat-val text-gradient-purple-pink" data-target="100" data-suffix="%">0</span>
             <span class="stat-lbl">Isolated Sandboxes</span>
         </div>
-        <div class="stat-item">
-            <span class="stat-val text-gradient-cyan" data-target="0" data-suffix="ms">0</span>
-            <span class="stat-lbl">Cursor Sync Latency</span>
-        </div>
+
         <div class="stat-item">
             <span class="stat-val text-gradient-purple-pink" data-target="100" data-suffix="%">0</span>
             <span class="stat-lbl">Nix Configured</span>
@@ -178,8 +173,8 @@
         <div class="timeline-item">
             <div class="timeline-dot cyan"></div>
             <div class="timeline-date">Q3 2025 · BETA STAGE</div>
-            <h3 class="timeline-title">Active Roster Deployment</h3>
-            <p class="timeline-desc">Scaled the platform to 1,200 concurrent student workspaces. Deployed Reverb-based cursor broadcasting and Jitsi video moderators for real-time lecture coding.</p>
+            <h3 class="timeline-title">Active Roster Rollout</h3>
+            <p class="timeline-desc">Scaled the platform to 1,200 concurrent student workspaces.</p>
         </div>
         <div class="timeline-item">
             <div class="timeline-dot pink"></div>
@@ -253,10 +248,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="2" y1="14" x2="22" y2="14"></line><line x1="12" y1="10" x2="12" y2="22"></line></svg>
                 Docker Compose
             </div>
-            <div class="tech-badge">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                Reverb WebSockets
-            </div>
+
             <div class="tech-badge">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
                 Redis Cache

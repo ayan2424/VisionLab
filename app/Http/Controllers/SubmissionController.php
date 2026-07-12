@@ -124,7 +124,6 @@ class SubmissionController extends Controller
             'workspace'       => $workspace->fresh(),
             'workspaceName'   => $assignment->title,
             'roomSlug'        => 'assign-' . $assignment->id . '-' . $user->id,
-            'isCollaborative' => false,
             'reverbConfig'    => \App\Http\Controllers\WorkspaceController::reverbConfig(),
             'vscodeUrl'       => $serverInfo['url'],
             'assignment'      => $assignment,

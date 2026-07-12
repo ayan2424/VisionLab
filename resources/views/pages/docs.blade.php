@@ -212,7 +212,7 @@
             Architectural <br><span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">developer guide.</span>
         </h1>
         <p class="section-sub reveal reveal-delay-1" style="margin: 2rem auto 0; text-align:center;">
-            Detailed specs on Nix sandboxing, Socratic AI prompts, Reverb WebSockets, LTI 1.3 integration parameters, and direct REST APIs.
+            Detailed specs on Nix sandboxing, Socratic AI prompts, LTI 1.3 integration parameters, and direct REST APIs.
         </p>
     </div>
 </section>
@@ -233,8 +233,7 @@
         <div class="docs-nav-group">
             <div class="docs-nav-title">Architecture</div>
             <a href="#sandboxed-workspaces" class="docs-nav-link" onclick="updateActiveLink(this)">Nix Sandboxing</a>
-            <a href="#ai-assistant" class="docs-nav-link" onclick="updateActiveLink(this)">AI Agent Modes</a>
-            <a href="#presence-sync" class="docs-nav-link" onclick="updateActiveLink(this)">Presence & Reverb</a>
+            <a href="#ai-assistant" class="docs-nav-link" onclick="updateActiveLink(this)">Governed AI Models</a>
         </div>
         
         <div class="docs-nav-group">
@@ -377,33 +376,7 @@ pkgs.mkShell {
             </div>
         </section>
 
-        <!-- PRESENCE & REVERB -->
-        <section id="presence-sync" class="docs-section reveal">
-            <h2 class="docs-section-title">Presence & WebSockets</h2>
-            <p class="docs-para">
-                Real-time collaboration (multi-user cursor tracking, document sync, and workspace chat) is powered by **Laravel Reverb**, a high-performance native WebSocket server. Reverb handles connection multiplexing using Redis, enabling seamless classroom scaling.
-            </p>
-            <p class="docs-para">
-                Client-side state synchronization broadcasts updates such as cursor movements every 80ms over client whispers. Document changes are sent as delta diffs to conserve packet overhead.
-            </p>
 
-            <div class="code-widget">
-                <div class="code-widget-header">
-                    <span>WebSocket Events</span>
-                    <span>JavaScript / Echo</span>
-                </div>
-                <div class="code-widget-body">Echo.join(<span class="highlight-string">`workspace.${roomId}`</span>)
-  .here((users) =&gt; {
-    updateCollaboratorList(users);
-  })
-  .joining((user) =&gt; {
-    triggerPresenceToast(<span class="highlight-string">`Joined: ${user.name}`</span>);
-  })
-  .listenForWhisper(<span class="highlight-string">'CursorMoved'</span>, (e) =&gt; {
-    updateRemoteCursor(e.userId, e.x, e.y);
-  });</div>
-            </div>
-        </section>
 
         <!-- REST API -->
         <section id="api-reference" class="docs-section reveal">

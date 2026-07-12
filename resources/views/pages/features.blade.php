@@ -1,7 +1,7 @@
 @extends('layouts.landing')
 
 @section('title', 'Features — VisionLab IDE, AI Agent & Live Collaboration')
-@section('meta_description', 'Explore VisionLab features: browser-based VS Code IDE, AI teaching assistant, real-time collaboration, video sessions, and smart LMS integration.')
+@section('meta_description', 'Explore VisionLab features: browser-based VS Code IDE, AI teaching assistant, and smart LMS integration.')
 
 @section('styles')
 <style>
@@ -132,7 +132,7 @@
             Sovereign engineering, <br><span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">natively compiled</span> for classrooms.
         </h1>
         <p class="section-sub mt-8 mx-auto text-center">
-            VisionLab consolidates browser-based interactive IDE workspaces, sandboxed container isolation, collaborative presence channels, and socratic AI assistance into a centralized platform.
+            VisionLab consolidates browser-based interactive IDE workspaces, sandboxed container isolation, and socratic AI assistance into a centralized platform.
         </p>
     </div>
 </section>
@@ -171,28 +171,7 @@
         </div>
     </div>
 
-    <!-- Block 2: Multi-Cursor Collaboration -->
-    <div class="feature-block reversed reveal">
-        <div class="feature-content">
-            <span class="feature-tag">/ 02 · Synchronization</span>
-            <h2 class="feature-title">Multi-Cursor Document Sync</h2>
-            <p class="feature-desc">
-                Edit code collaboratively in real-time. Built natively on Laravel Reverb WebSockets, our presence channels synchronize keystroke deltas, editor scroll positions, cursor highlights, and file updates instantly without routing data through third-party cloud servers.
-            </p>
-        </div>
-        <div class="feature-visual">
-            <div class="mock-header">
-                <span style="color:var(--cyan);font-size:0.65rem;font-weight:700">● Presence Channel Stream</span>
-            </div>
-            <div class="mock-body" style="font-size:0.7rem;">
-                <div style="color:var(--cyan-light)">[WS] Connected to presence: course-101-room-3</div>
-                <div>[WS] User joined: Student A (Cursor position: L42, C12)</div>
-                <div>[WS] Keystroke delta: insert "fn check_bounds()"</div>
-                <div>[WS] User joined: Instructor Vance (Cursor position: L45, C8)</div>
-                <div style="color:var(--emerald-light)">[SYNC] Document delta applied successfully in 12ms</div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Block 3: Socratic AI Assistant -->
     <div class="feature-block reveal">
@@ -222,34 +201,7 @@
         </div>
     </div>
 
-    <!-- Block 4: Cryptographic Video Sessions -->
-    <div class="feature-block reversed reveal">
-        <div class="feature-content">
-            <span class="feature-tag">/ 04 · Collaboration</span>
-            <h2 class="feature-title">Embedded Cryptographic Video</h2>
-            <p class="feature-desc">
-                Host lecture coding, office hours, and team group coding sessions directly within the IDE. Powered by secure Jitsi rooms authenticated via cryptographic JWTs, instructors can moderate controls and TAs can verify student participation logs.
-            </p>
-        </div>
-        <div class="feature-visual">
-            <div class="mock-header">
-                <span style="color:var(--rose-light);font-size:0.65rem;font-weight:700" class="flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 inline text-rose-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    Integrated Jitsi Workspace Room
-                </span>
-            </div>
-            <div class="mock-body" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;height:100%">
-                <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:0.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">
-                    <span style="font-size:0.75rem;color:white;font-weight:500;">Prof. Vance</span>
-                    <span style="position:absolute;bottom:8px;left:8px;font-size:0.6rem;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;color:var(--emerald-light)">Moderator</span>
-                </div>
-                <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;position:relative">
-                    <span style="font-size:0.75rem;color:var(--text-secondary)">Student (Sarah)</span>
-                    <span style="position:absolute;bottom:8px;left:8px;font-size:0.6rem;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;color:var(--text-muted)">Attendee</span>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Block 5: Smart Grading -->
     <div class="feature-block reveal">
@@ -317,7 +269,6 @@
                     <th>VisionLab</th>
                     <th>Google Classroom</th>
                     <th>GitHub Codespaces</th>
-                    <th>Zoom / Teams</th>
                 </tr>
             </thead>
             <tbody>
@@ -326,40 +277,24 @@
                     <td><span class="check-icon">✓</span></td>
                     <td><span class="cross-icon">✗</span></td>
                     <td><span class="check-icon">✓</span></td>
-                    <td><span class="cross-icon">✗</span></td>
                 </tr>
-                <tr>
-                    <td>Real-time Multi-cursor Sync</td>
-                    <td><span class="check-icon">✓</span></td>
-                    <td><span class="cross-icon">✗</span></td>
-                    <td><span class="cross-icon">✗</span></td>
-                    <td><span class="cross-icon">✗</span></td>
-                </tr>
+
                 <tr>
                     <td>Socratic AI Guidance</td>
                     <td><span class="check-icon">✓</span></td>
                     <td><span class="cross-icon">✗</span></td>
                     <td><span class="cross-icon">✗</span></td>
-                    <td><span class="cross-icon">✗</span></td>
                 </tr>
-                <tr>
-                    <td>Embedded Cryptographic Video</td>
-                    <td><span class="check-icon">✓</span></td>
-                    <td><span class="cross-icon">✗</span></td>
-                    <td><span class="cross-icon">✗</span></td>
-                    <td><span class="check-icon">✓</span></td>
-                </tr>
+
                 <tr>
                     <td>Direct Diff Review Grading</td>
                     <td><span class="check-icon">✓</span></td>
-                    <td><span class="cross-icon">✗</span></td>
                     <td><span class="cross-icon">✗</span></td>
                     <td><span class="cross-icon">✗</span></td>
                 </tr>
                 <tr>
                     <td>OWASP ASVS Level 2 Hardening</td>
                     <td><span class="check-icon">✓</span></td>
-                    <td><span class="cross-icon">✗</span></td>
                     <td><span class="cross-icon">✗</span></td>
                     <td><span class="cross-icon">✗</span></td>
                 </tr>
@@ -403,18 +338,7 @@
             </span>
             <span class="integration-name">GitHub API</span>
         </div>
-        <div class="integration-card">
-            <span class="integration-icon" style="color:var(--cyan)">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" style="width:24px; height:24px;"><path d="M24 22.525H0L12 1.475L24 22.525Z"/></svg>
-            </span>
-            <span class="integration-name">Vercel Deploy</span>
-        </div>
-        <div class="integration-card">
-            <span class="integration-icon" style="color:var(--violet-light)">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M7 11h10M11 7v10"></path></svg>
-            </span>
-            <span class="integration-name">Railway Deploy</span>
-        </div>
+
     </div>
 </section>
 
@@ -424,7 +348,7 @@
         <div class="absolute left-1/2 h-[200%] w-[200%] -translate-x-1/2 grid-floor opacity-[0.1]" style="top: 0; transform: translateX(-50%) perspective(900px) rotateX(60deg);"></div>
     </div>
     <div style="position:relative;z-index:10;max-width:700px;margin:0 auto" class="reveal">
-        <h2 class="section-heading font-display metallic-text">Deploy sandbox instances</h2>
+        <h2 class="section-heading font-display metallic-text">Provision sandbox instances</h2>
         <p class="section-sub" style="margin:0 auto 3rem">Empower your computer science department with sandboxed workspace nodes. Verify academic integrity natively.</p>
         <a href="{{ route('register') }}" class="btn btn-primary">Try VisionLab Features</a>
     </div>

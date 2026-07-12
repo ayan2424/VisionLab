@@ -81,10 +81,4 @@ class AuditService
         return self::log('workspace.started', 'Workspace', $workspaceId);
     }
 
-    public static function deploymentTriggered(int $deploymentId, string $provider): AuditLog
-    {
-        return self::log('deployment.triggered', 'Deployment', $deploymentId,
-            newState: ['provider' => $provider],
-        );
-    }
 }
