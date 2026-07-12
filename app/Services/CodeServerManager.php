@@ -767,6 +767,15 @@ JS;
                     $this->writeFile($workspace, '.vision/bootstrap.sh', $workspace->template->bootstrap_script);
                     $this->executeDockerFileCommand($workspace, ['chmod', '0777', "/home/coder/{$workspace->slug}/.vision/bootstrap.sh"]);
                 }
+
+                // Protect the .vision directory from accidental deletion by changing its owner to root.
+                // Because files inside (.nix and .sh) have generous permissions (666/777), they remain editable!
+                $volumeName = "vl_ws_{$workspace->id}_data";
+                $basePath = "/home/coder/{$workspace->slug}";
+                $chownCmd = [
+                    $this->dockerCmd(), 'run', '--rm', '-v', "{$volumeName}:{$basePath}", 'alpine', 'chown', 'root:root', "{$basePath}/.vision"
+                ];
+                (new Process($chownCmd))->run();
             }
         }
     }
