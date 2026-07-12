@@ -179,7 +179,7 @@ class CodeServerManager
         if ($workspace->template_id && $workspace->template && !empty($workspace->template->bootstrap_script)) {
             $bootstrapCmd = [
                 $this->dockerCmd(), 'exec', '-u', '1000', $containerId, 'sh', '-c', 
-                'cd /home/coder/' . escapeshellarg($workspace->slug) . ' && if [ -f .vision/bootstrap.sh ]; then dos2unix .vision/bootstrap.sh 2>/dev/null; if [ -f .vision/dev.nix ]; then nix-shell .vision/dev.nix --command "sh .vision/bootstrap.sh"; else sh .vision/bootstrap.sh; fi; fi'
+                'cd /home/coder/' . escapeshellarg($workspace->slug) . ' && if [ -f .vision/bootstrap.sh ]; then dos2unix .vision/bootstrap.sh 2>/dev/null; if [ -f .vision/dev.nix ]; then export NIXPKGS_ALLOW_INSECURE=1; nix-shell .vision/dev.nix --command "sh .vision/bootstrap.sh"; else sh .vision/bootstrap.sh; fi; fi'
             ];
             $bootstrapProcess = new Process($bootstrapCmd);
             $bootstrapProcess->setTimeout(300); // 5 mins for heavy installs
@@ -198,7 +198,6 @@ class CodeServerManager
             'container_id'    => $containerId,
             'port'            => $port,
             'token'           => $token,
-            'storage_path'    => $workspacePath,
             'status'          => 'running',
             'heartbeat_at'    => now(),
             'container_image' => $image,
