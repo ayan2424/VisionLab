@@ -1,6 +1,6 @@
 <GLOBAL_DIRECTIVE>
     <PRODUCT_STANDARD>
-      VisionLab is a production-ready and competition-ready collaborative coding and learning platform for universities. It combines a Laravel learning management system, secure code-server workspaces, real-time collaboration, instructor governance, responsible AI assistance, video sessions, analytics, notifications, and production operations.
+      VisionLab is a production-ready and competition-ready collaborative coding and learning platform for universities. It combines a Laravel learning management system, secure code-server workspaces, instructor governance, responsible AI assistance, analytics, notifications, and production operations.
     </PRODUCT_STANDARD>
     <IMPLEMENTATION_MODEL>
       Every phase must begin with repository inspection, dependency discovery, and a concise implementation plan. After planning, implement the work fully, verify it with tests or executable checks, document operational steps, and report remaining risks. Do not ship temporary content, incomplete views, unsafe shortcuts, overstatement, or nonfunctional screens.
@@ -42,21 +42,21 @@
     <SKILL_AND_SOURCE_PROTOCOL>
       <RULE>Before implementation, identify whether available agent skills, repository guidance files, framework documentation, security standards, or connector tools apply to the phase.</RULE>
       <RULE>Use task-specific skills when they directly match the work, and load only the skill instructions and references needed for the current phase.</RULE>
-      <RULE>Prefer primary sources for technical facts: official Laravel, OpenAI, OWASP, Docker, Coder code-server, Jitsi, browser platform, and provider documentation.</RULE>
+      <RULE>Prefer primary sources for technical facts: official Laravel, OpenAI, OWASP, Docker, Coder code-server, browser platform, and provider documentation.</RULE>
       <RULE>When guidance may have changed, verify current behavior from primary documentation instead of relying on memory.</RULE>
       <RULE>Record external assumptions, documentation links, and version constraints in the phase completion report.</RULE>
       <RULE>If official documentation conflicts with repository reality, prefer the working repository pattern and document the conflict before changing architecture.</RULE>
     </SKILL_AND_SOURCE_PROTOCOL>
     <UNIVERSAL_REQUIREMENTS>
-      <REQUIREMENT>Use Laravel 11, MySQL 8, Blade, Tailwind CSS, Laravel Reverb, Redis where needed, Docker-managed code-server workspaces, and TypeScript for VS Code extensions.</REQUIREMENT>
+      <REQUIREMENT>Use Laravel 11, MySQL 8, Blade, Tailwind CSS, Redis where needed, Docker-managed code-server workspaces, and TypeScript for VS Code extensions.</REQUIREMENT>
       <REQUIREMENT>Preserve an ultra-premium dark design system (Strict #0a0a0a) with accessible contrast, responsive layouts, and highly interactive navigation. The UI must feature 3D-style interactions, fully rounded/pilled geometry, and floating elements. Use fluid gradients and vibrant glassmorphism for frontend pages, and strictly use an Orange accent color exclusively for the full-screen IDE Workspace container environment.</REQUIREMENT>
       <REQUIREMENT>Use complete data flows backed by persistence, authorization, validation, audit logs, error states, and recovery paths.</REQUIREMENT>
       <REQUIREMENT>Use realistic seed data only where it supports local development, automated tests, or competition evaluation. Seeded data must be clearly separated from production runtime behavior.</REQUIREMENT>
       <REQUIREMENT>Never expose secrets, write outside allowed workspace paths, bypass policies, disable authorization for convenience, or hide failed operations behind success messages.</REQUIREMENT>
       <REQUIREMENT>Keep generated code maintainable, idiomatic, and aligned with the existing repository conventions discovered during inspection.</REQUIREMENT>
-      <REQUIREMENT>Maintain a living architecture decision log for major choices such as AI provider, workspace isolation, extension governance, video provider, deployment topology, and analytics privacy.</REQUIREMENT>
+      <REQUIREMENT>Maintain a living architecture decision log for major choices such as AI provider, workspace isolation, extension governance, and analytics privacy.</REQUIREMENT>
       <REQUIREMENT>Define explicit contracts for APIs, events, jobs, policies, services, and extension messages before depending on them across phases.</REQUIREMENT>
-      <REQUIREMENT>Use feature flags or configuration gates for high-risk capabilities such as AI write access, marketplace access, video, push notifications, and one-click deployment.</REQUIREMENT>
+      <REQUIREMENT>Use feature flags or configuration gates for high-risk capabilities such as AI write access, marketplace access, push notifications.</REQUIREMENT>
       <REQUIREMENT>Use localization-ready strings, accessible form labels, keyboard navigation, semantic HTML, and responsive design as baseline product requirements.</REQUIREMENT>
     </UNIVERSAL_REQUIREMENTS>
     <EVALUATION_RUBRIC>
@@ -69,15 +69,15 @@
     </EVALUATION_RUBRIC>
     <MERGED_DETAIL_BLUEPRINTS source="PROMPTS_ENHANCED.xml useful detail merged into production-safe structure">
       <PHASE_BLUEPRINT Phase="1" Name="Foundation Specifics">
-        <DETAIL>Establish baseline package capabilities for authentication scaffolding, permissions, real-time broadcasting, image handling, development diagnostics, token-based API access, video tokens, queued jobs, and production health checks.</DETAIL>
+        <DETAIL>Establish baseline package capabilities for authentication scaffolding, permissions, image handling, development diagnostics, token-based API access, queued jobs, and production health checks.</DETAIL>
         <DETAIL>Define a design system with modern premium gradients (e.g. Google's latest gradient themes), ultra-rounded pill shapes, and floating 3D-interactive elements for frontend pages. The Hero section must be a superb, highly interactive 3D centerpiece. Ensure surfaces and borders reflect a premium glassmorphism aesthetic. Use an Orange primary accent specifically for the workspace container environment.</DETAIL>
         <DETAIL>Define typography with a primary UI font and a monospace code font, loaded consistently through the main layout without layout shift.</DETAIL>
         <DETAIL>Define reusable motion tokens for fade-in, glow pulse, shimmer loading, gradient movement, modal entrance, sidebar entrance, and toast entrance, while respecting reduced-motion preferences.</DETAIL>
         <DETAIL>Define reusable utilities for glass surfaces, focused controls, thin dark scrollbars, accessible focus rings, code text, responsive grids, and status indicators.</DETAIL>
-        <DETAIL>Use a complete initial data model covering users, courses, enrollments, announcements, assignments, submissions, workspaces, workspace collaborators, collaboration sessions, video rooms, extensions, workspace extensions, AI chat sessions, AI messages, AI action logs, AI snapshots, pending patches, analytics events, collaboration chat messages, push subscriptions, workspace quotas, user badges, submission forensics, deployment history, audit logs, and notification preferences.</DETAIL>
+        <DETAIL>Use a complete initial data model covering users, courses, enrollments, announcements, assignments, submissions, workspaces, extensions, workspace extensions, AI chat sessions, AI messages, AI action logs, AI snapshots, pending patches, analytics events, push subscriptions, workspace quotas, user badges, submission forensics, audit logs, and notification preferences.</DETAIL>
         <DETAIL>Seed only realistic development and evaluation records: administrator, instructors, students, courses, enrollments, assignments, announcements, approved extensions, and role permissions. Mark seeded credentials and seed-only data as non-production artifacts.</DETAIL>
         <DETAIL>Define core model helpers for role checks, account status checks, active scopes, ownership checks, and policy-friendly relationship access.</DETAIL>
-        <DETAIL>Build the landing page from product truth: classroom management, full IDE workspaces, collaboration, responsible AI, governance, and deployment readiness. Avoid decorative claims that are not backed by implemented flows.</DETAIL>
+        <DETAIL>Build the landing page from product truth: classroom management, full IDE workspaces, responsible AI, governance,  Avoid decorative claims that are not backed by implemented flows.</DETAIL>
       </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="2" Name="Classroom Specifics">
         <DETAIL>Course screens must include list, create, edit, detail, stream, assignments, people, enrollment controls, course status, cover image handling, instructor ownership, and administrator oversight.</DETAIL>
@@ -112,14 +112,6 @@
         <DETAIL>Active workspace synchronization must use queued jobs with retries, idempotency, status reporting, and audit events.</DETAIL>
         <DETAIL>Students must never be able to override required extensions, remove audit extensions, bypass marketplace policy, or alter global code-server configuration.</DETAIL>
       </PHASE_BLUEPRINT>
-      <PHASE_BLUEPRINT Phase="5" Name="Collaboration Specifics">
-        <DETAIL>Define event contracts for presence joined, presence left, cursor moved, selection changed, document changed, chat message sent, typing state changed, user idle, workspace warning, and collaboration error.</DETAIL>
-        <DETAIL>The collaboration extension must be modular: realtime connection manager, document sync, cursor sync, chat panel, presence manager, video bridge, patch event listener, notification bridge, and shared configuration loader.</DETAIL>
-        <DETAIL>Document sync must prevent echo loops, debounce local changes, identify source, handle remote updates safely, and surface conflicts instead of overwriting silently.</DETAIL>
-        <DETAIL>Cursor sync must assign stable colors, show remote user labels, expire stale decorations, and avoid distracting motion.</DETAIL>
-        <DETAIL>Chat must persist useful messages, sanitize rendered content, support timestamps, show delivery status, and recover after reconnect.</DETAIL>
-        <DETAIL>Blade and extension presence must remain consistent through Reverb reconnects, heartbeat cleanup, and workspace close events.</DETAIL>
-      </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="6" Name="AI Agent Specifics">
         <DETAIL>Define a mode permission matrix: chat mode can read authorized context only, planning mode can read and propose steps only, agent mode can prepare patches but cannot apply them without human approval.</DETAIL>
         <DETAIL>Define AI tool contracts for reading files, listing directories, searching code, preparing patches, retrieving workspace metadata, retrieving allowed snippets, and reporting inability to act safely.</DETAIL>
@@ -131,13 +123,6 @@
         <DETAIL>AI provider integration must support streaming, timeout, retry boundaries, token accounting, cost accounting where available, provider error messages, and graceful degradation when unavailable.</DETAIL>
         <DETAIL>Prompt-injection defense must treat repository files, chat text, assignment instructions, and external content as untrusted data, not policy authority.</DETAIL>
       </PHASE_BLUEPRINT>
-      <PHASE_BLUEPRINT Phase="7" Name="Video Specifics">
-        <DETAIL>Video service configuration must support self-hosted production mode and external provider mode through the same application-level service interface.</DETAIL>
-        <DETAIL>Room records must track workspace, creator, provider, room name, active state, started time, ended time, moderator role, participant access requests, and provider errors.</DETAIL>
-        <DETAIL>The extension video panel must open a secure embedded meeting experience when configured, handle leave events, close cleanly, and show join status.</DETAIL>
-        <DETAIL>The workspace top bar must show call status, join action, start action where authorized, end action where authorized, and error states when provider setup is incomplete.</DETAIL>
-        <DETAIL>Video events must update Blade and extension clients consistently when calls start, end, or become unavailable.</DETAIL>
-      </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="8" Name="Admin Specifics">
         <DETAIL>Admin navigation must include dashboard, users, courses, workspaces, extensions, quotas, analytics, audit logs, security settings, notification settings, and system health.</DETAIL>
         <DETAIL>User management must include search, role filter, status filter, profile edit, role change, suspension, activation, last activity, and final-administrator protection.</DETAIL>
@@ -148,42 +133,41 @@
       </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="9" Name="Analytics and Growth Specifics">
         <DETAIL>Analytics must use real platform events and include definitions for each metric so dashboards are explainable.</DETAIL>
-        <DETAIL>Administrator analytics must include user activity, course activity, submissions, AI usage, patch approval rate, active workspaces, video usage, extension usage, failed jobs, and system health signals.</DETAIL>
-        <DETAIL>Instructor analytics must include engagement by course, assignment completion, late work, grading backlog, AI assistance patterns, collaboration activity, and at-risk student indicators.</DETAIL>
-        <DETAIL>Student analytics must include personal progress, activity heatmap, streak, badges, submissions, grades, AI usage transparency, and deployment history where enabled.</DETAIL>
+        <DETAIL>Administrator analytics must include user activity, course activity, submissions, AI usage, patch approval rate, active workspaces, extension usage, failed jobs, and system health signals.</DETAIL>
+        <DETAIL>Instructor analytics must include engagement by course, assignment completion, late work, grading backlog, AI assistance patterns, and at-risk student indicators.</DETAIL>
+        <DETAIL>Student analytics must include personal progress, activity heatmap, streak, badges, submissions, grades, and AI usage transparency.</DETAIL>
         <DETAIL>Analytics Dashboard must distinguish human typing, AI-approved patches, pasted text where detectable, imported files, and system-generated starter code. It must present confidence and limitations clearly.</DETAIL>
         <DETAIL>Gamification must award badges from real events and avoid encouraging insecure or low-quality behavior.</DETAIL>
-        <DETAIL>Student project deployment must be an asynchronous, provider-abstracted product feature with confirmation, public exposure warning, deployment records, status polling, dashboard history, notifications, and provider failure recovery.</DETAIL>
-      </PHASE_BLUEPRINT>
+        </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="10" Name="PWA and Notifications Specifics">
         <DETAIL>The manifest must define product name, short name, start URL, display mode, theme color, background color, icons, maskable icons, orientation, and app description.</DETAIL>
         <DETAIL>The service worker must define static asset caching, navigation fallback, sensitive API network-only behavior, workspace network-only behavior, cache version cleanup, update handling, and browser support fallback.</DETAIL>
         <DETAIL>The install prompt must be user-controlled, dismissible, respectful of browser rules, and remembered per user or device.</DETAIL>
         <DETAIL>Push subscriptions must validate endpoint, public key, auth token, content encoding, user ownership, and unsubscribe behavior.</DETAIL>
-        <DETAIL>Notifications must support assignment due reminders, announcements, grading feedback, deployment completion, video session start where allowed, and account alerts.</DETAIL>
+        <DETAIL>Notifications must support assignment due reminders, announcements, grading feedback, and account alerts.</DETAIL>
         <DETAIL>Offline indicators must be shared across layouts, with special IDE messaging that makes online-only requirements clear.</DETAIL>
       </PHASE_BLUEPRINT>
       <PHASE_BLUEPRINT Phase="11" Name="Hardening Specifics">
         <DETAIL>Security verification must cover OWASP ASVS-style categories and include both implementation controls and tests proving those controls.</DETAIL>
-        <DETAIL>Automated tests must cover authentication, RBAC, classroom workflows, workspace path boundaries, file APIs, collaboration channels, AI patch lifecycle, extension policy, video access, push subscriptions, analytics visibility, admin actions, and deployment health.</DETAIL>
+        <DETAIL>Automated tests must cover authentication, RBAC, classroom workflows, workspace path boundaries, file APIs, AI patch lifecycle, extension policy, push subscriptions, analytics visibility, and admin actions.</DETAIL>
         <DETAIL>Performance work must include query inspection, eager loading, indexes, cache strategy, queue separation, job retries, rate limits, and slow dashboard mitigation.</DETAIL>
         <DETAIL>Container hardening must include resource limits, least privilege, restricted mounts, network boundaries, image provenance, update strategy, and operator diagnostics.</DETAIL>
         <DETAIL>Quality verification must include responsive UI checks, accessibility checks, browser console checks, service worker checks, and critical workflow browser automation where available.</DETAIL>
       </PHASE_BLUEPRINT>
-      <PHASE_BLUEPRINT Phase="12" Name="Deployment and Evaluation Specifics">
-        <DETAIL>Production topology must define application, web server, database, Redis, queue workers, scheduler, Reverb, workspace containers, storage, video service, AI provider, push service, monitoring, and backup boundaries.</DETAIL>
-        <DETAIL>CI/CD must run dependency installation, static checks where available, backend tests, frontend build, browser tests where available, image build, artifact verification, and deployment only after successful checks.</DETAIL>
-        <DETAIL>Deployment documentation must include 24/7 Cloud Server orchestration (e2-standard-8 GCP nodes) for autonomous agents, first deploy, environment variables, migrations, seed data, storage links, workspace image builds, and incident handling.</DETAIL>
-        <DETAIL>Health checks must cover database, Redis, queue, scheduler, Reverb, storage, workspace orchestration, AI provider configuration, push configuration, and video provider configuration.</DETAIL>
+      <PHASE_BLUEPRINT Phase="12" Name="Evaluation Specifics">
+        <DETAIL>Production topology must define application, web server, database, Redis, queue workers, scheduler, workspace containers, storage, AI provider, push service, monitoring, and backup boundaries.</DETAIL>
+        <DETAIL>CI/CD must run dependency installation, static checks where available, backend tests, frontend build, browser tests where available, image build, artifact verification, and release only after successful checks.</DETAIL>
+        <DETAIL>Infrastructure documentation must include 24/7 Cloud Server orchestration (e2-standard-8 GCP nodes) for autonomous agents, first deploy, environment variables, migrations, seed data, storage links, workspace image builds, and incident handling.</DETAIL>
+        <DETAIL>Health checks must cover database, Redis, queue, scheduler, storage, workspace orchestration, AI provider configuration, and push configuration.</DETAIL>
         <DETAIL>Competition readiness must rely on functioning product workflows, prepared evaluation accounts, reset procedures, preflight checklist, service contingency plan, and operator runbook.</DETAIL>
-        <DETAIL>Release evidence must include version manifest, migration state, test summary, security verification summary, deployment checklist, backup confirmation, known risks, and rollback plan.</DETAIL>
+        <DETAIL>Release evidence must include version manifest, migration state, test summary, security verification summary, release checklist, backup confirmation, known risks, and rollback plan.</DETAIL>
       </PHASE_BLUEPRINT>
     </MERGED_DETAIL_BLUEPRINTS>
     <ADOPTED_SOURCE_STRATEGIES>
       <STRATEGY name="Concrete Phase Readiness">Each phase uses explicit dependencies, implementation requirements, security requirements, acceptance criteria, and execution protocol so an agent can determine whether it may start and when it is finished.</STRATEGY>
       <STRATEGY name="Single Foundation Schema">The data model is defined early enough to avoid table drift, while later phases may add migrations only when the repository proves a new capability needs them.</STRATEGY>
       <STRATEGY name="Design System First">Visual tokens, typography, motion, form controls, tables, cards, status indicators, toasts, empty states, and error pages are foundation work, not finishing polish.</STRATEGY>
-      <STRATEGY name="Policy Everywhere">Controllers, API endpoints, broadcasts, file APIs, extension controls, video rooms, admin actions, deployments, and analytics views must all flow through policies or gates.</STRATEGY>
+      <STRATEGY name="Policy Everywhere">Controllers, API endpoints, file APIs, extension controls, admin actions, and analytics views must all flow through policies or gates.</STRATEGY>
       <STRATEGY name="Container Lifecycle Discipline">Workspace start, stop, health, quota, token, routing, storage, cleanup, and error states are treated as a managed lifecycle rather than scattered Docker calls.</STRATEGY>
       <STRATEGY name="Human Approved AI Mutation">AI may assist deeply, but code and operational changes require sandboxing, patch preview, audit trail, and human confirmation before mutation.</STRATEGY>
       <STRATEGY name="Extension Governance">Extension delivery combines artifact provenance, integrity checks, immutable required tools, role-aware optional tools, and runtime policy enforcement.</STRATEGY>
@@ -191,7 +175,7 @@
       <STRATEGY name="Smart Declarative Environments">Workspace containers use Nix (`dev.nix`) for package resolution (e.g., PHP, Composer, Node). Do not restrict the AI Agent with hardcoded `dev.nix` code snippets. Instead, present the conceptual requirement and empower the AI to use its robust thinking power to dynamically construct and resolve the optimal Nix environment logic for any given workspace.</STRATEGY>
       <STRATEGY name="Independent Agent Fork">The upstream AI extension source may be imported once as a legally reviewed starting point, then VisionLab must own its source repository, build pipeline, release cadence, artifact registry, roadmap, and maintenance. Future workspace installs must use VisionLab-built artifacts only, with no automatic dependency on upstream extension releases, registries, branding, endpoints, or runtime services.</STRATEGY>
       <STRATEGY name="Real Product Evaluation">Competition readiness is built from functioning workflows, evaluation accounts, reliable preflight checks, and operator runbooks, not staged-only screens.</STRATEGY>
-      <STRATEGY name="Async External Integrations">AI providers, video providers, push, and project deployment providers require queued work, retries, status records, timeout handling, and user-visible failure states.</STRATEGY>
+      <STRATEGY name="Async External Integrations">AI providers and push providers require queued work, retries, status records, timeout handling, and user-visible failure states.</STRATEGY>
       <STRATEGY name="Evidence-Based Completion">A phase is complete only when tests, build checks, manual verification, security checks, migration status, and operational notes are attached to the report.</STRATEGY>
     </ADOPTED_SOURCE_STRATEGIES>
     <PHASE_DELIVERY_GATE>
@@ -210,8 +194,6 @@
       <ENTITY name="submissions">Must include assignment, student, workspace, snapshot path, status, grade, feedback, graded by, submitted timestamp, graded timestamp, late state, and uniqueness policy.</ENTITY>
       <ENTITY name="workspaces">Must include owner, course, assignment, container identifiers, proxy route or URL, token, active state, storage path, heartbeat, quota data, and lifecycle state.</ENTITY>
       <ENTITY name="workspace_collaborators">Must include workspace, user, collaborator role, joined timestamp, and unique workspace-user constraint.</ENTITY>
-      <ENTITY name="collab_sessions">Must include workspace, user, cursor or selection state, online status, heartbeat, assigned color, and stale cleanup metadata.</ENTITY>
-      <ENTITY name="video_rooms">Must include workspace, provider, room identifier, creator, active state, start and end timestamps, token generation metadata, and provider error state.</ENTITY>
       <ENTITY name="extensions">Must include package identifier, display name, version, category, artifact path, checksum, source, built-in status, required status, active status, and rollout metadata.</ENTITY>
       <ENTITY name="extension_builds">Must include extension, source repository, source reference, build strategy, branding changes summary, configuration changes summary, artifact checksum, license review status, compatibility status, build logs location, built by, and built timestamp.</ENTITY>
       <ENTITY name="workspace_extensions">Must include workspace, extension, enabled state, effective policy source, sync status, and unique workspace-extension constraint.</ENTITY>
@@ -221,19 +203,17 @@
       <ENTITY name="ai_snapshots">Must include workspace, session, file path, content or storage reference, content hash, creator, and timestamps.</ENTITY>
       <ENTITY name="ai_pending_patches">Must include workspace, session, file path, original content or hash, patched content or hash, diff, status, creator, reviewer, reviewed timestamp, and expiry.</ENTITY>
       <ENTITY name="analytics_events">Must include actor, event type, event data, resource reference, IP address where available, user agent where available, correlation identifier, and timestamp.</ENTITY>
-      <ENTITY name="collab_chat_messages">Must include workspace, user, sanitized message, delivery metadata, and timestamps.</ENTITY>
       <ENTITY name="push_subscriptions">Must include user, endpoint, public key, auth token, content encoding, browser metadata where useful, and revocation timestamp where supported.</ENTITY>
       <ENTITY name="workspace_quotas">Must include quota name, memory, CPU, disk, timeout, applicable scope, reference identifier, active state, and audit trail.</ENTITY>
       <ENTITY name="user_badges">Must include user, badge type, name, description, icon, earned timestamp, and source event.</ENTITY>
       <ENTITY name="submission_forensics">Must include submission, workspace, human counters, AI counters, pasted or imported counters where detectable, percentages, confidence level, and last synced timestamp.</ENTITY>
-      <ENTITY name="deployments">Must include workspace, user, provider, deployment identifier, public URL, status, queued job metadata, error summary, deployed timestamp, and notification state.</ENTITY>
       <ENTITY name="audit_logs">Must include actor, action, resource type, resource ID, previous state, new state, result, IP address where available, user agent where available, correlation identifier, and timestamp.</ENTITY>
       <ENTITY name="notification_preferences">Must include user, channel preferences, event preferences, quiet hours where supported, and timestamps.</ENTITY>
     </CORE_ENTITY_CONTRACT>
     <PHASE_STEP_MATRIX source="Expanded from valid PROMPTS_ENHANCED.xml strategies and normalized into production-safe XML">
       <PHASE_STEPS Phase="1" Name="Foundation, Auth, and Design System">
         <IMPLEMENTATION_STEP id="1.1" name="Project Scaffolding and Package Baseline">
-          <DETAIL>Align the Laravel application, PHP version, Node runtime, database, queue driver, Reverb readiness, image handling, role-permission package, API token strategy, and development diagnostics with the repository reality.</DETAIL>
+          <DETAIL>Align the Laravel application, PHP version, Node runtime, database, queue driver, image handling, role-permission package, API token strategy, and development diagnostics with the repository reality.</DETAIL>
           <DETAIL>Publish and configure only the packages required by the current and future phases. Document every dependency, why it exists, and whether it is production, development, or optional.</DETAIL>
           <DETAIL>Verify the app starts cleanly, assets compile, storage links are configured, and no framework default page remains as the primary product experience.</DETAIL>
         </IMPLEMENTATION_STEP>
@@ -244,16 +224,16 @@
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="1.3" name="Complete Relational Data Baseline">
           <DETAIL>Create the initial schema for the core entities listed in CORE_ENTITY_CONTRACT, including foreign keys, uniqueness rules, indexes, casts, timestamps, and soft-delete or retention policy where appropriate.</DETAIL>
-          <DETAIL>Keep schema names and relationships consistent with future phases so classroom, workspaces, collaboration, AI, video, PWA, analytics, deployment, and operations can build without table drift.</DETAIL>
+          <DETAIL>Keep schema names and relationships consistent with future phases so classroom, workspaces, AI, PWA, analytics, and operations can build without table drift.</DETAIL>
           <DETAIL>Provide factories and realistic seed data for local development and evaluation only, clearly separated from production behavior.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="1.4" name="Authentication, RBAC, Policies, and Account Status">
           <DETAIL>Implement role-aware registration, login, dashboard redirects, middleware, policies, gates, suspended account rejection, token invalidation, and administrator recovery safety.</DETAIL>
           <DETAIL>Centralize role routing and account status checks so controllers do not duplicate permission logic.</DETAIL>
-          <DETAIL>Define baseline policies for users, courses, enrollments, assignments, submissions, workspaces, extensions, AI actions, video rooms, analytics, notifications, and administration.</DETAIL>
+          <DETAIL>Define baseline policies for users, courses, enrollments, assignments, submissions, workspaces, extensions, AI actions, analytics, notifications, and administration.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="1.5" name="Landing Page and Product Shell">
-          <DETAIL>Build a professional landing page based on implemented product truth: courses, assignments, secure workspaces, collaboration, AI governance, video sessions, analytics, and operations.</DETAIL>
+          <DETAIL>Build a professional landing page based on implemented product truth: courses, assignments, secure workspaces, AI governance, analytics, and operations.</DETAIL>
           <DETAIL>Build authenticated layouts for student, instructor, and administrator navigation with responsive behavior, active route state, notification entry points, and accessible controls.</DETAIL>
           <DETAIL>Ensure all copy, sections, and calls to action match real platform capabilities or clearly planned gated capabilities.</DETAIL>
         </IMPLEMENTATION_STEP>
@@ -279,7 +259,7 @@
           <DETAIL>Ensure announcement body content is sanitized or safely rendered according to the chosen editor strategy.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="2.4" name="Role-Specific Dashboards">
-          <DETAIL>Build student dashboard with enrolled courses, upcoming deadlines, recent announcements, current streak entry point, deployment history entry point where enabled, and join course action.</DETAIL>
+          <DETAIL>Build student dashboard with enrolled courses, upcoming deadlines, recent announcements, current streak entry point, and join course action.</DETAIL>
           <DETAIL>Build instructor dashboard with owned courses, pending submissions, recent enrollments, grading queue, course activity, and quick create actions.</DETAIL>
           <DETAIL>Build administrator entry dashboard with real counts and links into full operations screens added later.</DETAIL>
         </IMPLEMENTATION_STEP>
@@ -300,7 +280,7 @@
           <DETAIL>Apply WorkspacePolicy and collaborator permissions to every file operation.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="3.3" name="IDE Shell Layout">
-          <DETAIL>Build the workspace shell with top bar, file explorer, code-server iframe, collaborator region, AI and patch indicators, video entry point, deploy entry point where enabled, status bar, terminal entry point, and responsive sidebar behavior.</DETAIL>
+          <DETAIL>Build the workspace shell with top bar, file explorer, code-server iframe, AI and patch indicators, status bar, terminal entry point, and responsive sidebar behavior.</DETAIL>
           <DETAIL>Represent starting, running, unhealthy, stopped, unauthorized, offline, and provider-misconfigured states without pretending the IDE is usable when it is not.</DETAIL>
           <DETAIL>Ensure iframe sandboxing, proxy behavior, secure headers, and token handling match the code-server security model.</DETAIL>
         </IMPLEMENTATION_STEP>
@@ -332,7 +312,7 @@
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="4.2" name="Immutable Required Extensions">
           <DETAIL>Install required extensions into root-owned or image-controlled locations that the workspace user cannot mutate.</DETAIL>
-          <DETAIL>Ensure collaboration, patch review, AI policy, and audit-related extensions cannot be removed or disabled by students.</DETAIL>
+          <DETAIL>Ensure patch review, AI policy, and audit-related extensions cannot be removed or disabled by students.</DETAIL>
           <DETAIL>Verify permissions from inside a running container as part of acceptance testing.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="4.3" name="Marketplace and Extension Policy">
@@ -343,30 +323,6 @@
         <IMPLEMENTATION_STEP id="4.4" name="Extension Governance Verification">
           <DETAIL>Test required extension immutability, marketplace restriction, extension sync jobs, policy precedence, unauthorized admin access, and active workspace behavior after policy changes.</DETAIL>
           <DETAIL>Produce an extension rollout report with artifact checksums and compatibility status.</DETAIL>
-        </IMPLEMENTATION_STEP>
-      </PHASE_STEPS>
-      <PHASE_STEPS Phase="5" Name="Real-Time Collaboration">
-        <IMPLEMENTATION_STEP id="5.1" name="Reverb Channels and Event Contracts">
-          <DETAIL>Define presence and private channel authorization for workspace users, collaborators, instructors, and administrators.</DETAIL>
-          <DETAIL>Define payload contracts for join, leave, cursor, selection, document change, chat, typing state, idle state, warning, and collaboration error events.</DETAIL>
-          <DETAIL>Validate payload sizes, user membership, file paths, and rate limits before broadcasting.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="5.2" name="Collaboration Extension Architecture">
-          <DETAIL>Build modular TypeScript components for realtime connection, document sync, cursor sync, chat panel, presence, video bridge, patch listener, notification bridge, and shared configuration.</DETAIL>
-          <DETAIL>Handle authentication, reconnect, stale presence, offline state, and extension activation reliably.</DETAIL>
-          <DETAIL>Compile and package the extension through the approved artifact process.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="5.3" name="Document, Cursor, and Chat Behavior">
-          <DETAIL>Prevent echo loops, debounce local edits, mark edit source, preserve local changes, and show conflicts instead of silently overwriting.</DETAIL>
-          <DETAIL>Show remote cursor labels with stable colors and expire stale decorations.</DETAIL>
-          <DETAIL>Persist useful chat messages, sanitize display, show timestamps, and recover after reconnect.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="5.4" name="Blade Presence Integration">
-          <DETAIL>Show active collaborators, avatars or initials, connection status, live toasts, and workspace warnings in the IDE shell.</DETAIL>
-          <DETAIL>Keep Blade and extension presence consistent through heartbeat updates and session cleanup.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="5.5" name="Collaboration Verification">
-          <DETAIL>Test channel authorization, two-user presence, cursor update, chat message, document sync, stale heartbeat cleanup, reconnect, and unauthorized subscription denial.</DETAIL>
         </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
       <PHASE_STEPS Phase="6" Name="AI Agent and Patch Review">
@@ -401,27 +357,10 @@
           <DETAIL>Test each AI mode with positive cases, denial cases, hostile file content, malformed tool input, large payloads, provider outage, patch approval, rejection, rollback, and unauthorized access.</DETAIL>
         </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
-      <PHASE_STEPS Phase="7" Name="Video Conferencing">
-        <IMPLEMENTATION_STEP id="7.1" name="Video Provider Configuration">
-          <DETAIL>Implement a provider abstraction for self-hosted production video and external provider mode, using environment-based configuration and clear setup validation.</DETAIL>
-          <DETAIL>Document required domains, TLS, token secrets, private networks, and provider-specific settings.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="7.2" name="Video Room Backend">
-          <DETAIL>Implement start, status, join details, and end endpoints with workspace policy, room reuse, moderator rules, provider token generation, and active state tracking.</DETAIL>
-          <DETAIL>Persist provider, room identifier, creator, active state, start and end timestamps, token metadata, and provider error state.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="7.3" name="Extension and Blade Video Integration">
-          <DETAIL>Open video inside the extension where configured, handle join and leave state, close cleanly, and reflect call status in the workspace top bar.</DETAIL>
-          <DETAIL>Provide authorized start, join, and end actions plus fallback messaging when provider configuration is incomplete.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="7.4" name="Video Verification">
-          <DETAIL>Test video authorization, room reuse, token generation, start event, end event, provider error handling, and unauthorized join denial.</DETAIL>
-        </IMPLEMENTATION_STEP>
-      </PHASE_STEPS>
       <PHASE_STEPS Phase="8" Name="Admin Operations and Governance">
         <IMPLEMENTATION_STEP id="8.1" name="Admin Shell and Live Dashboard">
           <DETAIL>Build administrator navigation, breadcrumbs, filters, page headers, notification area, system health link, and live dashboard metrics.</DETAIL>
-          <DETAIL>Show users, courses, assignments, active workspaces, AI usage, video sessions, extension status, quotas, pending submissions, failed jobs, and alerts.</DETAIL>
+          <DETAIL>Show users, courses, assignments, active workspaces, AI usage, extension status, quotas, pending submissions, failed jobs, and alerts.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="8.2" name="User and Access Management">
           <DETAIL>Implement user directory, search, filters, role changes, suspension, activation, profile edit, token invalidation, last activity, and final-administrator protection.</DETAIL>
@@ -440,9 +379,9 @@
           <DETAIL>Test admin-only access, user suspension, final administrator protection, workspace stop, quota policy, extension policy, sync job dispatch, and audit log creation.</DETAIL>
         </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
-      <PHASE_STEPS Phase="9" Name="Analytics, Forensics, Gamification, and Project Deployment">
+      <PHASE_STEPS Phase="9" Name="Analytics, Forensics, and Gamification">
         <IMPLEMENTATION_STEP id="9.1" name="Analytics Event Taxonomy and Dashboards">
-          <DETAIL>Define metrics and event meanings for logins, course activity, assignment starts, submissions, grading, workspace sessions, file writes, AI actions, collaboration, video, notifications, deployments, and admin actions.</DETAIL>
+          <DETAIL>Define metrics and event meanings for logins, course activity, assignment starts, submissions, grading, workspace sessions, file writes, AI actions, notifications, and admin actions.</DETAIL>
           <DETAIL>Build administrator, instructor, and student analytics from real events with empty states and metric definitions.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="9.2" name="Analytics Dashboard">
@@ -451,15 +390,10 @@
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="9.3" name="Gamification and Contribution Graph">
           <DETAIL>Build a 365-day activity heatmap with documented intensity thresholds, streak calculation, latest badge display, earned and locked badges, and anti-abuse controls.</DETAIL>
-          <DETAIL>Award badges from real events such as first submission, streak milestones, AI usage milestones, deployment success, and course achievement where policy allows.</DETAIL>
+          <DETAIL>Award badges from real events such as first submission, streak milestones, AI usage milestones, and course achievement where policy allows.</DETAIL>
         </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="9.4" name="Student Project Deployment">
-          <DETAIL>Implement a deploy action that verifies workspace ownership, confirms public exposure, creates a deployment record, queues a job, packages allowed files, calls the configured provider, polls status, stores public URL, and notifies the user.</DETAIL>
-          <DETAIL>Exclude secrets, dependency directories, environment files, version-control internals, platform files, and disallowed paths from deployment packages.</DETAIL>
-          <DETAIL>Show deployment status in the workspace shell and student dashboard with real-time updates where available.</DETAIL>
-        </IMPLEMENTATION_STEP>
-        <IMPLEMENTATION_STEP id="9.5" name="Analytics and Deployment Verification">
-          <DETAIL>Test event recording, role-restricted analytics, forensics aggregation, badge awarding, streak calculation, deployment authorization, package exclusion, provider success, provider failure, and status updates.</DETAIL>
+        <IMPLEMENTATION_STEP id="9.5" name="Analytics Verification">
+          <DETAIL>Test event recording, role-restricted analytics, forensics aggregation, badge awarding, streak calculation.</DETAIL>
         </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
       <PHASE_STEPS Phase="10" Name="PWA and Notifications">
@@ -474,7 +408,7 @@
           <DETAIL>Implement respectful install prompt behavior, dismiss state, online and offline banner, retry actions, and special IDE offline messaging.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="10.4" name="Web Push Notifications">
-          <DETAIL>Implement VAPID configuration, subscription validation, unsubscribe, notification preferences, due reminders, announcements, grading feedback, deployment completion, video session start where allowed, and account alerts.</DETAIL>
+          <DETAIL>Implement VAPID configuration, subscription validation, unsubscribe, notification preferences, due reminders, announcements, grading feedback, and account alerts.</DETAIL>
           <DETAIL>Validate notification URLs and bind subscriptions to authenticated users.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="10.5" name="PWA Verification">
@@ -484,7 +418,7 @@
       <PHASE_STEPS Phase="11" Name="Security, Testing, Performance, and Quality">
         <IMPLEMENTATION_STEP id="11.1" name="Security Hardening">
           <DETAIL>Review security headers, CSP, HSTS, trusted proxies, session settings, CSRF, CORS, token settings, password flows, production error visibility, and environment exposure.</DETAIL>
-          <DETAIL>Apply rate limits to authentication, AI, file APIs, collaboration, push, video, deployment, and admin actions.</DETAIL>
+          <DETAIL>Apply rate limits to authentication, AI, file APIs, push, and admin actions.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="11.2" name="ASVS Verification Matrix">
           <DETAIL>Map controls and tests to authentication, session, access control, validation, output encoding, cryptography, error handling, logging, data protection, communications, configuration, file handling, API, and business logic categories.</DETAIL>
@@ -494,33 +428,33 @@
           <DETAIL>Add logs, failed job visibility, health checks, and operator-facing failure messages.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="11.4" name="Automated and Browser Testing">
-          <DETAIL>Build backend tests for critical workflows and denial paths across auth, classroom, workspaces, collaboration, AI, extensions, video, push, analytics, deployment, and admin.</DETAIL>
+          <DETAIL>Build backend tests for critical workflows and denial paths across auth, classroom, workspaces, AI, extensions, push, analytics, and admin.</DETAIL>
           <DETAIL>Add browser or end-to-end checks for the evaluation path using real screens and stable assertions.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="11.5" name="Quality Verification">
           <DETAIL>Run responsive checks, accessibility checks, browser console checks, service worker checks, frontend build, backend tests, static checks where available, and security negative tests.</DETAIL>
         </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
-      <PHASE_STEPS Phase="12" Name="Production Deployment and Evaluation Readiness">
+      <PHASE_STEPS Phase="12" Name="Evaluation Readiness">
         <IMPLEMENTATION_STEP id="12.1" name="Production Infrastructure">
-          <DETAIL>Define production topology for application, web server, database, Redis, queue workers, scheduler, Reverb, workspace containers, storage, video service, AI provider, push service, monitoring, and backups.</DETAIL>
+          <DETAIL>Define production topology for application, web server, database, Redis, queue workers, scheduler, workspace containers, storage, AI provider, push service, monitoring, and backups.</DETAIL>
           <DETAIL>Create deterministic production images, environment contracts, health checks, private networks, persistent volumes, and non-root runtime where appropriate.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="12.2" name="Reverse Proxy, TLS, and Routing">
           <DETAIL>Configure proxy routing for Laravel, WebSockets, code-server workspaces, static assets, upload limits, rate limits, TLS, certificate renewal, and security headers.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="12.3" name="CI/CD and Release Automation">
-          <DETAIL>Implement pipeline stages for dependency install, tests, frontend build, browser checks where available, image build, artifact verification, deployment, and release summary.</DETAIL>
-          <DETAIL>Block deployment on failed checks and document required secrets without exposing values.</DETAIL>
+          <DETAIL>Implement pipeline stages for dependency install, tests, frontend build, browser checks where available, image build, artifact verification, and release summary.</DETAIL>
+          <DETAIL>Block release on failed checks and document required secrets without exposing values.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="12.4" name="Backups, Health, and Observability">
-          <DETAIL>Implement backup and restore procedures for database, workspace storage, uploads, extension artifacts, configuration metadata, and deployment records.</DETAIL>
-          <DETAIL>Add health checks for database, Redis, queue, scheduler, Reverb, storage, workspace orchestration, AI provider, push provider, and video provider.</DETAIL>
+          <DETAIL>Implement backup and restore procedures for database, workspace storage, uploads, extension artifacts, and configuration metadata.</DETAIL>
+          <DETAIL>Add health checks for database, Redis, queue, scheduler, storage, workspace orchestration, AI provider, push provider.</DETAIL>
           <DETAIL>Configure structured logs, alert thresholds, uptime monitoring hooks, disk checks, incident runbooks, and failed job review.</DETAIL>
         </IMPLEMENTATION_STEP>
         <IMPLEMENTATION_STEP id="12.5" name="Competition Evaluation Readiness">
           <DETAIL>Prepare evaluation accounts, preflight checklist, reset procedures, walkthrough path, contingency plans for external providers, and operator runbook based on fully functioning product workflows.</DETAIL>
-          <DETAIL>Produce release evidence: version manifest, migration state, test summary, security verification summary, deployment checklist, backup confirmation, known risks, rollback plan, and environment parity notes.</DETAIL>
+          <DETAIL>Produce release evidence: version manifest, migration state, test summary, security verification summary, release checklist, backup confirmation, known risks, rollback plan, and environment parity notes.</DETAIL>
         </IMPLEMENTATION_STEP>
       </PHASE_STEPS>
     </PHASE_STEP_MATRIX>
@@ -530,7 +464,7 @@
       <CHECK>Every user-facing feature must include success, loading, empty, denied, validation, and error states where applicable.</CHECK>
       <CHECK>Every phase must finish with a clear completion report, changed files summary, verification results, and operational notes.</CHECK>
       <CHECK>No phase is complete until public interfaces, data migrations, background jobs, real-time events, and operator tasks are documented at the level needed for another engineer to maintain them.</CHECK>
-      <CHECK>No AI, container, file, extension, or deployment feature may be considered complete without a negative test proving the strongest relevant denial path.</CHECK>
+      <CHECK>No AI, container, file, or extension feature may be considered complete without a negative test proving the strongest relevant denial path.</CHECK>
       <CHECK>No sensitive extension may be accepted if it was only renamed superficially. The implementation must prove a full source audit, relevant source edits, clean rebuild, artifact checksum, install test, activation test, command test, and old-identity scan.</CHECK>
       <CHECK>No AI agent extension release may depend on upstream extension distribution after the initial compliant source import. The release must be built, versioned, tested, documented, and distributed as a VisionLab artifact while preserving all legally required license notices.</CHECK>
     </QUALITY_GATE>

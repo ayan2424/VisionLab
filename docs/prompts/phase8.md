@@ -9,16 +9,16 @@
       Build admin dashboards for users, courses, extensions, workspaces, quotas, security controls, moderation, audit views, and operational management.
     </PHASE_GOAL>
     <DEPENDENCIES>
-      Requires the classroom, workspace, extension, collaboration, AI, and video phases. Admin screens must use the production design system and existing policy model.
+      Requires the classroom, workspace, extension, and AI phases. Admin screens must use the production design system and existing policy model.
     </DEPENDENCIES>
     <IMPLEMENTATION_REQUIREMENTS>
       <REQUIREMENT>Build an admin shell with navigation, page headers, filters, breadcrumbs, role-aware links, notification area, and consistent table and form components.</REQUIREMENT>
-      <REQUIREMENT>Implement an admin dashboard with live counts for users, roles, courses, assignments, active workspaces, AI usage, video sessions, extension status, pending submissions, and system alerts.</REQUIREMENT>
+      <REQUIREMENT>Implement an admin dashboard with live counts for users, roles, courses, assignments, active workspaces, AI usage, extension status, pending submissions, and system alerts.</REQUIREMENT>
       <REQUIREMENT>Implement user management with search, role filters, account status controls, profile edits, suspension and activation, and login prevention for suspended accounts.</REQUIREMENT>
       <REQUIREMENT>Implement workspace management with status inspection, owner and collaborator details, linked course and assignment context, stop controls, archive controls, storage usage, recent file activity, AI activity, and container health.</REQUIREMENT>
       <REQUIREMENT>Implement extension and marketplace management using the policy model from Phase 4, including global, course, and workspace-level views.</REQUIREMENT>
       <REQUIREMENT>Implement quota management for memory, CPU, disk, max active workspaces, timeout policy, and course or user overrides.</REQUIREMENT>
-      <REQUIREMENT>Implement audit log views for authentication, admin actions, workspace lifecycle, file actions, AI patches, extension policy changes, and video session actions.</REQUIREMENT>
+      <REQUIREMENT>Implement audit log views for authentication, admin actions, workspace lifecycle, file actions, AI patches, and extension policy changes.</REQUIREMENT>
       <REQUIREMENT>Add scheduled maintenance commands for stale workspace cleanup, failed job review, storage pruning, and operational status reports.</REQUIREMENT>
     </IMPLEMENTATION_REQUIREMENTS>
     <SECURITY_REQUIREMENTS>

@@ -1,28 +1,26 @@
-<MASTER_PROMPT Phase="9" Name="Analytics_Forensics_Gamification_And_Project_Deployment" Version="6.1">
+<MASTER_PROMPT Phase="9" Name="Analytics_Forensics_And_Gamification" Version="6.1">
     <SYSTEM_ROLE>
       You are a senior data product engineer, AI forensics specialist, and learning analytics designer. Your responsibility is to convert platform activity into trustworthy insights for students, instructors, and administrators.
     </SYSTEM_ROLE>
     <PRODUCT_CONTEXT>
-      VisionLab should prove learning progress, responsible AI usage, collaboration quality, and engagement through real events captured by the platform.
+      VisionLab should prove learning progress, responsible AI usage, and engagement through real events captured by the platform.
     </PRODUCT_CONTEXT>
     <PHASE_GOAL>
-      Implement learning analytics, instructor insights, Analytics Dashboard human-versus-AI contribution tracking, activity heatmaps, streaks, badges, and student project deployment using real platform events and governed provider integrations.
+      Implement learning analytics, instructor insights, Analytics Dashboard human-versus-AI contribution tracking, activity heatmaps, streaks, and badges using real platform events and governed integrations.
     </PHASE_GOAL>
     <DEPENDENCIES>
-      Requires classroom submissions, workspace file events, collaboration activity, AI action logs, workspace storage, notification infrastructure readiness, and admin governance data from prior phases.
+      Requires classroom submissions, workspace file events, AI action logs, workspace storage, notification infrastructure readiness, and admin governance data from prior phases.
     </DEPENDENCIES>
     <IMPLEMENTATION_REQUIREMENTS>
-      <REQUIREMENT>Define a normalized analytics event model for logins, course activity, assignment starts, submissions, grading, workspace sessions, file writes, AI patch proposals, AI approvals, collaboration activity, and video sessions.</REQUIREMENT>
+      <REQUIREMENT>Define a normalized analytics event model for logins, course activity, assignment starts, submissions, grading, workspace sessions, file writes, AI patch proposals, and AI approvals.</REQUIREMENT>
       <REQUIREMENT>Build admin analytics dashboards with daily active users, course activity, submissions over time, active workspaces, AI mode usage, patch approval rates, extension usage, and operational health indicators.</REQUIREMENT>
-      <REQUIREMENT>Build instructor analytics for course engagement, assignment completion, pending grading, late submissions, collaboration participation, and AI assistance patterns.</REQUIREMENT>
+      <REQUIREMENT>Build instructor analytics for course engagement, assignment completion, pending grading, late submissions, and AI assistance patterns.</REQUIREMENT>
       <REQUIREMENT>Build student analytics for personal activity, course progress, upcoming work, streaks, badges, and contribution heatmaps.</REQUIREMENT>
       <REQUIREMENT>Implement Analytics Dashboard by classifying changes as human-authored, AI-proposed, AI-approved, pasted, or imported where the data can be reliably captured.</REQUIREMENT>
-      <REQUIREMENT>Update the collaboration or workspace extension to report document change source metadata without collecting sensitive unnecessary content.</REQUIREMENT>
+      <REQUIREMENT>Update the workspace extension to report document change source metadata without collecting sensitive unnecessary content.</REQUIREMENT>
       <REQUIREMENT>Display submission forensics in grading views with transparent percentages, raw event counts, confidence notes, and links to relevant audit logs.</REQUIREMENT>
       <REQUIREMENT>Implement gamification with streaks, contribution graphs, badges, badge award rules, and student-facing explanations tied to real activity.</REQUIREMENT>
-      <REQUIREMENT>Implement student project deployment as a governed product feature: a workspace owner can request deployment, confirm public exposure, create a deployment record, queue a deployment job, package allowed project files, call the configured provider, poll status, store the production URL, and receive completion or failure notification.</REQUIREMENT>
-      <REQUIREMENT>Provide a provider abstraction for deployment targets such as Vercel or Railway, with environment-based selection, provider-specific credentials, timeout handling, retry boundaries, failure summaries, and operator diagnostics.</REQUIREMENT>
-      <REQUIREMENT>Show deployment history on the student dashboard and workspace shell with provider, status, public URL, timestamp, and real-time status updates where available.</REQUIREMENT>
+
       <REQUIREMENT>Define gamification thresholds explicitly, including contribution heatmap intensity levels, streak calculation rules, badge award triggers, and anti-abuse controls.</REQUIREMENT>
     </IMPLEMENTATION_REQUIREMENTS>
     <SECURITY_REQUIREMENTS>
@@ -30,21 +28,19 @@
       <REQUIREMENT>Restrict analytics views by role so students see their own data, instructors see their courses, and administrators see platform-level views.</REQUIREMENT>
       <REQUIREMENT>Make AI forensics explainable and avoid presenting uncertain classifications as absolute proof.</REQUIREMENT>
       <REQUIREMENT>Protect analytics endpoints with rate limits and efficient queries to prevent dashboard abuse.</REQUIREMENT>
-      <REQUIREMENT>Exclude secrets, dependency directories, version-control internals, environment files, and disallowed file types from deployment packages.</REQUIREMENT>
-      <REQUIREMENT>Require explicit confirmation before making any workspace project publicly accessible through a deployment provider.</REQUIREMENT>
+      <REQUIREMENT>Exclude secrets, dependency directories, version-control internals, and environment files.</REQUIREMENT>
     </SECURITY_REQUIREMENTS>
     <ACCEPTANCE_CRITERIA>
       <CRITERION>Analytics dashboards render from real persisted events and degrade clearly when a metric has no data yet.</CRITERION>
       <CRITERION>Submission grading includes human and AI contribution insight with audit links.</CRITERION>
       <CRITERION>Students receive accurate streaks, contribution heatmaps, and badges based on defined rules.</CRITERION>
-      <CRITERION>Students can deploy an eligible workspace project through a queued provider integration and view deployment history with accurate status.</CRITERION>
-      <CRITERION>Tests cover event recording, role-restricted analytics, forensics aggregation, badge awarding, deployment authorization, package exclusions, provider failure, and deployment status updates.</CRITERION>
+      <CRITERION>Tests cover event recording, role-restricted analytics, forensics aggregation, and badge awarding.</CRITERION>
     </ACCEPTANCE_CRITERIA>
     <EXECUTION_PROTOCOL>
       <STEP>Inspect existing event logs, analytics tables, AI logs, workspace logs, and dashboard components.</STEP>
-      <STEP>Plan event taxonomy, aggregation queries, dashboard surfaces, deployment provider contracts, privacy boundaries, and test cases.</STEP>
-      <STEP>Implement event capture, analytics services, dashboards, charts, forensics, gamification, student deployment services, jobs, notifications, and documentation.</STEP>
-      <STEP>Verify with seeded development data, unit tests, feature tests, provider-mocked deployment tests, and query performance checks.</STEP>
-      <STEP>Report analytics, forensics, gamification, and project deployment readiness, then confirm readiness for Phase 10.</STEP>
+      <STEP>Plan event taxonomy, aggregation queries, dashboard surfaces, privacy boundaries, and test cases.</STEP>
+      <STEP>Implement event capture, analytics services, dashboards, charts, forensics, gamification, jobs, notifications, and documentation.</STEP>
+      <STEP>Verify with seeded development data, unit tests, feature tests, and query performance checks.</STEP>
+      <STEP>Report analytics, forensics, gamification, then confirm readiness for Phase 10.</STEP>
     </EXECUTION_PROTOCOL>
   </MASTER_PROMPT>

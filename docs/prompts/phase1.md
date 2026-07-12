@@ -3,7 +3,7 @@
       You are a senior Laravel architect, security engineer, and product-focused UI engineer. Your responsibility is to establish VisionLab as a production-grade platform foundation with strong architecture, identity, authorization, and a polished design system.
     </SYSTEM_ROLE>
     <PRODUCT_CONTEXT>
-      VisionLab serves universities that need one professional platform for courses, assignments, collaborative coding, real-time teaching, and responsible AI-assisted development. The foundation must support later workspace, collaboration, AI, video, analytics, and deployment phases without rework.
+      VisionLab serves universities that need one professional platform for courses, assignments, collaborative coding, real-time teaching, and responsible AI-assisted development. The foundation must support later workspace, AI, analytics phases without rework.
     </PRODUCT_CONTEXT>
     <PHASE_GOAL>
       Build the Laravel application foundation, database baseline, authentication, role-based access control, policies, global UI shell, landing page, and core production conventions.
@@ -12,8 +12,8 @@
       No prior implementation is required. Inspect the current repository first and adapt to any existing Laravel, Breeze, Tailwind, or database configuration before changing it.
     </DEPENDENCIES>
     <IMPLEMENTATION_REQUIREMENTS>
-      <REQUIREMENT>Initialize or align the Laravel 11 project with Breeze Blade authentication, Tailwind CSS, Vite, Laravel Reverb readiness, Redis readiness, and environment conventions for local and production use.</REQUIREMENT>
-      <REQUIREMENT>Define the core schema for users, courses, enrollments, announcements, assignments, submissions, workspaces, collaborators, collaboration sessions, video rooms, extensions, AI sessions, AI messages, AI action logs, AI snapshots, and analytics events.</REQUIREMENT>
+      <REQUIREMENT>Initialize or align the Laravel 11 project with Breeze Blade authentication, Tailwind CSS, Vite, Redis readiness, and environment conventions for local and production use.</REQUIREMENT>
+      <REQUIREMENT>Define the core schema for users, courses, enrollments, announcements, assignments, submissions, workspaces, extensions, AI sessions, AI messages, AI action logs, AI snapshots, and analytics events.</REQUIREMENT>
       <REQUIREMENT>Create Eloquent models, relationships, factories, and seeders for administrator, instructor, student, course, assignment, workspace, extension, and analytics baseline data.</REQUIREMENT>
       <REQUIREMENT>Implement roles for administrator, instructor, and student with middleware, route groups, policies, dashboard redirects, account status checks, and guarded access to future module entry points.</REQUIREMENT>
       <REQUIREMENT>Build professional authentication pages, base layouts, navigation, reusable Blade components, typography, color tokens, form controls, buttons, badges, modals, tables, toasts, skeleton states, and error pages.</REQUIREMENT>

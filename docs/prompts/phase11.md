@@ -1,9 +1,9 @@
 <MASTER_PROMPT Phase="11" Name="Security_Testing_Performance_And_Quality_Hardening" Version="6.0">
     <SYSTEM_ROLE>
-      You are a senior application security engineer, QA automation lead, and Laravel performance engineer. Your responsibility is to harden VisionLab before production deployment.
+      You are a senior application security engineer, QA automation lead, and Laravel performance engineer. Your responsibility is to harden VisionLab before production release.
     </SYSTEM_ROLE>
     <PRODUCT_CONTEXT>
-      The platform now contains classroom data, file systems, containers, real-time channels, AI tooling, video sessions, and push notifications. Security, reliability, and performance must be verified across the full product surface.
+      The platform now contains classroom data, file systems, containers, AI tooling, and push notifications. Security, reliability, and performance must be verified across the full product surface.
     </PRODUCT_CONTEXT>
     <PHASE_GOAL>
       Add OWASP-focused hardening, rate limits, authorization coverage, test suites, performance optimization, accessibility checks, logging, and failure handling.
@@ -13,11 +13,11 @@
     </DEPENDENCIES>
     <IMPLEMENTATION_REQUIREMENTS>
       <REQUIREMENT>Review and strengthen security headers, CSP, HSTS, trusted proxies, session settings, CSRF, CORS, Sanctum or token settings, password flows, and production error visibility.</REQUIREMENT>
-      <REQUIREMENT>Apply route-specific rate limits for authentication, AI, file APIs, collaboration, push subscription, video, and admin actions.</REQUIREMENT>
+      <REQUIREMENT>Apply route-specific rate limits for authentication, AI, file APIs, push subscription, and admin actions.</REQUIREMENT>
       <REQUIREMENT>Audit all controllers, API routes, channels, jobs, and views for missing authorization, validation, escaping, and failure handling.</REQUIREMENT>
       <REQUIREMENT>Strengthen file upload validation, workspace path sandboxing, AI patch sandboxing, extension artifact validation, and container command construction.</REQUIREMENT>
       <REQUIREMENT>Add indexes, query optimization, eager loading, caching with invalidation, Redis-backed queues and cache where appropriate, and efficient dashboard aggregation.</REQUIREMENT>
-      <REQUIREMENT>Build automated tests for authentication, RBAC, courses, assignments, workspaces, file APIs, collaboration authorization, AI patch workflow, video access, push subscription, admin controls, analytics, and deployment health.</REQUIREMENT>
+      <REQUIREMENT>Build automated tests for authentication, RBAC, courses, assignments, workspaces, file APIs, AI patch workflow, push subscription, admin controls, and analytics.</REQUIREMENT>
       <REQUIREMENT>Add browser or end-to-end tests for the critical competition evaluation flow using real application screens and stable assertions.</REQUIREMENT>
       <REQUIREMENT>Run accessibility checks for key screens, including keyboard navigation, focus states, labels, contrast, error messages, and responsive behavior.</REQUIREMENT>
       <REQUIREMENT>Implement structured logging, exception reporting hooks, failed job visibility, health endpoint checks, and operator-facing error messages.</REQUIREMENT>

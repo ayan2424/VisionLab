@@ -21,7 +21,7 @@
       <REQUIREMENT>Store AI chat sessions, messages, tool calls, proposed patches, snapshots, approvals, rejections, rollbacks, and file changes with actor and workspace context.</REQUIREMENT>
       <REQUIREMENT>Build a VisionLab patch reviewer extension or panel that displays pending patches with file metadata, readable diff, approve, reject, and request-change actions.</REQUIREMENT>
       <REQUIREMENT>Implement a safe plan-to-agent bridge where a plan can trigger a server-side implementation run, but the run can only create pending patches and PatchProposed events until a human approves them.</REQUIREMENT>
-      <REQUIREMENT>Broadcast patch proposal and patch status events to authorized workspace users through Reverb.</REQUIREMENT>
+      <REQUIREMENT>Broadcast patch proposal and patch status events to authorized workspace users.</REQUIREMENT>
       <REQUIREMENT>Provide AI memory only as an explicit, visible workspace file governed by the same sandbox rules, with concise content and audit logs for updates.</REQUIREMENT>
       <REQUIREMENT>Implement an AI risk control matrix covering prompt injection, indirect prompt injection through files, sensitive information disclosure, insecure tool design, excessive agency, model denial of service, supply-chain risk, and overreliance.</REQUIREMENT>
       <REQUIREMENT>Separate trusted system instructions, developer policies, user requests, repository content, retrieved file content, and tool outputs so untrusted content is never treated as authority.</REQUIREMENT>
@@ -32,7 +32,7 @@
       <REQUIREMENT>Block reads or writes to secrets, environment files, dependency directories, storage outside the workspace, generated vendor content, and platform configuration unless explicitly allowed by administrator policy.</REQUIREMENT>
       <REQUIREMENT>Apply rate limits, token budgets, request validation, model error handling, and provider timeout handling.</REQUIREMENT>
       <REQUIREMENT>Sanitize AI-rendered content and isolate previews so generated HTML or scripts cannot access platform credentials.</REQUIREMENT>
-      <REQUIREMENT>Require human confirmation for every AI-generated change that can affect code, files, grades, deployment, extension policy, user permissions, or platform configuration.</REQUIREMENT>
+      <REQUIREMENT>Require human confirmation for every AI-generated change that can affect code, files, grades, extension policy, user permissions, or platform configuration.</REQUIREMENT>
       <REQUIREMENT>Never send secrets, private tokens, full environment files, administrator-only records, or unrelated users' data to an external model provider.</REQUIREMENT>
     </SECURITY_REQUIREMENTS>
     <ACCEPTANCE_CRITERIA>
@@ -43,7 +43,7 @@
       <CRITERION>Tests cover sandbox denial, patch approval, patch rejection, rollback, rate limits, and unauthorized access.</CRITERION>
     </ACCEPTANCE_CRITERIA>
     <EXECUTION_PROTOCOL>
-      <STEP>Inspect current AI tables, file APIs, extension interfaces, Reverb events, and policy boundaries.</STEP>
+      <STEP>Inspect current AI tables, file APIs, extension interfaces, and policy boundaries.</STEP>
       <STEP>Plan AI endpoint contracts, tool permission matrix, patch lifecycle, extension UI, and tests.</STEP>
       <STEP>Implement backend services, controllers, events, extension integration, UI surfaces, and documentation.</STEP>
       <STEP>Verify with tests and controlled local AI workflow checks using safe files.</STEP>

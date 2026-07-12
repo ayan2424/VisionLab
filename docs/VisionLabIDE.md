@@ -29,7 +29,7 @@ This plan outlines the deep source-level modifications required for VisionLab ID
 
 5. **Deep Backend Controls (Admin & Teacher Panel)**
     - Inject an internal REST/WebSocket bridge natively into the IDE's Extension Host.
-    - This will allow the Laravel Reverb backend to send signals directly to the IDE (e.g., forcefully installing a required class extension, blocking a process, or broadcasting teacher announcements directly inside the IDE shell).
+    - This will allow the backend to send signals directly to the IDE (e.g., forcefully installing a required class extension, blocking a process, or broadcasting teacher announcements directly inside the IDE shell).
 
 6. **Compilation & Docker Image Generation**
     - Run the `yarn build` and `yarn build:vscode` pipelines.

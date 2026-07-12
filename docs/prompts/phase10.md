@@ -17,7 +17,7 @@
       <REQUIREMENT>Add a professional install prompt flow that respects browser behavior and does not pressure users repeatedly.</REQUIREMENT>
       <REQUIREMENT>Implement online and offline indicators, top-level banners, retry actions, and clear workspace messaging when code-server cannot be reached.</REQUIREMENT>
       <REQUIREMENT>Implement web push subscription storage, unsubscribe, VAPID configuration, notification preferences, and secure service worker push handling.</REQUIREMENT>
-      <REQUIREMENT>Send notifications for assignment due reminders, new announcements, grading feedback, video session starts where permitted, and account-level alerts.</REQUIREMENT>
+      <REQUIREMENT>Send notifications for assignment due reminders, new announcements, grading feedback, and account-level alerts.</REQUIREMENT>
       <REQUIREMENT>Add scheduled jobs for due reminders and event listeners for real-time notification triggers.</REQUIREMENT>
       <REQUIREMENT>Update documentation for browser support, local HTTPS requirements, service worker troubleshooting, and push key rotation.</REQUIREMENT>
       <REQUIREMENT>Treat service workers as progressive enhancement: core authenticated workflows must still work when service worker registration is unsupported, delayed, blocked, or waiting to activate.</REQUIREMENT>
