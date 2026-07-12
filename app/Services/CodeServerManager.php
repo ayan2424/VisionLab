@@ -237,19 +237,10 @@ JS;
         // Run Nix bootstrap if it exists (Phase 3: Declarative Workspace Build)
         if ($workspace->template_id && $workspace->template && !empty($workspace->template->bootstrap_script)) {
             $bootstrapCmd = [
-                $this->dockerCmd(), 'exec', '-u', '1000', $containerId, 'sh', '-c', 
+                $this->dockerCmd(), 'exec', '-d', '-u', '1000', $containerId, 'sh', '-c', 
                 'cd /home/coder/' . escapeshellarg($workspace->slug) . ' && if [ -f .vision/bootstrap.sh ]; then dos2unix .vision/bootstrap.sh 2>/dev/null; if [ -f .vision/dev.nix ]; then export NIXPKGS_ALLOW_INSECURE=1; nix-shell .vision/dev.nix --command "sh .vision/bootstrap.sh"; else sh .vision/bootstrap.sh; fi; fi'
             ];
-            $bootstrapProcess = new Process($bootstrapCmd);
-            $bootstrapProcess->setTimeout(300); // 5 mins for heavy installs
-            $bootstrapProcess->run();
-            
-            if (!$bootstrapProcess->isSuccessful()) {
-                Log::warning("CodeServerManager: Nix bootstrap script failed", [
-                    'workspace' => $workspace->id,
-                    'error'     => $bootstrapProcess->getErrorOutput()
-                ]);
-            }
+            (new Process($bootstrapCmd))->run();
         }
 
         // Update workspace record
