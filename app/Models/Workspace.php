@@ -40,11 +40,15 @@ class Workspace extends Model
 
         static::creating(function ($workspace) {
             if (empty($workspace->slug)) {
-                $slug = \Illuminate\Support\Str::slug($workspace->name);
-                $originalSlug = $slug;
+                $userName = $workspace->owner ? $workspace->owner->name : 'user';
+                $templateName = $workspace->template ? $workspace->template->name : 'workspace';
+                
+                $baseSlug = \Illuminate\Support\Str::slug($userName . '-' . $templateName . '-' . $workspace->name);
+                
+                $slug = $baseSlug;
                 $count = 1;
                 while (static::where('slug', $slug)->exists()) {
-                    $slug = $originalSlug . '-' . $count;
+                    $slug = $baseSlug . '-' . $count;
                     $count++;
                 }
                 $workspace->slug = $slug;
