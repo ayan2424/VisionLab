@@ -192,7 +192,6 @@ class CodeServerManager
         $slug = $workspace->slug;
         $token = $workspace->token;
         $extJs = <<<JS
-const cp = require('child_process');
 const vscode = require('vscode');
 function activate(context) {
     let rebuildPromptShown = false;
@@ -206,7 +205,13 @@ function activate(context) {
             ).then(selection => {
                 rebuildPromptShown = false;
                 if (selection === 'Rebuild Environment') {
-                    cp.exec(`curl -X POST {$domain}/api/workspace/{$slug}/trigger-rebuild -H "Authorization: Bearer {$token}" -H "Accept: application/json"`);
+                    fetch("{$domain}/api/workspace/{$slug}/trigger-rebuild", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer {$token}",
+                            "Accept": "application/json"
+                        }
+                    }).catch(console.error);
                 }
             });
         }
