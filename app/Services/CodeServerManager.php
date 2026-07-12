@@ -167,12 +167,6 @@ class CodeServerManager
             'heartbeat_at' => now(),
         ]);
 
-        return [
-            'url'          => $proxyUrl,
-            'port'         => $port,
-            'token'        => $token,
-            'container_id' => $containerId,
-        ];
 
         // Enforce removal of GitHub Copilot to maintain VisionLab AI Agent sovereignty
         $purgeCopilotCmd = [
@@ -185,7 +179,7 @@ class CodeServerManager
         if ($workspace->template_id && $workspace->template && !empty($workspace->template->bootstrap_script)) {
             $bootstrapCmd = [
                 $this->dockerCmd(), 'exec', '-u', '1000', $containerId, 'sh', '-c', 
-                'cd /home/coder/' . escapeshellarg($workspace->slug) . ' && if [ -f .vision/bootstrap.sh ]; then dos2unix .vision/bootstrap.sh 2>/dev/null; sh .vision/bootstrap.sh; fi'
+                'cd /home/coder/' . escapeshellarg($workspace->slug) . ' && if [ -f .vision/bootstrap.sh ]; then dos2unix .vision/bootstrap.sh 2>/dev/null; if [ -f .vision/dev.nix ]; then nix-shell .vision/dev.nix --command "sh .vision/bootstrap.sh"; else sh .vision/bootstrap.sh; fi; fi'
             ];
             $bootstrapProcess = new Process($bootstrapCmd);
             $bootstrapProcess->setTimeout(300); // 5 mins for heavy installs
