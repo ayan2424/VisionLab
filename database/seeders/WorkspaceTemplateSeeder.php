@@ -60,7 +60,7 @@ BASH,
                 'nix_config' => <<<NIX
 { pkgs ? import <nixpkgs> {} }:
 pkgs.mkShell {
-  buildInputs = [ pkgs.nodejs_20 ];
+  buildInputs = [ pkgs.nodejs_22 ];
 }
 NIX,
                 'bootstrap_script' => <<<BASH
@@ -85,7 +85,7 @@ BASH,
                 'nix_config' => <<<NIX
 { pkgs ? import <nixpkgs> {} }:
 pkgs.mkShell {
-  buildInputs = [ pkgs.nodejs_20 ];
+  buildInputs = [ pkgs.nodejs_22 ];
 }
 NIX,
                 'bootstrap_script' => <<<BASH
@@ -109,7 +109,7 @@ BASH,
                 'nix_config' => <<<NIX
 { pkgs ? import <nixpkgs> {} }:
 pkgs.mkShell {
-  buildInputs = [ pkgs.nodejs_20 ];
+  buildInputs = [ pkgs.nodejs_22 ];
 }
 NIX,
                 'bootstrap_script' => <<<BASH
@@ -165,7 +165,7 @@ BASH,
                 'nix_config' => <<<NIX
 { pkgs ? import <nixpkgs> {} }:
 pkgs.mkShell {
-  buildInputs = [ pkgs.php83 pkgs.php83Packages.composer pkgs.nodejs_20 pkgs.sqlite ];
+  buildInputs = [ pkgs.php83 pkgs.php83Packages.composer pkgs.nodejs_22 pkgs.sqlite ];
 }
 NIX,
                 'bootstrap_script' => <<<BASH
@@ -360,7 +360,7 @@ BASH,
 pkgs.mkShell {
   buildInputs = [
     pkgs.php83 pkgs.php83Packages.composer
-    pkgs.nodejs_20 pkgs.yarn pkgs.bun
+    pkgs.nodejs_22 pkgs.yarn pkgs.bun
     pkgs.python311 pkgs.python311Packages.pip
     pkgs.jdk17 pkgs.go pkgs.ruby
     pkgs.git pkgs.curl pkgs.wget pkgs.unzip
