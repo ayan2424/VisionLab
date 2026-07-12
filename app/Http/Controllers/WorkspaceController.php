@@ -162,9 +162,34 @@ class WorkspaceController extends Controller
     {
         $this->authorize('manage', $workspace);
 
-        $this->codeServerManager->restartWorkspace($workspace);
+        $this->codeServerManager->stopWorkspace($workspace);
+        \App\Jobs\StartWorkspaceJob::dispatch($workspace);
 
         return response()->json(['status' => 'restarted']);
+    }
+
+    /** Show the environment rebuild preloader page */
+    public function rebuildView(Workspace $workspace)
+    {
+        $this->authorize('access', $workspace);
+        return view('workspaces.rebuild', compact('workspace'));
+    }
+
+    /** Process the rebuild request safely */
+    public function processRebuild(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('manage', $workspace);
+
+        // Safely stop the container. The Docker volume remains untouched.
+        $this->codeServerManager->stopWorkspace($workspace);
+
+        // Update status to indicate it is booting again
+        $workspace->update(['status' => 'starting']);
+
+        // Dispatch the start job which will recreate the container with the new Nix config
+        \App\Jobs\StartWorkspaceJob::dispatch($workspace);
+
+        return response()->json(['status' => 'rebuilding']);
     }
 
     /** Get workspace status */

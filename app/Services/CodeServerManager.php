@@ -178,6 +178,47 @@ class CodeServerManager
         ];
         (new Process($purgeCopilotCmd))->run();
 
+        // Inject VisionLab Nix Watcher VS Code Extension
+        $extDir = '/home/coder/.local/share/code-server/extensions/visionlab-nix-watcher';
+        $pkgJson = json_encode([
+            "name" => "visionlab-nix-watcher",
+            "displayName" => "VisionLab Nix Watcher",
+            "version" => "1.0.0",
+            "engines" => ["vscode" => "^1.60.0"],
+            "activationEvents" => ["*"],
+            "main" => "./extension.js"
+        ]);
+        $domain = url('/');
+        $slug = $workspace->slug;
+        $extJs = <<<JS
+const vscode = require('vscode');
+function activate(context) {
+    let rebuildPromptShown = false;
+    const disposable = vscode.workspace.onDidSaveTextDocument((document) => {
+        if (document.fileName.endsWith('.vision/dev.nix')) {
+            if (rebuildPromptShown) return;
+            rebuildPromptShown = true;
+            vscode.window.showInformationMessage(
+                'Environment configuration changed. Rebuild the environment to apply new packages.', 
+                'Rebuild Environment'
+            ).then(selection => {
+                rebuildPromptShown = false;
+                if (selection === 'Rebuild Environment') {
+                    vscode.env.openExternal(vscode.Uri.parse('{$domain}/workspace/{$slug}/rebuild'));
+                }
+            });
+        }
+    });
+    context.subscriptions.push(disposable);
+}
+exports.activate = activate;
+JS;
+        $injectExtCmd = [
+            $this->dockerCmd(), 'exec', '-u', '1000', $containerId, 'sh', '-c', 
+            "mkdir -p {$extDir} && echo " . escapeshellarg(base64_encode($pkgJson)) . " | base64 -d > {$extDir}/package.json && echo " . escapeshellarg(base64_encode($extJs)) . " | base64 -d > {$extDir}/extension.js"
+        ];
+        (new Process($injectExtCmd))->run();
+
         // Setup automatic Nix environment activation for the integrated terminal
         $bashrcCmd = [
             $this->dockerCmd(), 'exec', '-u', '1000', $containerId, 'sh', '-c', 
