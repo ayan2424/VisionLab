@@ -209,7 +209,7 @@
                     </div>
                     <div>
                         <div style="font-size:16px;font-weight:700;color:#f1f5f9;letter-spacing:-0.02em;">{{ $workspaceName ?? 'VisionLab Workspace' }}</div>
-                        <div style="font-size:12px;color:#64748b;margin-top:2px;">visionlab-{{ $workspace->id ?? rand(1000,9999) }}</div>
+                        <div style="font-size:12px;color:#64748b;margin-top:2px;">{{ $workspace->template->name ?? 'Standard' }} Template &bull; visionlab-{{ $workspace->id ?? rand(1000,9999) }}</div>
                     </div>
                 </div>
 
@@ -224,9 +224,13 @@
                     </div>
                     <div class="step-item" id="step-3">
                         <div style="width:16px;height:16px;"></div>
-                        <span>Starting VisionLab IDE</span>
+                        <span>Creating {{ $workspace->template->name ?? 'Starter' }} template</span>
                     </div>
                     <div class="step-item" id="step-4">
+                        <div style="width:16px;height:16px;"></div>
+                        <span>Starting VisionLab IDE</span>
+                    </div>
+                    <div class="step-item" id="step-5">
                         <div style="width:16px;height:16px;"></div>
                         <span>Finalizing</span>
                     </div>
@@ -280,13 +284,14 @@
     let fallbackTimeout = null;
     const workspaceId = "{{ $workspace->id }}";
     
-    // Animate steps while waiting (Step 1 -> Step 2 -> Step 3)
+    // Animate steps while waiting (Step 1 -> Step 2 -> Step 3 -> Step 4)
     setTimeout(advanceStep, 2000);
     setTimeout(advanceStep, 5000);
-    // Note: We don't advance to Step 4 (Finalizing) until we actually get 'ready: true'
+    setTimeout(advanceStep, 15000);
+    // Note: We don't advance to Step 5 (Finalizing) until we actually get 'ready: true'
 
     function advanceStep() {
-        if (vscLoaded || currentStep >= 3) return;
+        if (vscLoaded || currentStep >= 4) return;
         
         // Mark current as done
         const cur = document.getElementById('step-' + currentStep);
@@ -297,7 +302,7 @@
         currentStep++;
         
         // Activate next
-        if(currentStep <= 4) {
+        if(currentStep <= 5) {
             const next = document.getElementById('step-' + currentStep);
             next.classList.add('active');
             next.innerHTML = `<div class="spinner"></div> <span>${next.innerText}</span>`;
@@ -364,8 +369,8 @@
                 
                 if (data.ready) {
                     clearInterval(pollInterval);
-                    // Fast-forward to step 4
-                    currentStep = 3;
+                    // Fast-forward to step 5
+                    currentStep = 4;
                     advanceStep(); 
                     
                     // Inject the iframe src to start loading VS Code
@@ -392,7 +397,7 @@
         if (pollInterval) clearInterval(pollInterval);
         
         // Fast forward all steps to done
-        for(let i=1; i<=4; i++) {
+        for(let i=1; i<=5; i++) {
             const el = document.getElementById('step-' + i);
             if(el.classList.contains('done')) continue;
             el.classList.remove('active'); el.classList.add('done');

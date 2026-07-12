@@ -163,7 +163,7 @@ class WorkspaceController extends Controller
         $this->authorize('manage', $workspace);
 
         $this->codeServerManager->stopWorkspace($workspace);
-        \App\Jobs\StartWorkspaceJob::dispatch($workspace);
+        $this->codeServerManager->startWorkspace($workspace);
 
         return response()->json(['status' => 'restarted']);
     }
@@ -186,8 +186,8 @@ class WorkspaceController extends Controller
         // Update status to indicate it is booting again
         $workspace->update(['status' => 'starting']);
 
-        // Dispatch the start job which will recreate the container with the new Nix config
-        \App\Jobs\StartWorkspaceJob::dispatch($workspace);
+        // Start the workspace synchronously
+        $this->codeServerManager->startWorkspace($workspace);
 
         return response()->json(['status' => 'rebuilding']);
     }
