@@ -132,6 +132,18 @@
 {{-- Toast Container --}}
 <div id="toast-container"></div>
 
+{{-- Custom Confirm Modal --}}
+<div id="vc-confirm-modal" class="modal-overlay">
+    <div class="modal-content" style="padding: 24px; text-align: center;">
+        <h3 style="color: #f1f5f9; font-size: 18px; font-weight: 700; margin-bottom: 12px;">Confirm Action</h3>
+        <p id="vc-confirm-message" style="color: #94a3b8; font-size: 14px; margin-bottom: 24px; line-height: 1.5;"></p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button onclick="vcConfirmClose()" style="padding: 10px 20px; border-radius: 9999px; background: rgba(255,255,255,0.05); color: #f1f5f9; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</button>
+            <button id="vc-confirm-btn" style="padding: 10px 20px; border-radius: 9999px; background: #f97316; color: white; border: none; cursor: pointer; font-weight: 600; box-shadow: 0 4px 14px rgba(249,115,22,0.4); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Confirm</button>
+        </div>
+    </div>
+</div>
+
 {{-- TOP BAR --}}
 <div id="vc-topbar">
     {{-- Left --}}
@@ -284,9 +296,27 @@
 <script>
     // Real-Time Polling for Workspace Readiness
     let vscLoaded = false;
-    let currentStep = 1;
     let pollInterval = null;
     let fallbackTimeout = null;
+    let currentStep = 1;
+    let activeCall = false;
+
+    // Custom Confirmation Logic
+    let vcConfirmCallback = null;
+    function vcConfirm(msg, callback) {
+        document.getElementById('vc-confirm-message').innerText = msg;
+        vcConfirmCallback = callback;
+        document.getElementById('vc-confirm-modal').classList.add('open');
+    }
+    function vcConfirmClose() {
+        document.getElementById('vc-confirm-modal').classList.remove('open');
+        vcConfirmCallback = null;
+    }
+    document.getElementById('vc-confirm-btn')?.addEventListener('click', () => {
+        if (vcConfirmCallback) vcConfirmCallback();
+        vcConfirmClose();
+    });
+
     const workspaceId = "{{ $workspace->id }}";
     
     // Animate steps while waiting (Step 1 -> Step 2 -> Step 3 -> Step 4)
@@ -428,9 +458,9 @@
     function triggerRestart(isRebuild = false) {
         if (!isRebuild) {
             vcConfirm("Are you sure you want to restart the workspace?", () => _executeRestart(false));
-            return;
+        } else {
+            vcConfirm("Are you sure you want to rebuild the environment? This will apply your Nix packages.", () => _executeRestart(true));
         }
-        _executeRestart(true);
     }
 
     function _executeRestart(isRebuild) {
