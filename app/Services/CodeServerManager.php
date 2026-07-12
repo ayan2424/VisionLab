@@ -648,25 +648,17 @@ class CodeServerManager
             $process = $this->executeDockerFileCommand($workspace, ['git', 'clone', $workspace->template->git_url, '.']);
             if ($process->isSuccessful()) {
                 $this->executeDockerFileCommand($workspace, ['rm', '-rf', '.git']);
+                
+                // Inject declarative Nix configuration and bootstrap script even if cloned
+                $this->injectVisionConfig($workspace);
+
                 return; // Successfully seeded from template
             }
             Log::error("Workspace template clone failed", ['url' => $workspace->template->git_url, 'error' => $process->getErrorOutput()]);
         }
 
         // Inject declarative Nix configuration and bootstrap script
-        if ($workspace->template_id && $workspace->template) {
-            $this->createFile($workspace, '.vision', true);
-            
-            if (!empty($workspace->template->nix_config)) {
-                $this->writeFile($workspace, '.vision/dev.nix', $workspace->template->nix_config);
-                $this->executeDockerFileCommand($workspace, ['chmod', '0666', "/home/coder/{$workspace->slug}/.vision/dev.nix"]);
-            }
-            
-            if (!empty($workspace->template->bootstrap_script)) {
-                $this->writeFile($workspace, '.vision/bootstrap.sh', $workspace->template->bootstrap_script);
-                $this->executeDockerFileCommand($workspace, ['chmod', '0777', "/home/coder/{$workspace->slug}/.vision/bootstrap.sh"]);
-            }
-        }
+        $this->injectVisionConfig($workspace);
 
         $lang = $workspace->language ?? 'python';
 
@@ -697,6 +689,25 @@ class CodeServerManager
             'bash'       => 'sh',
             default      => 'py',
         };
+    }
+
+    private function injectVisionConfig(Workspace $workspace): void
+    {
+        if ($workspace->template_id && $workspace->template) {
+            if (!empty($workspace->template->nix_config) || !empty($workspace->template->bootstrap_script)) {
+                $this->createFile($workspace, '.vision', true);
+                
+                if (!empty($workspace->template->nix_config)) {
+                    $this->writeFile($workspace, '.vision/dev.nix', $workspace->template->nix_config);
+                    $this->executeDockerFileCommand($workspace, ['chmod', '0666', "/home/coder/{$workspace->slug}/.vision/dev.nix"]);
+                }
+                
+                if (!empty($workspace->template->bootstrap_script)) {
+                    $this->writeFile($workspace, '.vision/bootstrap.sh', $workspace->template->bootstrap_script);
+                    $this->executeDockerFileCommand($workspace, ['chmod', '0777', "/home/coder/{$workspace->slug}/.vision/bootstrap.sh"]);
+                }
+            }
+        }
     }
 
     private function starterCode(string $lang): string
