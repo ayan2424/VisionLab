@@ -62,6 +62,14 @@ class CodeServerManager
         // Check if container already running
         $existingStatus = $this->getStatus($workspace);
         if ($existingStatus['running']) {
+            // Fix: Sync DB state if it's out of sync
+            if ($workspace->status !== 'running') {
+                $workspace->update([
+                    'status'       => 'running',
+                    'container_id' => $existingStatus['container_id'],
+                    'port'         => $existingStatus['port'] ?? $workspace->port,
+                ]);
+            }
             return [
                 'url'          => $existingStatus['url'],
                 'port'         => $existingStatus['port'],
@@ -143,9 +151,9 @@ class CodeServerManager
             '-c',
             'if [ -f /home/coder/' . escapeshellarg($workspace->slug) . '/.vision/dev.nix ]; then ' .
             'export NIXPKGS_ALLOW_INSECURE=1; ' .
-            'exec nix-shell /home/coder/' . escapeshellarg($workspace->slug) . '/.vision/dev.nix --run "/usr/bin/entrypoint.sh --auth ' . escapeshellarg($authMode) . ' --bind-addr 0.0.0.0:8080 --disable-telemetry --trusted-origins https://visionlab.ayan24.me /home/coder/' . escapeshellarg($workspace->slug) . '"; ' .
+            'exec nix-shell /home/coder/' . escapeshellarg($workspace->slug) . '/.vision/dev.nix --run "/usr/bin/entrypoint.sh --auth ' . escapeshellarg($authMode) . ' --bind-addr 0.0.0.0:8080 --disable-telemetry --disable-workspace-trust --trusted-origins https://visionlab.ayan24.me /home/coder/' . escapeshellarg($workspace->slug) . '"; ' .
             'else ' .
-            'exec /usr/bin/entrypoint.sh --auth ' . escapeshellarg($authMode) . ' --bind-addr 0.0.0.0:8080 --disable-telemetry --trusted-origins https://visionlab.ayan24.me /home/coder/' . escapeshellarg($workspace->slug) . '; ' .
+            'exec /usr/bin/entrypoint.sh --auth ' . escapeshellarg($authMode) . ' --bind-addr 0.0.0.0:8080 --disable-telemetry --disable-workspace-trust --trusted-origins https://visionlab.ayan24.me /home/coder/' . escapeshellarg($workspace->slug) . '; ' .
             'fi'
         ]);
 
