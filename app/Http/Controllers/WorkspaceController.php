@@ -192,6 +192,25 @@ class WorkspaceController extends Controller
         return response()->json(['status' => 'rebuilding']);
     }
 
+    /** Show the environment restart preloader page */
+    public function restartView(Workspace $workspace)
+    {
+        $this->authorize('access', $workspace);
+        return view('workspaces.restart', compact('workspace'));
+    }
+
+    /** Process the restart request safely */
+    public function processRestart(Workspace $workspace): JsonResponse
+    {
+        $this->authorize('manage', $workspace);
+
+        $this->codeServerManager->stopWorkspace($workspace);
+        $workspace->update(['status' => 'starting']);
+        $this->codeServerManager->startWorkspace($workspace);
+
+        return response()->json(['status' => 'restarting']);
+    }
+
     /** Get workspace status */
     public function status(Workspace $workspace): JsonResponse
     {

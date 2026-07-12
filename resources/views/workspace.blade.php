@@ -186,7 +186,7 @@
         </div>
 
         {{-- Restart Workspace --}}
-        <a href="{{ route('workspace.rebuild', $workspace->slug) }}" class="pill-btn" style="background:rgba(234,179,8,0.1);color:#eab308;border:1px solid rgba(234,179,8,0.3);text-decoration:none;margin-left:8px;" title="Restart Workspace">
+        <a href="{{ route('workspace.restart', $workspace->slug) }}" class="pill-btn" style="background:rgba(234,179,8,0.1);color:#eab308;border:1px solid rgba(234,179,8,0.3);text-decoration:none;margin-left:8px;" title="Restart Workspace">
             Restart
         </a>
 
