@@ -299,7 +299,6 @@
     let pollInterval = null;
     let fallbackTimeout = null;
     let currentStep = 1;
-    let activeCall = false;
 
     // Custom Confirmation Logic
     let vcConfirmCallback = null;
@@ -471,8 +470,9 @@
         for(let i=1; i<=5; i++) {
             const el = document.getElementById('step-' + i);
             el.classList.remove('done', 'active');
-            if (el.querySelector('span')) {
-                el.innerHTML = el.querySelector('span').innerText;
+            const span = el.querySelector('span');
+            if (span) {
+                el.innerHTML = `<div style="width:16px;height:16px;"></div> <span>${span.innerText}</span>`;
             }
         }
         document.getElementById('step-1').classList.add('active');
