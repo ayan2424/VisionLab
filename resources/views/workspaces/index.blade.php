@@ -71,7 +71,7 @@
                             Boot Workspace
                         </a>
                     @endif
-                    <form method="POST" action="{{ route('workspace.destroy', $ws->slug) }}" class="inline" onsubmit="return confirm('WARNING: This will permanently delete your workspace and all its data. Continue?');">
+                    <form method="POST" action="{{ route('workspace.destroy', $ws->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('WARNING: This will permanently delete your workspace and all its data. Continue?', () => this.submit())">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-ghost py-1.5 px-3 rounded text-xs text-red-500 hover:bg-red-500/10" title="Delete Workspace">

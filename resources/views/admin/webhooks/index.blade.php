@@ -39,7 +39,7 @@
                 <td class="px-5 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
                         <a href="{{ route('admin.webhooks.edit', $webhook->id) }}" class="btn-ghost py-1 px-3 text-xs">Edit</a>
-                        <form method="POST" action="{{ route('admin.webhooks.destroy', $webhook->id) }}" onsubmit="return confirm('Are you sure you want to delete this webhook?');">
+                        <form method="POST" action="{{ route('admin.webhooks.destroy', $webhook->id) }}" onsubmit="event.preventDefault(); vcConfirm('Are you sure you want to delete this webhook?', () => this.submit())">
                             @csrf @method('DELETE')
                             <button class="btn-ghost py-1 px-3 text-xs text-red-500">Delete</button>
                         </form>

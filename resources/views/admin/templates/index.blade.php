@@ -54,7 +54,7 @@
                 </td>
                 <td class="px-4 py-3 text-right">
                     <a href="{{ route('admin.templates.edit', $template->id) }}" class="btn-ghost py-1 px-3 text-xs mr-2">Edit</a>
-                    <form method="POST" action="{{ route('admin.templates.destroy', $template->id) }}" class="inline" onsubmit="return confirm('Delete this template? Note: Existing workspaces will not be affected.');">
+                    <form method="POST" action="{{ route('admin.templates.destroy', $template->id) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Delete this template? Note: Existing workspaces will not be affected.', () => this.submit())">
                         @csrf
                         @method('DELETE')
                         <button class="btn-ghost text-red-500 py-1 px-3 text-xs">Delete</button>

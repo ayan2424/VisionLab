@@ -49,7 +49,7 @@
 
                     @if(Auth::user()->isAdmin())
                     <div class="mt-6 flex justify-end">
-                        <form action="{{ route('announcements.destroy_global', $announcement) }}" method="POST" onsubmit="return confirm('Delete this announcement?');">
+                        <form action="{{ route('announcements.destroy_global', $announcement) }}" method="POST" onsubmit="event.preventDefault(); vcConfirm('Delete this announcement?', () => this.submit())">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-medium">Delete</button>

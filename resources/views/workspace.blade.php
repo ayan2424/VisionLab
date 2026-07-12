@@ -152,9 +152,9 @@
     {{-- Right --}}
     <div style="display:flex;align-items:center;gap:10px;">
         @if(isset($assignment))
-        <form method="POST" action="{{ route('submissions.submit', $assignment->id) }}" style="margin:0;">
+        <form method="POST" action="{{ route('submissions.submit', $assignment->id) }}" style="margin:0;" onsubmit="event.preventDefault(); vcConfirm('Submit this assignment for grading?', () => this.submit())">
             @csrf
-            <button type="submit" class="pill-btn" style="background:rgba(124,58,237,0.1);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);" onclick="return confirm('Submit this assignment for grading?');">
+            <button type="submit" class="pill-btn" style="background:rgba(124,58,237,0.1);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);">
                 <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 Submit Assignment
             </button>
@@ -186,7 +186,7 @@
         </div>
 
         {{-- Destroy Workspace --}}
-        <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:8px;">
+        <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:8px;" onsubmit="event.preventDefault(); vcConfirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?', () => this.submit())">
             @csrf
             @method('DELETE')
             <button type="submit" class="pill-btn" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">

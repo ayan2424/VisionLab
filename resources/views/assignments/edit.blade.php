@@ -90,7 +90,7 @@
         </div>
 
         <div class="flex items-center justify-between pt-2">
-            <form method="POST" action="{{ route('assignments.destroy', $assignment->id) }}" onsubmit="return confirm('Delete this assignment? All submissions will be lost.')">
+            <form method="POST" action="{{ route('assignments.destroy', $assignment->id) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this assignment? All submissions will be lost.', () => this.submit())">
                 @csrf @method('DELETE')
                 <button type="submit" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all" style="color:var(--vc-danger);border:1px solid rgba(239,68,68,0.3);">Delete</button>
             </form>

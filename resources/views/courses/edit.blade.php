@@ -123,7 +123,7 @@
         </div>
 
         <div class="mt-8 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4" style="border-color:var(--vc-border);">
-            <form method="POST" action="{{ route('courses.destroy', $course->slug) }}" onsubmit="return confirm('Delete this course? This cannot be undone.')">
+            <form method="POST" action="{{ route('courses.destroy', $course->slug) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this course? This cannot be undone.', () => this.submit())">
                 @csrf @method('DELETE')
                 <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border w-full sm:w-auto" style="color:var(--vc-danger);background:transparent;border-color:rgba(239,68,68,0.3);" onmouseover="this.style.background='rgba(239,68,68,0.1)';" onmouseout="this.style.background='transparent';">Delete Course</button>
             </form>

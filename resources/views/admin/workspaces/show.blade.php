@@ -25,7 +25,7 @@
     <div class="flex gap-2">
         @if($workspace->status === 'running')
         <a href="{{ route('workspace.show', $workspace->slug) }}" target="_blank" class="btn-primary" style="background:var(--vc-accent);border-color:var(--vc-accent);">Open Workspace</a>
-        <form method="POST" action="{{ route('admin.workspaces.stop', $workspace->slug) }}" onsubmit="return confirm('Force stop this workspace?');">
+        <form method="POST" action="{{ route('admin.workspaces.stop', $workspace->slug) }}" onsubmit="event.preventDefault(); vcConfirm('Force stop this workspace?', () => this.submit())">
             @csrf
             <button class="btn-primary" style="background:#EF4444;border-color:#DC2626;">Force Stop</button>
         </form>
@@ -36,7 +36,7 @@
         </form>
         @endif
         @if($workspace->status !== 'archived')
-        <form method="POST" action="{{ route('admin.workspaces.archive', $workspace->slug) }}" onsubmit="return confirm('Archive this workspace?');">
+        <form method="POST" action="{{ route('admin.workspaces.archive', $workspace->slug) }}" onsubmit="event.preventDefault(); vcConfirm('Archive this workspace?', () => this.submit())">
             @csrf
             <button class="btn-ghost text-red-400">Archive</button>
         </form>

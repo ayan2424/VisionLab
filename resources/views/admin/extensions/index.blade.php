@@ -62,7 +62,7 @@
                     <div class="flex items-center justify-end gap-2">
                         <a href="{{ route('admin.extensions.edit', $ext->id) }}" class="btn-ghost py-1 px-3 text-xs">Edit</a>
                         @if(!$ext->is_builtin)
-                        <form method="POST" action="{{ route('admin.extensions.destroy', $ext->id) }}" onsubmit="return confirm('Delete this extension?')">
+                        <form method="POST" action="{{ route('admin.extensions.destroy', $ext->id) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this extension?', () => this.submit())">
                             @csrf @method('DELETE')
                             <button class="btn-ghost py-1 px-3 text-xs" style="color:#EF4444;border-color:rgba(239,68,68,0.3);" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">Delete</button>
                         </form>

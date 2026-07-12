@@ -93,7 +93,7 @@
                         <span class="text-xs font-semibold" style="color:var(--vc-muted);">Read</span>
                         @endif
                         @if($isInstructor)
-                        <form method="POST" action="{{ route('announcements.destroy', $ann->id) }}" onsubmit="return confirm('Delete this announcement?')">
+                        <form method="POST" action="{{ route('announcements.destroy', $ann->id) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this announcement?', () => this.submit())">
                             @csrf @method('DELETE')
                             <button class="text-xs transition-colors hover:text-red-500" style="color:var(--vc-muted);">Delete</button>
                         </form>
@@ -438,7 +438,7 @@
                     </div>
                 </div>
                 @if($isInstructor)
-                <form method="POST" action="{{ route('enrollments.remove', [$course->slug, $student->id]) }}" onsubmit="return confirm('Remove this student?')">
+                <form method="POST" action="{{ route('enrollments.remove', [$course->slug, $student->id]) }}" onsubmit="event.preventDefault(); vcConfirm('Remove this student?', () => this.submit())">
                     @csrf @method('DELETE')
                     <button class="text-xs transition-colors hover:text-red-500" style="color:var(--vc-muted);">Remove</button>
                 </form>

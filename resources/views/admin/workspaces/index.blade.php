@@ -57,12 +57,12 @@
                 <td class="px-4 py-3 text-right">
                     <a href="{{ route('admin.workspaces.show', $ws->slug) }}" class="btn-ghost py-1 px-3 text-xs mr-2">Inspect</a>
                     @if($ws->status === 'running')
-                        <form method="POST" action="{{ route('admin.workspaces.stop', $ws->slug) }}" class="inline" onsubmit="return confirm('Force stop this workspace? Data not pushed may be lost.');">
+                        <form method="POST" action="{{ route('admin.workspaces.stop', $ws->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Force stop this workspace? Data not pushed may be lost.', () => this.submit())">
                             @csrf
                             <button class="btn-ghost text-yellow-500 py-1 px-3 text-xs">Stop</button>
                         </form>
                     @endif
-                    <form method="POST" action="{{ route('admin.workspaces.destroy', $ws->slug) }}" class="inline">
+                    <form method="POST" action="{{ route('admin.workspaces.destroy', $ws->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('WARNING: This will permanently delete the workspace and all its local physical files. This cannot be undone. Continue?', () => this.submit())">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-ghost text-red-500 py-1 px-3 text-xs">Delete</button>

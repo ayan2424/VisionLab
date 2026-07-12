@@ -89,9 +89,76 @@
     </div>
 </div>
 
+{{-- Custom Confirm Modal Container --}}
+<div id="vc-confirm-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center pointer-events-none">
+    {{-- Backdrop --}}
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto" id="vc-confirm-backdrop" onclick="vcConfirmClose()"></div>
+    
+    {{-- Modal Box --}}
+    <div class="relative w-full max-w-sm mx-4 p-6 rounded-2xl transform scale-95 opacity-0 transition-all duration-300 pointer-events-auto" 
+         style="background:var(--vc-surface);border:1px solid var(--vc-border);box-shadow:var(--vc-shadow-xl);" 
+         id="vc-confirm-box">
+        <h3 class="text-lg font-bold mb-2" style="color:var(--vc-text);">Confirm Action</h3>
+        <p class="text-sm mb-6" style="color:var(--vc-text-secondary);" id="vc-confirm-message"></p>
+        <div class="flex items-center justify-end gap-3">
+            <button type="button" class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors hover:bg-black/5 dark:hover:bg-white/5" 
+                    style="color:var(--vc-text-secondary);background:var(--vc-bg);border:1px solid var(--vc-border);" 
+                    onclick="vcConfirmClose()">Cancel</button>
+            <button type="button" class="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors hover:brightness-110" 
+                    style="background:var(--vc-accent);" 
+                    id="vc-confirm-btn">Confirm</button>
+        </div>
+    </div>
+</div>
+
 {{-- Toast Container --}}
 <div id="toast-container" class="fixed top-16 right-4 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
 <script>
+let vcConfirmCallback = null;
+function vcConfirm(msg, callback) {
+    const modal = document.getElementById('vc-confirm-modal');
+    const backdrop = document.getElementById('vc-confirm-backdrop');
+    const box = document.getElementById('vc-confirm-box');
+    document.getElementById('vc-confirm-message').innerText = msg;
+    vcConfirmCallback = callback;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Trigger reflow
+    void modal.offsetWidth;
+    
+    backdrop.classList.remove('opacity-0');
+    backdrop.classList.add('opacity-100');
+    box.classList.remove('scale-95', 'opacity-0');
+    box.classList.add('scale-100', 'opacity-100');
+}
+
+function vcConfirmClose() {
+    const modal = document.getElementById('vc-confirm-modal');
+    const backdrop = document.getElementById('vc-confirm-backdrop');
+    const box = document.getElementById('vc-confirm-box');
+    
+    backdrop.classList.remove('opacity-100');
+    backdrop.classList.add('opacity-0');
+    box.classList.remove('scale-100', 'opacity-100');
+    box.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        vcConfirmCallback = null;
+    }, 300);
+}
+
+document.getElementById('vc-confirm-btn')?.addEventListener('click', () => {
+    if (vcConfirmCallback) {
+        vcConfirmCallback();
+    }
+    vcConfirmClose();
+});
+window.vcConfirm = vcConfirm;
+
 function vcToast(msg, type = 'info', duration = 5000) {
     const colors = {
         success: { bg:'rgba(22,163,74,.1)', border:'rgba(22,163,74,.3)', text:'var(--vc-success)', icon:'M5 13l4 4L19 7' },

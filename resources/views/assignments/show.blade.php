@@ -132,7 +132,7 @@
                 <a href="{{ route('submissions.ide', $assignment->id) }}" class="btn-primary w-full justify-center mb-3">Open in IDE</a>
                 <form method="POST" action="{{ route('submissions.submit', $assignment->id) }}">
                     @csrf
-                    <button type="submit" onclick="return confirm('Submit this assignment?')" class="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all" style="background:var(--vc-success);">
+                    <button type="button" onclick="vcConfirm('Submit this assignment?', () => this.form.submit())" class="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all" style="background:var(--vc-success);">
                         Submit Assignment
                     </button>
                 </form>
