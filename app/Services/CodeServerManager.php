@@ -95,6 +95,20 @@ class CodeServerManager
             $disableMarketplace = !$workspace->course->allow_marketplace;
         }
 
+        $volumeName = "vl_ws_{$workspace->id}_data";
+        $basePath = "/home/coder/{$workspace->slug}";
+
+        // Ensure volume exists and root directory has correct permissions BEFORE starting the container
+        $process = new Process([$this->dockerCmd(), 'volume', 'create', $volumeName]);
+        $process->run();
+        
+        // Run a quick alpine container to chown the volume root to user 1000
+        $chownCmd = [
+            $this->dockerCmd(), 'run', '--rm', '-v', "{$volumeName}:{$basePath}", 'alpine', 'chown', '1000:1000', $basePath
+        ];
+        $process = new Process($chownCmd);
+        $process->run();
+
         $cmd = [
             $this->dockerCmd(), 'run', '-d', '--init',
             '--name', $name,
