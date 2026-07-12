@@ -185,8 +185,13 @@
             {{ $user->avatar_initials ?? 'U' }}
         </div>
 
+        {{-- Restart Workspace --}}
+        <a href="{{ route('workspace.rebuild', $workspace->slug) }}" class="pill-btn" style="background:rgba(234,179,8,0.1);color:#eab308;border:1px solid rgba(234,179,8,0.3);text-decoration:none;margin-left:8px;" title="Restart Workspace">
+            Restart
+        </a>
+
         {{-- Destroy Workspace --}}
-        <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:8px;" onsubmit="event.preventDefault(); vcConfirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?', () => this.submit())">
+        <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:4px;" onsubmit="event.preventDefault(); vcConfirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?', () => this.submit())">
             @csrf
             @method('DELETE')
             <button type="submit" class="pill-btn" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">
