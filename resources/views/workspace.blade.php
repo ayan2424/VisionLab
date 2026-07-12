@@ -426,8 +426,14 @@
     startWorkspace();
 
     function triggerRestart(isRebuild = false) {
-        if (!isRebuild && !confirm("Are you sure you want to restart the workspace?")) return;
-        
+        if (!isRebuild) {
+            vcConfirm("Are you sure you want to restart the workspace?", () => _executeRestart(false));
+            return;
+        }
+        _executeRestart(true);
+    }
+
+    function _executeRestart(isRebuild) {
         document.getElementById('premium-loader').classList.remove('hidden');
         document.querySelector('.loader-title').textContent = isRebuild ? 'Rebuilding Environment' : 'Restarting Workspace';
         document.querySelector('.loader-subtitle').textContent = isRebuild ? 'Applying Nix packages...' : 'Stopping and starting the container...';
