@@ -175,6 +175,13 @@ class CodeServerManager
         ];
         (new Process($purgeCopilotCmd))->run();
 
+        // Setup automatic Nix environment activation for the integrated terminal
+        $bashrcCmd = [
+            $this->dockerCmd(), 'exec', '-u', '1000', $containerId, 'sh', '-c', 
+            'echo \'if [ -f .vision/dev.nix ] && [ -z "$IN_NIX_SHELL" ]; then export NIXPKGS_ALLOW_INSECURE=1; exec nix-shell .vision/dev.nix; fi\' >> /home/coder/.bashrc'
+        ];
+        (new Process($bashrcCmd))->run();
+
         // Run Nix bootstrap if it exists (Phase 3: Declarative Workspace Build)
         if ($workspace->template_id && $workspace->template && !empty($workspace->template->bootstrap_script)) {
             $bootstrapCmd = [
