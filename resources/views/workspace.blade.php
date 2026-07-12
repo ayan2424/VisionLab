@@ -186,9 +186,9 @@
         </div>
 
         {{-- Restart Workspace --}}
-        <a href="{{ route('workspace.restart', $workspace->slug) }}" class="pill-btn" style="background:rgba(234,179,8,0.1);color:#eab308;border:1px solid rgba(234,179,8,0.3);text-decoration:none;margin-left:8px;" title="Restart Workspace">
+        <button onclick="triggerRestart(false)" class="pill-btn" style="background:rgba(234,179,8,0.1);color:#eab308;border:1px solid rgba(234,179,8,0.3);text-decoration:none;margin-left:8px;cursor:pointer;" title="Restart Workspace">
             Restart
-        </a>
+        </button>
 
         {{-- Destroy Workspace --}}
         <form method="POST" action="{{ route('workspace.destroy', $workspace->slug) }}" style="margin:0;margin-left:4px;" onsubmit="event.preventDefault(); vcConfirm('WARNING: This will permanently delete your workspace and wipe all files. This cannot be undone. Continue?', () => this.submit())">
@@ -425,6 +425,40 @@
     // Start boot sequence
     startWorkspace();
 
+    function triggerRestart(isRebuild = false) {
+        if (!isRebuild && !confirm("Are you sure you want to restart the workspace?")) return;
+        
+        document.getElementById('premium-loader').classList.remove('hidden');
+        document.querySelector('.loader-title').textContent = isRebuild ? 'Rebuilding Environment' : 'Restarting Workspace';
+        document.querySelector('.loader-subtitle').textContent = isRebuild ? 'Applying Nix packages...' : 'Stopping and starting the container...';
+        
+        for(let i=1; i<=5; i++) {
+            const el = document.getElementById('step-' + i);
+            el.classList.remove('done', 'active');
+            if (el.querySelector('span')) {
+                el.innerHTML = el.querySelector('span').innerText;
+            }
+        }
+        document.getElementById('step-1').classList.add('active');
+        
+        document.getElementById('vscode-frame').classList.remove('ready');
+        document.getElementById('vscode-frame').src = 'about:blank';
+        
+        const processUrl = isRebuild 
+            ? "{{ route('workspace.process_rebuild', $workspace->slug) }}" 
+            : "{{ route('workspace.process_restart', $workspace->slug) }}";
+            
+        fetch(processUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        }).then(() => {
+            window.location.reload();
+        }).catch(err => console.error("Restart error", err));
+    }
+
     // Attach event listeners
     document.getElementById('vscode-frame').addEventListener('load', onVsCodeLoad);
     document.getElementById('vscode-frame').addEventListener('error', onVsCodeError);
@@ -457,7 +491,8 @@
                 appendChatMessage(e);
             })
             .listen('WorkspaceRebuildingEvent', (e) => {
-                window.location.href = `/workspace/{{ $workspace->slug }}/rebuild`;
+                console.log('Rebuilding workspace...', e);
+                triggerRestart(true);
             });
             
             let activeUsers = [];
