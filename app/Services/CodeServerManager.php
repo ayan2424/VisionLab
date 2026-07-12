@@ -190,7 +190,9 @@ class CodeServerManager
         ]);
         $domain = url('/');
         $slug = $workspace->slug;
+        $token = $workspace->token;
         $extJs = <<<JS
+const cp = require('child_process');
 const vscode = require('vscode');
 function activate(context) {
     let rebuildPromptShown = false;
@@ -204,7 +206,7 @@ function activate(context) {
             ).then(selection => {
                 rebuildPromptShown = false;
                 if (selection === 'Rebuild Environment') {
-                    vscode.env.openExternal(vscode.Uri.parse('{$domain}/workspace/{$slug}/rebuild'));
+                    cp.exec(`curl -X POST {$domain}/api/workspace/{$slug}/trigger-rebuild -H "Authorization: Bearer {$token}" -H "Accept: application/json"`);
                 }
             });
         }

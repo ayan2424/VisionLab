@@ -450,6 +450,9 @@
             })
             .listen('ChatMessageSent', (e) => {
                 appendChatMessage(e);
+            })
+            .listen('WorkspaceRebuildingEvent', (e) => {
+                window.location.href = `/workspace/{{ $workspace->slug }}/rebuild`;
             });
             
             let activeUsers = [];

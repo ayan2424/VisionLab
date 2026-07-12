@@ -50,6 +50,16 @@ Route::middleware(['auth:sanctum', 'throttle:file-api'])
         ->name('forensics.sync');
 });
 
+// Trigger Rebuild from IDE Extension (Uses Workspace Token instead of Sanctum)
+Route::post('/workspace/{slug}/trigger-rebuild', function(Request $request, $slug) {
+    $workspace = \App\Models\Workspace::where('slug', $slug)->firstOrFail();
+    if ($request->bearerToken() !== $workspace->token) {
+        abort(401, 'Unauthorized access from extension.');
+    }
+    event(new \App\Events\WorkspaceRebuildingEvent($workspace));
+    return response()->json(['status' => 'triggered']);
+})->name('api.workspace.trigger-rebuild');
+
 /*
 |--------------------------------------------------------------------------
 | Video Conferencing API (Phase 6)
