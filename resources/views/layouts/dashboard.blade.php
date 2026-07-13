@@ -45,7 +45,7 @@
     <x-sidebar />
 
     {{-- ═══ MAIN AREA ═══ --}}
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden md:ml-64">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden md:ml-[312px]">
 
         {{-- ── Topbar ── --}}
         <x-topbar />

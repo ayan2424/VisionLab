@@ -46,8 +46,8 @@
                 <label class="block cursor-pointer group relative template-card">
                     <input type="radio" name="template_id" value="{{ $template->id }}" class="peer sr-only" {{ $index === 0 ? 'checked' : '' }} required>
                     
-                    <div class="vc-card h-full border-2 transition-all duration-200 peer-checked:ring-2" 
-                         style="border-color:transparent; peer-checked:border-color:var(--vc-accent); peer-checked:ring-color:rgba(var(--vc-accent-rgb),0.2);">
+                    <div class="vc-card h-full p-6 border-2 border-transparent transition-all duration-300 relative group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] peer-checked:!border-[var(--vc-accent)] peer-checked:bg-[var(--vc-accent-subtle)]" 
+                         style="peer-checked:box-shadow:0 0 0 4px rgba(124,58,237,0.15), 0 10px 25px -5px rgba(0,0,0,0.3);">
                         
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold template-title" style="color:var(--vc-text);">{{ $template->name }}</h3>

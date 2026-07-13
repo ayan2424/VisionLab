@@ -1,13 +1,12 @@
-<aside id="dash-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 transition-all duration-300 transform -translate-x-full md:translate-x-0 flex flex-col backdrop-blur-xl"
-       style="background:rgba(24, 24, 27, 0.6); border-right:1px solid rgba(255,255,255,0.05);">
+<aside id="dash-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 md:w-[280px] md:h-[calc(100vh-2rem)] md:top-4 md:left-4 transition-all duration-400 transform -translate-x-full md:translate-x-0 flex flex-col backdrop-blur-2xl md:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] overflow-hidden"
+       style="background:rgba(24, 24, 27, 0.65); border:1px solid rgba(255,255,255,0.08);">
 
     <!-- ── Logo ── -->
     <div class="h-16 flex items-center px-6 border-b" style="border-color:rgba(255,255,255,0.05);">
         <a href="{{ route('home') }}" class="flex items-center gap-3 group">
             <x-logo size="h-9 w-9" :showText="false" />
             <div>
-                <span class="text-base font-bold tracking-tight" style="color:var(--vc-text);">Vision<span style="color:var(--vc-accent);">Lab</span></span>
-                <span class="block text-[9px] font-semibold uppercase tracking-widest" style="color:var(--vc-muted);">AI Platform</span>
+                <span class="text-lg font-bold tracking-tight" style="color:var(--vc-text);">Vision<span style="color:var(--vc-accent);">Lab</span></span>
             </div>
         </a>
     </div>
