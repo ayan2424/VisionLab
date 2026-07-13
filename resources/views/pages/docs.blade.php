@@ -1,454 +1,53 @@
-@extends('layouts.landing')
+<x-guest-layout>
+    <div class="min-h-screen w-full flex flex-col pt-32 pb-24 px-6 relative overflow-hidden" style="background-color:var(--vc-bg);">
+        
+        <!-- Ambient Neon Glows -->
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-[#B026FF]/10 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none z-0"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#00F3FF]/10 rounded-full blur-[150px] translate-y-1/2 pointer-events-none z-0"></div>
 
-@section('title', 'Documentation — VisionLab Developer Syndicate')
-@section('meta_description', 'Developer manuals, architecture specifications, sandboxing guidelines, and LTI parameters for VisionLab.')
+        <div class="max-w-4xl mx-auto w-full relative z-10">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">Documentation</h1>
+                <p class="text-lg" style="color:var(--vc-text-secondary);">Everything you need to know to get started.</p>
+            </div>
 
-@section('styles')
-<style>
-    /* Docs Page Layout */
-    .docs-layout {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 4rem 2rem;
-        position: relative;
-        z-index: 10;
-    }
-    
-    @media (min-width: 1024px) {
-        .docs-layout {
-            grid-template-columns: 280px 1fr;
-        }
-    }
+            <div class="vc-card p-8 rounded-2xl mb-8">
+                <h2 class="text-2xl font-bold text-white mb-4">Quick Start Guide</h2>
+                <p class="text-base leading-relaxed mb-4" style="color:var(--vc-text-secondary);">
+                    Getting started with VisionLab is simple. If you are an instructor, you can create a course, configure the environment template (Python, Node, C++, etc.), and invite students via a code. Once a student joins, they automatically get a sandboxed workspace allocated.
+                </p>
+                <div class="bg-black/30 p-4 rounded-xl border border-white/5 font-mono text-sm text-[#00F3FF] overflow-x-auto">
+                    # Example: Starting your first python assignment<br>
+                    print("Hello VisionLab!")
+                </div>
+            </div>
 
-    /* Sticky Sidebar */
-    .docs-sidebar {
-        position: sticky;
-        top: 100px;
-        height: calc(100vh - 140px);
-        overflow-y: auto;
-        padding-right: 1.5rem;
-    }
-    
-    .docs-sidebar::-webkit-scrollbar {
-        width: 4px;
-    }
-    .docs-sidebar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 2px;
-    }
+            <div class="space-y-4">
+                <div class="vc-card p-6 rounded-xl border-l-4" style="border-left-color:#B026FF;">
+                    <h3 class="text-lg font-bold text-white mb-2">Workspace Limitations</h3>
+                    <p class="text-sm" style="color:var(--vc-text-secondary);">
+                        Each workspace is restricted to 2GB RAM and 1 CPU Core by default. Network access is disabled during exam lockdowns. Do not run crypto miners.
+                    </p>
+                </div>
+                
+                <div class="vc-card p-6 rounded-xl border-l-4" style="border-left-color:#00F3FF;">
+                    <h3 class="text-lg font-bold text-white mb-2">Using the AI Agent</h3>
+                    <p class="text-sm" style="color:var(--vc-text-secondary);">
+                        The AI agent can be summoned from the left activity bar. It operates in Chat mode for general questions, Plan mode for project architecture, and Agent mode for autonomous diff generation.
+                    </p>
+                </div>
 
-    .docs-nav-group {
-        margin-bottom: 2rem;
-    }
-    
-    .docs-nav-title {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: var(--muted-foreground);
-        margin-bottom: 0.75rem;
-        font-weight: 600;
-    }
+                <div class="vc-card p-6 rounded-xl border-l-4" style="border-left-color:#4ADE80;">
+                    <h3 class="text-lg font-bold text-white mb-2">Exam Lockdown</h3>
+                    <p class="text-sm" style="color:var(--vc-text-secondary);">
+                        When an assignment is marked as 'Exam Mode', students are forced into full-screen. Exiting full-screen or switching tabs generates an automatic violation report.
+                    </p>
+                </div>
+            </div>
 
-    .docs-nav-link {
-        display: block;
-        color: var(--muted-foreground);
-        text-decoration: none;
-        font-size: 13px;
-        padding: 0.4rem 0;
-        transition: all 0.2s var(--ease-out-expo);
-        border-left: 2px solid transparent;
-        padding-left: 0.75rem;
-    }
-    
-    .docs-nav-link:hover {
-        color: #fff;
-        padding-left: 1rem;
-    }
-    
-    .docs-nav-link.active {
-        color: var(--cyan);
-        border-left-color: var(--cyan);
-        font-weight: 600;
-        padding-left: 1rem;
-    }
-
-    /* Docs Content */
-    .docs-content {
-        max-width: 820px;
-    }
-
-    .docs-section {
-        margin-bottom: 5rem;
-        scroll-margin-top: 100px;
-    }
-
-    .docs-section-title {
-        font-family: "Clash Display", sans-serif;
-        font-size: clamp(1.75rem, 3vw, 2.5rem);
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        margin-bottom: 1.5rem;
-        color: #fff;
-    }
-
-    .docs-para {
-        font-size: 0.95rem;
-        color: var(--muted-foreground);
-        line-height: 1.7;
-        margin-bottom: 1.5rem;
-    }
-
-    /* Bullet List styling */
-    .docs-list {
-        margin-left: 1.5rem;
-        margin-bottom: 1.5rem;
-        color: var(--muted-foreground);
-        font-size: 0.95rem;
-    }
-    .docs-list li {
-        margin-bottom: 0.5rem;
-    }
-    .docs-list li strong {
-        color: #fff;
-    }
-
-    /* Terminals & Code Blocks */
-    .code-widget {
-        background: rgba(255, 255, 255, 0.01);
-        border: 1px solid var(--border);
-        border-radius: 0.75rem;
-        padding: 1.25rem;
-        margin: 1.5rem 0;
-        font-family: 'JetBrains Mono', monospace;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .code-widget-header {
-        display: flex;
-        justify-content: space-between;
-        font-size: 10px;
-        color: var(--muted-foreground);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-    }
-
-    .code-widget-body {
-        font-size: 12.5px;
-        color: #e4e4e7;
-        line-height: 1.6;
-        overflow-x: auto;
-        white-space: pre;
-    }
-    
-    .highlight-keyword { color: var(--rose-light); }
-    .highlight-string { color: var(--emerald-light); }
-    .highlight-comment { color: #71717a; }
-
-    /* Alert callout */
-    .callout-box {
-        background: rgba(23, 195, 214, 0.02);
-        border: 1px solid rgba(23, 195, 214, 0.15);
-        border-radius: 0.75rem;
-        padding: 1.25rem 1.5rem;
-        margin: 2rem 0;
-        display: flex;
-        gap: 1rem;
-    }
-    
-    .callout-icon {
-        color: var(--cyan);
-        font-size: 1.25rem;
-        flex-shrink: 0;
-    }
-    
-    .callout-body {
-        font-size: 0.9rem;
-        color: var(--muted-foreground);
-        line-height: 1.6;
-    }
-    
-    .callout-title {
-        font-weight: 600;
-        color: #fff;
-        margin-bottom: 0.25rem;
-    }
-
-    /* Hero header */
-    .hero {
-        position: relative;
-        min-height: 50vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 8rem 2rem 4rem;
-        overflow: hidden;
-    }
-
-    .hero-headline {
-        font-size: clamp(2.5rem, 5vw, 4.5rem);
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -0.03em;
-    }
-</style>
-@endsection
-
-@section('content')
-<!-- HERO SECTION -->
-<section class="hero">
-
-    <div style="position:relative;z-index:10;max-width:900px;margin:0 auto">
-        <h1 class="hero-headline reveal text-gradient-hero">
-            Architectural <br><span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">developer guide.</span>
-        </h1>
-        <p class="section-sub reveal reveal-delay-1" style="margin: 2rem auto 0; text-align:center;">
-            Detailed specs on Nix sandboxing, Socratic AI prompts, LTI 1.3 integration parameters, and direct REST APIs.
-        </p>
+            <div class="mt-16 text-center">
+                <a href="{{ route('home') }}" class="btn-glow !px-8 !py-3 inline-flex">Return Home</a>
+            </div>
+        </div>
     </div>
-</section>
-
-<div class="section-sep"></div>
-
-<!-- DOUBLE COLUMN DOCS LAYOUT -->
-<div class="docs-layout">
-    
-    <!-- LEFT SIDEBAR -->
-    <aside class="docs-sidebar">
-        <div class="docs-nav-group">
-            <div class="docs-nav-title">Onboarding</div>
-            <a href="#quickstart" class="docs-nav-link active" onclick="updateActiveLink(this)">Quick Start</a>
-            <a href="#lti-integration" class="docs-nav-link" onclick="updateActiveLink(this)">LTI 1.3 Integration</a>
-        </div>
-        
-        <div class="docs-nav-group">
-            <div class="docs-nav-title">Architecture</div>
-            <a href="#sandboxed-workspaces" class="docs-nav-link" onclick="updateActiveLink(this)">Nix Sandboxing</a>
-            <a href="#ai-assistant" class="docs-nav-link" onclick="updateActiveLink(this)">Governed AI Models</a>
-        </div>
-        
-        <div class="docs-nav-group">
-            <div class="docs-nav-title">API Primitives</div>
-            <a href="#api-reference" class="docs-nav-link" onclick="updateActiveLink(this)">REST API Docs</a>
-        </div>
-    </aside>
-
-    <!-- RIGHT CONTENT PANELS -->
-    <main class="docs-content">
-        
-        <!-- QUICKSTART -->
-        <section id="quickstart" class="docs-section reveal">
-            <h2 class="docs-section-title">Quick Start</h2>
-            <p class="docs-para">
-                VisionLab is designed to boot isolated development workspaces for computer science cohorts within seconds. Universities can integrate the platform directly with their existing Learning Management Systems (Canvas, Moodle, Blackboard) or run it as a standalone container platform.
-            </p>
-            <p class="docs-para">
-                To run a local development instance of the VisionLab kernel and proxy services on your machine, clone the repository and execute the environment bootstrapper.
-            </p>
-            
-            <div class="code-widget">
-                <div class="code-widget-header">
-                    <span>Terminal</span>
-                    <span>bash</span>
-                </div>
-                <div class="code-widget-body"><span class="highlight-comment"># Clone the repository and navigate to root</span>
-git clone https://github.com/ayan2424/VisionLab.git
-cd VisionLab
-
-<span class="highlight-comment"># Run the environment setup script</span>
-./setup.sh --dev-mode
-
-<span class="highlight-comment"># Build assets and start Laravel Sail / Docker containers</span>
-sail up -d
-sail artisan migrate --seed</div>
-            </div>
-
-            <p class="docs-para">
-                Once initialized, the local portal is accessible at <code class="font-mono text-cyan">http://localhost:8000</code>. You can sign in using pre-configured seed credentials for instructors, students, or system administrators.
-            </p>
-        </section>
-
-        <!-- LTI 1.3 -->
-        <section id="lti-integration" class="docs-section reveal">
-            <h2 class="docs-section-title">LTI 1.3 LMS Integration</h2>
-            <p class="docs-para">
-                VisionLab complies with the IMS Global Learning Tools Interoperability (LTI) 1.3 standards. This allows automated single sign-on (SSO), dynamic course syncing, and programmatic grade passback from VisionLab workspaces directly into Canvas or Moodle.
-            </p>
-            <p class="docs-para">
-                To bind a course cohort from your LMS, navigate to your administrator console in Canvas, add a developer key, and supply the following connection parameters:
-            </p>
-
-            <div class="code-widget">
-                <div class="code-widget-header">
-                    <span>Configuration Parameters</span>
-                    <span>JSON</span>
-                </div>
-                <div class="code-widget-body">{
-  <span class="highlight-keyword">"target_link_uri"</span>: <span class="highlight-string">"https://visioncode.ai/lti/launch"</span>,
-  <span class="highlight-keyword">"oidc_initiation_url"</span>: <span class="highlight-string">"https://visioncode.ai/lti/login"</span>,
-  <span class="highlight-keyword">"public_jwk_url"</span>: <span class="highlight-string">"https://visioncode.ai/lti/jwks"</span>,
-  <span class="highlight-keyword">"scopes"</span>: [
-    <span class="highlight-string">"https://purl.imsglobal.org/spec/lti-ags/scope/score"</span>,
-    <span class="highlight-string">"https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"</span>
-  ]
-}</div>
-            </div>
-
-            <p class="docs-para">
-                Grade points scored during coding assignments or compiler evaluations are automatically forwarded back using LTI Outcomes services.
-            </p>
-        </section>
-
-        <!-- NIX SANDBOXING -->
-        <section id="sandboxed-workspaces" class="docs-section reveal">
-            <h2 class="docs-section-title">Nix Sandboxing</h2>
-            <p class="docs-para">
-                CS Workspaces are managed dynamically by the <code class="font-mono text-cyan">CodeServerManager</code> service. Each student receives an isolated workspace derived from declarative Nix environments (<code class="font-mono text-cyan">dev.nix</code>). This guarantees exact compiler environments across the entire student roster.
-            </p>
-            
-            <div class="callout-box">
-                <div class="callout-icon">
-                    <svg class="w-5 h-5 text-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                </div>
-                <div class="callout-body">
-                    <div class="callout-title">Container Hardening Matrix</div>
-                    Every container runs with dropped privileges: <code class="font-mono">--security-opt no-new-privileges:true</code>, dropped capabilities (<code class="font-mono">--cap-drop ALL</code>), a read-only root filesystem, and strict memory limits. Any file API requests undergo <code class="font-mono">realpath()</code> validation.
-                </div>
-            </div>
-
-            <p class="docs-para">
-                A typical workspace container definition uses the following system blueprint:
-            </p>
-
-            <div class="code-widget">
-                <div class="code-widget-header">
-                    <span>Nix Configuration</span>
-                    <span>dev.nix</span>
-                </div>
-                <div class="code-widget-body">{ pkgs ? import &lt;nixpkgs&gt; {} }:
-
-pkgs.mkShell {
-  buildInputs = [
-    pkgs.php83
-    pkgs.nodejs_20
-    pkgs.python311
-    pkgs.gcc
-    pkgs.git
-  ];
-
-  shellHook = <span class="highlight-string">''
-    echo "VisionLab Sandbox Environment Initialized."
-  ''</span>;
-}</div>
-            </div>
-        </section>
-
-        <!-- AI AGENT MODES -->
-        <section id="ai-assistant" class="docs-section reveal">
-            <h2 class="docs-section-title">Governed AI Agent Modes</h2>
-            <p class="docs-para">
-                The integrated AI assistant is managed by the server to balance pedagogy with coding assistance. Instructors can configure one of three specific operational modes for each programming assignment:
-            </p>
-            
-            <ul class="docs-list">
-                <li><strong>Socratic Mode (Default):</strong> The assistant is forbidden from generating directly copy-pasteable blocks of code. Instead, it parses student errors and suggests architectural concepts, guiding the student to solve the problem themselves.</li>
-                <li><strong>Plan Mode:</strong> The assistant is permitted to produce structured pseudocode and implementation blueprints, detailing step-by-step algorithms without supplying functional code files.</li>
-                <li><strong>Agent Mutation Mode:</strong> Full sandbox permissions are enabled. The assistant proposed code mutations as diffs. Files are never mutated directly; all changes must pass through the `ai_pending_patches` queue for manual human inspection and approval via the diff viewer.</li>
-            </ul>
-
-            <div class="callout-box">
-                <div class="callout-icon">
-                    <svg class="w-5 h-5 text-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                </div>
-                <div class="callout-body">
-                    <div class="callout-title">Patch Queue Safeguards</div>
-                    AI mutations are bound by a 20-patch lifecycle safety limit. Any code changes require user approval. The only directory exempted is the workspace-scoped metadata file <code class="font-mono">.visionlab_memory.md</code>.
-                </div>
-            </div>
-        </section>
-
-
-
-        <!-- REST API -->
-        <section id="api-reference" class="docs-section reveal">
-            <h2 class="docs-section-title">REST API Reference</h2>
-            <p class="docs-para">
-                VisionLab exposes secure endpoints protected by Sanctum API tokens. External administrative scripts or CI pipelines can trigger evaluations or monitor node telemetry using standard endpoints.
-            </p>
-
-            <div class="code-widget">
-                <div class="code-widget-header">
-                    <span>GET /api/v1/workspaces</span>
-                    <span>cURL</span>
-                </div>
-                <div class="code-widget-body">curl -X GET https://visioncode.ai/api/v1/workspaces \
-  -H <span class="highlight-string">'Authorization: Bearer vl_sec_7a2b9...'</span> \
-  -H <span class="highlight-string">'Accept: application/json'</span></div>
-            </div>
-
-            <div class="code-widget">
-                <div class="code-widget-header">
-                    <span>Response JSON</span>
-                    <span>application/json</span>
-                </div>
-                <div class="code-widget-body">{
-  <span class="highlight-keyword">"status"</span>: <span class="highlight-string">"success"</span>,
-  <span class="highlight-keyword">"data"</span>: [
-    {
-      <span class="highlight-keyword">"workspace_id"</span>: <span class="highlight-string">"ws_99818"</span>,
-      <span class="highlight-keyword">"user_id"</span>: 142,
-      <span class="highlight-keyword">"status"</span>: <span class="highlight-string">"active"</span>,
-      <span class="highlight-keyword">"cpu_usage_pct"</span>: 4.8,
-      <span class="highlight-keyword">"memory_mb"</span>: 512,
-      <span class="highlight-keyword">"uptime_seconds"</span>: 3600
-    }
-  ]
-}</div>
-            </div>
-        </section>
-    </main>
-</div>
-@endsection
-
-@section('scripts')
-<script type="module">
-    import * as THREE from 'three';
-
-    // ── Update sidebar active state on scroll ──
-    const sections = document.querySelectorAll('.docs-section');
-    const navLinks = document.querySelectorAll('.docs-nav-link');
-
-    window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            if (window.scrollY >= sectionTop - 120) {
-                current = section.getAttribute('id');
-            }
-        });
-
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
-        });
-    });
-
-    window.updateActiveLink = function(el) {
-        navLinks.forEach(l => l.classList.remove('active'));
-        el.classList.add('active');
-    };
-
-
-</script>
-@endsection
+</x-guest-layout>

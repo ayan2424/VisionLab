@@ -80,13 +80,7 @@
                 <a href="{{ route('register') }}" class="font-medium hover:underline" style="color:var(--vc-text);">Sign up</a>
             </div>
 
-            {{-- Demo Credentials --}}
-            <div class="mt-8 text-center text-xs" style="color:var(--vc-muted);">
-                Quick demo access:<br>
-                <button onclick="document.getElementById('email').value='admin@visioncode.ai';document.getElementById('password').value='Admin@12345';" class="mt-2 text-[#00F3FF] hover:underline">Admin</button> ·
-                <button onclick="document.getElementById('email').value='instructor@visioncode.ai';document.getElementById('password').value='Instructor@12345';" class="mt-2 text-[#00F3FF] hover:underline">Instructor</button> ·
-                <button onclick="document.getElementById('email').value='student@visioncode.ai';document.getElementById('password').value='Student@12345';" class="mt-2 text-[#00F3FF] hover:underline">Student</button>
-            </div>
+
 
         </div>
     </div>
