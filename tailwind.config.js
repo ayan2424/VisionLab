@@ -14,7 +14,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Space Grotesk', 'Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Plus Jakarta Sans', 'Inter', ...defaultTheme.fontFamily.sans],
                 mono: ['JetBrains Mono', 'Fira Code', ...defaultTheme.fontFamily.mono],
             },
             colors: {
