@@ -48,13 +48,13 @@
     <x-sidebar />
 
     {{-- ═══ MAIN AREA ═══ --}}
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden rounded-2xl md:rounded-2xl shadow-2xl relative transition-all duration-300" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
+    <div class="flex-1 flex flex-col min-w-0 gap-3 md:gap-5 transition-all duration-300">
 
         {{-- ── Topbar ── --}}
         <x-topbar />
 
         {{-- ── Content ── --}}
-        <main class="flex-1 min-h-0 overflow-y-auto p-6 md:p-10 transition-colors duration-300 relative z-10 custom-scrollbar">
+        <main class="flex-1 min-h-0 overflow-y-auto p-6 md:p-10 rounded-2xl shadow-2xl transition-colors duration-300 relative z-10 custom-scrollbar" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
             @if(session()->has('impersonator_id'))
             <div class="mb-4 px-4 py-3 rounded-xl text-sm flex items-center justify-between gap-4"
                  style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;">
