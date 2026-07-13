@@ -1,5 +1,4 @@
-<header class="h-16 flex-shrink-0 flex items-center justify-between px-8 rounded-full shadow-2xl transition-colors duration-300 z-30 relative"
-        style="background:var(--vc-surface); border:1px solid var(--vc-border);">
+<header class="vc-card h-16 flex-shrink-0 flex items-center justify-between px-8 !rounded-full transition-colors duration-300 z-30 relative">
 
     <div class="flex items-center gap-3">
         {{-- Mobile sidebar toggle --}}

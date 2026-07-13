@@ -39,8 +39,8 @@
 </head>
 <body class="font-sans antialiased overflow-hidden transition-colors duration-300 relative" style="background:var(--vc-bg);color:var(--vc-text);">
 <!-- Ambient Background Glows -->
-<div class="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-<div class="fixed bottom-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[150px] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+<div class="fixed top-0 left-0 w-[600px] h-[600px] bg-[#B026FF]/20 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+<div class="fixed bottom-0 right-0 w-[800px] h-[800px] bg-[#00F3FF]/15 rounded-full blur-[180px] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
 <div class="flex h-screen w-full p-3 md:p-5 gap-3 md:gap-5 box-border">
 
@@ -54,7 +54,7 @@
         <x-topbar />
 
         {{-- ── Content ── --}}
-        <main class="flex-1 min-h-0 overflow-y-auto p-6 md:p-10 rounded-2xl shadow-2xl transition-colors duration-300 relative z-10 custom-scrollbar" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
+        <main class="vc-card flex-1 min-h-0 overflow-y-auto p-6 md:p-10 !rounded-2xl relative z-10 custom-scrollbar">
             @if(session()->has('impersonator_id'))
             <div class="mb-4 px-4 py-3 rounded-xl text-sm flex items-center justify-between gap-4"
                  style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;">

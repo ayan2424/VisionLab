@@ -1,5 +1,4 @@
-<aside id="dash-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 md:relative md:w-[280px] transition-all duration-400 transform -translate-x-full md:translate-x-0 flex flex-col flex-shrink-0 rounded-2xl md:rounded-2xl shadow-2xl overflow-hidden"
-       style="background:var(--vc-surface); border:1px solid var(--vc-border);">
+<aside id="dash-sidebar" class="vc-card fixed inset-y-0 left-0 z-50 w-64 md:relative md:w-[280px] transition-all duration-400 transform -translate-x-full md:translate-x-0 flex flex-col flex-shrink-0 !rounded-2xl overflow-hidden">
 
     <!-- ── Logo ── -->
     <div class="h-16 flex items-center px-6 border-b" style="border-color:rgba(255,255,255,0.05);">
