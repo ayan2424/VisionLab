@@ -1,9 +1,7 @@
-@extends('layouts.landing')
+<x-guest-layout>
+    <x-slot name="title">Contact Us — VisionLab Support & Partnerships</x-slot>
 
-@section('title', 'Contact Us — VisionLab Support & Partnerships')
-@section('meta_description', 'Contact the VisionLab engineering syndicate for developer support and institutional partnerships.')
-
-@section('styles')
+    @push('styles')
 <style>
     /* Contact Page Layout */
     .contact-layout {
@@ -216,9 +214,9 @@
         letter-spacing: -0.03em;
     }
 </style>
-@endsection
+</style>
+    @endpush
 
-@section('content')
 <!-- HERO SECTION -->
 <section class="hero">
 
@@ -313,6 +311,6 @@
         </a>
     </div>
 </div>
-@endsection
-
-
+    </div>
+</div>
+</x-guest-layout>

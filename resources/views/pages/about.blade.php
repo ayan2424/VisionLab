@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="min-h-screen w-full flex flex-col pt-32 pb-24 px-6 relative overflow-hidden" style="background-color:var(--vc-bg);">
+    <div class="min-h-screen w-full flex flex-col pt-32 pb-24 px-6 relative overflow-hidden">
         
         <!-- Ambient Neon Glows -->
         <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-[#B026FF]/10 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none z-0"></div>
