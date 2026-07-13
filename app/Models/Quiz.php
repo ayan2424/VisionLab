@@ -8,5 +8,9 @@ class Quiz extends Model
 {
     protected $fillable = ['course_module_id', 'title', 'time_limit_minutes', 'passing_score', 'is_active'];
 
-    //
+    public function courseModule()
+    {
+        return $this->belongsTo(CourseModule::class);
+    }
+
 }

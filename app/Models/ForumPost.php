@@ -8,5 +8,14 @@ class ForumPost extends Model
 {
     protected $fillable = ['forum_topic_id', 'user_id', 'body'];
 
-    //
+    public function forumTopic()
+    {
+        return $this->belongsTo(ForumTopic::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

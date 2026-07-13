@@ -8,5 +8,9 @@ class Question extends Model
 {
     protected $fillable = ['quiz_id', 'question_text', 'type', 'options', 'correct_answer', 'points'];
 
-    //
+    public function quiz()
+    {
+        return $this->belongsTo(Quiz::class);
+    }
+
 }

@@ -8,5 +8,9 @@ class Payroll extends Model
 {
     protected $fillable = ['employee_id', 'month_year', 'basic_pay', 'allowances', 'deductions', 'net_pay', 'status', 'payment_date'];
 
-    //
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
 }
