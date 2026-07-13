@@ -1,11 +1,11 @@
-<footer class="relative z-10 py-16 bg-[#040d21] border-t border-white/5 font-['Inter']">
+<footer class="relative z-10 py-16 bg-[#040d21] border-t border-white/5">
     <div class="max-w-[1400px] mx-auto px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
             <!-- Brand Column -->
             <div class="col-span-2 lg:col-span-2">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 mb-6">
                     <img src="{{ asset('icons/logo.svg') }}" alt="VisionLab Logo" class="h-8 w-8">
-                    <span class="text-xl font-bold tracking-tight text-white font-['Inter']">Vision<span style="color:#7d8590;">Lab</span></span>
+                    <span class="text-xl font-bold tracking-tight text-white">Vision<span style="color:#7d8590;">Lab</span></span>
                 </a>
                 <p class="text-sm text-[#7d8590] leading-relaxed max-w-xs mb-6">
                     The collaborative IDE built for research universities. Fully sandboxed, real-time sync, and responsibly AI-assisted.

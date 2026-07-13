@@ -9,7 +9,7 @@
                 <img src="{{ asset('icons/logo.svg') }}" alt="VisionLab Logo" class="relative h-8 w-8 object-contain">
             </div>
             <div class="flex items-baseline gap-1">
-                <span class="text-xl font-bold tracking-tight text-white font-['Inter']">Vision<span style="color:#7d8590;">Lab</span></span>
+                <span class="text-xl font-bold tracking-tight text-white">Vision<span style="color:#7d8590;">Lab</span></span>
                 <span class="hidden md:inline-block font-mono text-[10px] uppercase tracking-widest text-[#10B981] ml-1">Kernel</span>
             </div>
         </a>

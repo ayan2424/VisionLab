@@ -6,12 +6,12 @@
     <meta name="description" content="The collaborative IDE built for research universities. Sandboxed, audited, and AI-assisted.">
     <title>VisionLab — Collaborative coding for universities</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #040d21; /* Deep GitHub dark background */
             color: white;
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             overflow-x: hidden;
             position: relative;
         }
