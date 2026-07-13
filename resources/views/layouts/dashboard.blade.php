@@ -37,7 +37,10 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased overflow-hidden transition-colors duration-300" style="background:var(--vc-bg);color:var(--vc-text);">
+<body class="font-sans antialiased overflow-hidden transition-colors duration-300 relative" style="background:var(--vc-bg);color:var(--vc-text);">
+<!-- Ambient Background Glows -->
+<div class="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+<div class="fixed bottom-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[150px] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
 <div class="flex h-screen w-full p-3 md:p-5 gap-3 md:gap-5 box-border">
 
@@ -45,7 +48,7 @@
     <x-sidebar />
 
     {{-- ═══ MAIN AREA ═══ --}}
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden rounded-[1.5rem] md:rounded-[2rem] shadow-2xl relative transition-all duration-300" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden rounded-2xl md:rounded-2xl shadow-2xl relative transition-all duration-300" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
 
         {{-- ── Topbar ── --}}
         <x-topbar />
