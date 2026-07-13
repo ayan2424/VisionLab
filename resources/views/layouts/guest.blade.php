@@ -15,12 +15,16 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased min-h-screen transition-colors duration-300"
+<body class="font-sans antialiased min-h-screen flex flex-col transition-colors duration-300"
       style="background:var(--vc-bg);color:var(--vc-text);">
 
-    <div class="relative z-10 w-full">
+    <x-frontend-header />
+
+    <main class="relative z-10 w-full flex-1 flex flex-col items-center justify-center pt-20">
         {{ $slot }}
-    </div>
+    </main>
+
+    <x-frontend-footer />
 </body>
 </html>
 
