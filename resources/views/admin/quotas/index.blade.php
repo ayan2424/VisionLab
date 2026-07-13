@@ -18,11 +18,11 @@
             <div class="p-4 rounded-xl" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-xs" 
-                         style="background:{{ $quota->role === 'student' ? '#16A34A' : ($quota->role === 'instructor' ? '#7c3aed' : '#3B82F6') }}">
-                        {{ strtoupper(substr($quota->role, 0, 1)) }}
+                         style="background:{{ $quota->scope === 'student' ? '#16A34A' : ($quota->scope === 'instructor' ? '#7c3aed' : '#3B82F6') }}">
+                        {{ strtoupper(substr($quota->scope, 0, 1)) }}
                     </div>
                     <h3 class="font-bold uppercase tracking-wider text-sm" style="color:var(--vc-text);">
-                        {{ ucfirst($quota->role) }} Quota
+                        {{ ucfirst($quota->scope) }} Quota
                     </h3>
                 </div>
 
@@ -34,16 +34,16 @@
                         <input type="number" name="quotas[{{ $i }}][max_workspaces]" value="{{ old('quotas.'.$i.'.max_workspaces', $quota->max_workspaces) }}" class="w-full text-sm rounded-lg" style="background:var(--vc-bg);border:1px solid var(--vc-border);color:var(--vc-text);">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1" style="color:var(--vc-text-secondary);">Memory Limit</label>
-                        <input type="text" name="quotas[{{ $i }}][memory_limit]" value="{{ old('quotas.'.$i.'.memory_limit', $quota->memory_limit) }}" class="w-full text-sm rounded-lg" style="background:var(--vc-bg);border:1px solid var(--vc-border);color:var(--vc-text);" placeholder="e.g. 512m">
+                        <label class="block text-xs font-semibold mb-1" style="color:var(--vc-text-secondary);">Memory Limit (MB)</label>
+                        <input type="number" name="quotas[{{ $i }}][memory_mb]" value="{{ old('quotas.'.$i.'.memory_mb', $quota->memory_mb) }}" class="w-full text-sm rounded-lg" style="background:var(--vc-bg);border:1px solid var(--vc-border);color:var(--vc-text);" placeholder="e.g. 512">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1" style="color:var(--vc-text-secondary);">CPU Limit</label>
-                        <input type="number" step="0.1" name="quotas[{{ $i }}][cpu_limit]" value="{{ old('quotas.'.$i.'.cpu_limit', $quota->cpu_limit) }}" class="w-full text-sm rounded-lg" style="background:var(--vc-bg);border:1px solid var(--vc-border);color:var(--vc-text);" placeholder="e.g. 0.5">
+                        <label class="block text-xs font-semibold mb-1" style="color:var(--vc-text-secondary);">CPU Shares</label>
+                        <input type="number" name="quotas[{{ $i }}][cpu_shares]" value="{{ old('quotas.'.$i.'.cpu_shares', $quota->cpu_shares) }}" class="w-full text-sm rounded-lg" style="background:var(--vc-bg);border:1px solid var(--vc-border);color:var(--vc-text);" placeholder="e.g. 1024">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1" style="color:var(--vc-text-secondary);">Storage Limit</label>
-                        <input type="text" name="quotas[{{ $i }}][storage_limit]" value="{{ old('quotas.'.$i.'.storage_limit', $quota->storage_limit) }}" class="w-full text-sm rounded-lg" style="background:var(--vc-bg);border:1px solid var(--vc-border);color:var(--vc-text);" placeholder="e.g. 5g">
+                        <label class="block text-xs font-semibold mb-1" style="color:var(--vc-text-secondary);">Storage Limit (MB)</label>
+                        <input type="number" name="quotas[{{ $i }}][disk_mb]" value="{{ old('quotas.'.$i.'.disk_mb', $quota->disk_mb) }}" class="w-full text-sm rounded-lg" style="background:var(--vc-bg);border:1px solid var(--vc-border);color:var(--vc-text);" placeholder="e.g. 5120">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold mb-1" style="color:var(--vc-text-secondary);">Timeout (mins)</label>

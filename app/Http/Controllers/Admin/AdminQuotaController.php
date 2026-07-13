@@ -13,7 +13,7 @@ class AdminQuotaController extends Controller
     {
         // For simplicity, we just list the global/role-based quotas.
         // A complete implementation would also list course or user-specific overrides.
-        $quotas = WorkspaceQuota::orderBy('role')->get();
+        $quotas = WorkspaceQuota::orderBy('scope')->get();
         return view('admin.quotas.index', compact('quotas'));
     }
 
@@ -23,9 +23,9 @@ class AdminQuotaController extends Controller
             'quotas' => 'required|array',
             'quotas.*.id' => 'required|exists:workspace_quotas,id',
             'quotas.*.max_workspaces' => 'required|integer|min:1',
-            'quotas.*.memory_limit' => 'required|string',
-            'quotas.*.cpu_limit' => 'required|numeric',
-            'quotas.*.storage_limit' => 'required|string',
+            'quotas.*.memory_mb' => 'required|integer',
+            'quotas.*.cpu_shares' => 'required|integer',
+            'quotas.*.disk_mb' => 'required|integer',
             'quotas.*.timeout_minutes' => 'required|integer|min:5',
         ]);
 
@@ -35,9 +35,9 @@ class AdminQuotaController extends Controller
             
             $quota->update([
                 'max_workspaces' => $qData['max_workspaces'],
-                'memory_limit' => $qData['memory_limit'],
-                'cpu_limit' => $qData['cpu_limit'],
-                'storage_limit' => $qData['storage_limit'],
+                'memory_mb' => $qData['memory_mb'],
+                'cpu_shares' => $qData['cpu_shares'],
+                'disk_mb' => $qData['disk_mb'],
                 'timeout_minutes' => $qData['timeout_minutes'],
             ]);
 

@@ -23,7 +23,7 @@
         </thead>
         <tbody class="divide-y" style="divide-color:var(--vc-border);">
             @forelse($workspaces as $ws)
-            <tr class="hover:bg-opacity-5 transition-colors" style="hover:background:var(--vc-border);">
+            <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b" style="border-color:var(--vc-border);">
                 <td class="px-4 py-3">
                     <div class="font-medium" style="color:var(--vc-text);">{{ $ws->slug }}</div>
                     <div class="text-[11px]" style="color:var(--vc-muted);">Created {{ $ws->created_at->diffForHumans() }}</div>
