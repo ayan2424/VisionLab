@@ -1,5 +1,5 @@
-<header class="h-16 flex-shrink-0 flex items-center justify-between px-8 transition-colors duration-300 backdrop-blur-xl z-30 relative"
-        style="background:rgba(9, 9, 11, 0.6);border-bottom:1px solid rgba(255,255,255,0.05);">
+<header class="h-16 flex-shrink-0 flex items-center justify-between px-8 transition-colors duration-300 z-30 relative"
+        style="border-bottom:1px solid var(--vc-border);">
 
     <div class="flex items-center gap-3">
         {{-- Mobile sidebar toggle --}}

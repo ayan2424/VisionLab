@@ -39,19 +39,19 @@
 </head>
 <body class="font-sans antialiased overflow-hidden transition-colors duration-300" style="background:var(--vc-bg);color:var(--vc-text);">
 
-<div class="flex h-screen">
+<div class="flex h-screen w-full p-3 md:p-5 gap-3 md:gap-5 box-border">
 
     {{-- ═══ SIDEBAR ═══ --}}
     <x-sidebar />
 
     {{-- ═══ MAIN AREA ═══ --}}
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden md:ml-[312px]">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden rounded-[1.5rem] md:rounded-[2rem] shadow-2xl relative transition-all duration-300" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
 
         {{-- ── Topbar ── --}}
         <x-topbar />
 
         {{-- ── Content ── --}}
-        <main class="flex-1 min-h-0 overflow-y-auto p-6 md:p-8 lg:p-10 transition-colors duration-300 relative z-10">
+        <main class="flex-1 min-h-0 overflow-y-auto p-6 md:p-10 transition-colors duration-300 relative z-10 custom-scrollbar">
             @if(session()->has('impersonator_id'))
             <div class="mb-4 px-4 py-3 rounded-xl text-sm flex items-center justify-between gap-4"
                  style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;">
@@ -178,6 +178,20 @@ window.vcToast = vcToast;
 @keyframes toastIn {
     from { opacity:0;transform:translateX(16px); }
     to   { opacity:1;transform:translateX(0); }
+}
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
 }
 </style>
 </body>
