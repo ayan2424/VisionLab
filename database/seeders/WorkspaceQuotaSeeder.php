@@ -12,6 +12,7 @@ class WorkspaceQuotaSeeder extends Seeder
         WorkspaceQuota::updateOrCreate(
             ['scope' => 'student'],
             [
+                'name' => 'Student Quota',
                 'max_workspaces' => 2,
                 'memory_mb' => 512,
                 'cpu_shares' => 512,
@@ -23,6 +24,7 @@ class WorkspaceQuotaSeeder extends Seeder
         WorkspaceQuota::updateOrCreate(
             ['scope' => 'instructor'],
             [
+                'name' => 'Instructor Quota',
                 'max_workspaces' => 5,
                 'memory_mb' => 1024,
                 'cpu_shares' => 1024,
@@ -34,6 +36,7 @@ class WorkspaceQuotaSeeder extends Seeder
         WorkspaceQuota::updateOrCreate(
             ['scope' => 'admin'],
             [
+                'name' => 'Admin Quota',
                 'max_workspaces' => 10,
                 'memory_mb' => 2048,
                 'cpu_shares' => 2048,
