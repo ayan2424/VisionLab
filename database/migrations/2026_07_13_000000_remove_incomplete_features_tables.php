@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('video_attendances');
         Schema::dropIfExists('video_rooms');
         Schema::dropIfExists('recording_audit_logs');
@@ -19,7 +20,9 @@ return new class extends Migration
         Schema::dropIfExists('collab_sessions');
         Schema::dropIfExists('workspace_collaborators');
         Schema::dropIfExists('chat_messages');
+        Schema::dropIfExists('room_members');
         Schema::dropIfExists('rooms');
+        Schema::enableForeignKeyConstraints();
     }
 
     /**

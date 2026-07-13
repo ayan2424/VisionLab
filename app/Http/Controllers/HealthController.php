@@ -63,7 +63,7 @@ class HealthController extends Controller
         try {
             DB::connection()->getPdo();
             $checks['database'] = true;
-        } catch (Exception) {
+        } catch (\Throwable) {
             $status = 'degraded';
         }
 
@@ -71,14 +71,14 @@ class HealthController extends Controller
         try {
             Redis::connection()->ping();
             $checks['redis'] = true;
-        } catch (Exception) {
+        } catch (\Throwable) {
             $status = 'degraded';
         }
 
         // 3. Reverb Probe (Check if broadcast driver is reverb)
         try {
             $checks['reverb'] = config('broadcasting.default') === 'reverb';
-        } catch (Exception) {
+        } catch (\Throwable) {
             $status = 'degraded';
         }
 
@@ -86,7 +86,7 @@ class HealthController extends Controller
         try {
             $checks['storage'] = Storage::disk('local')->put('.health', 'ok');
             Storage::disk('local')->delete('.health');
-        } catch (Exception) {
+        } catch (\Throwable) {
             $status = 'degraded';
         }
 
