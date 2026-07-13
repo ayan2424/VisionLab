@@ -11,23 +11,23 @@
 
 /* ── Light Theme ──────────────────────────────────────────────────────────── */
 :root {
-    --vc-bg:             #09090B; /* Neutral tech dark instead of warm brown */
-    --vc-surface:        #18181B; /* Neutral tech dark */
-    --vc-elevated:       #27272A; /* Neutral tech dark */
-    --vc-card:           rgba(24, 24, 27, 0.6); /* Glassmorphism base */
-    --vc-card-hover:     rgba(39, 39, 42, 0.8);
-    --vc-nav:            rgba(9,9,11,0.92);
-    --vc-border:         #3F3F46;
-    --vc-ring:           #FF6B2B;
-    --vc-text:           #FAFAFA;
-    --vc-text-secondary: #A1A1AA;
-    --vc-muted:          #71717A;
-    --vc-accent:         #8B5CF6;
-    --vc-accent-hover:   #A78BFA;
-    --vc-accent-subtle:  #2E1065;
-    --vc-input:          #18181B;
-    --vc-input-border:   #3F3F46;
-    --vc-input-focus:    #8B5CF6;
+    --vc-bg:             #020617; /* Deep slate tech dark */
+    --vc-surface:        #0B0F19; /* Rich dark slate */
+    --vc-elevated:       #1E293B; /* Lighter slate */
+    --vc-card:           rgba(11, 15, 25, 0.6); /* Glassmorphism base */
+    --vc-card-hover:     rgba(30, 41, 59, 0.8);
+    --vc-nav:            rgba(2, 6, 23, 0.92);
+    --vc-border:         #1E293B;
+    --vc-ring:           #6366F1;
+    --vc-text:           #F8FAFC;
+    --vc-text-secondary: #94A3B8;
+    --vc-muted:          #64748B;
+    --vc-accent:         #6366F1;
+    --vc-accent-hover:   #818CF8;
+    --vc-accent-subtle:  rgba(99, 102, 241, 0.15);
+    --vc-input:          #0F172A;
+    --vc-input-border:   #1E293B;
+    --vc-input-focus:    #6366F1;
     --vc-shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
     --vc-shadow-md:      0 4px 16px rgba(0,0,0,0.5);
     --vc-shadow-lg:      0 12px 48px rgba(0,0,0,0.6);
