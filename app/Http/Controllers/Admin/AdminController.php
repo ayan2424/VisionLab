@@ -7,7 +7,6 @@ use App\Models\AiActionsLog;
 use App\Models\AiPendingPatch;
 use App\Models\AuditLog;
 use App\Models\Course;
-use App\Models\Deployment;
 use App\Models\Extension;
 use App\Models\Submission;
 use App\Models\User;
@@ -44,8 +43,6 @@ class AdminController extends Controller
         $stats['total_workspaces']   = Workspace::count();
         $stats['extensions_active']  = Extension::where('is_active', true)->count();
         $stats['extensions_total']   = Extension::count();
-        $stats['deployments_total']  = Deployment::count();
-        $stats['deployments_active'] = Deployment::where('status', 'deployed')->count();
 
         // ── Recent Activity ─────────────────────────────────────────────
         $recentUsers     = User::latest()->take(5)->get();

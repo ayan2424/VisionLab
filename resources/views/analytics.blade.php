@@ -169,12 +169,11 @@
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-sm font-bold text-white" style="font-family:sans-serif;">Platform Activity</h3>
-                            <p class="text-[10px] text-muted" style="font-family:sans-serif;">Last 14 days · Executions · AI calls · Collabs</p>
+                            <p class="text-[10px] text-muted" style="font-family:sans-serif;">Last 14 days · Executions · AI calls</p>
                         </div>
                         <div class="flex items-center gap-3 text-[10px]" style="font-family:sans-serif;">
                             <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-violet-500"></span><span class="text-muted">Executions</span></span>
                             <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-cyan-400"></span><span class="text-muted">AI</span></span>
-                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="text-muted">Collab</span></span>
                         </div>
                     </div>
                     <div id="chart-activity" style="min-height:220px;"></div>
@@ -364,9 +363,8 @@ new ApexCharts(document.getElementById('chart-activity'), {
     series: [
         { name:'Executions', data: @json($execData) },
         { name:'AI Calls',   data: @json($aiData)   },
-        { name:'Collabs',    data: @json($collabData) },
     ],
-    colors:    ['#7c3aed','#22d3ee','#4ade80'],
+    colors:    ['#7c3aed','#22d3ee'],
     fill:      { type:'gradient', gradient:{ shadeIntensity:1, opacityFrom:.3, opacityTo:.02, stops:[0,90,100] } },
     xaxis:     { categories:@json($activityLabels), labels:{ style:{fontSize:'10px'} }, axisBorder:{show:false}, axisTicks:{show:false} },
     yaxis:     { labels:{ style:{fontSize:'10px'} } },

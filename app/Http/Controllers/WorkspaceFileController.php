@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room;
 use App\Services\CodeServerManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
