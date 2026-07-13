@@ -28,10 +28,13 @@
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($workspaces as $ws)
-            <div class="vc-card flex flex-col transition-all hover:border-[var(--vc-accent)]/30">
-                <div class="flex items-start justify-between mb-4">
+            <div class="vc-card p-6 flex flex-col transition-all hover:border-[var(--vc-accent)]/30 relative overflow-hidden group">
+                <!-- Decorative background glow on hover -->
+                <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full blur-3xl transition-opacity duration-300 opacity-0 group-hover:opacity-20" style="background:var(--vc-accent);"></div>
+                
+                <div class="flex items-start justify-between mb-5 relative z-10">
                     <div>
-                        <h3 class="font-bold text-lg" style="color:var(--vc-text);">{{ $ws->name }}</h3>
+                        <h3 class="font-bold text-xl tracking-tight" style="color:var(--vc-text);">{{ $ws->name }}</h3>
                         <p class="text-xs mt-1" style="color:var(--vc-muted);">Created {{ $ws->created_at->diffForHumans() }}</p>
                     </div>
                     @if($ws->status === 'running')
@@ -45,18 +48,18 @@
                     @endif
                 </div>
 
-                <div class="mb-6 flex items-center gap-2">
-                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider" style="background:var(--vc-surface-dark);color:var(--vc-accent);">
+                <div class="mb-6 flex flex-wrap items-center gap-2 relative z-10">
+                    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border" style="background:rgba(139,92,246,0.1);color:var(--vc-accent);border-color:rgba(139,92,246,0.2);">
                         {{ $ws->language }}
                     </span>
                     @if($ws->course)
-                        <span class="px-2 py-1 rounded text-[10px] font-bold tracking-wider" style="background:var(--vc-surface-dark);color:var(--vc-text-secondary);">
+                        <span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-widest border" style="background:rgba(255,255,255,0.05);color:var(--vc-text-secondary);border-color:rgba(255,255,255,0.1);">
                             {{ $ws->course->title }}
                         </span>
                     @endif
                 </div>
 
-                <div class="mt-auto flex items-center gap-2 pt-4 border-t" style="border-color:var(--vc-border);">
+                <div class="mt-auto flex items-center gap-2 pt-5 border-t relative z-10" style="border-color:rgba(255,255,255,0.05);">
                     @if($ws->status === 'running')
                         <a href="{{ route('workspace.show', $ws->slug) }}" class="btn-primary py-1.5 px-4 rounded text-xs font-bold flex-1 text-center">Open IDE</a>
                         <form method="POST" action="{{ route('workspace.stop', $ws->slug) }}" class="inline">
