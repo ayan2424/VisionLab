@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             WorkspaceTemplateSeeder::class,
             InstituteErpSeeder::class,
             ExtendedLmsErpSeeder::class,
+            WorkspaceQuotaSeeder::class,
         ]);
     }
 }
