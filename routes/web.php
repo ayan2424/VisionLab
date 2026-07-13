@@ -24,7 +24,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/healthz', [\App\Http\Controllers\HealthController::class, 'check'])->name('health');
-Route::get('/demo', fn () => view('demo'))->name('demo');
+
 Route::get('/offline', fn () => view('offline'))->name('offline');
 
 // ── SEO Public Pages ──────────────────────────────────────────────────

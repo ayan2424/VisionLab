@@ -272,20 +272,6 @@
         </div>
         @endif
 
-        <!-- ── Demo Link ── -->
-        <div class="pt-6 mt-6 border-t" style="border-color:rgba(255,255,255,0.05);">
-            @php $dActive = request()->routeIs('demo'); @endphp
-            <a href="{{ route('demo') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
-               style="{{ $dActive ? 'color:var(--vc-accent);background:var(--vc-accent-subtle);font-weight:600;' : 'color:var(--vc-text-secondary);' }}">
-                @if($dActive)<span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full" style="background:var(--vc-accent);"></span>@endif
-                <svg class="w-[18px] h-[18px]" style="{{ $dActive ? 'color:var(--vc-accent);' : 'color:var(--vc-muted);' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Demo
-            </a>
-        </div>
     </nav>
 
     <!-- ── User Profile Footer ── -->

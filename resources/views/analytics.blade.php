@@ -76,10 +76,7 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
                 Workspace
             </a>
-            <a href="{{ route('demo') }}" class="nav-link" target="_blank">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.361a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                Demo Script
-            </a>
+
         </nav>
 
         <!-- User pill -->
@@ -119,12 +116,7 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     {{ $activeSessions }} sessions live
                 </span>
-                <a href="{{ route('demo') }}" target="_blank"
-                   class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all"
-                   style="background:#7c3aed;color:#fff;font-family:sans-serif;box-shadow:0 0 12px rgba(124,58,237,.4);">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.361a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    Open Demo
-                </a>
+
             </div>
         </div>
 

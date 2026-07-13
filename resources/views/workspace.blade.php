@@ -159,9 +159,9 @@
         </form>
         @endif
         {{-- User Menu --}}
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #f97316, #fb923c);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.4);margin-left:4px;">
+        <a href="{{ route('dashboard') }}" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, #f97316, #fb923c);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;text-decoration:none;cursor:pointer;box-shadow:0 4px 12px rgba(249,115,22,0.4);margin-left:4px;" title="Go to Dashboard">
             {{ $user->avatar_initials ?? 'U' }}
-        </div>
+        </a>
 
         {{-- Restart Workspace --}}
         <button onclick="triggerRestart(false)" class="pill-btn" style="background:rgba(234,179,8,0.1);color:#eab308;border:1px solid rgba(234,179,8,0.3);text-decoration:none;margin-left:8px;cursor:pointer;" title="Restart Workspace">

@@ -62,14 +62,6 @@
                         Admin
                     </a>
                     @endif
-
-                    <a href="{{ route('demo') }}"
-                       class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200"
-                       style="{{ request()->routeIs('demo')
-                            ? 'color:var(--vc-accent);background:rgba(240,80,0,0.1);'
-                            : 'color:var(--vc-text-secondary);' }}">
-                        Demo
-                    </a>
                 </div>
             </div>
 
@@ -219,7 +211,7 @@
             @if(Auth::check() && Auth::user()->isAdmin())
             <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-red-500 transition-all">Admin Panel</a>
             @endif
-            <a href="{{ route('demo') }}" class="block px-3 py-2 rounded-lg text-sm transition-all" style="color:var(--vc-text-secondary);">Demo</a>
+
         </div>
         @auth
         <div class="px-4 py-3" style="border-top:1px solid var(--vc-border);">

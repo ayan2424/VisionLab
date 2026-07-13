@@ -57,9 +57,6 @@
                 Start Building Free
             </a>
             @endauth
-            <a href="{{ route('demo') }}" class="px-8 py-4 rounded-xl text-base font-semibold border transition-all duration-300 hover:bg-white/5" style="border-color:var(--vc-border);color:var(--vc-text);">
-                Request Faculty Demo
-            </a>
         </div>
 
         <!-- Hero Graphic (Glass Panel) -->
@@ -91,43 +88,159 @@
         </div>
     </main>
 
-    <!-- Features Section -->
-    <section class="relative z-10 w-full max-w-7xl mx-auto px-6 py-32 border-t" style="border-color:var(--vc-border);">
-        <div class="text-center mb-20">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Everything you need. Nothing you don't.</h2>
-            <p class="text-lg" style="color:var(--vc-text-secondary);">Focus on teaching and learning, not infrastructure.</p>
+    <!-- Detailed Features Sections -->
+    <!-- 1. LMS Section -->
+    <section class="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 border-t" style="border-color:var(--vc-border);">
+        <div class="flex flex-col md:flex-row gap-12 items-center">
+            <div class="flex-1 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-[#B026FF]" style="background:rgba(176,38,255,0.1); border:1px solid rgba(176,38,255,0.2);">
+                    Smart LMS
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Course Management, Reimagined.</h2>
+                <p class="text-lg leading-relaxed" style="color:var(--vc-text-secondary);">
+                    Manage courses, enrollments, and announcements effortlessly. Our LMS module integrates deeply with the code execution environment. Instructors can instantly distribute assignments and gather analytics on student progress, all in one place.
+                </p>
+                <ul class="space-y-3" style="color:var(--vc-text-secondary);">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#B026FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Automated Grading & Queue System</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#B026FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Global & Course-level Announcements</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#B026FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Real-time Progress Tracking</li>
+                </ul>
+            </div>
+            <div class="flex-1 vc-card p-6 rounded-2xl w-full">
+                <img src="/assets/dashboard-preview.png" alt="LMS Dashboard" class="rounded-xl border border-white/10 w-full opacity-80" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'><rect width=\'400\' height=\'300\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' fill=\'%23555\' text-anchor=\'middle\' font-family=\'sans-serif\'>LMS Interface Preview</text></svg>'">
+            </div>
         </div>
+    </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="vc-card p-8 rounded-2xl flex flex-col items-start text-left">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style="background:rgba(0,243,255,0.1); border:1px solid rgba(0,243,255,0.2);">
-                    <svg class="w-6 h-6 text-[#00F3FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+    <!-- 2. Workspace Section -->
+    <section class="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 border-t" style="border-color:var(--vc-border);">
+        <div class="flex flex-col md:flex-row-reverse gap-12 items-center">
+            <div class="flex-1 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-[#00F3FF]" style="background:rgba(0,243,255,0.1); border:1px solid rgba(0,243,255,0.2);">
+                    Cloud Workspace
                 </div>
-                <h3 class="text-xl font-bold text-white mb-3">Isolated Sandboxes</h3>
-                <p style="color:var(--vc-text-secondary);" class="leading-relaxed">Instant, ephemeral containers for every student. Securely execute code without risking the host system.</p>
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Full-fledged IDE in the Browser.</h2>
+                <p class="text-lg leading-relaxed" style="color:var(--vc-text-secondary);">
+                    No local setup required. Every student gets a dedicated, isolated sandbox powered by VS Code technology. Real-time syncing allows multiple users to collaborate seamlessly on the same codebase with multi-cursor support.
+                </p>
+                <ul class="space-y-3" style="color:var(--vc-text-secondary);">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00F3FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Instantly Booting Docker Sandboxes</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00F3FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Exam Lockdown Mode functionality</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00F3FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Built-in AI Agent (Chat & Plan modes)</li>
+                </ul>
             </div>
-
-            <div class="vc-card p-8 rounded-2xl flex flex-col items-start text-left">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style="background:rgba(176,38,255,0.1); border:1px solid rgba(176,38,255,0.2);">
-                    <svg class="w-6 h-6 text-[#B026FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3">Real-time Sync</h3>
-                <p style="color:var(--vc-text-secondary);" class="leading-relaxed">Collaborate with sub-millisecond latency. Multiple cursors, shared terminals, and instant state synchronization.</p>
+            <div class="flex-1 vc-card p-6 rounded-2xl w-full">
+                <img src="/assets/workspace-preview.png" alt="Workspace IDE" class="rounded-xl border border-white/10 w-full opacity-80" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'><rect width=\'400\' height=\'300\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' fill=\'%23555\' text-anchor=\'middle\' font-family=\'sans-serif\'>Workspace Preview</text></svg>'">
             </div>
+        </div>
+    </section>
 
-            <div class="vc-card p-8 rounded-2xl flex flex-col items-start text-left">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
-                    <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+    <!-- 3. Institute Management Section -->
+    <section class="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 border-t" style="border-color:var(--vc-border);">
+        <div class="flex flex-col md:flex-row gap-12 items-center">
+            <div class="flex-1 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold text-white" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);">
+                    Institute Management
                 </div>
-                <h3 class="text-xl font-bold text-white mb-3">Responsible AI</h3>
-                <p style="color:var(--vc-text-secondary);" class="leading-relaxed">AI pair programming that guides instead of giving away answers. Fully auditable by faculty.</p>
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Centralized ERP & Administration.</h2>
+                <p class="text-lg leading-relaxed" style="color:var(--vc-text-secondary);">
+                    Designed specifically for Aptech Vision 2026. Manage campuses, departments, batches, fee challans, library resources, and employees from a single pane of glass. High-level analytics keep stakeholders informed.
+                </p>
+                <ul class="space-y-3" style="color:var(--vc-text-secondary);">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Multi-Campus Hierarchy & Roles</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Deep System Auditing & Logs</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Quota & Infrastructure Management</li>
+                </ul>
+            </div>
+            <div class="flex-1 vc-card p-6 rounded-2xl w-full">
+                <img src="/assets/admin-preview.png" alt="Admin ERP Dashboard" class="rounded-xl border border-white/10 w-full opacity-80" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'><rect width=\'400\' height=\'300\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' fill=\'%23555\' text-anchor=\'middle\' font-family=\'sans-serif\'>ERP Admin Preview</text></svg>'">
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="relative z-10 w-full max-w-7xl mx-auto px-6 py-24 border-t" style="border-color:var(--vc-border);">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Trusted by Top Educators</h2>
+            <p class="text-lg" style="color:var(--vc-text-secondary);">See what faculty and students are saying.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="vc-card p-8 rounded-2xl">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-[#B026FF] flex items-center justify-center text-white font-bold text-xl">AJ</div>
+                    <div>
+                        <h4 class="font-bold text-white">Prof. Andrew Johnson</h4>
+                        <p class="text-xs" style="color:var(--vc-text-secondary);">Computer Science Dept.</p>
+                    </div>
+                </div>
+                <p class="italic text-sm leading-relaxed" style="color:var(--vc-text-secondary);">
+                    "VisionLab completely eliminated 'it works on my machine' problems in our python cohorts. The grading system is exceptionally robust."
+                </p>
+            </div>
+            <div class="vc-card p-8 rounded-2xl relative" style="border-color:var(--vc-accent);">
+                <!-- Highlight badge -->
+                <div class="absolute -top-3 right-6 bg-[#00F3FF] text-[#0A0A0F] text-xs font-bold px-3 py-1 rounded-full">Top Rated</div>
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-[#00F3FF] flex items-center justify-center text-[#0A0A0F] font-bold text-xl">SK</div>
+                    <div>
+                        <h4 class="font-bold text-white">Sarah Khan</h4>
+                        <p class="text-xs" style="color:var(--vc-text-secondary);">Student, Batch 2026</p>
+                    </div>
+                </div>
+                <p class="italic text-sm leading-relaxed" style="color:var(--vc-text-secondary);">
+                    "The AI agent doesn't just write code for me, it explains where I went wrong. It's like having a tutor available 24/7."
+                </p>
+            </div>
+            <div class="vc-card p-8 rounded-2xl">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#0A0A0F] font-bold text-xl">DM</div>
+                    <div>
+                        <h4 class="font-bold text-white">Dr. David Miller</h4>
+                        <p class="text-xs" style="color:var(--vc-text-secondary);">Dean of Engineering</p>
+                    </div>
+                </div>
+                <p class="italic text-sm leading-relaxed" style="color:var(--vc-text-secondary);">
+                    "The centralized ERP handles our entire institute. Managing enrollments and sandboxing in one system saves us hundreds of hours."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section class="relative z-10 w-full max-w-4xl mx-auto px-6 py-24 border-t" style="border-color:var(--vc-border);">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Frequently Asked Questions</h2>
+        </div>
+        <div class="space-y-4">
+            <div class="vc-card p-6 rounded-2xl">
+                <h3 class="text-lg font-bold text-white mb-2">How isolated are the workspaces?</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--vc-text-secondary);">
+                    Every workspace runs in an isolated Docker container with strict resource limits and no root access. Network policies prevent lateral movement, ensuring complete security.
+                </p>
+            </div>
+            <div class="vc-card p-6 rounded-2xl">
+                <h3 class="text-lg font-bold text-white mb-2">Can the AI write the assignments for students?</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--vc-text-secondary);">
+                    No. The integrated AI is strictly prompted to act as a "Socratic Tutor". It provides hints, explains concepts, and helps debug, but deliberately refuses to provide direct solutions.
+                </p>
+            </div>
+            <div class="vc-card p-6 rounded-2xl">
+                <h3 class="text-lg font-bold text-white mb-2">Does it support exam lockdown?</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--vc-text-secondary);">
+                    Yes. The lockdown mode enforces fullscreen, blocks tab switching, disables copy-paste from external sources, and actively monitors browser visibility API to report violations to instructors.
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="relative z-10 py-10 text-center border-t mt-auto" style="border-color:var(--vc-border);">
-        <p style="color:var(--vc-muted);" class="text-sm">© {{ date('Y') }} VisionLab Inc. All rights reserved.</p>
+    <footer class="relative z-10 py-12 text-center border-t mt-auto" style="border-color:var(--vc-border);">
+        <p style="color:var(--vc-muted);" class="text-sm mb-4">© {{ date('Y') }} VisionLab Inc. All rights reserved.</p>
+        <div class="flex justify-center gap-6 text-sm" style="color:var(--vc-text-secondary);">
+            <a href="{{ route('about') }}" class="hover:text-white transition-colors">About Us</a>
+            <a href="{{ route('features') }}" class="hover:text-white transition-colors">Features</a>
+            <a href="{{ route('docs') }}" class="hover:text-white transition-colors">Documentation</a>
+        </div>
     </footer>
 
 </body>
