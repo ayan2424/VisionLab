@@ -14,8 +14,8 @@
     --vc-bg:             #09090B; /* Neutral tech dark instead of warm brown */
     --vc-surface:        #18181B; /* Neutral tech dark */
     --vc-elevated:       #27272A; /* Neutral tech dark */
-    --vc-card:           #18181B;
-    --vc-card-hover:     #27272A;
+    --vc-card:           rgba(24, 24, 27, 0.6); /* Glassmorphism base */
+    --vc-card-hover:     rgba(39, 39, 42, 0.8);
     --vc-nav:            rgba(9,9,11,0.92);
     --vc-border:         #3F3F46;
     --vc-ring:           #FF6B2B;
@@ -52,6 +52,9 @@
 
     body {
         background-color: var(--vc-bg);
+        background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                          radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.05) 0%, transparent 40%);
+        background-attachment: fixed;
         color: var(--vc-text);
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         transition: background-color 0.3s ease, color 0.3s ease;
@@ -83,14 +86,19 @@
     /* ── Card ──────────────────────────────────────────────────── */
     .vc-card {
         background: var(--vc-card);
-        border: 1px solid var(--vc-border);
-        border-radius: 1rem;
-        box-shadow: var(--vc-shadow-sm);
-        transition: all 0.2s ease;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .vc-card:hover {
-        box-shadow: var(--vc-shadow-md);
+        background: var(--vc-card-hover);
+        box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         border-color: rgba(99, 102, 241, 0.3);
+        transform: translateY(-2px);
     }
 
     /* ── Button: Primary ──────────────────────────────────────── */
