@@ -1,8 +1,8 @@
-<aside id="dash-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 transition-all duration-300 transform -translate-x-full md:translate-x-0 flex flex-col"
-       style="background:var(--vc-surface); border-right:1px solid var(--vc-border);">
+<aside id="dash-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 transition-all duration-300 transform -translate-x-full md:translate-x-0 flex flex-col backdrop-blur-xl"
+       style="background:rgba(24, 24, 27, 0.6); border-right:1px solid rgba(255,255,255,0.05);">
 
     <!-- ── Logo ── -->
-    <div class="h-16 flex items-center px-5 border-b" style="border-color:var(--vc-border);">
+    <div class="h-16 flex items-center px-6 border-b" style="border-color:rgba(255,255,255,0.05);">
         <a href="{{ route('home') }}" class="flex items-center gap-3 group">
             <x-logo size="h-9 w-9" :showText="false" />
             <div>
@@ -13,7 +13,7 @@
     </div>
 
     <!-- ── Navigation ── -->
-    <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5">
+    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
         @php
             $navLinks = [
                 ['route' => 'dashboard', 'label' => 'Dashboard', 'match' => 'dashboard', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
@@ -22,7 +22,7 @@
             ];
         @endphp
 
-        <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest" style="color:var(--vc-muted);">Main</div>
+        <div class="px-3 mb-3 text-[10px] font-bold uppercase tracking-widest" style="color:var(--vc-muted);">Main</div>
 
         @foreach($navLinks as $link)
             @php $active = request()->routeIs($link['match']); @endphp
@@ -45,8 +45,8 @@
 
         <!-- ── Student-specific ── -->
         @if(Auth::check() && Auth::user()->isStudent())
-        <div class="pt-5 mt-5 border-t" style="border-color:var(--vc-border);">
-            <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest" style="color:var(--vc-muted);">Learning</div>
+        <div class="pt-6 mt-6 border-t" style="border-color:rgba(255,255,255,0.05);">
+            <div class="px-3 mb-3 text-[10px] font-bold uppercase tracking-widest" style="color:var(--vc-muted);">Learning</div>
             @php $pActive = request()->routeIs('progress.*'); @endphp
             <a href="{{ route('progress.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
@@ -72,8 +72,8 @@
 
         <!-- ── Instructor/Admin-specific ── -->
         @if(Auth::check() && (Auth::user()->isInstructor() || Auth::user()->isAdmin()))
-        <div class="pt-5 mt-5 border-t" style="border-color:var(--vc-border);">
-            <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest" style="color:var(--vc-muted);">Teaching</div>
+        <div class="pt-6 mt-6 border-t" style="border-color:rgba(255,255,255,0.05);">
+            <div class="px-3 mb-3 text-[10px] font-bold uppercase tracking-widest" style="color:var(--vc-muted);">Teaching</div>
             @php $gActive = request()->routeIs('submissions.*'); @endphp
             <a href="{{ route('submissions.queue') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
@@ -89,8 +89,8 @@
 
         <!-- ── Admin Panel ── -->
         @if(Auth::check() && Auth::user()->isAdmin())
-        <div class="pt-5 mt-5 border-t" style="border-color:var(--vc-border);">
-            <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-red-400">Admin</div>
+        <div class="pt-6 mt-6 border-t" style="border-color:rgba(255,255,255,0.05);">
+            <div class="px-3 mb-3 text-[10px] font-bold uppercase tracking-widest text-red-400">Admin</div>
             @php $aActive = request()->routeIs('admin.*'); @endphp
             <a href="{{ route('admin.dashboard') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
@@ -275,7 +275,7 @@
         @endif
 
         <!-- ── Demo Link ── -->
-        <div class="pt-5 mt-5 border-t" style="border-color:var(--vc-border);">
+        <div class="pt-6 mt-6 border-t" style="border-color:rgba(255,255,255,0.05);">
             @php $dActive = request()->routeIs('demo'); @endphp
             <a href="{{ route('demo') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative overflow-hidden"
@@ -291,7 +291,7 @@
     </nav>
 
     <!-- ── User Profile Footer ── -->
-    <div class="p-4 border-t flex items-center gap-3" style="border-color:var(--vc-border);">
+    <div class="p-5 border-t flex items-center gap-4" style="border-color:rgba(255,255,255,0.05);">
         <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 flex-1 overflow-hidden group">
             <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
                  style="background:{{ Auth::user()->isAdmin() ? '#EF4444' : (Auth::user()->isInstructor() ? '#7c3aed' : '#16A34A') }};">

@@ -15,7 +15,7 @@
 </div>
 
 {{-- System Health Bar --}}
-<div class="vc-card p-4 mb-6 flex flex-wrap items-center gap-6" style="opacity:0;animation:fadeSlideUp .4s .1s ease forwards">
+<div class="vc-card p-6 mb-8 flex flex-wrap items-center gap-8" style="opacity:0;animation:fadeSlideUp .4s .1s ease forwards">
     <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         <span class="text-xs font-semibold" style="color:#10B981;">All Systems Operational</span>
@@ -53,7 +53,7 @@
         $bg = $cMap[$stat['color']][1];
     @endphp
     <div class="vc-card group relative overflow-hidden transition-all duration-300"
-         style="padding:20px; animation:fadeSlideUp .4s ease both;animation-delay:{{ 150 + $i * 80 }}ms;"
+         style="padding:28px; animation:fadeSlideUp .4s ease both;animation-delay:{{ 150 + $i * 80 }}ms;"
          onmouseover="this.style.borderColor='{{ $hex }}'; this.style.boxShadow='0 4px 20px {{ str_replace('0.1', '0.15', $bg) }}'"
          onmouseout="this.style.borderColor='var(--vc-border)'; this.style.boxShadow='none'">
         <div class="absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl transition-colors" style="background:{{ str_replace('0.1', '0.05', $bg) }};"></div>
@@ -71,8 +71,8 @@
 </div>
 
 {{-- Secondary stats --}}
-<div class="grid grid-cols-3 gap-4 mb-8" style="opacity:0;animation:fadeSlideUp .4s .4s ease forwards">
-    <div class="vc-card p-4 flex items-center gap-3">
+<div class="grid grid-cols-3 gap-6 mb-10" style="opacity:0;animation:fadeSlideUp .4s .4s ease forwards">
+    <div class="vc-card p-6 flex items-center gap-4">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(239,68,68,0.1);">
             <svg class="w-4 h-4" style="color:#ef4444;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         </div>
@@ -81,7 +81,7 @@
             <div class="text-[10px]" style="color:var(--vc-muted);">Admins</div>
         </div>
     </div>
-    <div class="vc-card p-4 flex items-center gap-3">
+    <div class="vc-card p-6 flex items-center gap-4">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(240,80,0,0.1);">
             <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
         </div>
@@ -90,7 +90,7 @@
             <div class="text-[10px]" style="color:var(--vc-muted);">Instructors</div>
         </div>
     </div>
-    <div class="vc-card p-4 flex items-center gap-3">
+    <div class="vc-card p-6 flex items-center gap-4">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(6,182,212,0.1);">
             <svg class="w-4 h-4" style="color:#06b6d4;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
         </div>
@@ -103,13 +103,13 @@
 
 
 {{-- Infrastructure & Security Row --}}
-<div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6" style="opacity:0;animation:fadeSlideUp .4s .5s ease forwards">
+<div class="grid grid-cols-2 lg:grid-cols-3 gap-6 mb-10" style="opacity:0;animation:fadeSlideUp .4s .5s ease forwards">
     @foreach([
         ['label'=>'Suspended Users','value'=>$stats['suspended_users'] ?? 0,'color'=>'#ef4444','icon'=>'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636'],
         ['label'=>'Running Workspaces','value'=>$stats['active_workspaces'] ?? 0,'color'=>'#10b981','icon'=>'M5 12h14M12 5l7 7-7 7'],
         ['label'=>'AI Patches Pending','value'=>$stats['ai_patches_pending'] ?? 0,'color'=>'#f59e0b','icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
     ] as $i => $s)
-    <div class="vc-card p-3 flex items-center gap-3">
+    <div class="vc-card p-6 flex items-center gap-4">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:{{ $s['color'] }}12;">
             <svg class="w-4 h-4" style="color:{{ $s['color'] }};" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $s['icon'] }}"/></svg>
         </div>
@@ -121,9 +121,9 @@
     @endforeach
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     {{-- Recent Users --}}
-    <div class="vc-card p-5">
+    <div class="vc-card p-8">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold" style="color:var(--vc-text);">Recent Users</h3>
             <a href="{{ route('admin.users.index') }}" class="text-xs hover:underline" style="color:var(--vc-accent);">View all</a>
@@ -154,7 +154,7 @@
     </div>
 
     {{-- Recent AI Actions --}}
-    <div class="vc-card p-5">
+    <div class="vc-card p-8">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold" style="color:var(--vc-text);">Recent AI Actions</h3>
             <a href="{{ route('admin.analytics') }}" class="text-xs hover:underline" style="color:var(--vc-accent);">Analytics</a>
@@ -178,7 +178,7 @@
 
 {{-- Audit Logs --}}
 @if(isset($recentAuditLogs) && $recentAuditLogs->count() > 0)
-<div class="vc-card p-5 mt-6" style="opacity:0;animation:fadeSlideUp .4s .6s ease forwards">
+<div class="vc-card p-8 mt-8 mb-10" style="opacity:0;animation:fadeSlideUp .4s .6s ease forwards">
     <h3 class="text-sm font-bold mb-4 flex items-center gap-2" style="color:var(--vc-text);">
         <svg class="w-4 h-4 text-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         Recent Audit Logs
@@ -210,14 +210,14 @@
 </div>
 @endif
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style="opacity:0;animation:fadeSlideUp .5s .5s ease forwards">
-    <div class="vc-card p-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10" style="opacity:0;animation:fadeSlideUp .5s .5s ease forwards">
+    <div class="vc-card p-8">
         <h3 class="text-sm font-semibold mb-4" style="color:var(--vc-text);">Platform Growth</h3>
         <div class="relative w-full h-64">
             <canvas id="growthChart"></canvas>
         </div>
     </div>
-    <div class="vc-card p-4">
+    <div class="vc-card p-8">
         <h3 class="text-sm font-semibold mb-4" style="color:var(--vc-text);">AI Token Usage</h3>
         <div class="relative w-full h-64">
             <canvas id="aiUsageChart"></canvas>
