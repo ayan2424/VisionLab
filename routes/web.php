@@ -128,8 +128,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ── Progress ───────────────────────────────────────────────────────
     Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
 
-    // ── Gamification ───────────────────────────────────────────────────
-    Route::get('/gamification', [\App\Http\Controllers\GamificationController::class, 'index'])->name('gamification.index');
+    // ── Gamification & Portfolio ───────────────────────────────────────
     Route::get('/u/{student_id}', [\App\Http\Controllers\PublicProfileController::class, 'show'])->name('portfolio.show');
 
     // ── Contributions (Heatmap) ────────────────────────────────────────

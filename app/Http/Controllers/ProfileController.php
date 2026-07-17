@@ -18,13 +18,40 @@ class ProfileController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
+        
+        // Ensure user level/rank is up to date
+        $user->recalculateLevelAndRank();
+        $user->save();
+        
         $badges = UserBadge::where('user_id', $user->id)
             ->orderByDesc('earned_at')
             ->get();
 
+        // Fetch leaderboard (Top 10 active students by XP)
+        $leaderboard = \App\Models\User::where('role', 'student')
+            ->where('status', 'active')
+            ->orderBy('xp', 'desc')
+            ->take(10)
+            ->get();
+            
+        // Fetch recent XP transactions for the user
+        $transactions = $user->xpTransactions()->latest()->take(20)->get();
+        
+        // Compute progress to next level
+        $currentLevelXp = pow($user->level - 1, 2) * 100;
+        $nextLevelXp = pow($user->level, 2) * 100;
+        $progressPercent = 0;
+        if ($nextLevelXp > $currentLevelXp) {
+            $progressPercent = min(100, max(0, (($user->xp - $currentLevelXp) / ($nextLevelXp - $currentLevelXp)) * 100));
+        }
+
         return view('profile.index', [
             'user' => $user,
             'badges' => $badges,
+            'leaderboard' => $leaderboard,
+            'transactions' => $transactions,
+            'nextLevelXp' => $nextLevelXp,
+            'progressPercent' => $progressPercent,
         ]);
     }
 
