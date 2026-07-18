@@ -21,6 +21,7 @@
             <a href="{{ route('about') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Product</a>
             <a href="{{ route('features') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Features</a>
             <a href="{{ route('docs') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Documentation</a>
+            <a href="{{ route('contact') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Contact</a>
         </div>
 
         <!-- Action Buttons -->
