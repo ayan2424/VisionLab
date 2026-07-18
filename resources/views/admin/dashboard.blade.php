@@ -137,7 +137,14 @@
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
                 <div>
-                    <div class="text-sm" style="color:var(--vc-text);">{{ $user->name }}</div>
+                    <div class="text-sm flex items-center gap-2" style="color:var(--vc-text);">
+                        {{ $user->name }}
+                        @if($user->role === 'student' && $user->student_id)
+                        <a href="{{ route('portfolio.show', $user->student_id) }}" target="_blank" title="View Gamification Portfolio" class="text-blue-400 hover:text-blue-300 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                        @endif
+                    </div>
                     <div class="text-xs" style="color:var(--vc-text-secondary);">{{ $user->email }}</div>
                 </div>
             </div>

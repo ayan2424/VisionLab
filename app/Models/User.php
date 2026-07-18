@@ -20,6 +20,7 @@ class User extends Authenticatable
         'avatar_url', 'theme_preference',
         'campus_id', 'department_id', 'phone', 'date_of_birth', 'address', 'guardian_name', 'guardian_phone',
         'last_activity_at', 'current_streak', 'longest_streak',
+        'xp', 'level', 'rank_title',
         'vercel_token', 'railway_token',
     ];
 
@@ -38,6 +39,8 @@ class User extends Authenticatable
             'last_activity_at'  => 'datetime',
             'current_streak'    => 'integer',
             'longest_streak'    => 'integer',
+            'xp'                => 'integer',
+            'level'             => 'integer',
             'vercel_token'      => 'encrypted',
             'railway_token'     => 'encrypted',
         ];
@@ -152,6 +155,55 @@ class User extends Authenticatable
     public function badges(): HasMany
     {
         return $this->hasMany(UserBadge::class);
+    }
+
+    public function xpTransactions(): HasMany
+    {
+        return $this->hasMany(XpTransaction::class);
+    }
+
+    // ── Gamification Logic ──────────────────────────────────────────
+
+    public function addXp(int $amount, string $reason, ?Model $source = null): void
+    {
+        if ($amount === 0) return;
+
+        // Record the transaction
+        $this->xpTransactions()->create([
+            'amount'      => $amount,
+            'reason'      => $reason,
+            'source_type' => $source ? get_class($source) : null,
+            'source_id'   => $source ? $source->id : null,
+        ]);
+
+        // Add XP
+        $this->xp += $amount;
+        
+        // Ensure XP never goes below 0
+        if ($this->xp < 0) {
+            $this->xp = 0;
+        }
+
+        $this->recalculateLevelAndRank();
+        $this->save();
+    }
+
+    public function recalculateLevelAndRank(): void
+    {
+        // Simple quadratic curve: Level = floor(sqrt(XP / 100)) + 1
+        $this->level = floor(sqrt($this->xp / 100)) + 1;
+
+        $rank = 'Novice';
+        if ($this->level >= 75) $rank = 'Grandmaster';
+        elseif ($this->level >= 50) $rank = 'Principal';
+        elseif ($this->level >= 40) $rank = 'Architect';
+        elseif ($this->level >= 30) $rank = 'Lead Developer';
+        elseif ($this->level >= 20) $rank = 'Senior Developer';
+        elseif ($this->level >= 13) $rank = 'Developer';
+        elseif ($this->level >= 8) $rank = 'Coder';
+        elseif ($this->level >= 4) $rank = 'Apprentice';
+
+        $this->rank_title = $rank;
     }
 
     // ── Relationships: Audit ────────────────────────────────────────

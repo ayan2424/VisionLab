@@ -173,6 +173,18 @@ class SubmissionController extends Controller
             'graded_by' => $user->id,
         ]);
 
+        // Gamification: Award XP to the student based on the grade percentage
+        $percentage = (int) $validated['grade'];
+        if ($percentage > 0 && $submission->student) {
+            $xpAwarded = $percentage * 2; // e.g. 100% = 200 XP
+            \App\Services\GamificationService::awardXpAndEvaluate(
+                $submission->student, 
+                $xpAwarded, 
+                "Graded Assignment: {$submission->assignment->title} ({$percentage}%)", 
+                $submission
+            );
+        }
+
         // Broadcast real-time notification to student
         try {
             broadcast(new SubmissionGraded($submission->fresh(['assignment', 'grader'])));

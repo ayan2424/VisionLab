@@ -298,6 +298,13 @@ JS;
         $result = $this->removeContainer($name);
 
         if ($result) {
+            // Gamification hook: calculate duration from created_at or heartbeat_at (approximate)
+            $durationMinutes = $workspace->heartbeat_at ? $workspace->heartbeat_at->diffInMinutes(now()) : 0;
+            if ($durationMinutes > 0 && $workspace->student) {
+                $xp = min($durationMinutes * 2, 500); // 2 XP per minute, max 500 XP per session to prevent abuse
+                \App\Services\GamificationService::awardXpAndEvaluate($workspace->student, $xp, "Coding Session ({$durationMinutes} mins)", $workspace);
+            }
+            
             $workspace->update(['status' => 'stopped', 'heartbeat_at' => null, 'port' => null]);
         }
 

@@ -33,6 +33,9 @@ Route::get('/features', fn () => view('pages.features'))->name('features');
 Route::get('/contact', fn () => view('pages.contact'))->name('contact');
 Route::get('/docs', fn () => view('pages.docs'))->name('docs');
 
+// ── Public Student Portfolio ──────────────────────────────────────────
+Route::get('/u/{student_id}', [\App\Http\Controllers\PublicProfileController::class, 'show'])->name('portfolio.show');
+
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes
@@ -124,6 +127,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── Progress ───────────────────────────────────────────────────────
     Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
+
+    // ── Gamification ───────────────────────────────────────────────────
+    Route::get('/gamification', [\App\Http\Controllers\GamificationController::class, 'index'])->name('gamification.index');
 
     // ── Contributions (Heatmap) ────────────────────────────────────────
     Route::get('/api/contributions', [\App\Http\Controllers\ContributionController::class, 'heatmap'])->name('contributions.heatmap');

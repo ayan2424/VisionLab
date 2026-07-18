@@ -37,20 +37,31 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Update streak
+        // Update streak & Gamification
         $user = Auth::user();
         if (!$user->last_activity_at || $user->last_activity_at->lt(now()->startOfDay())) {
             // If last activity was exactly yesterday, increment. Otherwise, reset to 1.
+            $streakMaintained = false;
             if ($user->last_activity_at && $user->last_activity_at->isYesterday()) {
                 $user->current_streak += 1;
+                $streakMaintained = true;
             } else {
                 $user->current_streak = 1;
             }
             if ($user->current_streak > $user->longest_streak) {
                 $user->longest_streak = $user->current_streak;
             }
+            
+            // Gamification: Daily Login XP
+            $xpAward = 10; // Base XP for login
+            if ($streakMaintained) {
+                $xpAward += min($user->current_streak * 2, 50); // Bonus XP up to 50
+            }
+            
             $user->last_activity_at = now();
             $user->save();
+
+            \App\Services\GamificationService::awardXpAndEvaluate($user, $xpAward, "Daily Login Streak ({$user->current_streak})");
         }
 
         return redirect()->intended(route('dashboard', absolute: false));
