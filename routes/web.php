@@ -34,7 +34,9 @@ Route::get('/contact', fn () => view('pages.contact'))->name('contact');
 Route::get('/docs', fn () => view('pages.docs'))->name('docs');
 
 // ── Student Portfolio ─────────────────────────────────────────────────
-// Moved inside authenticated routes.
+Route::middleware('cache.headers:public;max_age=300;etag')->group(function () {
+    Route::get('/u/{student_id}', [\App\Http\Controllers\PublicProfileController::class, 'show'])->name('portfolio.show');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -128,8 +130,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ── Progress ───────────────────────────────────────────────────────
     Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
 
-    // ── Gamification & Portfolio ───────────────────────────────────────
-    Route::get('/u/{student_id}', [\App\Http\Controllers\PublicProfileController::class, 'show'])->name('portfolio.show');
+    // ── Gamification ───────────────────────────────────────────────────
+    Route::get('/gamification', [\App\Http\Controllers\GamificationController::class, 'index'])->name('gamification.index');
 
     // ── Contributions (Heatmap) ────────────────────────────────────────
     Route::get('/api/contributions', [\App\Http\Controllers\ContributionController::class, 'heatmap'])->name('contributions.heatmap');

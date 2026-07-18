@@ -178,12 +178,18 @@ class EnrollmentController extends Controller
             
             if (!$user) {
                 // Auto-create user if they don't exist
-                $role = ($roleIndex !== false && isset($row[$roleIndex])) ? strtolower($row[$roleIndex]) : 'student';
+                $role = 'student';
+                if (\Illuminate\Support\Facades\Auth::user()->isAdmin() && $roleIndex !== false && isset($row[$roleIndex])) {
+                    $requestedRole = strtolower($row[$roleIndex]);
+                    if (in_array($requestedRole, ['student', 'instructor', 'admin'])) {
+                        $role = $requestedRole;
+                    }
+                }
                 $user = User::create([
                     'name' => explode('@', $email)[0],
                     'email' => $email,
                     'password' => \Illuminate\Support\Facades\Hash::make('VisionLab2026!'),
-                    'role' => in_array($role, ['student', 'instructor', 'admin']) ? $role : 'student',
+                    'role' => $role,
                 ]);
                 $createdCount++;
             }

@@ -15,7 +15,7 @@ class AnnouncementReadController extends Controller
 
         // Ensure the student is enrolled in the course that has this announcement
         $course = $announcement->course;
-        if (!$user->isAdmin() && !$user->isInstructor() && !$course->isEnrolled($user)) {
+        if ($course && !$user->isAdmin() && $user->id !== $course->instructor_id && !$course->isEnrolled($user)) {
             abort(403, 'Unauthorized access.');
         }
 

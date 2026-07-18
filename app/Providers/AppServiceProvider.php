@@ -43,6 +43,11 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\User::observe(\App\Observers\AnalyticsObserver::class);
         \App\Models\Workspace::observe(\App\Observers\AnalyticsObserver::class);
 
+        \Illuminate\Support\Facades\Event::listen(
+            \Illuminate\Auth\Events\Login::class,
+            \App\Listeners\UpdateUserStreak::class
+        );
+
         \Illuminate\Support\Facades\RateLimiter::for('api', function (\Illuminate\Http\Request $request) {
             return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });

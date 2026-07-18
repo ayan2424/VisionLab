@@ -34,7 +34,7 @@ class AnalyticsObserver
 
             // Dispatch to GamificationService if it exists
             if (class_exists(\App\Services\GamificationService::class)) {
-                app(\App\Services\GamificationService::class)->evaluateUser(
+                app(\App\Services\GamificationService::class)->evaluateBadges(
                     \App\Models\User::find($userId)
                 );
             }

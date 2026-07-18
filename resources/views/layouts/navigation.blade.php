@@ -143,7 +143,7 @@
                 </span>
 
                 {{-- User dropdown --}}
-                <div x-data="{ open: false }" class="relative">
+                <div x-data="{ open: false }" @click.away="open = false" class="relative">
                     <button @click="open = !open"
                             class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer"
                             style="border:1px solid transparent;">
@@ -159,7 +159,7 @@
                         </svg>
                     </button>
 
-                    <div x-show="open" @click.away="open = false" x-transition
+                    <div x-show="open" x-transition
                          class="absolute right-0 mt-2 w-56 rounded-xl py-1 z-50"
                          style="background:var(--vc-card);border:1px solid var(--vc-border);box-shadow:var(--vc-shadow-lg);">
                         <div class="px-3 py-2 mb-1" style="border-bottom:1px solid var(--vc-border);">

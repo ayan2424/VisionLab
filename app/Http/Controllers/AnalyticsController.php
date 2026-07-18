@@ -22,7 +22,7 @@ class AnalyticsController extends Controller
         $user = Auth::user();
         $now = now();
 
-        if ($user->role === 'student') {
+        if ($user->isStudent()) {
             // Student view
             $executions = AnalyticsEvent::forUser($user->id)
                 ->ofType('workspace.command_executed')
@@ -44,15 +44,17 @@ class AnalyticsController extends Controller
             $activityChart = $this->fillDays(13, $dailyActivity);
 
             $data = compact('executions', 'aiInteractions', 'activeSessions', 'activityChart');
+            $data['user'] = $user;
 
             return view('analytics.student', $data);
             
-        } elseif ($user->role === 'instructor') {
+        } elseif ($user->isInstructor()) {
             // Instructor view
-            $myCourses = $user->courses()->pluck('id');
-            $studentIds = DB::table('course_user')
+            $myCourses = $user->taughtCourses()->pluck('id');
+            $studentIds = DB::table('enrollments')
                 ->whereIn('course_id', $myCourses)
-                ->pluck('user_id');
+                ->where('status', 'active')
+                ->pluck('student_id');
 
             $executions = AnalyticsEvent::whereIn('user_id', $studentIds)
                 ->ofType('workspace.command_executed')

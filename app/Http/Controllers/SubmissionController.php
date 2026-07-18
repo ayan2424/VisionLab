@@ -19,10 +19,19 @@ class SubmissionController extends Controller
             abort(403, 'Only students can start assignments.');
         }
 
+        $this->authorize('start', $assignment);
+
         $submission = Submission::firstOrCreate(
             ['assignment_id' => $assignment->id, 'student_id' => $user->id],
             ['status' => 'in_progress', 'code_snapshot' => $assignment->starter_code ?? '']
         );
+
+        if ($submission->wasRecentlyCreated) {
+            \App\Models\AnalyticsEvent::track('assignment_started', [], $user->id, 'assignment', $assignment->id);
+            if (class_exists(\App\Services\GamificationService::class)) {
+                \App\Services\GamificationService::awardXpAndEvaluate($user, 10, 'Started Assignment: ' . $assignment->title, $submission);
+            }
+        }
 
         if ($submission->status === 'not_started') {
             $submission->update(['status' => 'in_progress']);
@@ -62,6 +71,8 @@ class SubmissionController extends Controller
                                 ->where('student_id', $user->id)
                                 ->firstOrFail();
 
+        $this->authorize('submit', $submission);
+
         $isLate = $assignment->due_date && now()->gt($assignment->due_date);
 
         $submission->update([
@@ -81,9 +92,13 @@ class SubmissionController extends Controller
 
         $request->validate(['code_snapshot' => 'nullable|string|max:65535']);
 
-        Submission::where('assignment_id', $assignment->id)
-                  ->where('student_id', $user->id)
-                  ->update(['code_snapshot' => $request->code_snapshot ?? '']);
+        $submission = Submission::where('assignment_id', $assignment->id)
+                                ->where('student_id', $user->id)
+                                ->firstOrFail();
+                                
+        $this->authorize('submit', $submission);
+
+        $submission->update(['code_snapshot' => $request->code_snapshot ?? '']);
 
         return response()->json(['success' => true]);
     }
@@ -96,6 +111,8 @@ class SubmissionController extends Controller
         $submission = Submission::where('assignment_id', $assignment->id)
                                 ->where('student_id', $user->id)
                                 ->firstOrFail();
+
+        $this->authorize('view', $submission);
 
         $course = $assignment->course;
 
@@ -177,10 +194,18 @@ class SubmissionController extends Controller
         $percentage = (int) $validated['grade'];
         if ($percentage > 0 && $submission->student) {
             $xpAwarded = $percentage * 2; // e.g. 100% = 200 XP
+            $reason = "Graded Assignment: {$submission->assignment->title} ({$percentage}%)";
+
+            // Apply 50% penalty if submitted late
+            if ($submission->status === 'late') {
+                $xpAwarded = (int)($xpAwarded * 0.5);
+                $reason = "Graded Assignment (LATE): {$submission->assignment->title} ({$percentage}%)";
+            }
+
             \App\Services\GamificationService::awardXpAndEvaluate(
                 $submission->student, 
                 $xpAwarded, 
-                "Graded Assignment: {$submission->assignment->title} ({$percentage}%)", 
+                $reason, 
                 $submission
             );
         }

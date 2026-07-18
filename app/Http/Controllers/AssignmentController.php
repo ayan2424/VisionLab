@@ -19,6 +19,7 @@ class AssignmentController extends Controller
 
     public function store(StoreAssignmentRequest $request, Course $course)
     {
+        $this->authorize('update', $course);
         $assignment = $course->assignments()->create($request->validated());
 
         return redirect()->route('courses.show', [$course->slug, 'tab' => 'assignments'])
@@ -55,6 +56,7 @@ class AssignmentController extends Controller
 
     public function update(UpdateAssignmentRequest $request, Assignment $assignment)
     {
+        $this->authorize('update', $assignment);
         $assignment->update($request->validated());
 
         return redirect()->route('assignments.show', $assignment)

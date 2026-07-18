@@ -19,9 +19,11 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         
-        // Ensure user level/rank is up to date
-        $user->recalculateLevelAndRank();
-        $user->save();
+        // Ensure user level/rank is up to date (for students)
+        if ($user->isStudent()) {
+            $user->recalculateLevelAndRank();
+            $user->save();
+        }
         
         $badges = UserBadge::where('user_id', $user->id)
             ->orderByDesc('earned_at')

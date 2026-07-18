@@ -109,6 +109,16 @@ class WorkspaceController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Failed to start workspace'], 500);
         }
 
+        // Gamification & Analytics Hooks
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user && $user->isStudent()) {
+            \App\Models\AnalyticsEvent::track('workspace_started', [], $user->id, 'workspace', $workspace->id);
+            if (class_exists(\App\Services\GamificationService::class)) {
+                // Award minimal XP for activity (encourages usage without major inflation)
+                \App\Services\GamificationService::awardXpAndEvaluate($user, 2, 'Launched Workspace: ' . $workspace->name, $workspace);
+            }
+        }
+
         // Send authentication cookie along with the response headers
         $cookiePath = str_starts_with($result['url'], '/ide/') 
             ? '/ide/' . $result['port'] 
@@ -232,7 +242,7 @@ class WorkspaceController extends Controller
     /** List files in workspace */
     public function files(Workspace $workspace, Request $request): JsonResponse
     {
-        $this->authorize('access', $workspace);
+        $this->authorize('readFiles', $workspace);
 
         $path  = $request->query('path', '');
         $files = $this->codeServerManager->listFiles($workspace, $path);
@@ -243,7 +253,7 @@ class WorkspaceController extends Controller
     /** Read a file */
     public function readFile(Workspace $workspace, Request $request): JsonResponse
     {
-        $this->authorize('access', $workspace);
+        $this->authorize('readFiles', $workspace);
 
         $path    = $request->query('path', '');
         $content = $this->codeServerManager->readFile($workspace, $path);
@@ -258,22 +268,35 @@ class WorkspaceController extends Controller
     /** Download a file */
     public function downloadFile(Workspace $workspace, Request $request)
     {
-        $this->authorize('access', $workspace);
+        $this->authorize('readFiles', $workspace);
 
         $path = $request->query('path', '');
-        $securePath = $this->codeServerManager->getSecureFilePath($workspace, $path);
+        
+        // Prevent path traversal
+        if (str_contains(str_replace('\\', '/', $path), '..')) {
+            abort(403, 'Invalid path');
+        }
 
-        if ($securePath === null) {
+        $content = $this->codeServerManager->readFile($workspace, $path);
+
+        if ($content === null) {
             abort(404, 'File not found or access denied');
         }
 
-        return response()->download($securePath);
+        $filename = basename($path);
+        if (empty($filename)) {
+            $filename = 'download.txt';
+        }
+
+        return response()->streamDownload(function () use ($content) {
+            echo $content;
+        }, $filename);
     }
 
     /** Write a file */
     public function writeFile(Workspace $workspace, Request $request): JsonResponse
     {
-        $this->authorize('access', $workspace);
+        $this->authorize('writeFiles', $workspace);
 
         $request->validate([
             'path'    => 'required|string|max:500',
@@ -296,7 +319,7 @@ class WorkspaceController extends Controller
     /** Create a file or directory */
     public function createFile(Workspace $workspace, Request $request): JsonResponse
     {
-        $this->authorize('access', $workspace);
+        $this->authorize('writeFiles', $workspace);
 
         $request->validate([
             'path'         => 'required|string|max:500',
@@ -319,7 +342,7 @@ class WorkspaceController extends Controller
     /** Delete a file or directory */
     public function deleteFile(Workspace $workspace, Request $request): JsonResponse
     {
-        $this->authorize('access', $workspace);
+        $this->authorize('writeFiles', $workspace);
 
         $request->validate(['path' => 'required|string|max:500']);
 
@@ -331,7 +354,7 @@ class WorkspaceController extends Controller
     /** Rename a file or directory */
     public function renameFile(Workspace $workspace, Request $request): JsonResponse
     {
-        $this->authorize('access', $workspace);
+        $this->authorize('writeFiles', $workspace);
 
         $request->validate([
             'old_path' => 'required|string|max:500',

@@ -32,6 +32,8 @@ class WorkspaceFileController extends Controller
         $workspace = $this->resolveWorkspace($slug);
         if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
+        $this->authorize('readFiles', $workspace);
+
         $tree = $this->codeServer->listFiles($workspace);
 
         return response()->json(['files' => $tree]);
@@ -45,6 +47,8 @@ class WorkspaceFileController extends Controller
     {
         $workspace = $this->resolveWorkspace($slug);
         if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
+
+        $this->authorize('readFiles', $workspace);
 
         $path = $request->query('path');
         if (!$path) return response()->json(['error' => 'Path required'], 400);
@@ -74,6 +78,8 @@ class WorkspaceFileController extends Controller
 
         $workspace = $this->resolveWorkspace($slug);
         if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
+
+        $this->authorize('writeFiles', $workspace);
 
         // Sandbox check: block dangerous paths
         $path = $request->input('path');
@@ -113,6 +119,8 @@ class WorkspaceFileController extends Controller
         $workspace = $this->resolveWorkspace($slug);
         if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
+        $this->authorize('writeFiles', $workspace);
+
         $success = $this->codeServer->createFile(
             $workspace,
             $request->input('path'),
@@ -134,6 +142,8 @@ class WorkspaceFileController extends Controller
 
         $workspace = $this->resolveWorkspace($slug);
         if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
+
+        $this->authorize('writeFiles', $workspace);
 
         $path = $request->input('path');
         if ($this->isDangerousPath($workspace, $path)) {
@@ -169,6 +179,8 @@ class WorkspaceFileController extends Controller
         $workspace = $this->resolveWorkspace($slug);
         if (!$workspace) return response()->json(['error' => 'Workspace not found'], 404);
 
+        $this->authorize('writeFiles', $workspace);
+
         $success = $this->codeServer->renameFile(
             $workspace,
             $request->input('old_path'),
@@ -191,36 +203,12 @@ class WorkspaceFileController extends Controller
      */
     private function isDangerousPath(\App\Models\Workspace $workspace, string $path): bool
     {
-        $normalized = strtolower(str_replace('\\', '/', $path));
+        $normalized = str_replace('\\', '/', $path);
 
-        // Block path traversal attempts in the relative string (early exit)
+        // Block path traversal attempts
         if (str_contains($normalized, '..')) {
             Log::warning('Path traversal attempt blocked via relative path inspection', ['path' => $path]);
             return true;
-        }
-
-        // Validate via realpath in CodeServerManager
-        $securePath = $this->codeServer->resolveSecurePath($workspace, $path);
-        if ($securePath === null) {
-            // resolveSecurePath already logs path traversal
-            return true;
-        }
-
-        // Check if the secure absolute path touches protected directories
-        $blocked = [
-            DIRECTORY_SEPARATOR . '.env',
-            DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR,
-            DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR,
-            DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR,
-            DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR,
-            DIRECTORY_SEPARATOR . '.git' . DIRECTORY_SEPARATOR,
-        ];
-
-        foreach ($blocked as $pattern) {
-            if (str_contains($securePath, $pattern)) {
-                Log::warning('Write attempt to protected directory blocked', ['path' => $securePath]);
-                return true;
-            }
         }
 
         return false;

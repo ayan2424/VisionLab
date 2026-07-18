@@ -52,10 +52,12 @@ class WorkspacePolicy
         return $workspace->isOwnedBy($user);
     }
 
-    /** Only owner/instructor/admin can read files. */
     public function readFiles(User $user, Workspace $workspace): bool
     {
-        if ($user->isAdmin() || $user->isInstructor()) {
+        if ($user->isAdmin()) {
+            return true;
+        }
+        if ($user->isInstructor() && $workspace->course && $workspace->course->instructor_id === $user->id) {
             return true;
         }
         return $workspace->isOwnedBy($user);
