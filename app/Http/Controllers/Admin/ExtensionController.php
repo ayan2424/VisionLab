@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Extension;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class ExtensionController extends Controller
 {
@@ -20,12 +21,12 @@ class ExtensionController extends Controller
 
         $extensions = $query->latest()->paginate(20)->withQueryString();
 
-        return view('admin.extensions.index', compact('extensions'));
+        return Inertia::render('Admin/Extensions/Index', ['extensions' => $extensions, 'search' => (string) $request->get('search', '')]);
     }
 
     public function create()
     {
-        return view('admin.extensions.create');
+        return Inertia::render('Admin/Extensions/Form');
     }
 
     public function store(Request $request)
@@ -62,7 +63,7 @@ class ExtensionController extends Controller
 
     public function edit(Extension $extension)
     {
-        return view('admin.extensions.edit', compact('extension'));
+        return Inertia::render('Admin/Extensions/Form', compact('extension'));
     }
 
     public function update(Request $request, Extension $extension)

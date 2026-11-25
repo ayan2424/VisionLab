@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Plus, Search, ShieldOff, UserCheck } from 'lucide-react';
 import { PortalLayout } from '@/layouts/PortalLayout';
 import { MagneticButton, SpotlightSurface, StatusPill } from '@/components/ui/Primitives';
@@ -53,7 +53,7 @@ export default function AdminUsersIndex({
                             {users.total.toLocaleString()} provisioned accounts across all roles.
                         </p>
                     </div>
-                    <MagneticButton href="/admin/users/create" external size="sm" variant="primary">
+                    <MagneticButton href="/admin/users/create" size="sm" variant="primary">
                         <Plus className="h-3.5 w-3.5" />
                         Provision User
                     </MagneticButton>
@@ -111,7 +111,7 @@ export default function AdminUsersIndex({
                 <SpotlightSurface className="overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
-                            <thead className="border-b border-vl-border/12 text-xs text-vl-ink-muted">
+                            <thead className="border-b border-vl-border/15 text-xs text-vl-ink-muted">
                                 <tr>
                                     <th className="px-5 py-3.5 font-medium">User</th>
                                     <th className="px-5 py-3.5 font-medium">Student ID</th>
@@ -142,12 +142,12 @@ export default function AdminUsersIndex({
                                         </td>
                                         <td className="px-5 py-3.5 text-right">
                                             <div className="inline-flex items-center gap-2">
-                                                <a
+                                                <Link
                                                     href={`/admin/users/${u.id}/edit`}
-                                                    className="rounded-full bg-vl-bg/80 px-2.5 py-1.5 text-xs font-medium text-vl-ink-secondary hover:text-vl-ink"
+                                                    className="rounded-full bg-vl-bg/80 px-3 py-1.5 text-xs font-medium text-vl-ink-secondary hover:text-vl-ink"
                                                 >
                                                     Edit
-                                                </a>
+                                                </Link>
                                                 <button
                                                     type="button"
                                                     onClick={() => toggleStatus(u)}

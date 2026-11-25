@@ -111,7 +111,7 @@ export default function Login({
                     </MagneticButton>
                 </form>
 
-                <div className="rounded-[28px] bg-vl-surface/80 p-5 text-xs leading-relaxed text-vl-ink-secondary">
+                <div className="rounded-2xl bg-vl-surface/80 p-5 text-xs leading-relaxed text-vl-ink-secondary">
                     Accounts are provisioned by campus administrators. Need access for a department?{' '}
                     <Link href="/contact" prefetch="hover" className="font-medium text-sky-500 hover:underline">
                         Request a Campus Pilot

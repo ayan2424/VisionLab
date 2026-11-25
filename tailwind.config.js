@@ -14,8 +14,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                display: ['"Clash Display"', '"Satoshi"', ...defaultTheme.fontFamily.sans],
-                sans: ['"Satoshi"', ...defaultTheme.fontFamily.sans],
+                display: ['"Plus Jakarta Sans"', '"Inter"', ...defaultTheme.fontFamily.sans],
+                sans: ['"Inter"', ...defaultTheme.fontFamily.sans],
                 mono: ['"JetBrains Mono"', ...defaultTheme.fontFamily.mono],
             },
             colors: {

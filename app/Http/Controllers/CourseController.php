@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class CourseController extends Controller
 {
@@ -24,13 +25,13 @@ class CourseController extends Controller
             })->with('instructor')->withCount('students')->latest()->paginate(12);
         }
 
-        return view('courses.index', compact('courses'));
+        return Inertia::render('Courses/Index', compact('courses'));
     }
 
     public function create()
     {
         $this->authorize('create', Course::class);
-        return view('courses.create');
+        return Inertia::render('Courses/Form');
     }
 
     public function store(StoreCourseRequest $request)
@@ -93,7 +94,7 @@ class CourseController extends Controller
 
         $tab = request('tab', 'stream');
 
-        return view('courses.show', compact(
+        return Inertia::render('Courses/Show', compact(
             'course', 'isInstructor', 'isEnrolled', 'students',
             'userSubmissions', 'readAnnouncementIds', 'tab'
         ));
@@ -103,7 +104,7 @@ class CourseController extends Controller
     {
         $course = Course::where('slug', $slug)->firstOrFail();
         $this->authorize('update', $course);
-        return view('courses.edit', compact('course'));
+        return Inertia::render('Courses/Form', compact('course'));
     }
 
     public function update(UpdateCourseRequest $request, string $slug)
@@ -150,6 +151,7 @@ class CourseController extends Controller
                                              ->whereNotIn('id', $enrolledIds)
                                              ->get(['id', 'name', 'student_id']);
 
-        return view('courses.roster', compact('course', 'enrollments', 'extensions', 'availableStudents'));
+        $courseExtensionIds = $course->extensions()->pluck('extensions.id')->toArray();
+        return Inertia::render('Courses/Roster', compact('course', 'enrollments', 'extensions', 'availableStudents', 'courseExtensionIds'));
     }
 }

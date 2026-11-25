@@ -435,7 +435,7 @@ export default function LabRoom3DStage({
     return (
         <div
             className={cn(
-                'relative w-full overflow-hidden rounded-[36px] ring-1 ring-vl-border/15 shadow-[0_32px_90px_-28px_rgba(0,0,0,0.65)]',
+                'relative w-full overflow-hidden rounded-xl ring-1 ring-vl-border/15 shadow-[0_32px_90px_-28px_rgba(0,0,0,0.65)]',
                 isDark ? 'bg-[#070C16]' : 'bg-[#EEF3F9]',
                 compact ? 'h-[500px]' : 'h-[580px] sm:h-[640px]'
             )}
@@ -531,7 +531,7 @@ export default function LabRoom3DStage({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.97 }}
                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute bottom-4 left-4 z-20 w-[calc(100%-2rem)] max-w-[310px] rounded-[28px] bg-white/90 p-5 text-slate-900 shadow-2xl backdrop-blur-2xl ring-1 ring-slate-900/10 dark:bg-[#0B1324]/90 dark:text-slate-100 dark:ring-white/15 sm:bottom-6 sm:left-6"
+                    className="absolute bottom-4 left-4 z-20 w-[calc(100%-2rem)] max-w-[310px] rounded-2xl bg-white/90 p-5 text-slate-900 shadow-2xl backdrop-blur-2xl ring-1 ring-slate-900/10 dark:bg-[#0B1324]/90 dark:text-slate-100 dark:ring-white/15 sm:bottom-6 sm:left-6"
                 >
                     <div className="flex items-start justify-between gap-2">
                         <div>
@@ -545,7 +545,7 @@ export default function LabRoom3DStage({
                         </div>
                         <span
                             className={cn(
-                                'rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold',
+                                'shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold',
                                 selectedSeat.status === 'reviewing_patch' && 'bg-amber-500/15 text-amber-600 dark:text-amber-300',
                                 selectedSeat.status === 'exam_locked' && 'bg-teal-500/15 text-teal-700 dark:text-teal-300',
                                 selectedSeat.status === 'running' && 'bg-sky-500/15 text-sky-700 dark:text-sky-300'
@@ -559,7 +559,7 @@ export default function LabRoom3DStage({
                         </span>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-3 gap-2 rounded-[20px] bg-slate-900/[0.05] p-3 font-mono text-[11px] dark:bg-white/[0.05]">
+                    <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-slate-900/[0.05] p-3 font-mono text-[11px] dark:bg-white/[0.05]">
                         <div>
                             <p className="text-[9px] opacity-60">CPU</p>
                             <p className="mt-0.5 font-semibold tabular-nums">{selectedSeat.cpu}</p>
@@ -596,7 +596,7 @@ export default function LabRoom3DStage({
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 24 }}
                         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                        className="absolute right-4 bottom-4 top-16 z-30 flex w-[calc(100%-2rem)] max-w-[330px] flex-col overflow-hidden rounded-[28px] bg-white/95 text-slate-900 shadow-2xl backdrop-blur-2xl ring-1 ring-slate-900/10 dark:bg-[#09101E]/95 dark:text-slate-100 dark:ring-white/15 sm:right-6 sm:bottom-6"
+                        className="absolute right-4 bottom-4 top-16 z-30 flex w-[calc(100%-2rem)] max-w-[330px] flex-col overflow-hidden rounded-2xl bg-white/95 text-slate-900 shadow-2xl backdrop-blur-2xl ring-1 ring-slate-900/10 dark:bg-[#09101E]/95 dark:text-slate-100 dark:ring-white/15 sm:right-6 sm:bottom-6"
                     >
                         <div className="flex items-center justify-between border-b border-slate-900/10 px-5 py-3.5 dark:border-white/10">
                             <div className="flex items-center gap-2">
@@ -623,7 +623,7 @@ export default function LabRoom3DStage({
                                 <div
                                     key={i}
                                     className={cn(
-                                        'rounded-[20px] px-4 py-3',
+                                        'rounded-xl px-4 py-3',
                                         msg.from === 'user'
                                             ? 'ml-6 bg-sky-500 text-white'
                                             : 'mr-4 bg-slate-900/[0.06] dark:bg-white/[0.07]'

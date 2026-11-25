@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Workspace;
 use App\Models\AnalyticsEvent;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class PublicProfileController extends Controller
 {
@@ -66,7 +67,7 @@ class PublicProfileController extends Controller
             ->get()
             ->pluck('count', 'date');
 
-        return view('portfolio.show', compact(
+        return Inertia::render('Public/Portfolio', compact(
             'user', 
             'techStack', 
             'schedulePercentages', 

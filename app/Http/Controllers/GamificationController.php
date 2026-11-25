@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class GamificationController extends Controller
 {
@@ -43,7 +44,7 @@ class GamificationController extends Controller
             ->count();
 
         // Pass to view
-        return view('gamification.index', compact(
+        return Inertia::render('Gamification/Index', compact(
             'user', 
             'currentLevel', 
             'nextLevel', 

@@ -101,7 +101,7 @@ export default function WorkspaceCreate({ templates }: { templates: TemplateItem
                             <Link
                                 href="/workspace"
                                 prefetch="hover"
-                                className="rounded-[24px] px-4 py-2.5 text-xs font-medium text-vl-ink-secondary hover:text-vl-ink"
+                                className="rounded-xl px-4 py-2.5 text-xs font-medium text-vl-ink-secondary hover:text-vl-ink"
                             >
                                 Cancel
                             </Link>

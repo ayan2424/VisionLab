@@ -65,7 +65,7 @@ export default function Contact() {
                                 ].map((item) => {
                                     const Icon = item.icon;
                                     return (
-                                        <div key={item.title} className="flex items-start gap-3.5 rounded-[32px] bg-vl-surface/75 p-4">
+                                        <div key={item.title} className="flex items-start gap-3.5 rounded-2xl bg-vl-surface/75 p-4">
                                             <Icon className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" />
                                             <div>
                                                 <p className="text-sm font-semibold text-vl-ink">{item.title}</p>
@@ -85,7 +85,7 @@ export default function Contact() {
                         >
                             <SpotlightSurface accent="sky" className="p-7 sm:p-10">
                                 {props.flash?.status && (
-                                    <div className="mb-6 flex items-start gap-3 rounded-[24px] bg-teal-500/12 p-4 text-sm text-teal-700 dark:text-teal-200">
+                                    <div className="mb-6 flex items-start gap-3 rounded-xl bg-teal-500/12 p-4 text-sm text-teal-700 dark:text-teal-200">
                                         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
                                         <p>{props.flash.status}</p>
                                     </div>

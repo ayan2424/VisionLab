@@ -109,7 +109,7 @@ export default function Docs() {
                     <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
                         {/* Sticky Left Rail */}
                         <aside className="lg:col-span-3">
-                            <div className="sticky top-28 space-y-1.5 rounded-[32px] bg-vl-surface/75 p-2.5 shadow-vl-panel">
+                            <div className="sticky top-28 space-y-1.5 rounded-2xl bg-vl-surface/75 p-2.5 shadow-vl-panel">
                                 {DOC_SECTIONS.map((sec) => {
                                     const Icon = sec.icon;
                                     const active = activeId === sec.id;
@@ -143,7 +143,7 @@ export default function Docs() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true, amount: 0.2 }}
                                     transition={{ duration: 0.35 }}
-                                    className="scroll-mt-28 space-y-5 rounded-[32px] bg-vl-surface/75 p-7 shadow-vl-panel sm:p-9"
+                                    className="scroll-mt-28 space-y-5 rounded-2xl bg-vl-surface/75 p-7 shadow-vl-panel sm:p-9"
                                 >
                                     <h2 className="font-display text-2xl font-semibold tracking-tight text-vl-ink">
                                         {sec.title}
@@ -152,7 +152,7 @@ export default function Docs() {
                                         {sec.summary}
                                     </p>
 
-                                    <div className="overflow-hidden rounded-[24px] bg-[#060A13] ring-1 ring-white/[0.08]">
+                                    <div className="overflow-hidden rounded-xl bg-[#060A13] ring-1 ring-white/[0.08]">
                                         <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-2.5">
                                             <span className="font-mono text-xs text-slate-400">{sec.codeTitle}</span>
                                             <button

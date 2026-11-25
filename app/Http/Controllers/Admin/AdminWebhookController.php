@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Webhook;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminWebhookController extends Controller
 {
     public function index()
     {
         $webhooks = Webhook::latest()->get();
-        return view('admin.webhooks.index', compact('webhooks'));
+        return Inertia::render('Admin/Webhooks/Index', compact('webhooks'));
     }
 
     public function create()
     {
-        return view('admin.webhooks.create');
+        return Inertia::render('Admin/Webhooks/Form');
     }
 
     public function store(Request $request)
@@ -29,7 +30,7 @@ class AdminWebhookController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = $request->boolean('is_active');
 
         Webhook::create($validated);
 
@@ -38,7 +39,7 @@ class AdminWebhookController extends Controller
 
     public function edit(Webhook $webhook)
     {
-        return view('admin.webhooks.edit', compact('webhook'));
+        return Inertia::render('Admin/Webhooks/Form', compact('webhook'));
     }
 
     public function update(Request $request, Webhook $webhook)
@@ -50,7 +51,7 @@ class AdminWebhookController extends Controller
             'secret' => 'nullable|string|max:255',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = $request->boolean('is_active');
 
         $webhook->update($validated);
 

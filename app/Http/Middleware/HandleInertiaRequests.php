@@ -8,6 +8,7 @@ use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -35,20 +36,62 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
 
         $unreadAnnouncementsCount = 0;
+        $recentNotifications = [];
         if ($user && Schema::hasTable('announcements')) {
             try {
                 $readIds = Schema::hasTable('announcement_reads')
                     ? DB::table('announcement_reads')
                         ->where('user_id', $user->id)
                         ->pluck('announcement_id')
-                    : collect();
+                        ->all()
+                    : [];
 
-                $unreadAnnouncementsCount = Announcement::query()
-                    ->whereNull('course_id')
-                    ->when($readIds->isNotEmpty(), fn ($q) => $q->whereNotIn('id', $readIds))
+                $courseIds = collect();
+                if (Schema::hasTable('courses')) {
+                    if ($user->role === 'admin') {
+                        $courseIds = DB::table('courses')->pluck('id');
+                    } else {
+                        $taught = DB::table('courses')->where('instructor_id', $user->id)->pluck('id');
+                        $enrolled = Schema::hasTable('enrollments')
+                            ? DB::table('enrollments')->where('student_id', $user->id)->pluck('course_id')
+                            : collect();
+                        $courseIds = $taught->merge($enrolled)->unique()->values();
+                    }
+                }
+
+                $baseQuery = Announcement::query()
+                    ->with('course:id,title,slug')
+                    ->where(function ($q) use ($courseIds) {
+                        $q->whereNull('course_id');
+                        if ($courseIds->isNotEmpty()) {
+                            $q->orWhereIn('course_id', $courseIds->all());
+                        }
+                    });
+
+                $unreadAnnouncementsCount = (clone $baseQuery)
+                    ->when(!empty($readIds), fn ($q) => $q->whereNotIn('id', $readIds))
                     ->count();
+
+                $recentNotifications = (clone $baseQuery)
+                    ->orderByDesc('pinned')
+                    ->latest()
+                    ->limit(6)
+                    ->get()
+                    ->map(fn (Announcement $a) => [
+                        'id'            => $a->id,
+                        'title'         => $a->title,
+                        'body'          => Str::limit(strip_tags((string) $a->body), 120),
+                        'pinned'        => (bool) $a->pinned,
+                        'course_title'  => $a->course?->title,
+                        'course_slug'   => $a->course?->slug,
+                        'is_unread'     => !in_array($a->id, $readIds, true),
+                        'created_human' => $a->created_at?->diffForHumans() ?? 'Just now',
+                    ])
+                    ->values()
+                    ->all();
             } catch (\Throwable) {
                 $unreadAnnouncementsCount = 0;
+                $recentNotifications = [];
             }
         }
 
@@ -76,6 +119,7 @@ class HandleInertiaRequests extends Middleware
                 'error'   => fn () => $request->session()->get('error'),
             ],
             'unreadAnnouncementsCount' => $unreadAnnouncementsCount,
+            'recentNotifications'      => $recentNotifications,
             'csrfToken' => csrf_token(),
         ];
     }

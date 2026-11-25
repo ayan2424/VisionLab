@@ -173,18 +173,18 @@ export default function WorkspaceIde({
                         <span>{memory}</span>
                     </div>
 
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/12 px-2.5 py-1 font-mono text-[11px] text-amber-400 tabular-nums">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-2.5 py-1 font-mono text-[11px] text-amber-400 tabular-nums">
                         <GitPullRequestDraft className="h-3.5 w-3.5" />
                         <span>{pendingPatches} patches</span>
                     </div>
 
-                    <a
+                    <Link
                         href={`/workspace/${workspace.slug}/rebuild`}
                         title="Rebuild Nix environment"
                         className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-vl-surface text-vl-ink-secondary hover:text-sky-400 transition-colors"
                     >
                         <RefreshCw className="h-3.5 w-3.5" />
-                    </a>
+                    </Link>
 
                     <ThemeToggle className="!h-7 !w-7 !rounded-full" />
                 </div>
@@ -205,7 +205,7 @@ export default function WorkspaceIde({
                         <motion.div
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="w-full max-w-md rounded-[32px] bg-[#0B1220] p-7 text-slate-200 shadow-2xl ring-1 ring-white/10"
+                            className="w-full max-w-md rounded-2xl bg-[#0B1220] p-7 text-slate-200 shadow-2xl ring-1 ring-white/10"
                         >
                             <div className="flex items-center gap-3">
                                 <Loader2 className="h-5 w-5 animate-spin text-sky-400" />
@@ -215,7 +215,7 @@ export default function WorkspaceIde({
                             </div>
 
                             {bootError ? (
-                                <div className="mt-5 rounded-[24px] bg-rose-500/15 p-4 text-xs text-rose-200">
+                                <div className="mt-5 rounded-xl bg-rose-500/15 p-4 text-xs text-rose-200">
                                     {bootError}
                                 </div>
                             ) : (

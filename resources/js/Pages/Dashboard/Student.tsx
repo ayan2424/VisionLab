@@ -202,12 +202,12 @@ export default function StudentDashboard({
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2.5">
-                        <a
+                        <Link
                             href="/join"
                             className="inline-flex items-center gap-2 rounded-full bg-vl-surface px-4 py-2 text-xs font-semibold text-vl-ink ring-1 ring-inset ring-vl-border/15 hover:bg-vl-surface-raised transition-colors"
                         >
                             Join Course
-                        </a>
+                        </Link>
                         <MagneticButton href="/workspace/create" size="sm" variant="primary">
                             <Plus className="h-3.5 w-3.5" />
                             New Workspace
@@ -215,8 +215,8 @@ export default function StudentDashboard({
                     </div>
                 </div>
 
-                {/* Row 1 — V28 4 Sparkline KPI Bento Cards */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {/* Row 1 — V28 4 Sparkline KPI Bento Cards (Auto-Reflows Cleanly Beside Docked AI Sidebar) */}
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(225px,1fr))] gap-4">
                     {sparkCards.map((stat, idx) => {
                         const Icon = stat.icon;
                         return (
@@ -226,7 +226,7 @@ export default function StudentDashboard({
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.24, delay: idx * 0.04, ease: [0.16, 1, 0.3, 1] }}
                             >
-                                <SpotlightSurface className="!rounded-[30px] p-5">
+                                <SpotlightSurface className="!rounded-2xl p-5">
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="flex items-center gap-2.5">
                                             <span className={cn('flex h-9 w-9 items-center justify-center rounded-full', stat.iconTone)}>
@@ -234,7 +234,7 @@ export default function StudentDashboard({
                                             </span>
                                             <span className="text-xs font-medium text-vl-ink-secondary">{stat.label}</span>
                                         </div>
-                                        <span className={cn('rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold', stat.chipTone)}>
+                                        <span className={cn('shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold', stat.chipTone)}>
                                             {stat.chip}
                                         </span>
                                     </div>
@@ -273,7 +273,7 @@ export default function StudentDashboard({
                 {/* Row 2 — V21 Mixed-Contrast Hero Bento (Gradient XP Hero + Obsidian Containers + Donut Progress) */}
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
                     {/* 5-Col Vibrant Sapphire-Teal Gradient XP & Launch Card */}
-                    <div className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-7 text-white shadow-[0_24px_60px_-20px_rgba(14,165,233,0.55)] lg:col-span-5">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-7 text-white shadow-[0_24px_60px_-20px_rgba(14,165,233,0.55)] lg:col-span-5">
                         <div
                             aria-hidden="true"
                             className="pointer-events-none absolute -top-14 -right-10 h-44 w-44 rounded-full bg-white/15 blur-2xl"
@@ -314,18 +314,18 @@ export default function StudentDashboard({
                                     Launch Cloud IDE
                                     <ArrowUpRight className="h-3.5 w-3.5" />
                                 </Link>
-                                <a
+                                <Link
                                     href="/gamification"
                                     className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-xs font-semibold text-white hover:bg-white/25 transition-colors"
                                 >
                                     Achievements
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
 
                     {/* 4-Col High-Contrast Obsidian Running Containers Card */}
-                    <div className="rounded-[34px] bg-[#070C16] p-6 text-slate-100 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.65)] ring-1 ring-white/10 lg:col-span-4">
+                    <div className="rounded-2xl bg-[#070C16] p-6 text-slate-100 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.65)] ring-1 ring-white/10 lg:col-span-4">
                         <div className="mb-4 flex items-center justify-between">
                             <div>
                                 <p className="font-mono text-[10px] text-teal-300">LIVE WORKSPACES</p>
@@ -341,7 +341,7 @@ export default function StudentDashboard({
                         </div>
 
                         {activeWorkspaces.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center rounded-[24px] bg-white/5 px-4 py-7 text-center">
+                            <div className="flex flex-col items-center justify-center rounded-xl bg-white/5 px-4 py-7 text-center">
                                 <p className="text-xs text-slate-300">No active containers running right now.</p>
                                 <Link
                                     href="/workspace/create"
@@ -358,7 +358,7 @@ export default function StudentDashboard({
                                         key={ws.id}
                                         href={`/workspace/${ws.slug}`}
                                         prefetch="hover"
-                                        className="group flex items-center justify-between gap-3 rounded-full bg-white/5 px-4 py-2.5 hover:bg-white/10 transition-colors"
+                                        className="group flex items-center justify-between gap-3 rounded-xl bg-white/5 px-4 py-2.5 hover:bg-white/10 transition-colors"
                                     >
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
@@ -379,7 +379,7 @@ export default function StudentDashboard({
                     </div>
 
                     {/* 3-Col Circular Donut Lab Progress Card */}
-                    <SpotlightSurface className="!rounded-[34px] p-6 lg:col-span-3">
+                    <SpotlightSurface className="!rounded-2xl p-6 lg:col-span-3">
                         <div className="flex items-center justify-between">
                             <h3 className="font-display text-base font-semibold text-vl-ink">Lab Progress</h3>
                             <span className="rounded-full bg-vl-surface-raised px-2.5 py-0.5 font-mono text-[10px] text-vl-ink-muted tabular-nums">
@@ -432,18 +432,18 @@ export default function StudentDashboard({
 
                 {/* Row 3 — Enrolled Courses + Deadlines, Grades & Notices */}
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                    <SpotlightSurface className="!rounded-[34px] p-6 lg:col-span-7">
+                    <SpotlightSurface className="!rounded-2xl p-6 lg:col-span-7">
                         <div className="mb-5 flex items-center justify-between">
                             <div>
                                 <h3 className="font-display text-lg font-semibold text-vl-ink">Enrolled Courses</h3>
                                 <p className="text-xs text-vl-ink-muted">Pinned Nix toolchains &amp; course syllabi</p>
                             </div>
-                            <a
+                            <Link
                                 href="/courses"
                                 className="rounded-full bg-vl-surface-raised px-3.5 py-1.5 text-xs font-medium text-sky-500 hover:bg-sky-500/15 transition-colors"
                             >
                                 View catalog
-                            </a>
+                            </Link>
                         </div>
 
                         {courses.length === 0 ? (
@@ -453,10 +453,10 @@ export default function StudentDashboard({
                         ) : (
                             <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                                 {courses.map((course) => (
-                                    <a
+                                    <Link
                                         key={course.id}
                                         href={`/courses/${course.slug}`}
-                                        className="group rounded-[26px] bg-vl-bg/75 p-5 hover:bg-vl-surface-raised/85 transition-colors"
+                                        className="group rounded-xl bg-vl-bg/75 p-5 hover:bg-vl-surface-raised/85 transition-colors"
                                     >
                                         <div className="flex items-center justify-between gap-3">
                                             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-500/15 text-sky-400">
@@ -472,14 +472,14 @@ export default function StudentDashboard({
                                         <p className="mt-1 text-xs text-vl-ink-muted">
                                             {course.instructor?.name ?? 'Department Faculty'}
                                         </p>
-                                    </a>
+                                    </Link>
                                 ))}
                             </div>
                         )}
                     </SpotlightSurface>
 
                     <div className="space-y-6 lg:col-span-5">
-                        <SpotlightSurface accent="amber" className="!rounded-[34px] p-6">
+                        <SpotlightSurface accent="amber" className="!rounded-2xl p-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="font-display text-base font-semibold text-vl-ink">Upcoming Deadlines</h3>
                                 <StatusPill tone="amber">{upcomingAssignments.length} open</StatusPill>
@@ -489,10 +489,10 @@ export default function StudentDashboard({
                                     <p className="text-xs text-vl-ink-muted">No upcoming deadlines on your schedule.</p>
                                 ) : (
                                     upcomingAssignments.map((a) => (
-                                        <a
+                                        <Link
                                             key={a.id}
                                             href={`/assignments/${a.id}`}
-                                            className="flex items-center justify-between gap-3 rounded-full bg-vl-bg/75 px-4 py-3 hover:bg-vl-surface-raised/85 transition-colors"
+                                            className="flex items-center justify-between gap-3 rounded-xl bg-vl-bg/75 px-4 py-3 hover:bg-vl-surface-raised/85 transition-colors"
                                         >
                                             <div className="min-w-0">
                                                 <p className="truncate text-sm font-medium text-vl-ink">{a.title}</p>
@@ -503,13 +503,13 @@ export default function StudentDashboard({
                                             <span className="shrink-0 rounded-full bg-amber-500/15 px-3 py-1 font-mono text-[11px] font-semibold text-amber-500 dark:text-amber-300 tabular-nums">
                                                 {a.due_date ? new Date(a.due_date).toLocaleDateString() : 'Open'}
                                             </span>
-                                        </a>
+                                        </Link>
                                     ))
                                 )}
                             </div>
                         </SpotlightSurface>
 
-                        <SpotlightSurface accent="teal" className="!rounded-[34px] p-6">
+                        <SpotlightSurface accent="teal" className="!rounded-2xl p-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="font-display text-base font-semibold text-vl-ink">Recent Grades</h3>
                                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-500/15 text-teal-400">
@@ -523,7 +523,7 @@ export default function StudentDashboard({
                                     gradedSubmissions.map((s) => (
                                         <div
                                             key={s.id}
-                                            className="flex items-center justify-between gap-3 rounded-full bg-vl-bg/75 px-4 py-3"
+                                            className="flex items-center justify-between gap-3 rounded-xl bg-vl-bg/75 px-4 py-3"
                                         >
                                             <div className="min-w-0">
                                                 <p className="truncate text-xs font-semibold text-vl-ink">
@@ -542,7 +542,7 @@ export default function StudentDashboard({
                             </div>
                         </SpotlightSurface>
 
-                        <SpotlightSurface className="!rounded-[34px] p-6">
+                        <SpotlightSurface className="!rounded-2xl p-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="font-display text-base font-semibold text-vl-ink">Course Notices</h3>
                                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-500/15 text-sky-400">
@@ -554,7 +554,7 @@ export default function StudentDashboard({
                                     <p className="text-xs text-vl-ink-muted">You are all caught up.</p>
                                 ) : (
                                     recentAnnouncements.map((ann) => (
-                                        <div key={ann.id} className="rounded-[24px] bg-vl-bg/75 px-4 py-3">
+                                        <div key={ann.id} className="rounded-xl bg-vl-bg/75 px-4 py-3">
                                             <div className="flex items-center justify-between gap-2">
                                                 <p className="truncate text-xs font-semibold text-vl-ink">{ann.title}</p>
                                                 {ann.is_unread && (

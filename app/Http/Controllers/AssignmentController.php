@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateAssignmentRequest;
 use App\Models\Assignment;
 use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AssignmentController extends Controller
 {
@@ -14,7 +15,7 @@ class AssignmentController extends Controller
     {
         $this->authorize('update', $course);
         $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
-        return view('assignments.create', compact('course', 'templates'));
+        return Inertia::render('Assignments/Form', compact('course', 'templates'));
     }
 
     public function store(StoreAssignmentRequest $request, Course $course)
@@ -42,7 +43,7 @@ class AssignmentController extends Controller
             $submissions = collect();
         }
 
-        return view('assignments.show', compact(
+        return Inertia::render('Assignments/Show', compact(
             'assignment', 'course', 'isInstructor', 'submission', 'submissions'
         ));
     }
@@ -51,7 +52,8 @@ class AssignmentController extends Controller
     {
         $this->authorize('update', $assignment);
         $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
-        return view('assignments.edit', compact('assignment', 'templates'));
+        $assignment->load('course');
+        return Inertia::render('Assignments/Form', compact('assignment', 'templates'));
     }
 
     public function update(UpdateAssignmentRequest $request, Assignment $assignment)

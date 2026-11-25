@@ -10,6 +10,7 @@ use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class AnalyticsController extends Controller
 {
@@ -46,7 +47,8 @@ class AnalyticsController extends Controller
             $data = compact('executions', 'aiInteractions', 'activeSessions', 'activityChart');
             $data['user'] = $user;
 
-            return view('analytics.student', $data);
+            $data['mode'] = 'student';
+            return Inertia::render('Analytics/Overview', $data);
             
         } elseif ($user->isInstructor()) {
             // Instructor view
@@ -83,7 +85,8 @@ class AnalyticsController extends Controller
             
             $data = compact('executions', 'aiInteractions', 'pendingGrading', 'activityChart', 'recentEvents');
 
-            return view('analytics.instructor', $data);
+            $data['mode'] = 'instructor';
+            return Inertia::render('Analytics/Overview', $data);
         }
 
         // Admins should use AdminAnalyticsController

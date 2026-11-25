@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useMemo, useState } from 'react';
+import { Link } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
     Area,
@@ -180,7 +181,7 @@ export default function InstructorDashboard({
                                         type="button"
                                         onClick={() => setViewMode(tab.id)}
                                         className={cn(
-                                            'relative inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
+                                            'relative inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
                                             active ? 'text-white' : 'text-vl-ink-secondary hover:text-vl-ink'
                                         )}
                                     >
@@ -198,7 +199,7 @@ export default function InstructorDashboard({
                             })}
                         </div>
 
-                        <MagneticButton href="/courses/create" external size="sm" variant="primary">
+                        <MagneticButton href="/courses/create" size="sm" variant="primary">
                             <Plus className="h-3.5 w-3.5" />
                             Create Course
                         </MagneticButton>
@@ -216,7 +217,7 @@ export default function InstructorDashboard({
                         >
                             <Suspense
                                 fallback={
-                                    <div className="flex h-[560px] items-center justify-center rounded-[36px] bg-vl-surface text-sm text-vl-ink-muted">
+                                    <div className="flex h-[560px] items-center justify-center rounded-xl bg-vl-surface text-sm text-vl-ink-muted">
                                         Loading Interactive 3D Classroom Telemetry...
                                     </div>
                                 }
@@ -233,8 +234,8 @@ export default function InstructorDashboard({
                             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                             className="space-y-6"
                         >
-                            {/* Row 1 — V28 4 Sparkline KPI Bento Cards */}
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                            {/* Row 1 — V28 4 Sparkline KPI Bento Cards (Auto-Reflows Cleanly Beside Docked AI Sidebar) */}
+                            <div className="grid grid-cols-[repeat(auto-fit,minmax(225px,1fr))] gap-4">
                                 {sparkStats.map((stat, idx) => {
                                     const Icon = stat.icon;
                                     return (
@@ -244,7 +245,7 @@ export default function InstructorDashboard({
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.24, delay: idx * 0.04, ease: [0.16, 1, 0.3, 1] }}
                                         >
-                                            <SpotlightSurface className="!rounded-[30px] p-5">
+                                            <SpotlightSurface className="!rounded-2xl p-5">
                                                 <div className="flex items-center justify-between gap-2">
                                                     <div className="flex items-center gap-2.5">
                                                         <span className={cn('flex h-9 w-9 items-center justify-center rounded-full', stat.iconTone)}>
@@ -252,7 +253,7 @@ export default function InstructorDashboard({
                                                         </span>
                                                         <span className="text-xs font-medium text-vl-ink-secondary">{stat.label}</span>
                                                     </div>
-                                                    <span className={cn('rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold', stat.chipTone)}>
+                                                    <span className={cn('shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold', stat.chipTone)}>
                                                         {stat.chip}
                                                     </span>
                                                 </div>
@@ -291,7 +292,7 @@ export default function InstructorDashboard({
                             {/* Row 2 — V21 Mixed-Contrast Bento Trio (Gradient Hero + Obsidian Forensics + Circular Donut) */}
                             <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
                                 {/* 5-Col Sapphire-Teal Gradient Course Launch Card */}
-                                <div className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-7 text-white shadow-[0_24px_60px_-20px_rgba(14,165,233,0.55)] lg:col-span-5">
+                                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-7 text-white shadow-[0_24px_60px_-20px_rgba(14,165,233,0.55)] lg:col-span-5">
                                     <div
                                         aria-hidden="true"
                                         className="pointer-events-none absolute -top-14 -right-12 h-44 w-44 rounded-full bg-white/15 blur-2xl"
@@ -308,13 +309,13 @@ export default function InstructorDashboard({
                                         </div>
 
                                         <div className="flex flex-wrap items-center gap-2.5">
-                                            <a
+                                            <Link
                                                 href="/submissions"
                                                 className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-blue-700 hover:bg-sky-50 transition-colors"
                                             >
                                                 Open Grading Queue ({pendingGrading})
                                                 <ArrowUpRight className="h-3.5 w-3.5" />
-                                            </a>
+                                            </Link>
                                             <button
                                                 type="button"
                                                 onClick={() => setViewMode('lab3d')}
@@ -328,7 +329,7 @@ export default function InstructorDashboard({
                                 </div>
 
                                 {/* 4-Col High-Contrast Obsidian VisionGuard Pulse Card */}
-                                <div className="rounded-[34px] bg-[#070C16] p-7 text-slate-100 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.65)] ring-1 ring-white/10 lg:col-span-4">
+                                <div className="rounded-2xl bg-[#070C16] p-7 text-slate-100 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.65)] ring-1 ring-white/10 lg:col-span-4">
                                     <div className="flex h-full flex-col justify-between gap-6">
                                         <div className="flex items-start justify-between gap-3">
                                             <div>
@@ -342,7 +343,7 @@ export default function InstructorDashboard({
                                             </span>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-3 rounded-[24px] bg-white/5 p-4 font-mono text-xs tabular-nums">
+                                        <div className="grid grid-cols-2 gap-3 rounded-xl bg-white/5 p-4 font-mono text-xs tabular-nums">
                                             <div>
                                                 <p className="text-[10px] text-slate-400">LATE SUBMISSIONS</p>
                                                 <p className="mt-1 text-lg font-semibold text-amber-300">{lateSubmissions}</p>
@@ -360,7 +361,7 @@ export default function InstructorDashboard({
                                 </div>
 
                                 {/* 3-Col Circular Donut Grading Ratio Card */}
-                                <SpotlightSurface className="!rounded-[34px] p-6 lg:col-span-3">
+                                <SpotlightSurface className="!rounded-2xl p-6 lg:col-span-3">
                                     <div className="flex items-center justify-between">
                                         <h3 className="font-display text-base font-semibold text-vl-ink">Grading Mix</h3>
                                         <span className="rounded-full bg-vl-surface-raised px-2.5 py-0.5 font-mono text-[10px] text-vl-ink-muted tabular-nums">
@@ -418,17 +419,17 @@ export default function InstructorDashboard({
 
                             {/* Row 3 — Submissions Queue & Courses List */}
                             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                                <SpotlightSurface accent="sky" className="!rounded-[34px] p-6 lg:col-span-7">
+                                <SpotlightSurface accent="sky" className="!rounded-2xl p-6 lg:col-span-7">
                                     <div className="mb-5 flex items-center justify-between">
                                         <h3 className="font-display text-lg font-semibold text-vl-ink">
                                             Recent Submissions
                                         </h3>
-                                        <a
+                                        <Link
                                             href="/submissions"
                                             className="inline-flex items-center gap-1 rounded-full bg-vl-surface-raised px-3.5 py-1.5 text-xs font-medium text-sky-500 hover:bg-sky-500/15 transition-colors"
                                         >
                                             Open queue <ArrowRight className="h-3.5 w-3.5" />
-                                        </a>
+                                        </Link>
                                     </div>
 
                                     {recentSubmissions.length === 0 ? (
@@ -438,10 +439,10 @@ export default function InstructorDashboard({
                                     ) : (
                                         <div className="space-y-2.5">
                                             {recentSubmissions.map((sub) => (
-                                                <a
+                                                <Link
                                                     key={sub.id}
                                                     href={`/submissions/${sub.id}`}
-                                                    className="flex items-center justify-between gap-4 rounded-full bg-vl-bg/75 px-5 py-3 hover:bg-vl-surface-raised/85 transition-colors"
+                                                    className="flex items-center justify-between gap-4 rounded-xl bg-vl-bg/75 px-5 py-3 hover:bg-vl-surface-raised/85 transition-colors"
                                                 >
                                                     <div className="min-w-0">
                                                         <p className="truncate text-sm font-semibold text-vl-ink">
@@ -462,13 +463,13 @@ export default function InstructorDashboard({
                                                     >
                                                         {sub.status}
                                                     </StatusPill>
-                                                </a>
+                                                </Link>
                                             ))}
                                         </div>
                                     )}
                                 </SpotlightSurface>
 
-                                <SpotlightSurface className="!rounded-[34px] p-6 lg:col-span-5">
+                                <SpotlightSurface className="!rounded-2xl p-6 lg:col-span-5">
                                     <div className="mb-5 flex items-center justify-between">
                                         <h3 className="font-display text-lg font-semibold text-vl-ink">Your Courses</h3>
                                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-500/15 text-sky-400">
@@ -482,10 +483,10 @@ export default function InstructorDashboard({
                                             </p>
                                         ) : (
                                             courses.map((course) => (
-                                                <a
+                                                <Link
                                                     key={course.id}
                                                     href={`/courses/${course.slug}`}
-                                                    className="flex items-center justify-between gap-3 rounded-[26px] bg-vl-bg/75 px-4 py-3.5 hover:bg-vl-surface-raised/85 transition-colors"
+                                                    className="flex items-center justify-between gap-3 rounded-xl bg-vl-bg/75 px-4 py-3.5 hover:bg-vl-surface-raised/85 transition-colors"
                                                 >
                                                     <div className="min-w-0">
                                                         <p className="truncate text-sm font-semibold text-vl-ink">
@@ -498,7 +499,7 @@ export default function InstructorDashboard({
                                                     <span className="shrink-0 rounded-full bg-sky-500/15 px-3 py-1 font-mono text-xs font-semibold text-sky-500 dark:text-sky-300 tabular-nums">
                                                         {course.students_count ?? 0} seats
                                                     </span>
-                                                </a>
+                                                </Link>
                                             ))
                                         )}
                                     </div>

@@ -45,7 +45,7 @@ export default function AdminWorkspacesIndex({
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-1.5 rounded-[24px] bg-vl-surface p-1">
+                    <div className="flex items-center gap-1.5 rounded-xl bg-vl-surface p-1">
                         {['', 'running', 'stopped', 'pending', 'archived'].map((st) => (
                             <button
                                 key={st || 'all'}
@@ -66,7 +66,7 @@ export default function AdminWorkspacesIndex({
                 <SpotlightSurface className="overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
-                            <thead className="border-b border-vl-border/12 text-xs text-vl-ink-muted">
+                            <thead className="border-b border-vl-border/15 text-xs text-vl-ink-muted">
                                 <tr>
                                     <th className="px-5 py-3.5 font-medium">Workspace</th>
                                     <th className="px-5 py-3.5 font-medium">Owner</th>
@@ -104,18 +104,18 @@ export default function AdminWorkspacesIndex({
                                         </td>
                                         <td className="px-5 py-3.5 text-right">
                                             <div className="inline-flex items-center gap-2">
-                                                <a
+                                                <Link
                                                     href={`/admin/workspaces/${ws.slug}`}
-                                                    className="inline-flex items-center gap-1 rounded-full bg-vl-bg/80 px-2.5 py-1.5 text-xs font-medium text-vl-ink-secondary hover:text-vl-ink"
+                                                    className="inline-flex items-center gap-1 rounded-full bg-vl-bg/80 px-3 py-1.5 text-xs font-medium text-vl-ink-secondary hover:text-vl-ink"
                                                 >
                                                     Inspect
                                                     <ExternalLink className="h-3 w-3" />
-                                                </a>
+                                                </Link>
                                                 {ws.status === 'running' && (
                                                     <button
                                                         type="button"
                                                         onClick={() => forceStop(ws.slug)}
-                                                        className="inline-flex items-center gap-1 rounded-full bg-rose-500/12 px-2.5 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-500/20"
+                                                        className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-3 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-500/25"
                                                     >
                                                         <Square className="h-3 w-3" />
                                                         Stop

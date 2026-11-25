@@ -107,7 +107,7 @@ export default function Features() {
                         })}
                     </div>
 
-                    <div className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-[32px] bg-vl-surface/80 p-8 shadow-vl-panel">
+                    <div className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-2xl bg-vl-surface/80 p-8 shadow-vl-panel">
                         <div className="space-y-1.5">
                             <h3 className="font-display text-2xl font-semibold text-vl-ink">
                                 Ready to inspect a dedicated institutional cluster?

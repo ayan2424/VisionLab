@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminAuditController extends Controller
 {
@@ -22,6 +23,7 @@ class AdminAuditController extends Controller
 
         $audits = $query->latest()->paginate(50);
 
-        return view('admin.audits.index', compact('audits'));
+        $filters = $request->only(['action', 'user_id']);
+        return Inertia::render('Admin/Audits/Index', compact('audits', 'filters'));
     }
 }

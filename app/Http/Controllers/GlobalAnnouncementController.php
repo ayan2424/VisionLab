@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class GlobalAnnouncementController extends Controller
 {
@@ -17,7 +18,7 @@ class GlobalAnnouncementController extends Controller
             ->latest()
             ->paginate(15);
             
-        return view('announcements.index', compact('announcements'));
+        return Inertia::render('Announcements/Index', compact('announcements'));
     }
 
     public function create()
@@ -26,7 +27,7 @@ class GlobalAnnouncementController extends Controller
             abort(403);
         }
         
-        return view('announcements.create');
+        return Inertia::render('Announcements/Create');
     }
 
     public function store(Request $request)

@@ -574,7 +574,7 @@ export default function Home() {
                         <div className="vl-glide-in">
                             <Suspense
                                 fallback={
-                                    <div className="flex h-[580px] items-center justify-center rounded-[36px] bg-vl-surface text-sm text-vl-ink-muted ring-1 ring-vl-border/15">
+                                    <div className="flex h-[580px] items-center justify-center rounded-xl bg-vl-surface text-sm text-vl-ink-muted ring-1 ring-vl-border/15">
                                         Loading Interactive 3D Lab Floor...
                                     </div>
                                 }
@@ -644,7 +644,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <SpotlightSurface accent="sky" className="vl-glide-in !rounded-[38px] p-6 sm:p-10">
+                        <SpotlightSurface accent="sky" className="vl-glide-in !rounded-xl p-6 sm:p-10">
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={activeRole.id}
@@ -679,7 +679,7 @@ export default function Home() {
                                     </div>
 
                                     <div className="lg:col-span-7">
-                                        <div className="relative overflow-hidden rounded-[28px] aspect-[16/10] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.7)]">
+                                        <div className="relative overflow-hidden rounded-2xl aspect-[16/10] shadow-[0_28px_70px_-24px_rgba(0,0,0,0.7)]">
                                             <img
                                                 src={activeRole.image}
                                                 alt={activeRole.alt}
@@ -725,7 +725,7 @@ export default function Home() {
                                     and updates the submission's VisionGuard authorship balance live.
                                 </p>
 
-                                <SpotlightSurface accent="teal" className="!rounded-[30px] p-6 space-y-4">
+                                <SpotlightSurface accent="teal" className="!rounded-2xl p-6 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <span className="flex items-center gap-2 text-xs font-semibold text-vl-ink">
                                             <Lock className="h-3.5 w-3.5 text-teal-400" />
@@ -750,7 +750,7 @@ export default function Home() {
                                     </div>
                                 </SpotlightSurface>
 
-                                <div className="relative overflow-hidden rounded-[32px] aspect-[16/9] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)]">
+                                <div className="relative overflow-hidden rounded-2xl aspect-[16/9] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)]">
                                     <img
                                         src="/images/redesign/workstation-night-lab.jpg"
                                         alt="Dark obsidian software engineering desk showing code diff review"
@@ -772,7 +772,7 @@ export default function Home() {
                             </div>
 
                             <div className="vl-glide-in lg:col-span-7">
-                                <div className="overflow-hidden rounded-[36px] bg-[#080E1A] text-slate-200 shadow-[0_38px_90px_-26px_rgba(0,0,0,0.88),inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-white/10">
+                                <div className="overflow-hidden rounded-xl bg-[#080E1A] text-slate-200 shadow-[0_38px_90px_-26px_rgba(0,0,0,0.88),inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-white/10">
                                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5 px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
@@ -937,7 +937,7 @@ export default function Home() {
                 <section className="relative py-12 sm:py-20">
                     <div className="mx-auto max-w-[1380px] px-4 sm:px-6 lg:px-10">
                         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                            <SpotlightSurface accent="sky" className="vl-glide-in !rounded-[36px] p-7 sm:p-9 lg:col-span-7">
+                            <SpotlightSurface accent="sky" className="vl-glide-in !rounded-xl p-7 sm:p-9 lg:col-span-7">
                                 <div className="flex h-full flex-col justify-between gap-6">
                                     <div className="flex flex-wrap items-start justify-between gap-4">
                                         <div className="space-y-2">
@@ -981,7 +981,7 @@ export default function Home() {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -4 }}
                                             transition={{ duration: 0.18 }}
-                                            className="overflow-x-auto rounded-[24px] bg-[#05080F] p-5 font-mono text-xs leading-relaxed text-sky-200 ring-1 ring-white/10"
+                                            className="overflow-x-auto rounded-xl bg-[#05080F] p-5 font-mono text-xs leading-relaxed text-sky-200 ring-1 ring-white/10"
                                         >
                                             {activeNix.code}
                                         </motion.pre>
@@ -989,7 +989,7 @@ export default function Home() {
                                 </div>
                             </SpotlightSurface>
 
-                            <SpotlightSurface accent="teal" className="vl-glide-in !rounded-[36px] p-7 sm:p-9 lg:col-span-5">
+                            <SpotlightSurface accent="teal" className="vl-glide-in !rounded-xl p-7 sm:p-9 lg:col-span-5">
                                 <div className="flex h-full flex-col justify-between gap-6">
                                     <div className="space-y-3">
                                         <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-teal-500/15 text-teal-500 dark:text-teal-300">
@@ -1003,7 +1003,7 @@ export default function Home() {
                                         </p>
                                     </div>
 
-                                    <div className="space-y-3 rounded-[24px] bg-[#05080F] p-5 font-mono text-xs text-slate-200 ring-1 ring-white/10">
+                                    <div className="space-y-3 rounded-xl bg-[#05080F] p-5 font-mono text-xs text-slate-200 ring-1 ring-white/10">
                                         <div className="flex items-center justify-between text-[11px]">
                                             <span className="text-slate-400">ARTIFACT</span>
                                             <span
@@ -1059,7 +1059,7 @@ export default function Home() {
                         {/* Connected 4-Stage Institutional Track */}
                         <div className="vl-glide-in grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                             {LIFECYCLE_STAGES.map((item) => (
-                                <SpotlightSurface key={item.step} className="!rounded-[32px] p-6">
+                                <SpotlightSurface key={item.step} className="!rounded-2xl p-6">
                                     <div className="flex items-center justify-between">
                                         <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-teal-500 font-mono text-xs font-bold text-white tabular-nums">
                                             {item.step}
@@ -1078,7 +1078,7 @@ export default function Home() {
 
                         {/* Asymmetric High-Contrast Security Invariants Bento */}
                         <div className="vl-glide-in grid grid-cols-1 gap-6 lg:grid-cols-12">
-                            <div className="rounded-[38px] bg-[#070C16] p-8 text-slate-100 shadow-[0_32px_80px_-28px_rgba(0,0,0,0.8)] ring-1 ring-white/10 lg:col-span-8 sm:p-10">
+                            <div className="rounded-xl bg-[#070C16] p-8 text-slate-100 shadow-[0_32px_80px_-28px_rgba(0,0,0,0.8)] ring-1 ring-white/10 lg:col-span-8 sm:p-10">
                                 <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
                                     <div>
                                         <h3 className="font-display text-2xl font-semibold text-white">
@@ -1096,7 +1096,7 @@ export default function Home() {
 
                                 <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
                                     {SECURITY_INVARIANTS.map((sec) => (
-                                        <div key={sec.title} className="rounded-[24px] bg-white/5 p-5">
+                                        <div key={sec.title} className="rounded-xl bg-white/5 p-5">
                                             <div className="flex items-start gap-3">
                                                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
                                                 <div>
@@ -1111,7 +1111,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            <div className="relative overflow-hidden rounded-[38px] bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-8 text-white shadow-[0_32px_80px_-24px_rgba(14,165,233,0.55)] lg:col-span-4 sm:p-10">
+                            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-8 text-white shadow-[0_32px_80px_-24px_rgba(14,165,233,0.55)] lg:col-span-4 sm:p-10">
                                 <div
                                     aria-hidden="true"
                                     className="pointer-events-none absolute -bottom-16 -right-12 h-52 w-52 rounded-full bg-white/15 blur-2xl"
@@ -1173,7 +1173,7 @@ export default function Home() {
                                     return (
                                         <div
                                             key={faq.q}
-                                            className="overflow-hidden rounded-[28px] bg-vl-surface/90 ring-1 ring-vl-border/15 transition-colors"
+                                            className="overflow-hidden rounded-2xl bg-vl-surface/90 ring-1 ring-vl-border/15 transition-colors"
                                         >
                                             <button
                                                 type="button"
@@ -1226,7 +1226,7 @@ export default function Home() {
                 {/* Architectural Campus Pilot Sanctuary CTA */}
                 <section className="relative py-16 sm:py-24">
                     <div className="mx-auto max-w-[1380px] px-4 sm:px-6 lg:px-10">
-                        <div className="vl-glide-in relative overflow-hidden rounded-[40px] bg-[#060C18] px-8 py-16 text-white shadow-[0_38px_95px_-28px_rgba(2,12,27,0.88)] sm:px-16 sm:py-20">
+                        <div className="vl-glide-in relative overflow-hidden rounded-xl bg-[#060C18] px-8 py-16 text-white shadow-[0_38px_95px_-28px_rgba(2,12,27,0.88)] sm:px-16 sm:py-20">
                             <img
                                 src="/images/redesign/university-atrium-study.jpg"
                                 alt="Modern university atrium with computer science students collaborating"

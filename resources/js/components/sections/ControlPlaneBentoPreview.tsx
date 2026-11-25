@@ -324,10 +324,10 @@ export function ControlPlaneBentoPreview() {
             </div>
 
             {/* Outer Sculptural Curved Glass Dashboard Frame (V21 + V28 Fusion) */}
-            <div className="relative overflow-hidden rounded-[40px] bg-vl-surface/85 p-4 ring-1 ring-vl-border/15 shadow-[0_36px_96px_-30px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-6">
+            <div className="relative overflow-hidden rounded-xl bg-vl-surface/85 p-4 ring-1 ring-vl-border/15 shadow-[0_36px_96px_-30px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-6">
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
                     {/* Left Detached Floating Curved Sidebar Preview */}
-                    <div className="hidden lg:col-span-3 lg:flex lg:flex-col justify-between rounded-[32px] bg-vl-bg/85 p-4 ring-1 ring-vl-border/15">
+                    <div className="hidden lg:col-span-3 lg:flex lg:flex-col justify-between rounded-2xl bg-vl-bg/85 p-4 ring-1 ring-vl-border/15">
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-2 pt-1">
                                 <span className="font-display text-sm font-semibold text-vl-ink">VisionLab</span>
@@ -358,7 +358,7 @@ export function ControlPlaneBentoPreview() {
                         </div>
 
                         {/* V21 Sidebar Bottom Gradient Promo Card */}
-                        <div className="mt-6 rounded-[26px] bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-4 text-white shadow-lg">
+                        <div className="mt-6 rounded-xl bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-4 text-white shadow-lg">
                             <p className="font-display text-xs font-semibold">{data.sidebarCta}</p>
                             <p className="mt-1 text-[11px] leading-snug text-sky-100/90">
                                 Instant Nix container &amp; audited AI tutor ready.
@@ -403,7 +403,7 @@ export function ControlPlaneBentoPreview() {
                                     {data.kpis.map((kpi, idx) => (
                                         <div
                                             key={kpi.label}
-                                            className="rounded-[26px] bg-vl-bg/85 p-4 ring-1 ring-vl-border/15"
+                                            className="rounded-xl bg-vl-bg/85 p-4 ring-1 ring-vl-border/15"
                                         >
                                             <div className="flex items-center justify-between gap-2">
                                                 <span className="text-[11px] font-medium text-vl-ink-secondary">
@@ -444,7 +444,7 @@ export function ControlPlaneBentoPreview() {
 
                                 {/* Row 2 — Mixed-Contrast Gradient + Obsidian Hero Bento */}
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-                                    <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-5 text-white shadow-lg md:col-span-6">
+                                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-5 text-white shadow-lg md:col-span-6">
                                         <div className="flex items-start justify-between gap-2">
                                             <div>
                                                 <p className="text-[11px] font-medium text-sky-100/90">{data.heroTitle}</p>
@@ -468,7 +468,7 @@ export function ControlPlaneBentoPreview() {
                                         </div>
                                     </div>
 
-                                    <div className="rounded-[28px] bg-[#070C16] p-5 text-slate-100 ring-1 ring-white/10 md:col-span-6">
+                                    <div className="rounded-2xl bg-[#070C16] p-5 text-slate-100 ring-1 ring-white/10 md:col-span-6">
                                         <div className="flex items-start justify-between gap-2">
                                             <div>
                                                 <p className="text-[11px] font-medium text-amber-300">{data.obsidianTitle}</p>
@@ -480,7 +480,7 @@ export function ControlPlaneBentoPreview() {
                                                 <ArrowUpRight className="h-4 w-4" />
                                             </span>
                                         </div>
-                                        <div className="mt-3.5 grid grid-cols-2 gap-2.5 rounded-[20px] bg-white/5 p-3 font-mono text-xs tabular-nums">
+                                        <div className="mt-3.5 grid grid-cols-2 gap-2.5 rounded-xl bg-white/5 p-3 font-mono text-xs tabular-nums">
                                             <div>
                                                 <p className="text-[9px] text-slate-400">{data.obsidianLeftLabel}</p>
                                                 <p className="mt-0.5 text-sm font-semibold text-sky-300">{data.obsidianLeftVal}</p>
@@ -496,7 +496,7 @@ export function ControlPlaneBentoPreview() {
 
                                 {/* Row 3 — Capsule Bar Chart + Circular Donut Gauge (V28 DNA) */}
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-                                    <div className="rounded-[28px] bg-vl-bg/85 p-5 ring-1 ring-vl-border/15 md:col-span-7">
+                                    <div className="rounded-2xl bg-vl-bg/85 p-5 ring-1 ring-vl-border/15 md:col-span-7">
                                         <div className="mb-3 flex items-center justify-between">
                                             <div>
                                                 <p className="font-display text-sm font-semibold text-vl-ink">{data.barTitle}</p>
@@ -524,7 +524,7 @@ export function ControlPlaneBentoPreview() {
                                         </div>
                                     </div>
 
-                                    <div className="rounded-[28px] bg-vl-bg/85 p-5 ring-1 ring-vl-border/15 md:col-span-5">
+                                    <div className="rounded-2xl bg-vl-bg/85 p-5 ring-1 ring-vl-border/15 md:col-span-5">
                                         <div className="flex items-center justify-between">
                                             <p className="font-display text-sm font-semibold text-vl-ink">{data.donutTitle}</p>
                                             <span className="font-mono text-[10px] text-vl-ink-muted">Breakdown</span>

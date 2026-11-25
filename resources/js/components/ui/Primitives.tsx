@@ -6,36 +6,69 @@ import { cn } from '@/lib/cn';
 import { useTheme } from '@/components/ThemeProvider';
 import type { FlashMessages } from '@/types';
 
-/* ── Brand Monogram & Wordmark (Full Circle Badge) ───────────────────────── */
+/* ── Authentic 6-Path VisionLab Geometric Logo Mark ──────────────────────── */
 export function BrandLogo({
     compact = false,
+    inverted = false,
+    size = 'h-9 w-9',
     className,
 }: {
     compact?: boolean;
+    inverted?: boolean;
+    size?: string;
     className?: string;
 }) {
     return (
-        <span className={cn('inline-flex items-center gap-2.5 select-none', className)}>
-            <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 via-blue-600 to-teal-500 shadow-[0_8px_22px_-4px_rgba(14,165,233,0.55),inset_0_1px_0_rgba(255,255,255,0.48)]">
-                <svg className="h-[18px] w-[18px] text-white" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                        d="M4.5 6.5L10.2 18.2C10.55 18.92 11.58 18.92 11.93 18.2L17.6 6.5"
-                        stroke="currentColor"
-                        strokeWidth="2.3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                    <path
-                        d="M15.2 17.5H20.2"
-                        stroke="currentColor"
-                        strokeWidth="2.3"
-                        strokeLinecap="round"
-                    />
-                </svg>
-            </span>
+        <span className={cn('inline-flex items-center gap-2.5 select-none group', className)}>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 144 144"
+                className={cn(
+                    size,
+                    'shrink-0 transition-transform duration-200 group-hover:scale-[1.04]',
+                    inverted ? 'text-white' : 'text-vl-ink'
+                )}
+                aria-hidden="true"
+            >
+                <path
+                    fill="currentColor"
+                    d="M 11.3,33.3 L 54.6,110.5 L 63.4,110.5 L 78.9,83.2 L 63.2,83.2 L 59.1,89.9 L 27.3,33.3 Z"
+                />
+                <path
+                    fill="currentColor"
+                    opacity={inverted ? 0.8 : 0.72}
+                    d="M 44.2,48.9 L 51.7,62.5 L 61.3,47.5 L 118.4,47.5 L 126.4,33.3 L 54.7,33.3 Z"
+                />
+                <path
+                    fill={inverted ? '#7DD3FC' : '#0284C7'}
+                    d="M 62.8,57.4 L 60.5,59.6 L 67.2,66.1 L 60.6,73.3 L 62.9,75.5 L 71.9,66.1 Z"
+                />
+                <path
+                    fill="currentColor"
+                    opacity={inverted ? 0.92 : 0.88}
+                    d="M 105.7,55.7 L 89.8,55.7 L 97.0,68.7 L 73.5,110.7 L 89.5,110.7 L 113.3,68.9 Z"
+                />
+                <path
+                    fill="currentColor"
+                    opacity={inverted ? 0.8 : 0.72}
+                    d="M 90.1,110.6 L 126.3,110.6 L 134.5,96.2 L 98.1,96.2 Z"
+                />
+                <path
+                    fill={inverted ? '#5EEAD4' : '#0D9488'}
+                    d="M 72.3,72.5 L 85.8,72.5 L 85.8,75.6 L 72.3,75.6 Z"
+                />
+            </svg>
             {!compact && (
-                <span className="font-display text-[17px] font-semibold tracking-[-0.025em] text-vl-ink">
-                    Vision<span className="text-sky-500 dark:text-sky-400">Lab</span>
+                <span
+                    className={cn(
+                        'font-display text-[17px] font-bold tracking-[-0.025em]',
+                        inverted ? 'text-white' : 'text-vl-ink'
+                    )}
+                >
+                    Vision
+                    <span className={inverted ? 'text-sky-200 font-medium' : 'text-sky-500 dark:text-sky-400 font-medium'}>
+                        Lab
+                    </span>
                 </span>
             )}
         </span>
@@ -170,10 +203,10 @@ export function MagneticButton({
     );
 }
 
-/* ── Super-Rounded Organic Spotlight Container (rounded-[32px]) ──────────── */
+/* ── Executive Spotlight Card Container (rounded-2xl) ────────────────────── */
 interface SpotlightSurfaceProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
-    accent?: 'sky' | 'teal' | 'amber';
+    accent?: 'sky' | 'teal' | 'amber' | 'none';
 }
 
 export function SpotlightSurface({
@@ -195,11 +228,13 @@ export function SpotlightSurface({
     };
 
     const glowColor =
-        accent === 'teal'
-            ? 'rgba(45, 212, 191, 0.13)'
+        accent === 'none'
+            ? 'transparent'
+            : accent === 'teal'
+            ? 'rgba(45, 212, 191, 0.12)'
             : accent === 'amber'
-            ? 'rgba(251, 191, 36, 0.13)'
-            : 'rgba(56, 189, 248, 0.14)';
+            ? 'rgba(251, 191, 36, 0.12)'
+            : 'rgba(56, 189, 248, 0.13)';
 
     return (
         <div
@@ -207,10 +242,11 @@ export function SpotlightSurface({
             onMouseMove={handleMove}
             style={{ '--spot-color': glowColor } as React.CSSProperties}
             className={cn(
-                'group/spot relative overflow-hidden rounded-[32px] transition-transform duration-300 ease-vl-out',
-                'bg-gradient-to-b from-vl-surface/95 to-vl-surface-raised/80 dark:from-[#0E1625]/95 dark:to-[#080D17]/95',
-                'shadow-[0_24px_54px_-24px_rgba(2,8,20,0.35),inset_0_1px_0_rgba(255,255,255,0.1)]',
-                'dark:shadow-[0_28px_68px_-24px_rgba(0,0,0,0.82),inset_0_1px_0_rgba(255,255,255,0.08)]',
+                'group/spot relative overflow-hidden rounded-2xl backdrop-blur-2xl transition-all duration-300 ease-vl-out',
+                'bg-white/70 dark:bg-[#0A1326]/65',
+                'shadow-[0_18px_46px_-22px_rgba(2,12,27,0.16),inset_0_1px_0_rgba(255,255,255,0.82)]',
+                'dark:shadow-[0_24px_58px_-22px_rgba(0,0,0,0.72),inset_0_1px_0_rgba(255,255,255,0.12)]',
+                'ring-1 ring-inset ring-slate-900/10 dark:ring-white/10',
                 className
             )}
             {...rest}
@@ -241,10 +277,10 @@ export function StatusPill({
     className?: string;
 }) {
     const toneMap = {
-        sky: 'bg-sky-500/12 text-sky-600 dark:text-sky-300',
-        teal: 'bg-teal-500/12 text-teal-700 dark:text-teal-300',
-        amber: 'bg-amber-500/14 text-amber-700 dark:text-amber-300',
-        rose: 'bg-rose-500/14 text-rose-700 dark:text-rose-300',
+        sky: 'bg-sky-500/15 text-sky-600 dark:text-sky-300',
+        teal: 'bg-teal-500/15 text-teal-700 dark:text-teal-300',
+        amber: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+        rose: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
         neutral: 'bg-vl-surface-raised text-vl-ink-secondary',
     };
     const dotMap = {
@@ -258,7 +294,7 @@ export function StatusPill({
     return (
         <span
             className={cn(
-                'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-[11px] font-medium tracking-tight',
+                'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-medium tracking-tight',
                 toneMap[tone],
                 className
             )}
@@ -289,8 +325,8 @@ export function FlashToast({ flash }: { flash?: FlashMessages }) {
                     className={cn(
                         'fixed top-20 right-5 z-50 flex max-w-md items-center gap-3 rounded-full px-5 py-3 text-sm shadow-2xl backdrop-blur-xl',
                         isError
-                            ? 'bg-rose-950/92 text-rose-100 ring-1 ring-rose-400/30'
-                            : 'bg-[#091323]/94 text-sky-50 ring-1 ring-sky-400/25'
+                            ? 'bg-rose-950/95 text-rose-100 ring-1 ring-rose-400/30'
+                            : 'bg-[#091323]/95 text-sky-50 ring-1 ring-sky-400/25'
                     )}
                 >
                     {isError ? (

@@ -65,7 +65,7 @@ export function CommandPalette({
                 { id: 'adm-status', label: 'Cluster Telemetry & Healthz', group: 'Governance', href: '/admin/status', icon: Activity },
                 { id: 'adm-users', label: 'User Directory', group: 'Governance', href: '/admin/users', icon: Users },
                 { id: 'adm-ws', label: 'All Container Workspaces', group: 'Governance', href: '/admin/workspaces', icon: Code2 },
-                { id: 'adm-campuses', label: 'Campuses & ERP', group: 'Governance', href: '/admin/campuses', icon: Building2, hardNavigate: true }
+                { id: 'adm-campuses', label: 'Campuses & ERP', group: 'Governance', href: '/admin/campuses', icon: Building2 }
             );
         }
 
@@ -114,9 +114,9 @@ export function CommandPalette({
                 role="dialog"
                 aria-modal="true"
                 aria-label="Command palette"
-                className="w-full max-w-xl overflow-hidden rounded-[32px] bg-vl-surface shadow-[0_32px_90px_-16px_rgba(0,0,0,0.75),inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-vl-border/15"
+                className="w-full max-w-xl overflow-hidden rounded-2xl bg-vl-surface shadow-[0_32px_90px_-16px_rgba(0,0,0,0.75),inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-vl-border/15"
             >
-                <div className="flex items-center gap-3 border-b border-vl-border/12 px-6 py-4">
+                <div className="flex items-center gap-3 border-b border-vl-border/15 px-6 py-4">
                     <Search className="h-4 w-4 text-vl-ink-muted" />
                     <input
                         ref={inputRef}
@@ -162,7 +162,7 @@ export function CommandPalette({
                                     className={cn(
                                         'flex w-full items-center justify-between rounded-full px-4 py-2.5 text-left text-sm transition-colors duration-100',
                                         active
-                                            ? 'bg-sky-500/14 text-vl-ink'
+                                            ? 'bg-sky-500/15 text-vl-ink'
                                             : 'text-vl-ink-secondary hover:bg-vl-surface-raised/60'
                                     )}
                                 >

@@ -11,6 +11,7 @@ use App\Models\Submission;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class AdminAnalyticsController extends Controller
 {
@@ -82,7 +83,7 @@ class AdminAnalyticsController extends Controller
 
         $recentEvents = AnalyticsEvent::with('user')->latest()->take(10)->get();
 
-        return view('admin.analytics.index', compact(
+        return Inertia::render('Admin/Analytics/Index', compact(
             'userChart', 'submissionChart', 'aiChart', 'aiModes', 'workspaceChart', 'eventTypes', 'roleDistribution', 'stats', 'recentEvents'
         ));
     }

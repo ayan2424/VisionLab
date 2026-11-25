@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
@@ -26,7 +27,7 @@ class ExtensionControllerTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.extensions.index'));
 
         $response->assertOk()
-                 ->assertViewIs('admin.extensions.index');
+                 ->assertInertia(fn (Assert $page) => $page->component('Admin/Extensions/Index'));
     }
 
     public function test_instructor_cannot_access_extension_management(): void

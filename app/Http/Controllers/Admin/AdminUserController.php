@@ -41,7 +41,7 @@ class AdminUserController extends Controller
         $courses = \App\Models\Course::with(['batches' => function($q) {
             $q->where('is_active', true);
         }])->where('is_active', true)->get();
-        return view('admin.users.create', compact('courses'));
+        return Inertia::render('Admin/Users/Form', compact('courses'));
     }
 
     public function store(Request $request)
@@ -100,7 +100,7 @@ class AdminUserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        return Inertia::render('Admin/Users/Form', compact('user'));
     }
 
     public function update(Request $request, User $user)

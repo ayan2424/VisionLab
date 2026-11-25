@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ProgressController extends Controller
 {
@@ -102,7 +103,7 @@ class ProgressController extends Controller
             'pending'     => $pendingCnt,
         ];
 
-        return view('progress.index', compact(
+        return Inertia::render('Progress/Index', compact(
             'courseProgress', 'overallPct', 'gradeLetter', 'stats'
         ));
     }

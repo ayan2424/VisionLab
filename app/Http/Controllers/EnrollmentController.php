@@ -8,12 +8,13 @@ use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class EnrollmentController extends Controller
 {
     public function joinForm()
     {
-        return view('enrollments.join');
+        return Inertia::render('Enrollments/Join');
     }
 
     public function joinByCode(JoinCourseRequest $request)

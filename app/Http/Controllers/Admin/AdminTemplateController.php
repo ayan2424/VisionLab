@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\WorkspaceTemplate;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminTemplateController extends Controller
 {
     public function index()
     {
         $templates = WorkspaceTemplate::latest()->get();
-        return view('admin.templates.index', compact('templates'));
+        return Inertia::render('Admin/Templates/Index', compact('templates'));
     }
 
     public function create()
     {
-        return view('admin.templates.create');
+        return Inertia::render('Admin/Templates/Form');
     }
 
     public function store(Request $request)
@@ -33,7 +34,7 @@ class AdminTemplateController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = $request->boolean('is_active');
         if (!empty($validated['ui_parameters'])) {
             $decoded = json_decode($validated['ui_parameters'], true);
             if (json_last_error() === JSON_ERROR_NONE) {
@@ -50,7 +51,7 @@ class AdminTemplateController extends Controller
 
     public function edit(WorkspaceTemplate $template)
     {
-        return view('admin.templates.edit', compact('template'));
+        return Inertia::render('Admin/Templates/Form', compact('template'));
     }
 
     public function update(Request $request, WorkspaceTemplate $template)
@@ -67,7 +68,7 @@ class AdminTemplateController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = $request->boolean('is_active');
         if (!empty($validated['ui_parameters'])) {
             $decoded = json_decode($validated['ui_parameters'], true);
             if (json_last_error() === JSON_ERROR_NONE) {

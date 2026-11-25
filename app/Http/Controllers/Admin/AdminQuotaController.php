@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\WorkspaceQuota;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminQuotaController extends Controller
 {
@@ -14,7 +15,7 @@ class AdminQuotaController extends Controller
         // For simplicity, we just list the global/role-based quotas.
         // A complete implementation would also list course or user-specific overrides.
         $quotas = WorkspaceQuota::orderBy('scope')->get();
-        return view('admin.quotas.index', compact('quotas'));
+        return Inertia::render('Admin/Quotas/Index', compact('quotas'));
     }
 
     public function updateGlobal(Request $request)

@@ -52,7 +52,7 @@ export function AuthLayout({
                     <p className="text-sm leading-relaxed text-slate-300">
                         Sign in with your institutional email to launch isolated Nix containers, review AI-proposed code patches, and submit graded coursework with full integrity telemetry.
                     </p>
-                    <div className="flex items-center gap-3.5 rounded-[28px] bg-white/[0.06] p-5 backdrop-blur-md ring-1 ring-inset ring-white/10">
+                    <div className="flex items-center gap-3.5 rounded-2xl bg-white/[0.06] p-5 backdrop-blur-md ring-1 ring-inset ring-white/10">
                         <ShieldCheck className="h-5 w-5 shrink-0 text-teal-300" />
                         <p className="text-xs text-slate-200 leading-relaxed">
                             Institutional identity enforced — self-registration is disabled so container quotas and academic records remain verified by your campus administrator.

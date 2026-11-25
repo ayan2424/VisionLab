@@ -39,7 +39,7 @@ export default function About() {
                             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                             className="lg:col-span-6"
                         >
-                            <div className="relative overflow-hidden rounded-[32px] aspect-[16/11] shadow-[0_32px_72px_-28px_rgba(0,0,0,0.65)]">
+                            <div className="relative overflow-hidden rounded-2xl aspect-[16/11] shadow-[0_32px_72px_-28px_rgba(0,0,0,0.65)]">
                                 <img
                                     src="/images/redesign/university-atrium-study.jpg"
                                     alt="University atrium and collaborative engineering space"

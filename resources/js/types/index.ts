@@ -20,6 +20,17 @@ export interface FlashMessages {
     error?: string | null;
 }
 
+export interface PortalNotification {
+    id: number;
+    title: string;
+    body: string;
+    pinned: boolean;
+    course_title: string | null;
+    course_slug: string | null;
+    is_unread: boolean;
+    created_human: string;
+}
+
 export interface SharedProps {
     auth: {
         user: AuthUser | null;
@@ -27,6 +38,7 @@ export interface SharedProps {
     };
     flash: FlashMessages;
     unreadAnnouncementsCount: number;
+    recentNotifications: PortalNotification[];
     csrfToken: string;
     errors: Record<string, string>;
     [key: string]: unknown;

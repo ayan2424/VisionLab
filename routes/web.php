@@ -24,7 +24,7 @@ Route::get('/', fn () => Inertia::render('Public/Home'))->name('home');
 
 Route::get('/healthz', [\App\Http\Controllers\HealthController::class, 'check'])->name('health');
 
-Route::view('/offline', 'errors.offline')->name('offline');
+Route::get('/offline', fn () => Inertia::render('Public/Offline'))->name('offline');
 
 // ── SEO Public Pages ──────────────────────────────────────────────────
 Route::get('/about', fn () => Inertia::render('Public/About'))->name('about');
@@ -49,6 +49,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+    // ── Portal-Wide Vision AI Copilot ──────────────────────────────────
+    Route::post('/api/portal-ai/chat', [\App\Http\Controllers\PortalAiController::class, 'chat'])
+        ->middleware('throttle:30,1')
+        ->name('portal.ai.chat');
 
     // ── Workspace ──────────────────────────────────────────────────────
     Route::get('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'index'])->name('workspace.index');

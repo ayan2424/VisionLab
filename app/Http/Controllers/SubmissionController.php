@@ -9,6 +9,7 @@ use App\Models\Submission;
 use Illuminate\Http\Request;
 use App\Http\Requests\SubmitAssignmentRequest;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class SubmissionController extends Controller
 {
@@ -136,7 +137,8 @@ class SubmissionController extends Controller
             );
         }
 
-        return view('workspace', [
+        return Inertia::render('Workspace/Ide', [
+            'isAssignmentLocked' => (bool) $assignment->is_locked,
             'user'            => $user,
             'workspace'       => $workspace->fresh(),
             'workspaceName'   => $assignment->title,
@@ -173,7 +175,8 @@ class SubmissionController extends Controller
                             ? Submission::with('student')->find($siblings[$currentIndex + 1])
                             : null;
 
-        return view('submissions.show', compact(
+        $submission->load('student');
+        return Inertia::render('Submissions/Show', compact(
             'submission', 'assignment', 'course',
             'canGrade', 'prevSubmission', 'nextSubmission'
         ));
@@ -301,8 +304,8 @@ class SubmissionController extends Controller
             ->pluck('cnt', 'course_id')
             ->toArray();
 
-        return view('submissions.queue', compact(
-            'submissions', 'grouped', 'courses',
+        return Inertia::render('Submissions/Queue', compact(
+            'submissions', 'courses',
             'courseFilter', 'statusFilter', 'stats', 'pendingCount', 'perCoursePending'
         ));
     }

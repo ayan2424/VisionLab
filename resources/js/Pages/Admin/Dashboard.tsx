@@ -230,7 +230,7 @@ export default function AdminDashboard({
                                     type="button"
                                     onClick={() => setViewMode(tab.id)}
                                     className={cn(
-                                        'relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-colors',
+                                        'relative inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition-colors',
                                         active ? 'text-white' : 'text-vl-ink-secondary hover:text-vl-ink'
                                     )}
                                 >
@@ -250,7 +250,7 @@ export default function AdminDashboard({
                 </div>
 
                 {/* Live /healthz Operational Probe Pill Bar */}
-                <SpotlightSurface accent={allHealthy ? 'teal' : 'amber'} className="!rounded-[28px] px-5 py-4">
+                <SpotlightSurface accent={allHealthy ? 'teal' : 'amber'} className="!rounded-2xl px-5 py-4">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex flex-wrap items-center gap-3">
                             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-500/15 text-sky-400">
@@ -305,7 +305,7 @@ export default function AdminDashboard({
                         >
                             <Suspense
                                 fallback={
-                                    <div className="flex h-[580px] items-center justify-center rounded-[36px] bg-vl-surface text-sm text-vl-ink-muted">
+                                    <div className="flex h-[580px] items-center justify-center rounded-xl bg-vl-surface text-sm text-vl-ink-muted">
                                         Initializing Interactive 3D Lab Floor...
                                     </div>
                                 }
@@ -322,8 +322,8 @@ export default function AdminDashboard({
                             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                             className="space-y-6"
                         >
-                            {/* Row 1 — V28 4 Sparkline KPI Bento Cards */}
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                            {/* Row 1 — V28 4 Sparkline KPI Bento Cards (Auto-Reflows Cleanly Beside Docked AI Sidebar) */}
+                            <div className="grid grid-cols-[repeat(auto-fit,minmax(225px,1fr))] gap-4">
                                 {sparkCards.map((kpi, idx) => {
                                     const Icon = kpi.icon;
                                     return (
@@ -333,7 +333,7 @@ export default function AdminDashboard({
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.24, delay: idx * 0.04, ease: [0.16, 1, 0.3, 1] }}
                                         >
-                                            <SpotlightSurface className="!rounded-[30px] p-5">
+                                            <SpotlightSurface className="!rounded-2xl p-5">
                                                 <div className="flex items-center justify-between gap-2">
                                                     <div className="flex items-center gap-2.5">
                                                         <span className={cn('flex h-9 w-9 items-center justify-center rounded-full', kpi.iconTone)}>
@@ -341,7 +341,7 @@ export default function AdminDashboard({
                                                         </span>
                                                         <span className="text-xs font-medium text-vl-ink-secondary">{kpi.label}</span>
                                                     </div>
-                                                    <span className={cn('rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums', kpi.chipTone)}>
+                                                    <span className={cn('shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums', kpi.chipTone)}>
                                                         {kpi.chip}
                                                     </span>
                                                 </div>
@@ -384,7 +384,7 @@ export default function AdminDashboard({
                             {/* Row 2 — V21 Mixed-Contrast Hero Bento (Sapphire Gradient + Obsidian Contrast + Circular Donut) */}
                             <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
                                 {/* 5-Col Vibrant Sapphire-Teal Gradient Feature Card */}
-                                <div className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-7 text-white shadow-[0_24px_60px_-20px_rgba(14,165,233,0.55)] lg:col-span-5">
+                                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-teal-500 p-7 text-white shadow-[0_24px_60px_-20px_rgba(14,165,233,0.55)] lg:col-span-5">
                                     <div
                                         aria-hidden="true"
                                         className="pointer-events-none absolute -top-16 -right-12 h-48 w-48 rounded-full bg-white/15 blur-2xl"
@@ -439,7 +439,7 @@ export default function AdminDashboard({
                                 </div>
 
                                 {/* 4-Col High-Contrast Obsidian Governance Card */}
-                                <div className="relative overflow-hidden rounded-[34px] bg-[#070C16] p-7 text-slate-100 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.65)] ring-1 ring-white/10 lg:col-span-4">
+                                <div className="relative overflow-hidden rounded-2xl bg-[#070C16] p-7 text-slate-100 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.65)] ring-1 ring-white/10 lg:col-span-4">
                                     <div className="flex h-full flex-col justify-between gap-6">
                                         <div className="flex items-start justify-between gap-3">
                                             <div>
@@ -455,7 +455,7 @@ export default function AdminDashboard({
                                             </span>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-3 rounded-[24px] bg-white/5 p-4 font-mono text-xs tabular-nums">
+                                        <div className="grid grid-cols-2 gap-3 rounded-xl bg-white/5 p-4 font-mono text-xs tabular-nums">
                                             <div>
                                                 <p className="text-[10px] text-slate-400">AI ACTIONS TODAY</p>
                                                 <p className="mt-1 text-lg font-semibold text-sky-300">
@@ -472,18 +472,18 @@ export default function AdminDashboard({
 
                                         <div className="flex items-center justify-between text-xs">
                                             <span className="text-slate-400">Direct agent write policy: HTTP 403</span>
-                                            <a
+                                            <Link
                                                 href="/admin/audits"
                                                 className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3.5 py-1.5 font-medium text-white hover:bg-white/15 transition-colors"
                                             >
                                                 Audit Log <ArrowRight className="h-3 w-3" />
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* 3-Col Circular Donut Role Breakdown Card (V21/V28 DNA) */}
-                                <SpotlightSurface className="!rounded-[34px] p-6 lg:col-span-3">
+                                <SpotlightSurface className="!rounded-2xl p-6 lg:col-span-3">
                                     <div className="flex items-center justify-between">
                                         <h3 className="font-display text-base font-semibold text-vl-ink">Role Split</h3>
                                         <span className="rounded-full bg-vl-surface-raised px-2.5 py-0.5 font-mono text-[10px] text-vl-ink-muted tabular-nums">
@@ -541,7 +541,7 @@ export default function AdminDashboard({
 
                             {/* Row 3 — Wavy Gradient Area Chart + Rounded Capsule Bar Chart (V28 DNA) */}
                             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                                <SpotlightSurface accent="sky" className="!rounded-[34px] p-6 lg:col-span-7">
+                                <SpotlightSurface accent="sky" className="!rounded-2xl p-6 lg:col-span-7">
                                     <div className="mb-5 flex items-center justify-between">
                                         <div>
                                             <h3 className="font-display text-base font-semibold text-vl-ink">
@@ -578,7 +578,7 @@ export default function AdminDashboard({
                                     </div>
                                 </SpotlightSurface>
 
-                                <SpotlightSurface accent="teal" className="!rounded-[34px] p-6 lg:col-span-5">
+                                <SpotlightSurface accent="teal" className="!rounded-2xl p-6 lg:col-span-5">
                                     <div className="mb-5 flex items-center justify-between">
                                         <div>
                                             <h3 className="font-display text-base font-semibold text-vl-ink">
@@ -612,7 +612,7 @@ export default function AdminDashboard({
 
                             {/* Row 4 — Live Provisioned Accounts & Governance Audit Stream */}
                             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                                <SpotlightSurface className="!rounded-[34px] p-6 lg:col-span-6">
+                                <SpotlightSurface className="!rounded-2xl p-6 lg:col-span-6">
                                     <div className="mb-4 flex items-center justify-between">
                                         <h3 className="font-display text-base font-semibold text-vl-ink">
                                             Recently Provisioned Accounts
@@ -629,7 +629,7 @@ export default function AdminDashboard({
                                         {recentUsers.map((u) => (
                                             <div
                                                 key={u.id}
-                                                className="flex items-center justify-between gap-3 rounded-full bg-vl-bg/75 px-4 py-2.5"
+                                                className="flex items-center justify-between gap-3 rounded-xl bg-vl-bg/75 px-4 py-2.5"
                                             >
                                                 <div className="flex items-center gap-3 min-w-0">
                                                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-teal-500 text-[11px] font-bold text-white">
@@ -653,7 +653,7 @@ export default function AdminDashboard({
                                     </div>
                                 </SpotlightSurface>
 
-                                <SpotlightSurface className="!rounded-[34px] p-6 lg:col-span-6">
+                                <SpotlightSurface className="!rounded-2xl p-6 lg:col-span-6">
                                     <div className="mb-4 flex items-center justify-between">
                                         <h3 className="font-display text-base font-semibold text-vl-ink">
                                             Recent Governance Audit
@@ -671,7 +671,7 @@ export default function AdminDashboard({
                                             recentAuditLogs.slice(0, 6).map((log) => (
                                                 <div
                                                     key={log.id}
-                                                    className="flex items-center justify-between gap-3 rounded-full bg-vl-bg/75 px-4 py-2.5"
+                                                    className="flex items-center justify-between gap-3 rounded-xl bg-vl-bg/75 px-4 py-2.5"
                                                 >
                                                     <div className="min-w-0">
                                                         <p className="truncate font-mono text-xs font-semibold text-vl-ink">

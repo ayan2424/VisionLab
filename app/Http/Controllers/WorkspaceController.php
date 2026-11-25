@@ -187,7 +187,7 @@ class WorkspaceController extends Controller
     public function rebuildView(Workspace $workspace)
     {
         $this->authorize('access', $workspace);
-        return view('workspaces.rebuild', compact('workspace'));
+        return Inertia::render('Workspace/Action', ['workspace' => $workspace, 'mode' => 'rebuild']);
     }
 
     /** Process the rebuild request safely */
@@ -211,7 +211,7 @@ class WorkspaceController extends Controller
     public function restartView(Workspace $workspace)
     {
         $this->authorize('access', $workspace);
-        return view('workspaces.restart', compact('workspace'));
+        return Inertia::render('Workspace/Action', ['workspace' => $workspace, 'mode' => 'restart']);
     }
 
     /** Process the restart request safely */

@@ -1,5 +1,4 @@
-@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -162,7 +161,8 @@
     body {
         background-color: rgb(var(--vl-bg));
         color: rgb(var(--vl-ink));
-        font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
 
     /* Styled Browser Surfaces (Craft Floor) */
@@ -185,20 +185,28 @@
         text-decoration-thickness: 1px;
     }
 
-    /* Refined Slim Scrollbars */
+    /* Refined Arrowless Hover-Only Scrollbars Globally */
     ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
+    }
+    ::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
     }
     ::-webkit-scrollbar-track {
         background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-        background: rgb(var(--vl-border) / 0.18);
+        background-color: transparent;
         border-radius: 9999px;
     }
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgb(var(--vl-border) / 0.32);
+    *:hover::-webkit-scrollbar-thumb {
+        background-color: rgb(var(--vl-border) / 0.24);
+    }
+    *:hover::-webkit-scrollbar-thumb:hover {
+        background-color: rgb(var(--vl-border) / 0.42);
     }
 
     select {
@@ -239,11 +247,11 @@
         background: var(--vl-rail-bg);
     }
 
-    /* Sculptural Silk Surface Panel (Full Organic Curvature — Zero Boxy Grid Cage) */
+    /* Executive Silk Surface Panel (Crisp 16px Radius — Buttons remain Full Pill) */
     .vl-panel,
     .vc-card {
         background: var(--vl-panel-bg);
-        border-radius: 2rem;
+        border-radius: 1rem;
         box-shadow: var(--vl-panel-shadow);
         border: 0;
         transition: box-shadow 200ms var(--vl-ease-out), transform 200ms var(--vl-ease-out), background 200ms var(--vl-ease-out);
@@ -261,7 +269,7 @@
     .vl-code-stage {
         background: linear-gradient(180deg, #0C1321 0%, #070B14 100%);
         color: #E2E8F0;
-        border-radius: 2rem;
+        border-radius: 1rem;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px -18px rgba(0, 0, 0, 0.65);
     }
 
@@ -337,11 +345,11 @@
         transform: scale(0.97);
     }
 
-    /* Smooth Full-Pill Form Input (Textarea gets 28px organic curve) */
+    /* Crisp Executive Form Input (Buttons stay rounded-full) */
     .vl-input,
     .vc-input,
     .input-dark {
-        @apply w-full rounded-full px-5 py-2.5 text-sm;
+        @apply w-full rounded-xl px-4 py-2.5 text-sm;
         background: var(--vc-input);
         color: rgb(var(--vl-ink));
         border: 1px solid var(--vc-input-border);
@@ -351,9 +359,9 @@
     textarea.vl-input,
     textarea.vc-input,
     textarea.input-dark {
-        border-radius: 1.75rem;
-        padding-top: 0.875rem;
-        padding-bottom: 0.875rem;
+        border-radius: 0.875rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
     }
 
     .vl-input::placeholder,
@@ -370,9 +378,9 @@
         box-shadow: 0 0 0 3px rgb(var(--vl-accent) / 0.16);
     }
 
-    /* Stat Panel (Super-Rounded) */
+    /* Stat Panel (Crisp 16px) */
     .stat-card {
-        @apply relative rounded-[2rem] p-5 overflow-hidden;
+        @apply relative rounded-2xl p-5 overflow-hidden;
         background: var(--vl-panel-bg);
         box-shadow: var(--vl-panel-shadow);
     }
@@ -416,5 +424,91 @@
     }
     .vl-divider {
         border-color: var(--vl-border-hairline);
+    }
+
+    /* Hover-Only Zero-Shift Sidebar Scrollbar (100% invisible at rest, arrowless 4px macOS-style pill on hover, 0px shift) */
+    .vl-sidebar-scroll {
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+    }
+    .vl-sidebar-scroll::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    .vl-sidebar-scroll::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+    .vl-sidebar-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .vl-sidebar-scroll::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 9999px;
+    }
+    .vl-sidebar-scroll:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(100, 116, 139, 0.36);
+    }
+    .dark .vl-sidebar-scroll:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.26);
+    }
+    @supports not selector(::-webkit-scrollbar) {
+        .vl-sidebar-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+        }
+        .vl-sidebar-scroll:hover {
+            scrollbar-color: rgba(100, 116, 139, 0.36) transparent;
+        }
+        .dark .vl-sidebar-scroll:hover {
+            scrollbar-color: rgba(255, 255, 255, 0.26) transparent;
+        }
+    }
+
+    /* Hover-Only Zero-Shift Scrollbar for Recessed Workspace Sheet (100% invisible at rest, arrowless 5px pill on hover) */
+    .vl-workspace-scroll {
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+    }
+    .vl-workspace-scroll::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+    .vl-workspace-scroll::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+    .vl-workspace-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .vl-workspace-scroll::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 9999px;
+    }
+    .vl-workspace-scroll:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(100, 116, 139, 0.34);
+    }
+    .dark .vl-workspace-scroll:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.24);
+    }
+    .vl-workspace-scroll:hover::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(100, 116, 139, 0.52);
+    }
+    .dark .vl-workspace-scroll:hover::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+    }
+    @supports not selector(::-webkit-scrollbar) {
+        .vl-workspace-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+        }
+        .vl-workspace-scroll:hover {
+            scrollbar-color: rgba(100, 116, 139, 0.34) transparent;
+        }
+        .dark .vl-workspace-scroll:hover {
+            scrollbar-color: rgba(255, 255, 255, 0.24) transparent;
+        }
     }
 }

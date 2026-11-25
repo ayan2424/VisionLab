@@ -42,7 +42,7 @@ class AdminWorkspaceController extends Controller
         // Map of extension_id => WorkspaceExtension pivot for this workspace
         $workspaceExtMap = $workspace->extensions->keyBy('extension_id');
 
-        return view('admin.workspaces.show', compact('workspace', 'auditLogs', 'allExtensions', 'workspaceExtMap'));
+        return Inertia::render('Admin/Workspaces/Show', compact('workspace', 'auditLogs', 'allExtensions', 'workspaceExtMap'));
     }
 
     public function stop(Workspace $workspace)
