@@ -1,316 +1,180 @@
-<x-guest-layout>
-    <x-slot name="title">Contact Us — VisionLab Support & Partnerships</x-slot>
+@extends('layouts.landing')
 
-    @push('styles')
-<style>
-    /* Contact Page Layout */
-    .contact-layout {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 4rem 2rem;
-        position: relative;
-        z-index: 10;
-    }
+@section('title', 'Request Campus Pilot — VisionLab')
+@section('meta_description', 'Contact the VisionLab engineering team to schedule a campus pilot, architecture briefing, or multi-department deployment.')
 
-    .contact-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 4rem;
-        margin-top: 2rem;
-    }
-    
-    @media (min-width: 1024px) {
-        .contact-grid {
-            grid-template-columns: 1.2fr 1fr;
-        }
-    }
+@section('content')
+    <section class="vl-atmosphere pt-14 pb-20 lg:pt-20 lg:pb-28">
+        <div class="mx-auto max-w-7xl px-5 sm:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                {{-- Left Column: Institutional Context & Campus Architecture Photo --}}
+                <div class="lg:col-span-5 space-y-7">
+                    <div class="space-y-4">
+                        <h1 class="text-4xl sm:text-5xl font-bold tracking-[-0.03em] leading-[1.08] text-vl-ink text-balance">
+                            Start a campus pilot with your engineering faculty.
+                        </h1>
+                        <p class="text-base leading-relaxed text-vl-ink-secondary">
+                            Share your department size, course runtimes, and deployment preference. Our infrastructure engineers will configure a sandboxed pilot cohort and walkthrough for your faculty and IT leads.
+                        </p>
+                    </div>
 
-    /* Forms */
-    .contact-form {
-        background: rgba(255, 255, 255, 0.01);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 2.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        box-shadow: rgba(0, 0, 0, 0.5) 0px 30px 90px -30px;
-    }
-    
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .form-label {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--muted-foreground);
-    }
-    
-    .form-control {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        padding: 0.75rem 1rem;
-        color: #fff;
-        font-size: 0.95rem;
-        outline: none;
-        transition: all 0.3s var(--ease-out-expo);
-        font-family: inherit;
-    }
-    
-    .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.2);
-    }
-    
-    .form-control:focus {
-        border-color: rgba(23, 195, 214, 0.4);
-        box-shadow: 0 0 0 4px rgba(23, 195, 214, 0.08);
-        background: rgba(255, 255, 255, 0.03);
-    }
-    
-    select.form-control option {
-        background: #050507;
-        color: #fff;
-    }
+                    <div class="relative overflow-hidden rounded-3xl shadow-vl-panel aspect-[16/10] bg-vl-surface-raised">
+                        <img
+                            src="{{ asset('images/redesign/campus-glass-lab.jpg') }}"
+                            alt="Modern glass university architecture hosting VisionLab software engineering laboratories"
+                            loading="eager"
+                            decoding="async"
+                            class="h-full w-full object-cover"
+                        >
+                        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#090D14]/70 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4 text-xs text-slate-200">
+                            Self-hosted on campus hardware or private university cloud clusters
+                        </div>
+                    </div>
 
-    /* Info Column */
-    .info-column {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-    
-    .info-card {
-        background: rgba(255, 255, 255, 0.015);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 2rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        transition: all 0.3s var(--ease-out-expo);
-    }
-    
-    .info-card:hover {
-        border-color: var(--border-hover);
-        background: rgba(255, 255, 255, 0.025);
-        transform: translateY(-2px);
-    }
-    
-    .info-lbl {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--muted-foreground);
-        font-weight: 600;
-    }
-    
-    .info-val {
-        font-size: 1.25rem;
-        font-weight: 600;
-        text-decoration: none;
-        color: #fff;
-        transition: color 0.2s;
-    }
-    
-    a.info-val:hover {
-        color: var(--cyan);
-    }
-
-    /* Social channels */
-    .social-row {
-        display: flex;
-        gap: 1rem;
-        margin-top: 0.5rem;
-    }
-    
-    .social-link {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        border: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--muted-foreground);
-        text-decoration: none;
-        transition: all 0.3s var(--ease-out-expo);
-        font-size: 1.2rem;
-    }
-    
-    .social-link:hover {
-        border-color: #fff;
-        color: #fff;
-        background: rgba(255, 255, 255, 0.05);
-        transform: translateY(-2px);
-    }
-
-    /* FAQ Quick links */
-    .quick-links {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        margin-top: 4rem;
-    }
-    
-    @media (min-width: 640px) {
-        .quick-links {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    
-    .quick-card {
-        background: rgba(255, 255, 255, 0.01);
-        border: 1px solid var(--border);
-        border-radius: 0.75rem;
-        padding: 1.75rem 1.25rem;
-        text-align: center;
-        text-decoration: none;
-        color: #fff;
-        transition: all 0.3s var(--ease-out-expo);
-    }
-    
-    .quick-card:hover {
-        border-color: var(--border-hover);
-        background: rgba(255, 255, 255, 0.03);
-        transform: translateY(-2px);
-    }
-    
-    .quick-title {
-        font-size: 1.05rem;
-        font-weight: 600;
-        margin-bottom: 0.35rem;
-    }
-    
-    .quick-desc {
-        font-size: 0.8rem;
-        color: var(--muted-foreground);
-        line-height: 1.4;
-    }
-
-    /* Hero */
-    .hero {
-        position: relative;
-        min-height: 50vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 8rem 2rem 4rem;
-        overflow: hidden;
-    }
-
-    .hero-headline {
-        font-size: clamp(2.5rem, 5vw, 4.5rem);
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -0.03em;
-    }
-</style>
-</style>
-    @endpush
-
-<!-- HERO SECTION -->
-<section class="hero">
-
-    <div style="position:relative;z-index:10;max-width:900px;margin:0 auto">
-        <h1 class="hero-headline reveal text-gradient-hero">
-            Let's <span class="font-serif-italic" style="font-weight:400;text-transform:lowercase">collaborate.</span>
-        </h1>
-        <p class="section-sub reveal reveal-delay-1" style="margin: 2rem auto 0; text-align:center;">
-            Have questions regarding server specs, LTI configuration, or cohort licensing? Speak to our engineering syndicate.
-        </p>
-    </div>
-</section>
-
-<div class="section-sep"></div>
-
-<!-- CONTACT LAYOUT -->
-<div class="contact-layout">
-    <div class="contact-grid reveal">
-        
-        <!-- CONTACT FORM -->
-        <div>
-            <form class="contact-form" id="contactForm" action="mailto:admin@visioncode.ai" method="get" enctype="text/plain">
-                <div class="form-group">
-                    <label class="form-label" for="name">Your Name</label>
-                    <input type="text" id="name" required class="form-control" placeholder="Your full name">
+                    <div class="vl-panel p-6 space-y-4">
+                        <h2 class="text-sm font-semibold text-vl-ink">What happens after you submit</h2>
+                        <ol class="space-y-3 text-sm text-vl-ink-secondary">
+                            <li class="flex items-start gap-3">
+                                <span class="font-mono text-xs font-semibold text-vl-accent mt-0.5 tabular-nums">01</span>
+                                <span>Architecture review covering Docker/Nix templates and quota ceilings.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="font-mono text-xs font-semibold text-vl-accent mt-0.5 tabular-nums">02</span>
+                                <span>Provisioning of instructor &amp; student pilot accounts with course join codes.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="font-mono text-xs font-semibold text-vl-accent mt-0.5 tabular-nums">03</span>
+                                <span>Live validation of AI patch governance, SHA256 extensions, and ERP modules.</span>
+                            </li>
+                        </ol>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="email">University Email</label>
-                    <input type="email" id="email" required class="form-control" placeholder="your@university.edu">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="subject">Inquiry Sector</label>
-                    <select id="subject" class="form-control" required>
 
-                        <option value="Academic Licensing">Academic Cohort Licensing</option>
-                        <option value="LMS LTI Setup">LMS LTI 1.3 Integrations</option>
-                        <option value="Security Audit">Security & Vulnerability Audits</option>
-                        <option value="Developer Relations">General Support & Contribution</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="message">Detailed Inquiry</label>
-                    <textarea id="message" rows="5" required class="form-control" placeholder="Describe your department size, estimated student rosters, cloud vs. on-prem host preferences, and target integration systems..."></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; padding:0.8rem;">Send Inquiry</button>
-            </form>
-        </div>
+                {{-- Right Column: Real Throttled POST /contact Form --}}
+                <div class="lg:col-span-7">
+                    <div class="vl-panel p-7 sm:p-10 space-y-6">
+                        @if(session('status'))
+                            <div role="status" class="rounded-2xl bg-vl-teal/12 px-5 py-4 text-sm text-vl-teal flex items-start gap-3">
+                                <svg class="h-5 w-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="leading-relaxed">{{ session('status') }}</span>
+                            </div>
+                        @endif
 
-        <!-- INFO CARDS -->
-        <div class="info-column">
-            <div class="info-card">
-                <span class="info-lbl">Direct Contact</span>
-                <a href="mailto:admin@visioncode.ai" class="info-val">admin@visioncode.ai</a>
-            </div>
-            
-            <div class="info-card">
-                <span class="info-lbl">Response Time</span>
-                <span class="info-val">Within 24–48 Business Hours</span>
-            </div>
+                        @if($errors->any())
+                            <div role="alert" class="rounded-2xl bg-vl-danger/12 px-5 py-4 text-sm text-vl-danger space-y-1">
+                                <p class="font-semibold">Please review the highlighted fields below.</p>
+                            </div>
+                        @endif
 
-            <div class="info-card">
-                <span class="info-lbl">Support Hours</span>
-                <span class="info-val">Mon–Fri, 9:00 AM – 6:00 PM PKT</span>
-            </div>
+                        <form method="POST" action="{{ route('contact.submit') }}" class="space-y-5" novalidate>
+                            @csrf
 
-            <div class="info-card">
-                <span class="info-lbl">Based In</span>
-                <span class="info-val">Karachi, Pakistan</span>
-            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="contact-name" class="block text-sm font-medium text-vl-ink mb-2">Full Name</label>
+                                    <input
+                                        id="contact-name"
+                                        name="name"
+                                        type="text"
+                                        required
+                                        autocomplete="name"
+                                        value="{{ old('name') }}"
+                                        placeholder="Dr. Nadia Rahman"
+                                        class="vl-input @error('name') !border-vl-danger @enderror"
+                                    >
+                                    @error('name')
+                                        <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-            <div class="info-card">
-                <span class="info-lbl">Source Repository</span>
-                <div class="social-row">
-                    <a href="https://github.com/ayan2424/VisionLab" target="_blank" class="social-link" title="GitHub Repository">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-                    </a>
+                                <div>
+                                    <label for="contact-email" class="block text-sm font-medium text-vl-ink mb-2">Institutional Email</label>
+                                    <input
+                                        id="contact-email"
+                                        name="email"
+                                        type="email"
+                                        required
+                                        autocomplete="email"
+                                        value="{{ old('email') }}"
+                                        placeholder="n.rahman@university.edu"
+                                        class="vl-input @error('email') !border-vl-danger @enderror"
+                                    >
+                                    @error('email')
+                                        <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="contact-institution" class="block text-sm font-medium text-vl-ink mb-2">University or Institution</label>
+                                <input
+                                    id="contact-institution"
+                                    name="institution"
+                                    type="text"
+                                    required
+                                    autocomplete="organization"
+                                    value="{{ old('institution') }}"
+                                    placeholder="Department of Computer Science, National Institute of Technology"
+                                    class="vl-input @error('institution') !border-vl-danger @enderror"
+                                >
+                                @error('institution')
+                                    <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="contact-role" class="block text-sm font-medium text-vl-ink mb-2">Your Role</label>
+                                    <select id="contact-role" name="role" class="vl-input">
+                                        <option value="faculty" @selected(old('role', 'faculty') === 'faculty')>Faculty / Instructor</option>
+                                        <option value="it_admin" @selected(old('role') === 'it_admin')>Campus IT / Infrastructure Lead</option>
+                                        <option value="dean" @selected(old('role') === 'dean')>Department Chair / Dean</option>
+                                        <option value="student_lead" @selected(old('role') === 'student_lead')>Lab Coordinator / TA Lead</option>
+                                        <option value="other" @selected(old('role') === 'other')>Other Academic Role</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="contact-cohort" class="block text-sm font-medium text-vl-ink mb-2">Estimated Active Students</label>
+                                    <select id="contact-cohort" name="cohort_size" class="vl-input">
+                                        <option value="under_100" @selected(old('cohort_size') === 'under_100')>Under 100 seats</option>
+                                        <option value="100_500" @selected(old('cohort_size', '100_500') === '100_500')>100 – 500 seats</option>
+                                        <option value="500_2000" @selected(old('cohort_size') === '500_2000')>500 – 2,000 seats</option>
+                                        <option value="over_2000" @selected(old('cohort_size') === 'over_2000')>2,000+ multi-campus seats</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="contact-message" class="block text-sm font-medium text-vl-ink mb-2">Lab Requirements &amp; Target Term</label>
+                                <textarea
+                                    id="contact-message"
+                                    name="message"
+                                    rows="5"
+                                    required
+                                    placeholder="Share the programming languages, courses, and hosting requirements you would like to test in your campus pilot..."
+                                    class="vl-input @error('message') !border-vl-danger @enderror"
+                                >{{ old('message') }}</textarea>
+                                @error('message')
+                                    <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="pt-2 flex flex-wrap items-center justify-between gap-4">
+                                <p class="text-xs text-vl-ink-muted">
+                                    Already provisioned by your campus? <a href="{{ route('login') }}" class="text-vl-accent font-medium hover:underline">Sign in to Portal</a>.
+                                </p>
+                                <button type="submit" class="vl-btn-primary !px-6 !py-3">
+                                    Submit Pilot Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-
-    </div>
-
-    <!-- QUICK LINKS -->
-    <div class="quick-links reveal">
-        <a href="{{ route('docs') }}" class="quick-card">
-            <h4 class="quick-title">Developer Docs</h4>
-            <p class="quick-desc">Read sandbox installation guides and configuration Blueprints</p>
-        </a>
-        <a href="{{ route('features') }}" class="quick-card">
-            <h4 class="quick-title">Features Deck</h4>
-            <p class="quick-desc">Explore containers, WebSockets sync, and Socratic AI assistants</p>
-        </a>
-    </div>
-</div>
-    </div>
-</div>
-</x-guest-layout>
+    </section>
+@endsection

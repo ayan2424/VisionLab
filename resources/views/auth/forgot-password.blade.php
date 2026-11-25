@@ -1,56 +1,47 @@
-<x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center px-4 py-12">
-        <div class="w-full max-w-md">
+<x-guest-layout title="Reset Password">
+    <div class="space-y-6">
+        <div class="space-y-1.5">
+            <h1 class="text-2xl font-bold tracking-tight text-vl-ink">Forgot your password?</h1>
+            <p class="text-sm text-vl-ink-secondary leading-relaxed">
+                Enter your institutional email address and we will send a secure password reset link.
+            </p>
+        </div>
 
-            {{-- Logo --}}
-            <div class="text-center mb-8" style="opacity:0;animation:fadeUp 0.6s 0.1s ease forwards">
-                <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5 group">
-                    <x-logo size="h-10 w-10" textSize="text-xl" />
-                </a>
-                <p class="mt-2 text-sm text-muted">Reset your password</p>
+        @if(session('status'))
+            <div role="status" class="rounded-xl bg-vl-teal/12 px-4 py-3 text-sm text-vl-teal">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+            @csrf
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-vl-ink mb-2">Institutional Email</label>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    required
+                    autofocus
+                    autocomplete="email"
+                    placeholder="you@university.edu"
+                    class="vl-input @error('email') !border-vl-danger @enderror"
+                >
+                @error('email')
+                    <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                @enderror
             </div>
 
-            {{-- Card --}}
-            <div class="glass p-8" style="opacity:0;animation:fadeUp 0.6s 0.2s ease forwards">
-                <h2 class="text-base font-bold text-white mb-1">Forgot your password?</h2>
-                <p class="text-xs text-muted mb-6">No problem. Enter your email and we'll send you a reset link.</p>
+            <button type="submit" class="vl-btn-primary w-full !py-3">
+                Send Reset Link
+            </button>
+        </form>
 
-                @if (session('status'))
-                    <div class="mb-5 flex items-center gap-2 text-sm text-emerald-300 bg-emerald-400/10 border border-emerald-400/20 rounded-xl px-4 py-3">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        {{ session('status') }}
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
-                    @csrf
-
-                    <div>
-                        <x-input-label for="email" :value="__('Email Address')" />
-                        <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus placeholder="you@example.com" />
-                        <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
-                    </div>
-
-                    <x-primary-button class="w-full justify-center">
-                        Send Reset Link
-                    </x-primary-button>
-                </form>
-
-                <p class="mt-6 text-center text-xs text-muted">
-                    Remember your password?
-                    <a href="{{ route('login') }}" class="text-violet-400 hover:text-violet-300 transition-colors">Sign in</a>
-                </p>
-            </div>
-
+        <div class="pt-4 border-t border-vl-border/10 text-center text-xs text-vl-ink-muted">
+            Remembered your password?
+            <a href="{{ route('login') }}" class="font-semibold text-vl-accent hover:underline ml-1">Back to Sign in</a>
         </div>
     </div>
-
-    <style>
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 </x-guest-layout>
-
-

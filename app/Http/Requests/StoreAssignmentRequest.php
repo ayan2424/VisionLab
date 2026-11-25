@@ -31,4 +31,5 @@ class StoreAssignmentRequest extends FormRequest
             'template_id'      => 'nullable|exists:workspace_templates,id',
             'is_locked'        => 'nullable|boolean',
         ];
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Course;
+use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -23,14 +23,13 @@ class WorkspaceAccessTest extends TestCase
         $workspace1 = Workspace::factory()->create([
             'student_id' => $student1->id,
             'course_id'  => $course->id,
-            'status'     => 'running'
+            'status'     => 'running',
         ]);
 
         $this->actingAs($student2);
 
-        // Try to view student1's workspace
-        $response = $this->get("/workspace/{$workspace1->id}");
-        
+        $response = $this->get(route('workspace.show', $workspace1));
+
         $response->assertStatus(403);
     }
 
@@ -44,13 +43,13 @@ class WorkspaceAccessTest extends TestCase
         $workspace = Workspace::factory()->create([
             'student_id' => $student->id,
             'course_id'  => $course->id,
-            'status'     => 'running'
+            'status'     => 'running',
         ]);
 
         $this->actingAs($instructor);
 
-        $response = $this->get("/workspace/{$workspace->id}");
-        
+        $response = $this->get(route('workspace.show', $workspace));
+
         $response->assertStatus(200);
     }
 }

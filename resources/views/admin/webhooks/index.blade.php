@@ -47,7 +47,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="4" class="px-5 py-12 text-center text-sm text-gray-500">No webhooks configured.</td></tr>
+            <tr><td colspan="4" class="px-5 py-12 text-center text-sm text-vl-ink-muted">No webhooks configured.</td></tr>
             @endforelse
         </tbody>
     </table>

@@ -1,50 +1,45 @@
+@props(['title' => 'Sign in'])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ isset($title) ? $title . ' — VisionLab' : 'VisionLab' }}</title>
+    <meta name="theme-color" content="#090D14">
+    <link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
+    <title>{{ $title }} — VisionLab</title>
 
-    {{-- Prevent flash of wrong theme --}}
-    <script>
-        (function() {
-            
-        })();
-    </script>
+    @include('partials.theme-init')
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        body {
-            background-color: #040d21;
-            color: white;
-            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            position: relative;
-        }
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 50;
-        }
-    </style>
 </head>
-<body class="font-sans antialiased min-h-screen flex flex-col transition-colors duration-300 selection:bg-[#238636]/30 selection:text-white">
+<body class="min-h-screen flex flex-col vl-atmosphere text-vl-ink font-sans antialiased">
+    {{-- Minimal Auth Folio Topbar --}}
+    <header class="w-full px-5 sm:px-8 h-16 flex items-center justify-between max-w-6xl mx-auto">
+        <a href="{{ route('home') }}" class="inline-flex items-center rounded-lg py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vl-accent">
+            <x-logo size="h-7 w-7" textSize="text-[17px]" />
+        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('home') }}" class="text-xs font-medium text-vl-ink-secondary hover:text-vl-ink transition-colors duration-150">
+                Back to overview
+            </a>
+            <x-theme-toggle />
+        </div>
+    </header>
 
-    <!-- Ambient Glow -->
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[50vh] bg-[#238636]/10 blur-[150px] pointer-events-none rounded-full z-0"></div>
-
-    <x-frontend-header />
-
-    <main class="relative z-10 w-full flex-1 flex flex-col items-center justify-center pt-20">
-        {{ $slot }}
+    {{-- Centered Sculptural Folio Card --}}
+    <main class="flex-1 flex items-center justify-center px-5 py-10">
+        <div class="w-full max-w-[440px]">
+            <div class="vl-panel p-7 sm:p-9">
+                {{ $slot }}
+            </div>
+        </div>
     </main>
 
-    <x-frontend-footer />
+    {{-- Subtle Institutional Footer --}}
+    <footer class="w-full px-5 py-6 text-center text-xs text-vl-ink-muted">
+        &copy; {{ date('Y') }} VisionLab &middot; Institutional Coding Infrastructure
+    </footer>
 </body>
 </html>
-
-

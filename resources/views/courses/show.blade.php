@@ -1,483 +1,434 @@
 @extends('layouts.dashboard')
 @section('title', $course->title)
-@section('page-title', 'Course Details')
+@section('page-title', $course->title)
 
 @section('content')
-<div class="max-w-5xl mx-auto">
-    {{-- Course header --}}
-    <div class="mb-6" style="opacity:0;animation:fadeSlideUp .4s .05s ease forwards">
-        <div class="flex items-start justify-between">
-            <div>
-                <div class="flex items-center gap-2 text-xs mb-2" style="color:var(--vc-text-secondary);">
-                    <a href="{{ route('courses.index') }}" class="hover:text-current transition-colors">Courses</a>
+<div class="space-y-6">
+    {{-- Course Header & Tab Strip --}}
+    <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div class="space-y-1.5">
+                <nav class="flex items-center gap-2 text-xs text-vl-ink-muted" aria-label="Breadcrumb">
+                    <a href="{{ route('courses.index') }}" class="hover:text-vl-ink transition-colors">Courses</a>
                     <span>/</span>
-                    <span style="color:var(--vc-muted);">{{ $course->title }}</span>
-                </div>
-                <h1 class="text-xl font-bold" style="color:var(--vc-text);">{{ $course->title }}</h1>
-                <p class="text-sm mt-1" style="color:var(--vc-text-secondary);">{{ $course->instructor->name }} &middot; {{ $course->students()->count() }} students</p>
+                    <span class="text-vl-ink-secondary truncate">{{ $course->title }}</span>
+                </nav>
+                <h2 class="text-2xl font-bold tracking-tight text-vl-ink">{{ $course->title }}</h2>
+                <p class="text-sm text-vl-ink-secondary">
+                    {{ $course->instructor->name }} &middot; <span class="tabular-nums">{{ $course->students()->count() }}</span> students
+                </p>
             </div>
-            <div class="flex items-center gap-3">
+
+            <div class="flex flex-wrap items-center gap-2.5">
                 @if($isInstructor)
-                <span class="px-3 py-1 rounded-lg font-mono text-xs font-bold border"
-                      style="color:var(--vc-accent);background:rgba(240,80,0,0.1);border-color:rgba(240,80,0,0.2);">
-                    Code: {{ $course->enrollment_code }}
-                </span>
-                <a href="{{ route('courses.edit', $course->slug) }}" class="btn-ghost py-2 px-4 text-xs">Edit</a>
+                    <span class="rounded-xl bg-vl-accent/12 px-3 py-1.5 font-mono text-xs font-semibold text-vl-accent">
+                        Code: {{ $course->enrollment_code }}
+                    </span>
+                    <a href="{{ route('courses.roster', $course->slug) }}" class="vl-btn-secondary !py-2 !px-3.5 !text-xs">Roster</a>
+                    <a href="{{ route('courses.edit', $course->slug) }}" class="vl-btn-secondary !py-2 !px-3.5 !text-xs">Edit Course</a>
                 @endif
             </div>
         </div>
 
-        {{-- Tabs --}}
-        <div class="flex gap-1 mt-6" style="border-bottom:1px solid var(--vc-border);">
-            @php
-                $availableTabs = ['stream' => 'Stream', 'modules' => 'Curriculum', 'assignments' => 'Assignments', 'quizzes' => 'Quizzes', 'forums' => 'Forums', 'people' => 'People'];
-                if ($isInstructor) {
-                    $availableTabs['extensions'] = 'Extensions';
-                }
-            @endphp
+        @php
+            $availableTabs = [
+                'stream' => 'Stream',
+                'modules' => 'Curriculum',
+                'assignments' => 'Assignments',
+                'quizzes' => 'Quizzes',
+                'forums' => 'Forums',
+                'people' => 'People',
+            ];
+            if ($isInstructor) {
+                $availableTabs['extensions'] = 'Extensions';
+            }
+        @endphp
+        <div class="flex items-center gap-1 overflow-x-auto border-b border-vl-border/10 pb-px" role="tablist">
             @foreach($availableTabs as $tabKey => $tabLabel)
-            <a href="{{ route('courses.show', [$course->slug, 'tab' => $tabKey]) }}"
-               class="px-4 py-2 text-sm font-semibold border-b-2 transition-all -mb-px"
-               style="{{ $tab === $tabKey ? 'border-color:var(--vc-accent);color:var(--vc-accent);' : 'border-color:transparent;color:var(--vc-text-secondary);' }}">
-                {{ $tabLabel }}
-                @if($tabKey === 'assignments')
-                <span class="ml-1.5 px-1.5 py-0.5 rounded-md text-xs" style="background:var(--vc-border);color:var(--vc-text-secondary);">{{ $course->assignments->count() }}</span>
-                @endif
-            </a>
+                <a
+                    href="{{ route('courses.show', [$course->slug, 'tab' => $tabKey]) }}"
+                    class="inline-flex items-center gap-2 whitespace-nowrap px-4 py-2.5 text-sm font-semibold border-b-2 transition-colors duration-150 -mb-px {{ $tab === $tabKey ? 'border-vl-accent text-vl-accent' : 'border-transparent text-vl-ink-secondary hover:text-vl-ink' }}"
+                >
+                    <span>{{ $tabLabel }}</span>
+                    @if($tabKey === 'assignments')
+                        <span class="rounded-md bg-vl-surface-raised px-1.5 py-0.5 font-mono text-[11px] text-vl-ink-secondary tabular-nums">{{ $course->assignments->count() }}</span>
+                    @endif
+                </a>
             @endforeach
         </div>
     </div>
 
     {{-- STREAM TAB --}}
     @if($tab === 'stream')
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-4" style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-            @if($isInstructor)
-            <form method="POST" action="{{ route('announcements.store', $course->slug) }}" class="vc-card p-5">
-                @csrf
-                <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">Post Announcement</h3>
-                <input type="text" name="title" placeholder="Title" required class="vc-input mb-3">
-                <textarea name="body" rows="3" placeholder="Share something with your class…" required class="vc-input resize-none mb-3"></textarea>
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2 text-xs cursor-pointer" style="color:var(--vc-text-secondary);">
-                        <input type="checkbox" name="pinned" value="1" class="rounded" style="accent-color:var(--vc-accent);"> Pin announcement
-                    </label>
-                    <button type="submit" class="btn-primary py-2 px-5 text-xs">Post</button>
-                </div>
-            </form>
-            @endif
-
-            @forelse($course->announcements as $ann)
-            <div class="vc-card p-5" style="{{ $ann->pinned ? 'border-color:rgba(217,119,6,0.3);background:rgba(217,119,6,0.03);' : '' }}">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                             style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">
-                            {{ strtoupper(substr($ann->author->name ?? 'I', 0, 1)) }}
-                        </div>
-                        <div>
-                            <div class="text-sm font-semibold" style="color:var(--vc-text);">{{ $ann->author->name }}</div>
-                            <div class="text-xs" style="color:var(--vc-muted);">{{ $ann->created_at->diffForHumans() }}</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        @if($ann->pinned)
-                        <span class="text-xs font-semibold" style="color:#D97706;">📌 Pinned</span>
-                        @endif
-                        @if(!$isInstructor && !in_array($ann->id, $readAnnouncementIds ?? []))
-                        <form method="POST" action="{{ route('announcements.read', $ann->id) }}">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-8 space-y-4">
+                @if($isInstructor)
+                    <x-card title="Post Course Announcement" :padding="true">
+                        <form method="POST" action="{{ route('announcements.store', $course->slug) }}" class="space-y-3.5">
                             @csrf
-                            <button class="px-2 py-0.5 rounded-lg text-xs font-bold text-white transition-all hover:opacity-80" style="background:var(--vc-accent);">Mark Read</button>
+                            <input type="text" name="title" placeholder="Announcement title" required class="vl-input">
+                            <textarea name="body" rows="3" placeholder="Share lab notes, deadline changes, or clarifications with enrolled students..." required class="vl-input resize-none"></textarea>
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <label class="inline-flex items-center gap-2 text-xs text-vl-ink-secondary cursor-pointer">
+                                    <input type="checkbox" name="pinned" value="1" class="rounded border-vl-border/25 text-vl-accent-cta focus:ring-vl-accent bg-vl-surface">
+                                    Pin announcement to top
+                                </label>
+                                <button type="submit" class="vl-btn-primary !py-2 !px-4 !text-xs">Post Announcement</button>
+                            </div>
                         </form>
-                        @elseif(!$isInstructor && in_array($ann->id, $readAnnouncementIds ?? []))
-                        <span class="text-xs font-semibold" style="color:var(--vc-muted);">Read</span>
-                        @endif
-                        @if($isInstructor)
-                        <form method="POST" action="{{ route('announcements.destroy', $ann->id) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this announcement?', () => this.submit())">
-                            @csrf @method('DELETE')
-                            <button class="text-xs transition-colors hover:text-red-500" style="color:var(--vc-muted);">Delete</button>
-                        </form>
-                        @endif
-                    </div>
-                </div>
-                <h4 class="text-sm font-bold mb-2" style="color:var(--vc-text);">{{ $ann->title }}</h4>
-                <p class="text-sm whitespace-pre-wrap" style="color:var(--vc-text-secondary);">{{ $ann->body }}</p>
-            </div>
-            @empty
-            <div class="text-center py-12 text-sm" style="color:var(--vc-muted);">No announcements yet.</div>
-            @endforelse
-        </div>
+                    </x-card>
+                @endif
 
-        {{-- Sidebar --}}
-        <div class="space-y-4" style="opacity:0;animation:fadeSlideUp .4s .25s ease forwards">
-            <div class="vc-card p-5">
-                <h3 class="text-sm font-bold mb-3" style="color:var(--vc-text);">Course Info</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between" style="color:var(--vc-text-secondary);">
-                        <span>Instructor</span><span style="color:var(--vc-text);">{{ $course->instructor->name }}</span>
-                    </div>
-                    <div class="flex justify-between" style="color:var(--vc-text-secondary);">
-                        <span>Students</span><span style="color:var(--vc-text);">{{ $course->students()->count() }}</span>
-                    </div>
-                    <div class="flex justify-between" style="color:var(--vc-text-secondary);">
-                        <span>Assignments</span><span style="color:var(--vc-text);">{{ $course->assignments->count() }}</span>
-                    </div>
-
-                    @if($course->start_date || $course->end_date || $course->schedule_time || $course->duration)
-                    <div class="pt-3 space-y-2" style="border-top:1px solid var(--vc-border);">
-                        @if($course->schedule_time)
-                        <div>
-                            <span class="block text-xs" style="color:var(--vc-muted);">Schedule</span>
-                            <span class="font-semibold" style="color:var(--vc-text);">{{ $course->schedule_time }}</span>
-                        </div>
-                        @endif
-                        @if($course->duration)
-                        <div>
-                            <span class="block text-xs" style="color:var(--vc-muted);">Course Duration</span>
-                            <span class="font-semibold" style="color:var(--vc-text);">{{ $course->duration }}</span>
-                        </div>
-                        @endif
-                        @if($course->start_date)
-                        <div>
-                            <span class="block text-xs" style="color:var(--vc-muted);">Dates</span>
-                            <span class="font-semibold" style="color:var(--vc-text);">
-                                {{ $course->start_date->format('M d, Y') }} - {{ $course->end_date ? $course->end_date->format('M d, Y') : 'Ongoing' }}
-                            </span>
-                        </div>
-                        @endif
-                    </div>
-                    @endif
-
-                    @if($course->notes)
-                    <div class="pt-3" style="border-top:1px solid var(--vc-border);">
-                        <span class="block text-xs mb-1" style="color:var(--vc-muted);">Instructor Notes</span>
-                        <div class="text-xs whitespace-pre-wrap" style="color:var(--vc-text-secondary);">{{ $course->notes }}</div>
-                    </div>
-                    @endif
-
-                    @if($isInstructor)
-                    <div class="pt-3" style="border-top:1px solid var(--vc-border);">
-                        <div class="text-xs mb-1" style="color:var(--vc-muted);">Enrollment Code</div>
-                        <div class="font-mono font-bold text-lg tracking-widest" style="color:var(--vc-accent);">{{ $course->enrollment_code }}</div>
-                    </div>
-                    @endif
-                </div>
-            </div>
-
-
-
-            {{-- My Workspace --}}
-            <a href="{{ route('workspace.index') }}" class="vc-card flex items-center gap-3 p-4 hover:-translate-y-1 transition-all">
-                <div class="w-8 h-8 rounded-xl flex items-center justify-center border flex-shrink-0"
-                     style="background:rgba(240,80,0,0.1);border-color:rgba(240,80,0,0.2);">
-                    <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                </div>
-                <div>
-                    <div class="text-xs font-bold" style="color:var(--vc-text);">My Workspace</div>
-                    <div class="text-xs" style="color:var(--vc-muted);">VS Code + AI sidebar</div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    {{-- CURRICULUM (MODULES) TAB --}}
-    @elseif($tab === 'modules')
-    <div style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-        @if($isInstructor)
-        <div class="flex justify-end mb-5">
-            <a href="#" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-indigo-500 flex items-center gap-2 transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Add Module
-            </a>
-        </div>
-        @endif
-
-        <div class="space-y-4">
-            @forelse($course->modules as $module)
-                <div class="vc-card overflow-hidden">
-                    <div class="p-4 bg-slate-50 flex justify-between items-center cursor-pointer border-b border-slate-200">
-                        <div>
-                            <h3 class="font-bold text-gray-900">Module {{ $module->order_index + 1 }}: {{ $module->title }}</h3>
-                            @if($module->description)
-                                <p class="text-sm text-gray-500 mt-1">{{ $module->description }}</p>
-                            @endif
-                        </div>
-                        <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </div>
-                    <div class="p-4 bg-white space-y-2">
-                        @forelse($module->lessons as $lesson)
-                            <div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    @if($lesson->type === 'video')
-                                        <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    @elseif($lesson->type === 'pdf')
-                                        <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                                    @else
-                                        <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                    @endif
-                                    <span class="font-medium text-gray-700">{{ $lesson->title }}</span>
+                @forelse($course->announcements as $ann)
+                    <div class="vl-panel p-5 space-y-3 {{ $ann->pinned ? 'ring-1 ring-vl-gate/30' : '' }}">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="h-8 w-8 rounded-xl shrink-0 bg-vl-accent/14 text-vl-accent flex items-center justify-center text-xs font-bold">
+                                    {{ strtoupper(substr($ann->author->name ?? 'I', 0, 1)) }}
                                 </div>
-                                <div class="text-sm text-gray-400">
-                                    {{ $lesson->duration_minutes ? $lesson->duration_minutes . ' mins' : '' }}
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-vl-ink truncate">{{ $ann->author->name }}</p>
+                                    <p class="text-xs text-vl-ink-muted">{{ $ann->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
-                        @empty
-                            <p class="text-sm text-gray-500 text-center py-2">No lessons in this module yet.</p>
-                        @endforelse
-                        
-                        @if($isInstructor)
-                        <div class="mt-3 text-right">
-                            <a href="#" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">+ Add Lesson</a>
+
+                            <div class="flex items-center gap-2 shrink-0">
+                                @if($ann->pinned)
+                                    <x-badge variant="warning">Pinned</x-badge>
+                                @endif
+                                @if(!$isInstructor && !in_array($ann->id, $readAnnouncementIds ?? []))
+                                    <form method="POST" action="{{ route('announcements.read', $ann->id) }}">
+                                        @csrf
+                                        <button type="submit" class="vl-btn-primary !py-1 !px-2.5 !text-[11px]">Mark Read</button>
+                                    </form>
+                                @elseif(!$isInstructor && in_array($ann->id, $readAnnouncementIds ?? []))
+                                    <x-badge variant="neutral">Read</x-badge>
+                                @endif
+                                @if($isInstructor)
+                                    <form method="POST" action="{{ route('announcements.destroy', $ann->id) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this announcement?', () => this.submit())">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-xs font-medium text-vl-ink-muted hover:text-vl-danger transition-colors cursor-pointer">Delete</button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
-                        @endif
+
+                        <div class="space-y-1.5">
+                            <h3 class="text-sm font-bold text-vl-ink">{{ $ann->title }}</h3>
+                            <p class="text-sm leading-relaxed text-vl-ink-secondary whitespace-pre-wrap">{{ $ann->body }}</p>
+                        </div>
                     </div>
-                </div>
+                @empty
+                    <x-card :padding="true">
+                        <x-empty-state title="No course announcements yet" description="Announcements posted by the course instructor will appear here." />
+                    </x-card>
+                @endforelse
+            </div>
+
+            <div class="lg:col-span-4 space-y-4">
+                <x-card title="Course Details" :padding="true">
+                    <dl class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between gap-2">
+                            <dt class="text-vl-ink-secondary">Instructor</dt>
+                            <dd class="font-medium text-vl-ink">{{ $course->instructor->name }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <dt class="text-vl-ink-secondary">Enrolled Students</dt>
+                            <dd class="font-mono font-semibold text-vl-ink tabular-nums">{{ $course->students()->count() }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <dt class="text-vl-ink-secondary">Assignments</dt>
+                            <dd class="font-mono font-semibold text-vl-ink tabular-nums">{{ $course->assignments->count() }}</dd>
+                        </div>
+
+                        @if($course->schedule_time || $course->duration || $course->start_date)
+                            <div class="pt-3 border-t border-vl-border/10 space-y-2.5">
+                                @if($course->schedule_time)
+                                    <div>
+                                        <dt class="text-xs text-vl-ink-muted">Schedule</dt>
+                                        <dd class="font-medium text-vl-ink mt-0.5">{{ $course->schedule_time }}</dd>
+                                    </div>
+                                @endif
+                                @if($course->duration)
+                                    <div>
+                                        <dt class="text-xs text-vl-ink-muted">Duration</dt>
+                                        <dd class="font-medium text-vl-ink mt-0.5">{{ $course->duration }}</dd>
+                                    </div>
+                                @endif
+                                @if($course->start_date)
+                                    <div>
+                                        <dt class="text-xs text-vl-ink-muted">Term Dates</dt>
+                                        <dd class="font-medium text-vl-ink mt-0.5">
+                                            {{ $course->start_date->format('M d, Y') }} &ndash; {{ $course->end_date ? $course->end_date->format('M d, Y') : 'Ongoing' }}
+                                        </dd>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
+                        @if($course->notes)
+                            <div class="pt-3 border-t border-vl-border/10">
+                                <dt class="text-xs text-vl-ink-muted mb-1">Instructor Notes</dt>
+                                <dd class="text-xs leading-relaxed text-vl-ink-secondary whitespace-pre-wrap">{{ $course->notes }}</dd>
+                            </div>
+                        @endif
+
+                        @if($isInstructor)
+                            <div class="pt-3 border-t border-vl-border/10">
+                                <dt class="text-xs text-vl-ink-muted mb-1">Enrollment Join Code</dt>
+                                <dd class="font-mono text-lg font-bold tracking-widest text-vl-accent">{{ $course->enrollment_code }}</dd>
+                            </div>
+                        @endif
+                    </dl>
+                </x-card>
+
+                <a href="{{ route('workspace.index') }}" class="vl-panel vl-panel-interactive p-4 flex items-center gap-3.5">
+                    <div class="h-10 w-10 rounded-xl shrink-0 bg-vl-accent/14 text-vl-accent flex items-center justify-center">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-vl-ink">Open Cloud Workspace</p>
+                        <p class="text-xs text-vl-ink-muted">Browser VS Code &amp; AI Patch Review</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    {{-- CURRICULUM TAB --}}
+    @elseif($tab === 'modules')
+        <div class="space-y-4">
+            @forelse($course->modules as $module)
+                <x-card :title="'Module ' . ($module->order_index + 1) . ': ' . $module->title" :subtitle="$module->description" :padding="true">
+                    <div class="space-y-2">
+                        @forelse($module->lessons as $lesson)
+                            <div class="flex items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 bg-vl-surface-raised/65">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <span class="font-mono text-[11px] uppercase px-2 py-0.5 rounded bg-vl-surface text-vl-ink-secondary">{{ $lesson->type ?? 'lesson' }}</span>
+                                    <span class="text-sm font-medium text-vl-ink truncate">{{ $lesson->title }}</span>
+                                </div>
+                                @if($lesson->duration_minutes)
+                                    <span class="font-mono text-xs text-vl-ink-muted tabular-nums shrink-0">{{ $lesson->duration_minutes }}m</span>
+                                @endif
+                            </div>
+                        @empty
+                            <p class="text-sm text-vl-ink-muted py-2">No lessons published in this module yet.</p>
+                        @endforelse
+                    </div>
+                </x-card>
             @empty
-                <div class="vc-card p-10 flex flex-col items-center justify-center text-center">
-                    <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                    <h3 class="text-lg font-medium text-gray-900">No Modules Yet</h3>
-                    <p class="text-sm text-gray-500 mt-1">Get started by creating the first curriculum module.</p>
-                </div>
+                <x-card :padding="true">
+                    <x-empty-state title="No curriculum modules yet" description="Structured course modules and lesson outlines will appear here once published." />
+                </x-card>
             @endforelse
         </div>
-    </div>
 
     {{-- QUIZZES TAB --}}
     @elseif($tab === 'quizzes')
-    <div style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-        @if($isInstructor)
-        <div class="flex justify-end mb-5">
-            <a href="#" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-indigo-500 flex items-center gap-2 transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Create Quiz
-            </a>
-        </div>
-        @endif
-        <div class="vc-card p-10 flex flex-col items-center justify-center text-center">
-            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <h3 class="text-lg font-medium text-gray-900">No Quizzes Available</h3>
-            <p class="text-sm text-gray-500 mt-1">This course currently has no active quizzes.</p>
-        </div>
-    </div>
+        <x-card :padding="true">
+            <x-empty-state title="No quizzes scheduled" description="This course currently has no active quizzes." />
+        </x-card>
 
     {{-- FORUMS TAB --}}
     @elseif($tab === 'forums')
-    <div style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-        <div class="flex justify-between items-center mb-5">
-            <h3 class="text-lg font-bold text-gray-900">Discussion Forum</h3>
-            <a href="#" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-indigo-500 flex items-center gap-2 transition-colors">
-                New Topic
-            </a>
-        </div>
-        <div class="vc-card p-10 flex flex-col items-center justify-center text-center">
-            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
-            </svg>
-            <h3 class="text-lg font-medium text-gray-900">No Discussions Yet</h3>
-            <p class="text-sm text-gray-500 mt-1">Start a conversation by creating the first topic.</p>
-        </div>
-    </div>
+        <x-card :padding="true">
+            <x-empty-state title="No discussion topics yet" description="Course discussion threads will appear here." />
+        </x-card>
 
     {{-- ASSIGNMENTS TAB --}}
     @elseif($tab === 'assignments')
-    <div style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-        @if($isInstructor)
-        <div class="flex justify-end mb-5">
-            <a href="{{ route('assignments.create', $course->slug) }}" class="btn-primary py-2 px-4 text-xs">
-                <svg class="w-3.5 h-3.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                New Assignment
-            </a>
-        </div>
-        @endif
+        <div class="space-y-4">
+            @if($isInstructor)
+                <div class="flex justify-end">
+                    <a href="{{ route('assignments.create', $course->slug) }}" class="vl-btn-primary !py-2 !px-4 !text-xs">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        New Assignment
+                    </a>
+                </div>
+            @endif
 
-        @forelse($course->assignments as $assignment)
-        @php
-            $sub = $userSubmissions[$assignment->id] ?? null;
-            $isOverdue = $assignment->isOverdue();
-        @endphp
-        <div class="vc-card p-5 mb-4 hover:border-violet-500/30 transition-all">
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <h3 class="font-bold text-sm" style="color:var(--vc-text);">{{ $assignment->title }}</h3>
-                        @if($isOverdue)<span class="px-2 py-0.5 rounded-md text-xs border" style="color:#ef4444;background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);">Past Due</span>@endif
-                        @if($assignment->due_soon && !$isOverdue)<span class="px-2 py-0.5 rounded-md text-xs border" style="color:#F59E0B;background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.2);">Due Soon</span>@endif
+            @forelse($course->assignments as $assignment)
+                @php
+                    $sub = $userSubmissions[$assignment->id] ?? null;
+                    $isOverdue = $assignment->isOverdue();
+                @endphp
+                <div class="vl-panel p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-2 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="text-base font-bold text-vl-ink">{{ $assignment->title }}</h3>
+                            @if($isOverdue)
+                                <x-badge variant="danger">Past Due</x-badge>
+                            @elseif($assignment->due_soon)
+                                <x-badge variant="warning">Due Soon</x-badge>
+                            @endif
+                        </div>
+
+                        <p class="text-xs sm:text-sm text-vl-ink-secondary line-clamp-2">
+                            {{ $assignment->description ?? 'No description provided.' }}
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-4 text-xs text-vl-ink-muted tabular-nums">
+                            @if($assignment->due_date)
+                                <span>Due {{ $assignment->due_date->format('M d, Y · H:i') }}</span>
+                            @endif
+                            <span>{{ $assignment->max_points }} pts</span>
+                            @if($isInstructor)
+                                <span class="text-vl-accent font-medium">
+                                    {{ $assignment->submissions()->whereIn('status', ['submitted', 'graded'])->count() }}/{{ $course->students()->count() }} submitted
+                                </span>
+                            @endif
+                        </div>
                     </div>
-                    <p class="text-xs mb-3 line-clamp-2" style="color:var(--vc-text-secondary);">{{ $assignment->description ?? 'No description.' }}</p>
-                    <div class="flex items-center gap-4 text-xs" style="color:var(--vc-muted);">
-                        @if($assignment->due_date)
-                        <span class="flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            Due {{ $assignment->due_date->format('M d, Y H:i') }}
-                        </span>
-                        @endif
-                        <span>{{ $assignment->max_points }} pts</span>
+
+                    <div class="flex items-center gap-2.5 shrink-0">
                         @if($isInstructor)
-                        <span style="color:var(--vc-accent);">{{ $assignment->submissions()->whereIn('status', ['submitted','graded'])->count() }}/{{ $course->students()->count() }} submitted</span>
+                            <a href="{{ route('assignments.show', $assignment->id) }}" class="vl-btn-secondary !py-2 !px-4 !text-xs">View Submissions</a>
+                        @else
+                            @if(!$sub || $sub->status === 'not_started')
+                                <form method="POST" action="{{ route('submissions.start', $assignment->id) }}">
+                                    @csrf
+                                    <button type="submit" class="vl-btn-primary !py-2 !px-4 !text-xs">Start Lab</button>
+                                </form>
+                            @elseif($sub->status === 'in_progress')
+                                <a href="{{ route('submissions.ide', $assignment->id) }}" class="vl-btn-primary !py-2 !px-4 !text-xs">Continue in IDE</a>
+                            @elseif($sub->status === 'graded')
+                                <x-badge variant="success" class="tabular-nums font-mono !text-xs !px-3 !py-1">
+                                    {{ $sub->grade }} / {{ $assignment->max_points }}
+                                </x-badge>
+                            @else
+                                <x-badge variant="info">{{ ucfirst($sub->status) }}</x-badge>
+                            @endif
                         @endif
                     </div>
                 </div>
-                <div class="flex items-center gap-2 ml-4">
-                    @if($isInstructor)
-                    <a href="{{ route('assignments.show', $assignment->id) }}" class="btn-ghost py-1.5 px-3 text-xs">View</a>
-                    @else
-                    @if(!$sub || $sub->status === 'not_started')
-                    <form method="POST" action="{{ route('submissions.start', $assignment->id) }}">
-                        @csrf
-                        <button type="submit" class="btn-primary py-1.5 px-4 text-xs">Start</button>
-                    </form>
-                    @elseif($sub->status === 'in_progress')
-                    <a href="{{ route('submissions.ide', $assignment->id) }}" class="btn-ghost py-1.5 px-3 text-xs" style="color:var(--vc-accent);border-color:rgba(240,80,0,0.3);">Continue</a>
-                    @elseif($sub->status === 'graded')
-                    <span class="px-3 py-1.5 rounded-lg text-xs font-bold border" style="color:#10B981;border-color:rgba(16,185,129,0.3);">{{ $sub->grade }}/{{ $assignment->max_points }}</span>
-                    @else
-                    <span class="px-3 py-1.5 rounded-lg text-xs font-semibold border {{ $sub->status_badge_class }}">{{ ucfirst($sub->status) }}</span>
-                    @endif
-                    @endif
-                </div>
-            </div>
+            @empty
+                <x-card :padding="true">
+                    <x-empty-state title="No assignments published yet" description="Coding labs and graded assignments will appear here.">
+                        @if($isInstructor)
+                            <a href="{{ route('assignments.create', $course->slug) }}" class="vl-btn-primary !py-2 !px-4 !text-xs">Create First Assignment</a>
+                        @endif
+                    </x-empty-state>
+                </x-card>
+            @endforelse
         </div>
-        @empty
-        <div class="text-center py-12 text-sm" style="color:var(--vc-muted);">No assignments yet.
-            @if($isInstructor) <a href="{{ route('assignments.create', $course->slug) }}" class="hover:underline" style="color:var(--vc-accent);">Create one</a>. @endif
-        </div>
-        @endforelse
-    </div>
 
     {{-- PEOPLE TAB --}}
     @elseif($tab === 'people')
-    <div class="space-y-4" style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-        <div class="vc-card p-5">
-            <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">Instructor</h3>
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                     style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);">
-                    {{ strtoupper(substr($course->instructor->name, 0, 1)) }}
-                </div>
-                <div>
-                    <div class="text-sm font-semibold" style="color:var(--vc-text);">{{ $course->instructor->name }}</div>
-                    <div class="text-xs" style="color:var(--vc-text-secondary);">{{ $course->instructor->email }}</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="vc-card p-5">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-bold" style="color:var(--vc-text);">Students ({{ $students->count() }})</h3>
-                @if($isInstructor)
-                <a href="{{ route('courses.roster', $course->slug) }}" class="btn-ghost py-1 px-3 text-xs" style="color:var(--vc-accent);border-color:rgba(240,80,0,0.3);">Workspace Roster</a>
-                @endif
-            </div>
-
-            @if($isInstructor)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6" style="border-bottom:1px solid var(--vc-border);">
-                <!-- Single Invite -->
-                <div>
-                    <h4 class="text-xs font-bold mb-2 uppercase tracking-wide text-gray-500">Manual Invite</h4>
-                    <form method="POST" action="{{ route('enrollments.invite', $course->slug) }}" class="flex gap-2">
-                        @csrf
-                        <input type="email" name="email" placeholder="Student email address..." required class="vc-input flex-1 text-sm">
-                        <button type="submit" class="btn-primary py-2 px-4 text-xs whitespace-nowrap">Invite</button>
-                    </form>
-                </div>
-                
-                <!-- CSV Import -->
-                <div>
-                    <h4 class="text-xs font-bold mb-2 uppercase tracking-wide text-gray-500">Bulk Import via CSV</h4>
-                    <form method="POST" action="{{ route('enrollments.import_csv', $course->slug) }}" enctype="multipart/form-data" class="flex gap-2 items-center">
-                        @csrf
-                        <div class="flex-1">
-                            <input type="file" name="csv_file" accept=".csv" required 
-                                   class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all">
-                        </div>
-                        <button type="submit" class="btn-ghost py-2 px-4 text-xs whitespace-nowrap" style="color:var(--vc-accent);border-color:rgba(240,80,0,0.3);">Import CSV</button>
-                    </form>
-                    <div class="mt-1 text-[10px] text-gray-500">CSV must contain an "email" column.</div>
-                </div>
-            </div>
-            @endif
-
-            @forelse($students as $student)
-            <div class="flex items-center justify-between py-2.5 last:border-0" style="border-bottom:1px solid var(--vc-border);">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                         style="background:#0891B2;">
-                        {{ strtoupper(substr($student->name, 0, 1)) }}
+        <div class="space-y-5">
+            <x-card title="Course Instructor" :padding="true">
+                <div class="flex items-center gap-3.5">
+                    <div class="h-10 w-10 rounded-xl bg-vl-accent/14 text-vl-accent flex items-center justify-center text-sm font-bold">
+                        {{ strtoupper(substr($course->instructor->name, 0, 1)) }}
                     </div>
                     <div>
-                        <div class="text-sm" style="color:var(--vc-text);">{{ $student->name }}</div>
-                        <div class="text-xs" style="color:var(--vc-text-secondary);">{{ $student->email }}</div>
+                        <p class="text-sm font-semibold text-vl-ink">{{ $course->instructor->name }}</p>
+                        <p class="text-xs text-vl-ink-secondary">{{ $course->instructor->email }}</p>
                     </div>
                 </div>
+            </x-card>
+
+            <x-card :title="'Enrolled Students (' . $students->count() . ')'" :padding="true">
                 @if($isInstructor)
-                <form method="POST" action="{{ route('enrollments.remove', [$course->slug, $student->id]) }}" onsubmit="event.preventDefault(); vcConfirm('Remove this student?', () => this.submit())">
-                    @csrf @method('DELETE')
-                    <button class="text-xs transition-colors hover:text-red-500" style="color:var(--vc-muted);">Remove</button>
-                </form>
+                    <x-slot:actions>
+                        <a href="{{ route('courses.roster', $course->slug) }}" class="vl-btn-secondary !py-1.5 !px-3 !text-xs">Workspace Roster</a>
+                    </x-slot:actions>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 pb-6 border-b border-vl-border/10">
+                        <div class="space-y-2">
+                            <p class="text-xs font-semibold text-vl-ink">Invite by Institutional Email</p>
+                            <form method="POST" action="{{ route('enrollments.invite', $course->slug) }}" class="flex gap-2">
+                                @csrf
+                                <input type="email" name="email" placeholder="student@university.edu" required class="vl-input flex-1 !py-2">
+                                <button type="submit" class="vl-btn-primary !py-2 !px-4 !text-xs shrink-0">Invite</button>
+                            </form>
+                        </div>
+
+                        <div class="space-y-2">
+                            <p class="text-xs font-semibold text-vl-ink">Bulk Import via CSV</p>
+                            <form method="POST" action="{{ route('enrollments.import_csv', $course->slug) }}" enctype="multipart/form-data" class="flex flex-wrap sm:flex-nowrap gap-2 items-center">
+                                @csrf
+                                <input type="file" name="csv_file" accept=".csv" required class="block w-full text-xs text-vl-ink-secondary file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-vl-surface-raised file:text-vl-ink hover:file:bg-vl-accent/15">
+                                <button type="submit" class="vl-btn-secondary !py-2 !px-4 !text-xs shrink-0">Import CSV</button>
+                            </form>
+                            <p class="text-[11px] text-vl-ink-muted">CSV file must include an <code class="font-mono">email</code> column.</p>
+                        </div>
+                    </div>
                 @endif
-            </div>
-            @empty
-            <div class="text-center py-8 text-sm" style="color:var(--vc-muted);">No students enrolled yet.</div>
-            @endforelse
+
+                <div class="divide-y divide-vl-border/10">
+                    @forelse($students as $student)
+                        <div class="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="h-8 w-8 rounded-xl bg-vl-teal/14 text-vl-teal flex items-center justify-center text-xs font-bold shrink-0">
+                                    {{ strtoupper(substr($student->name, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-vl-ink truncate">{{ $student->name }}</p>
+                                    <p class="text-xs text-vl-ink-muted truncate">{{ $student->email }}</p>
+                                </div>
+                            </div>
+                            @if($isInstructor)
+                                <form method="POST" action="{{ route('enrollments.remove', [$course->slug, $student->id]) }}" onsubmit="event.preventDefault(); vcConfirm('Remove this student from the course?', () => this.submit())">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-xs font-medium text-vl-ink-muted hover:text-vl-danger transition-colors cursor-pointer">Remove</button>
+                                </form>
+                            @endif
+                        </div>
+                    @empty
+                        <p class="text-sm text-vl-ink-muted py-6 text-center">No students enrolled yet.</p>
+                    @endforelse
+                </div>
+            </x-card>
         </div>
-    </div>
-    @endif
 
     {{-- EXTENSIONS TAB --}}
-    @if($tab === 'extensions' && $isInstructor)
-    <div class="space-y-6" style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-        <div class="vc-card p-5">
-            <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">Course Extensions Policy</h3>
-            <p class="text-xs mb-6" style="color:var(--vc-text-secondary);">Select the extensions that should be automatically installed in student workspaces. This forces synchronization to active workspaces.</p>
-
-            <form method="POST" action="{{ route('courses.extensions.update', $course->slug) }}">
+    @elseif($tab === 'extensions' && $isInstructor)
+        <x-card title="Course Extensions Policy" subtitle="Selected SHA256-verified extensions synchronize automatically into student workspaces." :padding="true">
+            <form method="POST" action="{{ route('courses.extensions.update', $course->slug) }}" class="space-y-5">
                 @csrf
                 @method('PUT')
-                
+
                 @php
                     $allExtensions = \App\Models\Extension::where('is_builtin', false)->get();
                     $courseExtensionIds = $course->extensions()->pluck('extension_id')->toArray();
                 @endphp
 
-                <div class="space-y-3 mb-6">
+                <div class="space-y-2.5">
                     @forelse($allExtensions as $index => $ext)
-                    <div class="flex items-center justify-between p-3 rounded-lg border transition-colors hover:bg-black/5 dark:hover:bg-white/5" style="border-color:var(--vc-border);">
-                        <div class="flex items-center gap-3">
-                            <input type="hidden" name="extensions[{{$index}}][id]" value="{{ $ext->id }}">
-                            <input type="hidden" name="extensions[{{$index}}][is_required]" value="0">
-                            <input type="checkbox" id="ext_{{ $ext->id }}" name="extensions[{{$index}}][is_required]" value="1" 
-                                   class="rounded" style="accent-color:var(--vc-accent);"
-                                   {{ in_array($ext->id, $courseExtensionIds) ? 'checked' : '' }}>
-                            <label for="ext_{{ $ext->id }}" class="cursor-pointer">
-                                <div class="text-sm font-bold" style="color:var(--vc-text);">{{ $ext->name }}</div>
-                                <div class="text-xs font-mono" style="color:var(--vc-text-secondary);">{{ $ext->package_identifier }} &middot; v{{ $ext->version }}</div>
-                            </label>
-                        </div>
-                        @if($ext->is_global)
-                        <span class="text-xs font-bold px-2 py-1 rounded border" style="color:var(--vc-accent);background:rgba(240,80,0,0.1);border-color:rgba(240,80,0,0.2);">Global Default</span>
-                        @endif
-                    </div>
+                        <label for="ext_{{ $ext->id }}" class="flex items-center justify-between gap-3 rounded-xl p-3.5 bg-vl-surface-raised/65 hover:bg-vl-surface-raised transition-colors duration-150 cursor-pointer">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <input type="hidden" name="extensions[{{ $index }}][id]" value="{{ $ext->id }}">
+                                <input type="hidden" name="extensions[{{ $index }}][is_required]" value="0">
+                                <input
+                                    type="checkbox"
+                                    id="ext_{{ $ext->id }}"
+                                    name="extensions[{{ $index }}][is_required]"
+                                    value="1"
+                                    class="h-4 w-4 rounded border-vl-border/25 text-vl-accent-cta focus:ring-vl-accent bg-vl-surface"
+                                    {{ in_array($ext->id, $courseExtensionIds) ? 'checked' : '' }}
+                                >
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-vl-ink truncate">{{ $ext->name }}</p>
+                                    <p class="font-mono text-xs text-vl-ink-muted truncate">{{ $ext->package_identifier }} &middot; v{{ $ext->version }}</p>
+                                </div>
+                            </div>
+                            @if($ext->is_global)
+                                <x-badge variant="info">Global Default</x-badge>
+                            @endif
+                        </label>
                     @empty
-                    <div class="text-xs" style="color:var(--vc-muted);">No custom extensions available in the registry.</div>
+                        <p class="text-sm text-vl-ink-muted py-4">No custom extensions registered by administrators yet.</p>
                     @endforelse
                 </div>
 
-                <button type="submit" class="btn-primary py-2 px-5 text-sm">Save Policy & Sync Workspaces</button>
+                <div class="pt-2">
+                    <button type="submit" class="vl-btn-primary">Save Policy &amp; Sync Workspaces</button>
+                </div>
             </form>
-        </div>
-    </div>
+        </x-card>
     @endif
 </div>
 @endsection
-
-

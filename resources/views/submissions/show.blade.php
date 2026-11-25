@@ -1,360 +1,322 @@
 @extends('layouts.dashboard')
-
 @section('title', 'Submission — ' . $submission->student->name)
 @section('page-title', 'Submission Review')
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
+    {{-- Header --}}
+    <div class="vl-panel p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div class="space-y-2.5 min-w-0">
+            <nav class="flex flex-wrap items-center gap-2 text-xs text-vl-ink-muted" aria-label="Breadcrumb">
+                <a href="{{ route('courses.index') }}" class="hover:text-vl-ink transition-colors">Courses</a>
+                <span>/</span>
+                <a href="{{ route('courses.show', $assignment->course->slug) }}" class="hover:text-vl-ink transition-colors">{{ $assignment->course->title }}</a>
+                <span>/</span>
+                <a href="{{ route('assignments.show', $assignment->id) }}" class="hover:text-vl-ink transition-colors">{{ $assignment->title }}</a>
+                <span>/</span>
+                <span class="text-vl-ink-secondary">{{ $submission->student->name }}</span>
+            </nav>
 
-    {{-- Breadcrumbs / Header --}}
-    <div class="vc-card p-6 border-l-4" style="border-left-color:var(--vc-accent);">
-        <div class="flex items-center justify-between">
-            <div>
-                <div class="flex items-center gap-2 text-xs mb-2" style="color:var(--vc-text-secondary);">
-                    <a href="{{ route('courses.index') }}" class="hover:text-current transition-colors">Courses</a>
-                    <span>/</span>
-                    <a href="{{ route('courses.show', $assignment->course->slug) }}" class="hover:text-current transition-colors">{{ $assignment->course->title }}</a>
-                    <span>/</span>
-                    <a href="{{ route('assignments.show', $assignment->id) }}" class="hover:text-current transition-colors">{{ $assignment->title }}</a>
-                    <span>/</span>
-                    <span style="color:var(--vc-muted);">{{ $submission->student->name }}</span>
+            <div class="flex items-center gap-4">
+                <div class="h-12 w-12 rounded-2xl shrink-0 bg-vl-accent/14 text-vl-accent flex items-center justify-center text-lg font-bold">
+                    {{ strtoupper(substr($submission->student->name, 0, 1)) }}
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-black text-white" style="background:var(--vc-info);">
-                        {{ strtoupper(substr($submission->student->name, 0, 1)) }}
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold" style="color:var(--vc-text);">{{ $submission->student->name }}</h1>
-                        <div class="flex items-center gap-3 mt-1">
-                            <span class="badge {{ $submission->status_badge_class }}">{{ ucfirst($submission->status) }}</span>
-                            @if($submission->isLate())
-                            <span class="badge text-xs" style="color:var(--vc-danger);background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);">Late</span>
-                            @endif
-                            <span class="text-sm font-semibold" style="color:var(--vc-text-secondary);">{{ ucfirst($assignment->starter_language) }}</span>
-                        </div>
+                <div class="min-w-0">
+                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-vl-ink truncate">{{ $submission->student->name }}</h2>
+                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                        <x-badge :variant="$submission->status === 'graded' ? 'success' : ($submission->status === 'late' ? 'danger' : 'info')">
+                            {{ ucfirst($submission->status) }}
+                        </x-badge>
+                        @if($submission->isLate())
+                            <x-badge variant="danger">Late</x-badge>
+                        @endif
+                        <span class="font-mono text-xs text-vl-ink-secondary">{{ strtoupper($assignment->starter_language) }}</span>
                     </div>
                 </div>
             </div>
-
-            {{-- Grade ring --}}
-            @if($submission->status === 'graded')
-            <div class="text-center animate-float">
-                <div class="relative w-20 h-20 mx-auto mb-1">
-                    @php
-                        $pct = $assignment->max_points > 0 ? ($submission->grade / $assignment->max_points) * 100 : 0;
-                        $c = 2 * pi() * 32;
-                        $d = ($pct / 100) * $c;
-                        $color = $pct >= 80 ? 'var(--vc-success)' : ($pct >= 60 ? 'var(--vc-warning)' : 'var(--vc-danger)');
-                    @endphp
-                    <svg class="w-20 h-20" viewBox="0 0 80 80" style="transform:rotate(-90deg)">
-                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--vc-border)" stroke-width="6"/>
-                        <circle cx="40" cy="40" r="32" fill="none" stroke="{{ $color }}" stroke-width="6"
-                                stroke-dasharray="{{ number_format($d, 2) }} {{ number_format($c, 2) }}"
-                                stroke-linecap="round" style="transition:stroke-dasharray 1s ease-out;"/>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <div class="text-xl font-black" style="color:{{ $color }};">{{ $submission->grade }}</div>
-                        <div class="text-[10px] font-semibold" style="color:var(--vc-muted);">/{{ $assignment->max_points }}</div>
-                    </div>
-                </div>
-                <div class="text-xs font-bold" style="color:var(--vc-text-secondary);">{{ number_format($pct, 0) }}%</div>
-            </div>
-            @endif
         </div>
+
+        @if($submission->status === 'graded')
+            @php
+                $pct = $assignment->max_points > 0 ? ($submission->grade / $assignment->max_points) * 100 : 0;
+                $c = 2 * pi() * 32;
+                $d = ($pct / 100) * $c;
+                $ringTone = $pct >= 80 ? 'rgb(var(--vl-teal))' : ($pct >= 60 ? 'rgb(var(--vl-gate))' : 'rgb(var(--vl-danger))');
+            @endphp
+            <div class="flex items-center gap-4 shrink-0">
+                <div class="relative h-20 w-20">
+                    <svg class="h-20 w-20 -rotate-90" viewBox="0 0 80 80" aria-hidden="true">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="rgb(var(--vl-border) / 0.12)" stroke-width="6" />
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="{{ $ringTone }}" stroke-width="6" stroke-dasharray="{{ number_format($d, 2) }} {{ number_format($c, 2) }}" stroke-linecap="round" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center tabular-nums">
+                        <span class="font-mono text-lg font-bold" style="color: {{ $ringTone }}">{{ $submission->grade }}</span>
+                        <span class="font-mono text-[10px] text-vl-ink-muted">/{{ $assignment->max_points }}</span>
+                    </div>
+                </div>
+                <div class="text-xs font-mono font-semibold text-vl-ink-secondary tabular-nums">{{ number_format($pct, 0) }}%</div>
+            </div>
+        @endif
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {{-- ── LEFT: CODE VIEWER ── --}}
-        <div class="lg:col-span-2 space-y-6">
-
-            {{-- Submission meta --}}
-            <div class="vc-card p-5">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm text-center">
-                    <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--vc-muted);">Submitted</div>
-                        <div class="font-bold" style="color:var(--vc-text);">
-                            {{ $submission->submitted_at ? $submission->submitted_at->format('M d, H:i') : 'Not yet' }}
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--vc-muted);">Due date</div>
-                        <div class="font-bold {{ $assignment->isOverdue() ? '' : '' }}" style="{{ $assignment->isOverdue() ? 'color:var(--vc-danger);' : 'color:var(--vc-text);' }}">
-                            {{ $assignment->due_date ? $assignment->due_date->format('M d, H:i') : 'None' }}
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--vc-muted);">Language</div>
-                        <div class="font-bold font-mono" style="color:var(--vc-info);">{{ strtoupper($assignment->starter_language) }}</div>
-                    </div>
-                    <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--vc-muted);">Max Points</div>
-                        <div class="font-bold" style="color:var(--vc-text);">{{ $assignment->max_points }}</div>
-                    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {{-- Left: Snapshot & VisionGuard Forensics --}}
+        <div class="lg:col-span-8 space-y-6">
+            <div class="vl-panel p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                <div>
+                    <p class="text-xs text-vl-ink-muted">Submitted</p>
+                    <p class="mt-1 font-mono text-xs sm:text-sm font-semibold text-vl-ink tabular-nums">
+                        {{ $submission->submitted_at ? $submission->submitted_at->format('M d, H:i') : 'Pending' }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs text-vl-ink-muted">Due Date</p>
+                    <p class="mt-1 font-mono text-xs sm:text-sm font-semibold tabular-nums {{ $assignment->isOverdue() ? 'text-vl-danger' : 'text-vl-ink' }}">
+                        {{ $assignment->due_date ? $assignment->due_date->format('M d, H:i') : 'None' }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs text-vl-ink-muted">Runtime</p>
+                    <p class="mt-1 font-mono text-xs sm:text-sm font-semibold text-vl-accent">{{ strtoupper($assignment->starter_language) }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-vl-ink-muted">Max Points</p>
+                    <p class="mt-1 font-mono text-xs sm:text-sm font-semibold text-vl-ink tabular-nums">{{ $assignment->max_points }}</p>
                 </div>
             </div>
 
-            {{-- Code viewer / Forensics Tabs --}}
-            <div class="vc-card overflow-hidden flex flex-col">
-                <div class="flex border-b" style="border-color:var(--vc-border);background:var(--vc-elevated);">
-                    <button onclick="switchTab('code')" id="tab-code" class="px-6 py-3 text-sm font-bold border-b-2 transition-colors" style="border-color:var(--vc-accent);color:var(--vc-text);">Source Code</button>
-                    @if($canGrade)
-                    <button onclick="switchTab('forensics')" id="tab-forensics" class="px-6 py-3 text-sm font-bold border-b-2 border-transparent transition-colors" style="color:var(--vc-muted);" onmouseover="if(!this.classList.contains('active'))this.style.color='var(--vc-text)';" onmouseout="if(!this.classList.contains('active'))this.style.color='var(--vc-muted)';">
-                        <span class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                            VisionGuard Forensics
-                        </span>
+            {{-- Source Code & Forensics Panel --}}
+            <div x-data="{ activeTab: 'code' }" class="vl-panel overflow-hidden">
+                <div class="flex items-center border-b border-vl-border/10 bg-vl-surface-raised/60 px-2">
+                    <button
+                        type="button"
+                        @click="activeTab = 'code'"
+                        :class="activeTab === 'code' ? 'border-vl-accent text-vl-ink' : 'border-transparent text-vl-ink-muted hover:text-vl-ink'"
+                        class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors cursor-pointer"
+                    >
+                        Source Code
                     </button>
+                    @if($canGrade)
+                        <button
+                            type="button"
+                            @click="activeTab = 'forensics'; $nextTick(() => window.renderForensicsChart && window.renderForensicsChart())"
+                            :class="activeTab === 'forensics' ? 'border-vl-accent text-vl-ink' : 'border-transparent text-vl-ink-muted hover:text-vl-ink'"
+                            class="inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors cursor-pointer"
+                        >
+                            <svg class="h-4 w-4 text-vl-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                            </svg>
+                            VisionGuard Forensics
+                        </button>
                     @endif
                 </div>
 
-                {{-- CODE TAB --}}
-                <div id="content-code" class="flex-1">
-                    <div class="flex items-center justify-between px-4 py-3 border-b" style="background:var(--vc-elevated);border-color:var(--vc-border);">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/70"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-cyan-500/70"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/70"></div>
-                            <span class="ml-2 text-xs font-mono font-semibold" style="color:var(--vc-text-secondary);">{{ $assignment->starter_language === 'python' ? 'solution.py' : ($assignment->starter_language === 'javascript' ? 'solution.js' : ($assignment->starter_language === 'php' ? 'solution.php' : 'solution.' . $assignment->starter_language)) }}</span>
-                        </div>
+                {{-- Source Code Tab --}}
+                <div x-show="activeTab === 'code'">
+                    @php
+                        $fileName = match($assignment->starter_language) {
+                            'python' => 'solution.py',
+                            'javascript' => 'solution.js',
+                            'php' => 'solution.php',
+                            default => 'solution.' . $assignment->starter_language,
+                        };
+                    @endphp
+                    <div class="flex items-center justify-between px-4 py-2.5 bg-[#0D1422] border-b border-white/10 text-xs text-slate-400">
+                        <span class="font-mono text-slate-200">{{ $fileName }}</span>
                         <div class="flex items-center gap-3">
-                            <span id="line-count" class="text-xs font-semibold" style="color:var(--vc-muted);"></span>
-                            <button onclick="copyCode()" class="text-xs font-bold transition-colors hover:text-current" style="color:var(--vc-text-secondary);" onmouseover="this.style.color='var(--vc-text)';" onmouseout="this.style.color='var(--vc-text-secondary)';">Copy</button>
+                            <span id="line-count" class="font-mono text-[11px] tabular-nums"></span>
+                            <button type="button" onclick="copyCode(this)" class="rounded-lg px-2.5 py-1 text-[11px] font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">Copy</button>
                         </div>
                     </div>
+
                     @if($submission->code_snapshot)
-                    <div class="overflow-auto bg-black p-4" style="height:500px;">
-                        <pre><code id="code-viewer" class="language-{{ $assignment->starter_language }} text-sm font-mono text-gray-300"></code></pre>
-                    </div>
-                    @else
-                    <div class="flex items-center justify-center" style="height:250px;">
-                        <div class="text-center text-sm font-semibold" style="color:var(--vc-muted);">
-                            <svg class="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            No code submitted yet
+                        <div class="overflow-auto bg-[#080D16] p-4 max-h-[520px]">
+                            <pre><code id="code-viewer" class="language-{{ $assignment->starter_language }} text-xs sm:text-[13px] font-mono leading-6 text-slate-200"></code></pre>
                         </div>
-                    </div>
+                    @else
+                        <div class="py-16 text-center text-sm text-vl-ink-muted">No code snapshot saved yet.</div>
                     @endif
                 </div>
 
-                {{-- FORENSICS TAB --}}
+                {{-- Forensics Tab --}}
                 @if($canGrade)
-                <div id="content-forensics" class="hidden flex-1 p-6">
-                    @if($submission->forensic)
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-6">
-                            <div class="relative w-48 h-48 mx-auto">
-                                <canvas id="forensicsChart"></canvas>
-                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                    <div class="text-3xl font-black" style="color:var(--vc-text);">{{ $submission->forensic->human_pct }}%</div>
-                                    <div class="text-xs font-bold" style="color:var(--vc-muted);">Human</div>
+                    <div x-show="activeTab === 'forensics'" x-cloak class="p-6 space-y-6">
+                        @if($submission->forensic)
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                <div class="relative h-48 w-48 mx-auto">
+                                    <canvas id="forensicsChart"></canvas>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                        <span class="font-mono text-3xl font-bold text-vl-ink tabular-nums">{{ $submission->forensic->human_pct }}%</span>
+                                        <span class="text-xs font-medium text-vl-ink-muted">Human</span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <h3 class="text-base font-bold text-vl-ink">Contribution Analysis</h3>
+                                    <div class="flex items-center justify-between rounded-xl bg-vl-surface-raised/75 px-4 py-3 text-sm">
+                                        <span class="inline-flex items-center gap-2 text-vl-ink-secondary">
+                                            <span class="h-2.5 w-2.5 rounded-full bg-vl-teal"></span>
+                                            Human Typed
+                                        </span>
+                                        <span class="font-mono font-semibold text-vl-ink tabular-nums">{{ number_format($submission->forensic->human_keystrokes) }} chars</span>
+                                    </div>
+                                    <div class="flex items-center justify-between rounded-xl bg-vl-surface-raised/75 px-4 py-3 text-sm">
+                                        <span class="inline-flex items-center gap-2 text-vl-ink-secondary">
+                                            <span class="h-2.5 w-2.5 rounded-full bg-vl-gate"></span>
+                                            AI / Pasted
+                                        </span>
+                                        <span class="font-mono font-semibold text-vl-ink tabular-nums">{{ number_format($submission->forensic->ai_patches_applied + $submission->forensic->pasted_count) }} chars</span>
+                                    </div>
+                                    <div class="pt-1">
+                                        <x-badge variant="info">Confidence: {{ ucfirst($submission->forensic->confidence ?? 'high') }}</x-badge>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-bold" style="color:var(--vc-text);">Contribution Analysis</h3>
-                                <div class="flex justify-between items-center p-3 rounded-lg border" style="background:var(--vc-bg);border-color:var(--vc-border);">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-                                        <span class="text-sm font-semibold" style="color:var(--vc-text-secondary);">Human Typed</span>
-                                    </div>
-                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->human_keystrokes) }} chars</span>
-                                </div>
-                                <div class="flex justify-between items-center p-3 rounded-lg border" style="background:var(--vc-bg);border-color:var(--vc-border);">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-3 h-3 rounded-full bg-purple-500"></div>
-                                        <span class="text-sm font-semibold" style="color:var(--vc-text-secondary);">AI / Pasted</span>
-                                    </div>
-                                    <span class="font-mono text-sm" style="color:var(--vc-text);">{{ number_format($submission->forensic->ai_patches_applied + $submission->forensic->pasted_count) }} chars</span>
-                                </div>
-                                <div class="pt-2">
-                                    <span class="text-xs font-semibold px-2 py-1 rounded" style="background:rgba(99,102,241,0.1);color:#818cf8;">
-                                        Confidence: {{ ucfirst($submission->forensic->confidence ?? 'high') }}
-                                    </span>
-                                </div>
+
+                            <div class="rounded-xl bg-vl-surface-raised/70 p-4 text-xs leading-relaxed text-vl-ink-secondary">
+                                <strong class="font-semibold text-vl-ink">Academic Note:</strong> VisionGuard compares organic typing cadence against bulk insertions and applied AI patches. Use telemetry as an advisory signal alongside code walkthroughs. Last synced {{ $submission->forensic->last_synced_at ? $submission->forensic->last_synced_at->diffForHumans() : 'never' }}.
                             </div>
-                        </div>
-                        <div class="p-4 rounded-xl text-xs leading-relaxed" style="background:var(--vc-surface);color:var(--vc-muted);">
-                            <strong style="color:var(--vc-text-secondary);">Disclaimer:</strong> VisionGuard classifies keystrokes versus rapid block insertions to estimate AI assistance. This does not definitively prove cheating and should be used alongside academic judgment. Data synced {{ $submission->forensic->last_synced_at ? $submission->forensic->last_synced_at->diffForHumans() : 'never' }}.
-                        </div>
-                    @else
-                        <div class="flex flex-col items-center justify-center py-12 text-center">
-                            <svg class="w-12 h-12 mb-4 text-indigo-400 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                            <h3 class="text-lg font-bold" style="color:var(--vc-text);">No Forensics Data Available</h3>
-                            <p class="text-sm mt-2 max-w-md" style="color:var(--vc-muted);">VisionGuard has not captured any telemetry for this submission. The student may not have used the VisionLab workspace, or telemetry was blocked.</p>
-                        </div>
-                    @endif
-                </div>
+                        @else
+                            <x-empty-state
+                                title="No forensics telemetry available"
+                                description="VisionGuard has not received keystroke or AI patch telemetry for this submission."
+                            />
+                        @endif
+                    </div>
                 @endif
             </div>
 
-            {{-- Feedback display (for students or if already graded) --}}
             @if($submission->feedback)
-            <div class="p-5 rounded-2xl border" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.2);">
-                <div class="flex items-center gap-2 mb-3">
-                    <svg class="w-4 h-4" style="color:var(--vc-success);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
-                    <span class="text-sm font-bold" style="color:var(--vc-success);">Instructor Feedback</span>
-                    @if($submission->grader)
-                    <span class="text-xs font-semibold" style="color:var(--vc-muted);">— {{ $submission->grader->name }}</span>
-                    @endif
+                <div class="vl-panel p-5 bg-vl-teal/10 space-y-2">
+                    <div class="flex items-center gap-2 text-xs font-bold text-vl-teal">
+                        <span>Instructor Feedback</span>
+                        @if($submission->grader)
+                            <span class="font-normal text-vl-ink-muted">&mdash; {{ $submission->grader->name }}</span>
+                        @endif
+                    </div>
+                    <p class="text-sm leading-relaxed text-vl-ink whitespace-pre-wrap">{{ $submission->feedback }}</p>
                 </div>
-                <p class="text-sm leading-relaxed whitespace-pre-wrap font-medium" style="color:var(--vc-text-secondary);">{{ $submission->feedback }}</p>
-            </div>
             @endif
         </div>
 
-        {{-- ── RIGHT: GRADE FORM + INFO ── --}}
-        <div class="space-y-6">
-
-            {{-- Grade form (instructors/admins only, and submission must be submitted/late/graded) --}}
+        {{-- Right: Grade Form & Navigation --}}
+        <div class="lg:col-span-4 space-y-5">
             @if($canGrade)
-            <div class="vc-card p-5 border-t-4" style="border-top-color:var(--vc-accent);">
-                <div class="flex items-center gap-2 mb-5">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center border" style="background:rgba(240,80,0,0.1);border-color:rgba(240,80,0,0.2);">
-                        <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    </div>
-                    <span class="text-base font-bold" style="color:var(--vc-text);">
-                        {{ $submission->status === 'graded' ? 'Update Grade' : 'Grade Submission' }}
-                    </span>
-                </div>
+                <x-card :title="$submission->status === 'graded' ? 'Update Grade' : 'Grade Submission'" :padding="true">
+                    <form method="POST" action="{{ route('submissions.grade', $submission->id) }}" id="grade-form" class="space-y-5">
+                        @csrf
+                        @method('PATCH')
 
-                <form method="POST" action="{{ route('submissions.grade', $submission->id) }}" id="grade-form">
-                    @csrf
-                    @method('PATCH')
+                        <div class="space-y-2">
+                            <label for="grade-input" class="block text-xs font-semibold text-vl-ink-secondary">
+                                Score (0 &ndash; {{ $assignment->max_points }})
+                            </label>
+                            <div class="flex items-center gap-3">
+                                <input
+                                    type="number"
+                                    name="grade"
+                                    id="grade-input"
+                                    value="{{ $submission->grade ?? '' }}"
+                                    min="0"
+                                    max="{{ $assignment->max_points }}"
+                                    placeholder="85"
+                                    oninput="updateGradeBar(this.value)"
+                                    class="vl-input font-mono text-base font-bold tabular-nums"
+                                >
+                                <span class="font-mono text-sm font-semibold text-vl-ink-secondary shrink-0">/ {{ $assignment->max_points }}</span>
+                            </div>
 
-                    {{-- Grade input with visual indicator --}}
-                    <div class="mb-5">
-                        <label class="text-xs font-bold uppercase tracking-wider mb-2 block" style="color:var(--vc-muted);">
-                            Grade <span style="color:var(--vc-accent);">(0 – {{ $assignment->max_points }})</span>
-                        </label>
-                        <div class="flex items-center gap-3">
-                            <input type="number"
-                                   name="grade"
-                                   id="grade-input"
-                                   value="{{ $submission->grade ?? '' }}"
-                                   min="0"
-                                   max="{{ $assignment->max_points }}"
-                                   placeholder="e.g. 85"
-                                   oninput="updateGradeBar(this.value)"
-                                   class="vc-input font-bold text-lg"
-                                   style="padding:10px 16px;">
-                            <span class="text-lg font-bold" style="color:var(--vc-text-secondary);">/ {{ $assignment->max_points }}</span>
+                            <div class="h-2 rounded-full bg-vl-surface-raised overflow-hidden">
+                                <div id="grade-bar" class="h-full rounded-full bg-vl-accent transition-[width] duration-200" style="width: {{ $submission->grade ? ($submission->grade / $assignment->max_points * 100) : 0 }}%"></div>
+                            </div>
+                            <div class="flex justify-between font-mono text-[11px] text-vl-ink-muted tabular-nums">
+                                <span>0</span>
+                                <span id="grade-pct" class="text-vl-ink font-semibold">{{ $submission->grade ? number_format($submission->grade / $assignment->max_points * 100, 0) . '%' : '' }}</span>
+                                <span>{{ $assignment->max_points }}</span>
+                            </div>
                         </div>
-                        {{-- Grade bar --}}
-                        <div class="mt-3 h-2 rounded-full overflow-hidden" style="background:var(--vc-elevated);">
-                            <div id="grade-bar" class="h-full rounded-full transition-all duration-300" style="width:{{ $submission->grade ? ($submission->grade / $assignment->max_points * 100) : 0 }}%;background:var(--vc-accent);"></div>
-                        </div>
-                        <div class="flex justify-between mt-1">
-                            <span class="text-xs font-bold" style="color:var(--vc-muted);">0</span>
-                            <span id="grade-pct" class="text-xs font-bold" style="color:var(--vc-text-secondary);">{{ $submission->grade ? number_format($submission->grade / $assignment->max_points * 100, 0) . '%' : '' }}</span>
-                            <span class="text-xs font-bold" style="color:var(--vc-muted);">{{ $assignment->max_points }}</span>
-                        </div>
-                    </div>
 
-                    {{-- Feedback --}}
-                    <div class="mb-5">
-                        <label class="text-xs font-bold uppercase tracking-wider mb-2 block" style="color:var(--vc-muted);">Feedback <span style="font-weight:normal;">(optional)</span></label>
-                        <textarea name="feedback"
-                                  rows="5"
-                                  placeholder="Great work! Consider improving the error handling in the loop…"
-                                  class="vc-input font-medium resize-none"
-                                  style="line-height:1.6;">{{ $submission->feedback }}</textarea>
-                    </div>
+                        <div class="space-y-2">
+                            <label for="grade-feedback" class="block text-xs font-semibold text-vl-ink-secondary">Feedback <span class="font-normal text-vl-ink-muted">(optional)</span></label>
+                            <textarea
+                                id="grade-feedback"
+                                name="feedback"
+                                rows="4"
+                                placeholder="Provide constructive guidance on correctness, complexity, and edge cases..."
+                                class="vl-input resize-none"
+                            >{{ $submission->feedback }}</textarea>
+                        </div>
 
-                    {{-- Quick feedback buttons --}}
-                    <div class="flex flex-wrap gap-2 mb-5">
-                        @foreach(['Excellent work!', 'Good effort!', 'Needs improvement', 'See comments below', 'Check edge cases', 'Add error handling'] as $quick)
-                        <button type="button"
-                                onclick="appendFeedback('{{ $quick }}')"
-                                class="px-2 py-1 rounded-lg text-xs font-semibold transition-all border"
-                                style="background:var(--vc-bg);border-color:var(--vc-border);color:var(--vc-text-secondary);"
-                                onmouseover="this.style.color='var(--vc-text)';this.style.borderColor='var(--vc-accent)';"
-                                onmouseout="this.style.color='var(--vc-text-secondary)';this.style.borderColor='var(--vc-border)';">
-                            {{ $quick }}
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach(['Excellent work!', 'Good effort!', 'Needs improvement', 'Check edge cases', 'Add error handling'] as $quick)
+                                <button
+                                    type="button"
+                                    onclick="appendFeedback(@js($quick))"
+                                    class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-vl-surface-raised text-vl-ink-secondary hover:text-vl-ink transition-colors cursor-pointer"
+                                >
+                                    {{ $quick }}
+                                </button>
+                            @endforeach
+                        </div>
+
+                        <button type="submit" class="vl-btn-primary w-full">
+                            {{ $submission->status === 'graded' ? 'Update Grade' : 'Save Grade' }}
                         </button>
-                        @endforeach
-                    </div>
-
-                    @if($errors->any())
-                    <div class="mb-4 px-4 py-3 rounded-xl text-sm font-semibold" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:var(--vc-danger);">{{ $errors->first() }}</div>
-                    @endif
-
-                    <button type="submit" class="btn-primary w-full justify-center text-base py-3">
-                        {{ $submission->status === 'graded' ? 'Update Grade' : 'Save Grade' }}
-                    </button>
-                </form>
-
-                @if(session('success'))
-                <div class="mt-4 px-4 py-3 rounded-xl text-sm font-semibold" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);color:var(--vc-success);">{{ session('success') }}</div>
-                @endif
-            </div>
+                    </form>
+                </x-card>
             @endif
 
-            {{-- Assignment info --}}
-            <div class="vc-card p-5">
-                <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">Assignment Details</h3>
-                <div class="space-y-4 text-sm">
-                    <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--vc-muted);">Title</div>
-                        <div class="font-bold" style="color:var(--vc-text);">{{ $assignment->title }}</div>
-                    </div>
+            <x-card title="Assignment Reference" :padding="true">
+                <div class="space-y-3 text-sm">
+                    <p class="font-semibold text-vl-ink">{{ $assignment->title }}</p>
                     @if($assignment->description)
-                    <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--vc-muted);">Instructions</div>
-                        <div class="font-medium line-clamp-4" style="color:var(--vc-text-secondary);">{{ $assignment->description }}</div>
-                    </div>
+                        <p class="text-xs leading-relaxed text-vl-ink-secondary line-clamp-4">{{ $assignment->description }}</p>
                     @endif
-                    <div class="pt-3 border-t" style="border-color:var(--vc-border);">
-                        <a href="{{ route('assignments.show', $assignment->id) }}"
-                           class="flex items-center gap-2 text-xs font-bold transition-colors hover:text-current" style="color:var(--vc-text-secondary);" onmouseover="this.style.color='var(--vc-text)';" onmouseout="this.style.color='var(--vc-text-secondary)';">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                            View all submissions
+                    <div class="pt-3 border-t border-vl-border/10">
+                        <a href="{{ route('assignments.show', $assignment->id) }}" class="text-xs font-semibold text-vl-accent hover:underline">
+                            View all submissions &rarr;
                         </a>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
-            {{-- Other submissions (navigation) --}}
             @if($prevSubmission || $nextSubmission)
-            <div class="vc-card p-5">
-                <div class="text-xs font-bold uppercase tracking-wider mb-4" style="color:var(--vc-muted);">Navigate Submissions</div>
-                <div class="flex flex-col gap-3">
-                    @if($prevSubmission)
-                    <a href="{{ route('submissions.show', $prevSubmission->id) }}"
-                       class="flex items-center gap-3 p-3 rounded-xl transition-all border" style="background:var(--vc-bg);border-color:var(--vc-border);" onmouseover="this.style.borderColor='var(--vc-accent)';" onmouseout="this.style.borderColor='var(--vc-border)';">
-                        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--vc-text-secondary);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                        <div class="min-w-0">
-                            <div class="text-sm font-bold truncate" style="color:var(--vc-text);">{{ $prevSubmission->student->name }}</div>
-                            <div class="text-xs font-semibold" style="color:var(--vc-muted);">Previous</div>
-                        </div>
-                        <span class="ml-auto badge {{ $prevSubmission->status_badge_class }}">{{ ucfirst($prevSubmission->status) }}</span>
-                    </a>
-                    @endif
-                    @if($nextSubmission)
-                    <a href="{{ route('submissions.show', $nextSubmission->id) }}"
-                       class="flex items-center gap-3 p-3 rounded-xl transition-all border" style="background:var(--vc-bg);border-color:var(--vc-border);" onmouseover="this.style.borderColor='var(--vc-accent)';" onmouseout="this.style.borderColor='var(--vc-border)';">
-                        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--vc-text-secondary);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        <div class="min-w-0">
-                            <div class="text-sm font-bold truncate" style="color:var(--vc-text);">{{ $nextSubmission->student->name }}</div>
-                            <div class="text-xs font-semibold" style="color:var(--vc-muted);">Next</div>
-                        </div>
-                        <span class="ml-auto badge {{ $nextSubmission->status_badge_class }}">{{ ucfirst($nextSubmission->status) }}</span>
-                    </a>
-                    @endif
-                </div>
-            </div>
+                <x-card title="Queue Navigation" :padding="true">
+                    <div class="space-y-2.5">
+                        @if($prevSubmission)
+                            <a href="{{ route('submissions.show', $prevSubmission->id) }}" class="flex items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 bg-vl-surface-raised/70 hover:bg-vl-surface-raised transition-colors">
+                                <div class="min-w-0">
+                                    <p class="text-xs text-vl-ink-muted">Previous</p>
+                                    <p class="text-sm font-semibold text-vl-ink truncate">{{ $prevSubmission->student->name }}</p>
+                                </div>
+                                <x-badge variant="neutral">{{ ucfirst($prevSubmission->status) }}</x-badge>
+                            </a>
+                        @endif
+                        @if($nextSubmission)
+                            <a href="{{ route('submissions.show', $nextSubmission->id) }}" class="flex items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 bg-vl-surface-raised/70 hover:bg-vl-surface-raised transition-colors">
+                                <div class="min-w-0">
+                                    <p class="text-xs text-vl-ink-muted">Next</p>
+                                    <p class="text-sm font-semibold text-vl-ink truncate">{{ $nextSubmission->student->name }}</p>
+                                </div>
+                                <x-badge variant="neutral">{{ ucfirst($nextSubmission->status) }}</x-badge>
+                            </a>
+                        @endif
+                    </div>
+                </x-card>
             @endif
         </div>
-
     </div>
 </div>
+@endsection
 
-{{-- Load scripts --}}
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
 const SUBMISSION = {
-    code:     @json($submission->code_snapshot ?? ''),
-    language: '{{ $assignment->starter_language }}',
-    maxPts:   {{ $assignment->max_points }},
+    code: @json($submission->code_snapshot ?? ''),
+    maxPts: {{ (int) $assignment->max_points }},
 };
 
 @if($submission->code_snapshot)
@@ -362,27 +324,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewer = document.getElementById('code-viewer');
     if (viewer) {
         viewer.textContent = SUBMISSION.code;
-        hljs.highlightElement(viewer);
+        if (window.hljs) hljs.highlightElement(viewer);
     }
-    const lines = SUBMISSION.code.split('\n').length;
     const lineCountEl = document.getElementById('line-count');
     if (lineCountEl) {
-        lineCountEl.textContent = lines + ' lines';
+        lineCountEl.textContent = SUBMISSION.code.split('\n').length + ' lines';
     }
 });
 @endif
 
-// ── Grade bar ────────────────────────────────────────────────────
 function updateGradeBar(val) {
-    const v   = Math.max(0, Math.min(Number(val) || 0, SUBMISSION.maxPts));
-    const pct = SUBMISSION.maxPts > 0 ? (v / SUBMISSION.maxPts * 100) : 0;
+    const v = Math.max(0, Math.min(Number(val) || 0, SUBMISSION.maxPts));
+    const pct = SUBMISSION.maxPts > 0 ? (v / SUBMISSION.maxPts) * 100 : 0;
     const bar = document.getElementById('grade-bar');
-    bar.style.width = pct + '%';
-    bar.style.background = pct >= 80 ? 'var(--vc-success)' : pct >= 60 ? 'var(--vc-warning)' : 'var(--vc-danger)';
-    document.getElementById('grade-pct').textContent = pct > 0 ? Math.round(pct) + '%' : '';
+    if (bar) {
+        bar.style.width = pct + '%';
+        bar.style.background = pct >= 80 ? 'rgb(var(--vl-teal))' : (pct >= 60 ? 'rgb(var(--vl-gate))' : 'rgb(var(--vl-danger))');
+    }
+    const pctEl = document.getElementById('grade-pct');
+    if (pctEl) pctEl.textContent = pct > 0 ? Math.round(pct) + '%' : '';
 }
 
-// ── Quick feedback ────────────────────────────────────────────────
 function appendFeedback(text) {
     const ta = document.querySelector('textarea[name="feedback"]');
     if (!ta) return;
@@ -390,89 +352,56 @@ function appendFeedback(text) {
     ta.focus();
 }
 
-// ── Tabs ─────────────────────────────────────────────────────────
-function switchTab(tab) {
-    document.getElementById('tab-code').classList.remove('active');
-    document.getElementById('tab-code').style.borderColor = 'transparent';
-    document.getElementById('tab-code').style.color = 'var(--vc-muted)';
-    
-    const tabForensics = document.getElementById('tab-forensics');
-    if (tabForensics) {
-        tabForensics.classList.remove('active');
-        tabForensics.style.borderColor = 'transparent';
-        tabForensics.style.color = 'var(--vc-muted)';
-    }
-
-    document.getElementById('content-code').classList.add('hidden');
-    const contentForensics = document.getElementById('content-forensics');
-    if (contentForensics) contentForensics.classList.add('hidden');
-
-    const activeBtn = document.getElementById('tab-' + tab);
-    if (activeBtn) {
-        activeBtn.classList.add('active');
-        activeBtn.style.borderColor = 'var(--vc-accent)';
-        activeBtn.style.color = 'var(--vc-text)';
-    }
-
-    const activeContent = document.getElementById('content-' + tab);
-    if (activeContent) activeContent.classList.remove('hidden');
-
-    if (tab === 'forensics' && !window.forensicsChartRendered) {
-        renderForensicsChart();
-    }
+function copyCode(btn) {
+    if (!SUBMISSION.code || !navigator.clipboard) return;
+    navigator.clipboard.writeText(SUBMISSION.code).then(() => {
+        btn.textContent = 'Copied';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+    });
 }
 
-// Ensure the first tab is styled correctly
-document.addEventListener('DOMContentLoaded', () => {
-    switchTab('code');
-});
-
-// ── Forensics Chart ──────────────────────────────────────────────
 @if($canGrade && $submission->forensic)
-function renderForensicsChart() {
-    window.forensicsChartRendered = true;
-    const ctx = document.getElementById('forensicsChart');
-    if (!ctx) return;
-    
-    new Chart(ctx, {
+let forensicsChartInstance = null;
+window.renderForensicsChart = function () {
+    const canvas = document.getElementById('forensicsChart');
+    if (!canvas || !window.Chart) return;
+    const styles = getComputedStyle(document.documentElement);
+    const teal = `rgb(${styles.getPropertyValue('--vl-teal').trim()})`;
+    const gate = `rgb(${styles.getPropertyValue('--vl-gate').trim()})`;
+
+    if (forensicsChartInstance) {
+        forensicsChartInstance.data.datasets[0].backgroundColor = [teal, gate];
+        forensicsChartInstance.update();
+        return;
+    }
+
+    forensicsChartInstance = new Chart(canvas, {
         type: 'doughnut',
         data: {
             labels: ['Human Typed', 'AI / Pasted'],
             datasets: [{
-                data: [{{ $submission->forensic->human_pct }}, {{ $submission->forensic->ai_pct }}],
-                backgroundColor: ['#10B981', '#8B5CF6'],
+                data: [{{ (float) $submission->forensic->human_pct }}, {{ (float) $submission->forensic->ai_pct }}],
+                backgroundColor: [teal, gate],
                 borderWidth: 0,
-                hoverOffset: 4
-            }]
+                hoverOffset: 4,
+            }],
         },
         options: {
-            cutout: '75%',
+            cutout: '74%',
             plugins: {
                 legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.parsed + '%';
-                        }
-                    }
-                }
-            }
-        }
+                        label: (ctx) => `${ctx.label}: ${ctx.parsed}%`,
+                    },
+                },
+            },
+        },
     });
-}
+};
+window.addEventListener('vl:theme-changed', () => {
+    if (forensicsChartInstance) window.renderForensicsChart();
+});
 @endif
-
-// ── Copy code ─────────────────────────────────────────────────────
-function copyCode() {
-    if (SUBMISSION.code) {
-        navigator.clipboard.writeText(SUBMISSION.code).then(() => {
-            const btn = event.target;
-            btn.textContent = 'Copied!';
-            setTimeout(() => btn.textContent = 'Copy', 2000);
-        });
-    }
-}
 </script>
-@endsection
-
-
+@endpush

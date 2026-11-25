@@ -1,49 +1,157 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DESIGN SYSTEM — Light/Dark Theme via CSS Custom Properties
-   Based on "Firebase × Amber" Palette (Tech-modified)
+   VISIONLAB — LUMINOUS ATELIER DESIGN SYSTEM
+   Dual-Light Semantic RGB Channels (Pearl Mist Light + Obsidian Velvet Dark)
+   Fluid Sculptural Silk Surfaces · Ocean Sapphire → Luminous Teal Gradients
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Light Theme ──────────────────────────────────────────────────────────── */
-:root {
-    --vc-bg:             #060608; /* Near black for neon contrast */
-    --vc-surface:        rgba(15, 15, 20, 0.55); /* Glass surface */
-    --vc-elevated:       rgba(25, 25, 35, 0.65); /* Elevated glass */
-    --vc-card:           rgba(20, 20, 28, 0.4); /* Glassmorphism base */
-    --vc-card-hover:     rgba(30, 30, 45, 0.6);
-    --vc-nav:            rgba(6, 6, 8, 0.85);
-    --vc-border:         rgba(255, 255, 255, 0.08); /* Subtle glass border */
-    --vc-ring:           #00F3FF; /* Neon Cyan */
-    --vc-text:           #FFFFFF;
-    --vc-text-secondary: #A3A3B5;
-    --vc-muted:          #6E6E82;
-    --vc-accent:         #B026FF; /* Electric Purple */
-    --vc-accent-hover:   #D946EF; /* Neon Pink */
-    --vc-accent-subtle:  rgba(176, 38, 255, 0.15);
-    --vc-input:          rgba(10, 10, 15, 0.5);
-    --vc-input-border:   rgba(255, 255, 255, 0.1);
-    --vc-input-focus:    #00F3FF;
-    --vc-shadow-glow:    0 0 30px rgba(176, 38, 255, 0.15); /* Ambient neon glow */
-    --vc-shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
-    --vc-shadow-md:      0 4px 16px rgba(0,0,0,0.5);
-    --vc-shadow-lg:      0 12px 48px rgba(0,0,0,0.6);
-    --vc-success:        #22C55E;
-    --vc-warning:        #FBBF24;
-    --vc-danger:         #F87171;
-    --vc-info:           #60A5FA;
-    --vc-overlay:        rgba(0,0,0,0.8);
-}
-
-
-
-/* ─── Base Reset ──────────────────────────────────────────────────────────── */
 @layer base {
-    *, *::before, *::after { box-sizing: border-box; }
+    /* ── Pearl Mist Light (Lecture Hall / Projector Mode) ── */
+    :root {
+        --vl-bg: 244 247 251;
+        --vl-surface: 255 255 255;
+        --vl-surface-raised: 238 243 249;
+        --vl-rail: 235 241 248;
+        --vl-border: 15 23 42;
+        --vl-border-strong: 15 23 42;
+
+        --vl-ink: 11 18 32;
+        --vl-ink-secondary: 71 85 105;
+        --vl-ink-muted: 100 116 139;
+
+        --vl-accent: 2 132 199;
+        --vl-accent-cta: 37 99 235;
+        --vl-accent-fg: 255 255 255;
+        --vl-teal: 13 148 136;
+        --vl-gate: 180 83 9;
+        --vl-danger: 225 29 72;
+        --vl-info: 2 132 199;
+
+        /* Sculptural Surface & Motion Variables */
+        --vl-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+        --vl-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+        --vl-panel-bg: linear-gradient(180deg, #FFFFFF 0%, #F7FAFE 100%);
+        --vl-panel-bg-hover: linear-gradient(180deg, #FFFFFF 0%, #F2F7FD 100%);
+        --vl-panel-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.96), 0 14px 34px -18px rgba(15, 23, 42, 0.14), 0 1px 3px rgba(15, 23, 42, 0.05);
+        --vl-panel-shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 1), 0 22px 44px -18px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.06);
+        --vl-cta-bg: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
+        --vl-cta-bg-hover: linear-gradient(180deg, #3B82F6 0%, #1D4ED8 100%);
+        --vl-cta-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 8px 20px -6px rgba(37, 99, 235, 0.44);
+        --vl-secondary-bg: rgba(255, 255, 255, 0.88);
+        --vl-secondary-shadow: inset 0 1px 0 #FFFFFF, 0 2px 8px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.08);
+        --vl-overlay-shadow: 0 24px 60px -16px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(15, 23, 42, 0.07);
+        --vl-atmosphere-bg:
+            radial-gradient(82% 58% at 50% -14%, rgba(14, 165, 233, 0.14) 0%, rgba(13, 148, 136, 0.06) 44%, rgba(246, 249, 252, 0) 76%),
+            linear-gradient(180deg, #F3F8FE 0%, #F6F9FC 42%, #F8FAFC 100%);
+        --vl-rail-bg: linear-gradient(180deg, #EFF4FA 0%, #EBF1F8 100%);
+        --vl-border-hairline: rgba(15, 23, 42, 0.08);
+        --vl-border-hover: rgba(15, 23, 42, 0.16);
+
+        /* Backward-Compatibility Legacy Aliases (--vc-*) */
+        --vc-bg: rgb(var(--vl-bg));
+        --vc-surface: rgb(var(--vl-surface));
+        --vc-elevated: rgb(var(--vl-surface-raised));
+        --vc-card: rgb(var(--vl-surface));
+        --vc-card-hover: rgb(var(--vl-surface-raised));
+        --vc-nav: rgba(246, 249, 252, 0.86);
+        --vc-border: var(--vl-border-hairline);
+        --vc-ring: rgb(var(--vl-accent));
+        --vc-text: rgb(var(--vl-ink));
+        --vc-text-secondary: rgb(var(--vl-ink-secondary));
+        --vc-muted: rgb(var(--vl-ink-muted));
+        --vc-accent: rgb(var(--vl-accent-cta));
+        --vc-accent-hover: #1D4ED8;
+        --vc-accent-subtle: rgba(37, 99, 235, 0.10);
+        --vc-input: rgb(var(--vl-surface));
+        --vc-input-border: rgba(15, 23, 42, 0.12);
+        --vc-input-focus: rgb(var(--vl-accent-cta));
+        --vc-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+        --vc-shadow-md: 0 10px 28px -10px rgba(15, 23, 42, 0.12);
+        --vc-shadow-lg: 0 22px 48px -16px rgba(15, 23, 42, 0.18);
+        --vc-shadow-xl: var(--vl-overlay-shadow);
+        --vc-success: rgb(var(--vl-teal));
+        --vc-warning: rgb(var(--vl-gate));
+        --vc-danger: rgb(var(--vl-danger));
+        --vc-info: rgb(var(--vl-info));
+        --vc-overlay: rgba(11, 18, 32, 0.48);
+    }
+
+    /* ── Obsidian Velvet Dark (Night Lab / IDE Mode) ── */
+    .dark {
+        --vl-bg: 5 8 15;
+        --vl-surface: 12 18 29;
+        --vl-surface-raised: 19 28 43;
+        --vl-rail: 9 14 23;
+        --vl-border: 255 255 255;
+        --vl-border-strong: 255 255 255;
+
+        --vl-ink: 248 250 252;
+        --vl-ink-secondary: 168 181 200;
+        --vl-ink-muted: 118 134 156;
+
+        --vl-accent: 56 189 248;
+        --vl-accent-cta: 37 99 235;
+        --vl-accent-fg: 255 255 255;
+        --vl-teal: 45 212 191;
+        --vl-gate: 251 191 36;
+        --vl-danger: 251 113 133;
+        --vl-info: 56 189 248;
+
+        --vl-panel-bg: linear-gradient(180deg, rgba(22, 31, 46, 0.90) 0%, rgba(14, 20, 31, 0.94) 100%);
+        --vl-panel-bg-hover: linear-gradient(180deg, rgba(27, 38, 56, 0.94) 0%, rgba(17, 24, 37, 0.96) 100%);
+        --vl-panel-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 18px 42px -18px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(255, 255, 255, 0.045);
+        --vl-panel-shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 24px 52px -18px rgba(0, 0, 0, 0.82), 0 0 0 1px rgba(56, 189, 248, 0.18);
+        --vl-cta-bg: linear-gradient(180deg, #3B82F6 0%, #1D4ED8 100%);
+        --vl-cta-bg-hover: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%);
+        --vl-cta-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 10px 26px -8px rgba(37, 99, 235, 0.56);
+        --vl-secondary-bg: rgba(255, 255, 255, 0.06);
+        --vl-secondary-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.11), 0 0 0 1px rgba(255, 255, 255, 0.07);
+        --vl-overlay-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 28px 64px -16px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
+        --vl-atmosphere-bg:
+            radial-gradient(84% 58% at 50% -12%, rgba(14, 165, 233, 0.20) 0%, rgba(13, 148, 136, 0.09) 42%, rgba(9, 13, 20, 0) 76%),
+            linear-gradient(180deg, #0B111C 0%, #090D14 48%, #080C12 100%);
+        --vl-rail-bg: linear-gradient(180deg, #0F1623 0%, #0B101A 100%);
+        --vl-border-hairline: rgba(255, 255, 255, 0.07);
+        --vl-border-hover: rgba(255, 255, 255, 0.15);
+
+        /* Backward-Compatibility Legacy Aliases (--vc-*) */
+        --vc-bg: rgb(var(--vl-bg));
+        --vc-surface: rgb(var(--vl-surface));
+        --vc-elevated: rgb(var(--vl-surface-raised));
+        --vc-card: rgba(19, 27, 40, 0.92);
+        --vc-card-hover: rgba(25, 35, 52, 0.96);
+        --vc-nav: rgba(9, 13, 20, 0.84);
+        --vc-border: var(--vl-border-hairline);
+        --vc-ring: rgb(var(--vl-accent));
+        --vc-text: rgb(var(--vl-ink));
+        --vc-text-secondary: rgb(var(--vl-ink-secondary));
+        --vc-muted: rgb(var(--vl-ink-muted));
+        --vc-accent: rgb(var(--vl-accent));
+        --vc-accent-hover: #60A5FA;
+        --vc-accent-subtle: rgba(56, 189, 248, 0.13);
+        --vc-input: rgba(13, 19, 29, 0.88);
+        --vc-input-border: rgba(255, 255, 255, 0.11);
+        --vc-input-focus: rgb(var(--vl-accent));
+        --vc-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+        --vc-shadow-md: 0 12px 30px -10px rgba(0, 0, 0, 0.55);
+        --vc-shadow-lg: 0 24px 52px -16px rgba(0, 0, 0, 0.72);
+        --vc-shadow-xl: var(--vl-overlay-shadow);
+        --vc-success: rgb(var(--vl-teal));
+        --vc-warning: rgb(var(--vl-gate));
+        --vc-danger: rgb(var(--vl-danger));
+        --vc-info: rgb(var(--vl-info));
+        --vc-overlay: rgba(4, 7, 12, 0.72);
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
 
     html {
         scroll-behavior: smooth;
@@ -52,242 +160,261 @@
     }
 
     body {
-        background-color: var(--vc-bg);
-        background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
-                          radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.05) 0%, transparent 40%);
-        background-attachment: fixed;
-        color: var(--vc-text);
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        background-color: rgb(var(--vl-bg));
+        color: rgb(var(--vl-ink));
+        font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
     }
 
+    /* Styled Browser Surfaces (Craft Floor) */
     ::selection {
-        background: rgba(99, 102, 241, 0.2);
-        color: var(--vc-text);
+        background: rgb(var(--vl-accent) / 0.22);
+        color: rgb(var(--vl-ink));
     }
 
-    /* Custom scrollbar */
-    ::-webkit-scrollbar              { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track        { background: var(--vc-bg); }
-    ::-webkit-scrollbar-thumb        { background: var(--vc-border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover  { background: var(--vc-accent); }
+    input, textarea, select {
+        caret-color: rgb(var(--vl-accent));
+    }
 
-    /* Reduced motion */
+    :focus-visible {
+        outline: 2px solid rgb(var(--vl-accent));
+        outline-offset: 2px;
+    }
+
+    a {
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+    }
+
+    /* Refined Slim Scrollbars */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgb(var(--vl-border) / 0.18);
+        border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgb(var(--vl-border) / 0.32);
+    }
+
+    select {
+        color: rgb(var(--vl-ink));
+        background-color: var(--vc-input);
+    }
+    select option {
+        background-color: rgb(var(--vl-surface));
+        color: rgb(var(--vl-ink));
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
     @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
         *, *::before, *::after {
             animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
         }
     }
 }
 
-/* ─── Component Library ───────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENT PRIMITIVES — FLUID, SCULPTURAL, NON-BOXY SILK ARCHITECTURE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @layer components {
+    .vl-atmosphere {
+        background: var(--vl-atmosphere-bg);
+    }
 
-    /* ── Card ──────────────────────────────────────────────────── */
+    .vl-rail-surface {
+        background: var(--vl-rail-bg);
+    }
+
+    /* Sculptural Silk Surface Panel (Full Organic Curvature — Zero Boxy Grid Cage) */
+    .vl-panel,
     .vc-card {
-        background: var(--vc-card);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid var(--vc-border);
-        border-top: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 1.25rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .vc-card:hover {
-        background: var(--vc-card-hover);
-        box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        border-color: rgba(99, 102, 241, 0.3);
-        transform: translateY(-2px);
+        background: var(--vl-panel-bg);
+        border-radius: 2rem;
+        box-shadow: var(--vl-panel-shadow);
+        border: 0;
+        transition: box-shadow 200ms var(--vl-ease-out), transform 200ms var(--vl-ease-out), background 200ms var(--vl-ease-out);
     }
 
-    /* ── Button: Primary ──────────────────────────────────────── */
+    @media (hover: hover) and (pointer: fine) {
+        .vl-panel-interactive:hover {
+            background: var(--vl-panel-bg-hover);
+            box-shadow: var(--vl-panel-shadow-hover);
+            transform: translateY(-2px);
+        }
+    }
+
+    /* Deep Obsidian Syntax & Code Diff Viewport (High Contrast in Light & Dark) */
+    .vl-code-stage {
+        background: linear-gradient(180deg, #0C1321 0%, #070B14 100%);
+        color: #E2E8F0;
+        border-radius: 2rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px -18px rgba(0, 0, 0, 0.65);
+    }
+
+    /* Primary Directional Ocean Sapphire Silk CTA (Full Pill Radius) */
+    .vl-btn-primary,
     .btn-primary {
-        @apply relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
-               text-white cursor-pointer
-               transition-all duration-200 ease-out;
-        background: var(--vc-accent);
-        border: 1px solid transparent;
-    }
-    .btn-primary:hover {
-        background: var(--vc-accent-hover);
-        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
-        transform: translateY(-1px);
-    }
-    .btn-primary:active { transform: translateY(0); }
-
-    /* ── Button: Secondary/Ghost ────────────────────────────────────────── */
-    .btn-secondary, .btn-ghost {
-        @apply relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
-               cursor-pointer transition-all duration-200 ease-out;
-        background: transparent;
-        color: var(--vc-text-secondary);
-        border: 1px solid var(--vc-border);
-    }
-    .btn-secondary:hover, .btn-ghost:hover {
-        background: var(--vc-elevated);
-        color: var(--vc-text);
-        border-color: var(--vc-accent);
-        transform: translateY(-1px);
+        @apply relative inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm cursor-pointer select-none disabled:opacity-50 disabled:pointer-events-none;
+        background: var(--vl-cta-bg);
+        color: rgb(var(--vl-accent-fg));
+        box-shadow: var(--vl-cta-shadow);
+        border: 0;
+        transition: transform 140ms var(--vl-ease-out), box-shadow 180ms var(--vl-ease-out), filter 160ms var(--vl-ease-out);
     }
 
-    /* ── CTA glow button ──────────────────────────────────────── */
-    .btn-glow {
-        @apply relative inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm
-               text-white cursor-pointer transition-all duration-200 ease-out overflow-hidden;
-        background: linear-gradient(135deg, #B026FF, #00F3FF);
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 0 15px rgba(176,38,255,0.4);
+    @media (hover: hover) and (pointer: fine) {
+        .vl-btn-primary:hover,
+        .btn-primary:hover {
+            background: var(--vl-cta-bg-hover);
+            transform: translateY(-1px);
+            filter: brightness(1.04);
+        }
     }
-    .btn-glow:hover {
-        box-shadow: 0 0 24px rgba(99,102,241,0.4), 0 0 48px rgba(236,72,153,0.15);
-        transform: translateY(-1px);
-    }
-    .btn-glow:active { transform: translateY(0); }
 
-    /* ── Input field & Select ──────────────────────────────────── */
-    .input-dark, .vc-input {
-        @apply w-full rounded-xl px-4 py-3 text-sm transition-all duration-200;
+    .vl-btn-primary:active,
+    .btn-primary:active {
+        transform: scale(0.97);
+    }
+
+    /* Secondary Frosted Silk Button (Full Pill Radius) */
+    .vl-btn-secondary,
+    .btn-secondary,
+    .btn-ghost {
+        @apply relative inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm cursor-pointer select-none disabled:opacity-50 disabled:pointer-events-none;
+        background: var(--vl-secondary-bg);
+        color: rgb(var(--vl-ink));
+        box-shadow: var(--vl-secondary-shadow);
+        border: 0;
+        transition: transform 140ms var(--vl-ease-out), background-color 160ms var(--vl-ease-out), box-shadow 180ms var(--vl-ease-out);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .vl-btn-secondary:hover,
+        .btn-secondary:hover,
+        .btn-ghost:hover {
+            background: rgb(var(--vl-surface-raised));
+            transform: translateY(-1px);
+        }
+    }
+
+    .vl-btn-secondary:active,
+    .btn-secondary:active,
+    .btn-ghost:active {
+        transform: scale(0.97);
+    }
+
+    /* Destructive Coral-Rose Action Button (Full Pill Radius) */
+    .vl-btn-danger {
+        @apply relative inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm cursor-pointer select-none disabled:opacity-50 disabled:pointer-events-none;
+        background: rgb(var(--vl-danger) / 0.14);
+        color: rgb(var(--vl-danger));
+        box-shadow: inset 0 1px 0 rgb(var(--vl-danger) / 0.18);
+        border: 0;
+        transition: transform 140ms var(--vl-ease-out), background-color 160ms var(--vl-ease-out);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .vl-btn-danger:hover {
+            background: rgb(var(--vl-danger) / 0.22);
+        }
+    }
+
+    .vl-btn-danger:active {
+        transform: scale(0.97);
+    }
+
+    /* Smooth Full-Pill Form Input (Textarea gets 28px organic curve) */
+    .vl-input,
+    .vc-input,
+    .input-dark {
+        @apply w-full rounded-full px-5 py-2.5 text-sm;
         background: var(--vc-input);
+        color: rgb(var(--vl-ink));
         border: 1px solid var(--vc-input-border);
-        color: var(--vc-text);
+        transition: border-color 160ms var(--vl-ease-out), box-shadow 160ms var(--vl-ease-out), background-color 160ms var(--vl-ease-out);
     }
-    .input-dark::placeholder, .vc-input::placeholder {
-        color: var(--vc-muted);
+
+    textarea.vl-input,
+    textarea.vc-input,
+    textarea.input-dark {
+        border-radius: 1.75rem;
+        padding-top: 0.875rem;
+        padding-bottom: 0.875rem;
     }
-    .input-dark:focus, .vc-input:focus {
+
+    .vl-input::placeholder,
+    .vc-input::placeholder,
+    .input-dark::placeholder {
+        color: rgb(var(--vl-ink-muted));
+    }
+
+    .vl-input:focus,
+    .vc-input:focus,
+    .input-dark:focus {
         outline: none;
-        border-color: var(--vc-input-focus);
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+        border-color: rgb(var(--vl-accent));
+        box-shadow: 0 0 0 3px rgb(var(--vl-accent) / 0.16);
     }
 
-    /* Global select/option fix for dark theme */
-    select {
-        color: var(--vc-text);
-        background-color: var(--vc-input);
-    }
-    select option {
-        background-color: var(--vc-bg);
-        color: var(--vc-text);
-    }
-
-    /* ── Gradient text ────────────────────────────────────────── */
-    .text-gradient-violet, .text-gradient-brand {
-        @apply bg-clip-text text-transparent;
-        background-image: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
-    }
-    .text-gradient-orange {
-        @apply bg-clip-text text-transparent;
-        background-image: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
-    }
-    .text-gradient-cyan {
-        @apply bg-clip-text text-transparent;
-        background-image: linear-gradient(135deg, #14B8A6 0%, #3B82F6 100%);
-    }
-
-    /* ── Glass card (for special sections) ─────────────────────── */
-    .glass {
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--vc-border);
-        border-radius: 1rem;
-    }
-    :root .glass { background: rgba(255,255,255,0.7); }
-    .dark .glass { background: rgba(24,24,27,0.6); }
-
-    .glass-hover {
-        @apply glass transition-all duration-300;
-    }
-    .glass-hover:hover {
-        border-color: var(--vc-accent);
-        box-shadow: var(--vc-shadow-md);
-        transform: translateY(-2px);
-    }
-
-    /* ── Badge / pill ──────────────────────────────────────────── */
-    .badge {
-        @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
-        background: rgba(99,102,241,0.08);
-        color: var(--vc-accent);
-        border: 1px solid rgba(99,102,241,0.15);
-    }
-
-    /* ── Skeleton ──────────────────────────────────────────────── */
-    .skeleton {
-        @apply rounded-lg;
-        background: linear-gradient(90deg, var(--vc-elevated) 25%, var(--vc-surface) 50%, var(--vc-elevated) 75%);
-        background-size: 200% 100%;
-        animation: shimmer 2.5s linear infinite;
-    }
-
-    /* ── Animated blob background ──────────────────────────────── */
-    .blob {
-        @apply absolute rounded-full mix-blend-screen filter blur-3xl opacity-20 pointer-events-none;
-        animation: blob 8s infinite ease-in-out;
-    }
-
-    /* ── Nav link ──────────────────────────────────────────────── */
-    .nav-link {
-        @apply text-sm font-medium transition-colors duration-200 cursor-pointer;
-        color: var(--vc-text-secondary);
-    }
-    .nav-link:hover { color: var(--vc-text); }
-
-    /* ── Section title ─────────────────────────────────────────── */
-    .section-title {
-        @apply text-3xl md:text-4xl font-bold;
-        color: var(--vc-text);
-    }
-    .section-subtitle {
-        @apply text-base max-w-xl mx-auto;
-        color: var(--vc-text-secondary);
-    }
-
-    /* ── Stat card ─────────────────────────────────────────────── */
+    /* Stat Panel (Super-Rounded) */
     .stat-card {
-        @apply relative rounded-2xl p-5 overflow-hidden transition-all duration-300 cursor-default;
-        background: var(--vc-card);
-        border: 1px solid var(--vc-border);
-    }
-    .stat-card:hover {
-        border-color: var(--vc-accent);
-        box-shadow: var(--vc-shadow-md);
+        @apply relative rounded-[2rem] p-5 overflow-hidden;
+        background: var(--vl-panel-bg);
+        box-shadow: var(--vl-panel-shadow);
     }
 
-    
+    /* Soft Pill Badge */
+    .badge {
+        @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+        background: rgb(var(--vl-accent) / 0.12);
+        color: rgb(var(--vl-accent));
+    }
+
+    /* Shimmer Loading Skeleton */
+    .skeleton {
+        @apply rounded-xl;
+        background: linear-gradient(
+            90deg,
+            rgb(var(--vl-surface-raised) / 0.6) 25%,
+            rgb(var(--vl-surface) / 0.9) 50%,
+            rgb(var(--vl-surface-raised) / 0.6) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2.2s linear infinite;
+    }
+
+    .nav-link {
+        @apply text-sm font-medium cursor-pointer;
+        color: rgb(var(--vl-ink-secondary));
+        transition: color 160ms var(--vl-ease-out);
+    }
+    .nav-link:hover {
+        color: rgb(var(--vl-ink));
+    }
 }
 
-/* ─── Utilities ───────────────────────────────────────────────────────────── */
 @layer utilities {
-    .perspective-1000 { perspective: 1000px; }
-    .tilt-card { transition: transform 0.15s ease-out; transform-style: preserve-3d; }
-    .opacity-0-init { opacity: 0; }
-    .animate-delay-100 { animation-delay: 0.1s; }
-    .animate-delay-200 { animation-delay: 0.2s; }
-    .animate-delay-300 { animation-delay: 0.3s; }
-    .animate-delay-400 { animation-delay: 0.4s; }
-    .animate-delay-500 { animation-delay: 0.5s; }
-    .text-balance { text-wrap: balance; }
-}
-
-/* ─── Keyframes ───────────────────────────────────────────────────────────── */
-@keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-@keyframes float {
-    0%,100% { transform: translateY(0px); }
-    50%     { transform: translateY(-10px); }
-}
-@keyframes scan-line {
-    0%   { transform: translateY(-100%); }
-    100% { transform: translateY(100vh); }
-}
-@keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.animate-float { animation: float 6s ease-in-out infinite; }
-.animate-fade-in-up {
-    animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .tabular-nums {
+        font-variant-numeric: tabular-nums;
+    }
+    .text-balance {
+        text-wrap: balance;
+    }
+    .vl-divider {
+        border-color: var(--vl-border-hairline);
+    }
 }

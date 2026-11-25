@@ -16,7 +16,7 @@ class WorkspaceSecurityTest extends TestCase
         $user = User::factory()->create(['role' => 'student']);
         $workspace = Workspace::factory()->create(['student_id' => $user->id]);
 
-        $response = $this->actingAs($user)->getJson("/workspace/{$workspace->id}/read-file?path=../../../.env");
+        $response = $this->actingAs($user)->getJson(route('workspace.readFile', $workspace) . '?path=../../../.env');
 
         $response->assertStatus(404);
     }
@@ -28,7 +28,7 @@ class WorkspaceSecurityTest extends TestCase
 
         $workspace1 = Workspace::factory()->create(['student_id' => $user1->id]);
 
-        $response = $this->actingAs($user2)->getJson("/workspace/{$workspace1->id}/files?path=index.js");
+        $response = $this->actingAs($user2)->getJson(route('workspace.files', $workspace1) . '?path=index.js');
 
         $response->assertStatus(403);
     }

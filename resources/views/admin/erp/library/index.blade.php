@@ -36,7 +36,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No books found in the library.</td>
+                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-vl-ink-muted text-center">No books found in the library.</td>
                                 </tr>
                             @endforelse
                         </tbody>

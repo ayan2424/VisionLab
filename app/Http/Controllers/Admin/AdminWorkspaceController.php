@@ -7,6 +7,7 @@ use App\Models\Workspace;
 use App\Models\AuditLog;
 use App\Services\CodeServerManager;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminWorkspaceController extends Controller
 {
@@ -18,15 +19,18 @@ class AdminWorkspaceController extends Controller
             $query->where('status', $request->status);
         }
 
-        $workspaces = $query->latest()->paginate(20);
+        $workspaces = $query->latest()->paginate(20)->withQueryString();
 
-        return view('admin.workspaces.index', compact('workspaces'));
+        return Inertia::render('Admin/Workspaces/Index', [
+            'workspaces'   => $workspaces,
+            'statusFilter' => (string) $request->get('status', ''),
+        ]);
     }
 
     public function show(Workspace $workspace)
     {
-        $workspace->load(['owner', 'course', 'collaborators', 'extensions.extension']);
-        $auditLogs = AuditLog::where('workspace_id', $workspace->id)
+        $workspace->load(['owner', 'course', 'extensions.extension']);
+        $auditLogs = AuditLog::forResource('Workspace', $workspace->id)
             ->with('actor')
             ->latest()
             ->take(20)
@@ -50,20 +54,21 @@ class AdminWorkspaceController extends Controller
         $manager = new CodeServerManager();
         $manager->stopWorkspace($workspace);
 
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'admin_force_stopped_workspace',
-            'resource_type' => 'Workspace',
-            'resource_id' => $workspace->id,
-            'details' => ['reason' => 'Admin manual force stop'],
-            'ip_address' => request()->ip(),
-        ]);
+        AuditLog::record(
+            action: 'admin_force_stopped_workspace',
+            resourceType: 'Workspace',
+            resourceId: $workspace->id,
+            oldState: ['status' => 'running'],
+            newState: ['status' => 'stopped', 'reason' => 'Admin manual force stop'],
+        );
 
         return back()->with('success', 'Workspace forcefully stopped.');
     }
 
     public function archive(Workspace $workspace)
     {
+        $previousStatus = $workspace->status;
+
         if ($workspace->status === 'running') {
             $manager = new CodeServerManager();
             $manager->stopWorkspace($workspace);
@@ -71,14 +76,13 @@ class AdminWorkspaceController extends Controller
 
         $workspace->update(['status' => 'archived']);
 
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'admin_archived_workspace',
-            'resource_type' => 'Workspace',
-            'resource_id' => $workspace->id,
-            'details' => ['reason' => 'Admin archive'],
-            'ip_address' => request()->ip(),
-        ]);
+        AuditLog::record(
+            action: 'admin_archived_workspace',
+            resourceType: 'Workspace',
+            resourceId: $workspace->id,
+            oldState: ['status' => $previousStatus],
+            newState: ['status' => 'archived', 'reason' => 'Admin archive'],
+        );
 
         return back()->with('success', 'Workspace archived successfully.');
     }
@@ -89,16 +93,16 @@ class AdminWorkspaceController extends Controller
         $manager->deleteWorkspace($workspace);
 
         $workspaceId = $workspace->id;
+        $previousStatus = $workspace->status;
         $workspace->delete();
 
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'admin_deleted_workspace',
-            'resource_type' => 'Workspace',
-            'resource_id' => $workspaceId,
-            'details' => ['reason' => 'Admin permanent deletion (files wiped)'],
-            'ip_address' => request()->ip(),
-        ]);
+        AuditLog::record(
+            action: 'admin_deleted_workspace',
+            resourceType: 'Workspace',
+            resourceId: $workspaceId,
+            oldState: ['status' => $previousStatus],
+            newState: ['deleted' => true, 'reason' => 'Admin permanent deletion (files wiped)'],
+        );
 
         return back()->with('success', 'Workspace and its physical files permanently deleted.');
     }

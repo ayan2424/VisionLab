@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
@@ -26,8 +27,7 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($student)->get(route('dashboard'));
 
         $response->assertOk()
-                 ->assertViewIs('dashboard.student')
-                 ->assertSee('Welcome back');
+                 ->assertInertia(fn (Assert $page) => $page->component('Dashboard/Student'));
     }
 
     public function test_instructor_sees_instructor_dashboard(): void
@@ -37,7 +37,7 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($instructor)->get(route('dashboard'));
 
         $response->assertOk()
-                 ->assertViewIs('dashboard.instructor');
+                 ->assertInertia(fn (Assert $page) => $page->component('Dashboard/Instructor'));
     }
 
     public function test_admin_redirects_to_admin_dashboard(): void
@@ -60,13 +60,14 @@ class DashboardTest extends TestCase
 
         $response = $this->actingAs($student)->get(route('dashboard'));
 
-        $response->assertViewHasAll([
-            'courses',
-            'upcomingAssignments',
-            'recentAnnouncements',
-            'pendingSubmissions',
-            'streak',
-        ]);
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard/Student')
+            ->has('courses')
+            ->has('upcomingAssignments')
+            ->has('recentAnnouncements')
+            ->has('pendingSubmissions')
+            ->has('streak')
+        );
     }
 
     public function test_instructor_dashboard_has_required_data(): void
@@ -75,15 +76,16 @@ class DashboardTest extends TestCase
 
         $response = $this->actingAs($instructor)->get(route('dashboard'));
 
-        $response->assertViewHasAll([
-            'courses',
-            'pendingGrading',
-            'totalStudents',
-            'recentSubmissions',
-            'lateSubmissions',
-            'avgGrade',
-            'pendingPatches',
-        ]);
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard/Instructor')
+            ->has('courses')
+            ->has('pendingGrading')
+            ->has('totalStudents')
+            ->has('recentSubmissions')
+            ->has('lateSubmissions')
+            ->has('avgGrade')
+            ->has('pendingPatches')
+        );
     }
 
     public function test_progress_page_accessible_to_students(): void

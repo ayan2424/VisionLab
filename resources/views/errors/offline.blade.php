@@ -1,29 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090D14">
+    <link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
     <title>Offline — VisionLab</title>
-    <style>
-        body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #f1f5f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; }
-        .container { max-w-md; padding: 2rem; }
-        h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #f8fafc; }
-        p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6; }
-        .btn { display: inline-flex; align-items: center; justify-content: center; background: #38bdf8; color: #0f172a; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; }
-        .btn:hover { background: #7dd3fc; }
-        svg { width: 3rem; height: 3rem; color: #38bdf8; margin-bottom: 1rem; opacity: 0.8; }
-    </style>
+
+    @include('partials.theme-init')
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <div class="container">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.163a1.5 1.5 0 112.121 2.121 1.5 1.5 0 01-2.121-2.121z" />
-        </svg>
-        <h1>You are offline</h1>
-        <p>It looks like you've lost your internet connection.<br>VisionLab requires a connection, especially to sync your workspaces securely.</p>
-        <a href="javascript:window.location.reload()" class="btn">Retry Connection</a>
-    </div>
+<body class="min-h-screen flex flex-col vl-atmosphere text-vl-ink font-sans antialiased">
+    <header class="w-full max-w-5xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+        <a href="{{ url('/') }}" class="inline-flex items-center">
+            <x-logo size="h-7 w-7" textSize="text-[17px]" />
+        </a>
+        <x-theme-toggle />
+    </header>
+
+    <main class="flex-1 flex items-center justify-center px-5 py-12">
+        <div class="vl-panel w-full max-w-lg p-8 sm:p-11 text-center space-y-5">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-vl-accent/14 text-vl-accent">
+                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" />
+                </svg>
+            </div>
+
+            <div class="space-y-2">
+                <h1 class="text-2xl font-bold tracking-tight text-vl-ink">You are currently offline</h1>
+                <p class="text-sm leading-relaxed text-vl-ink-secondary max-w-md mx-auto">
+                    VisionLab requires an active network connection to synchronize cloud IDE containers, AI patch reviews, and assignment snapshots.
+                </p>
+            </div>
+
+            <div class="pt-2">
+                <button type="button" onclick="window.location.reload()" class="vl-btn-primary">
+                    Retry Connection
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-6 text-center text-xs text-vl-ink-muted">
+        &copy; {{ date('Y') }} VisionLab
+    </footer>
 </body>
 </html>
-
-

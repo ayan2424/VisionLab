@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
-use Exception;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class HealthController extends Controller
 {
@@ -31,13 +31,13 @@ class HealthController extends Controller
 
     /**
      * Returns the human-readable system status page.
-     * Uses the same 6 probes as check() but renders a Blade view.
+     * Uses the same 6 probes as check() and renders via Inertia React.
      */
-    public function status(): View
+    public function status(): Response
     {
         [$checks, $status] = $this->runProbes();
 
-        return view('admin.status', compact('checks', 'status'));
+        return Inertia::render('Admin/Status', compact('checks', 'status'));
     }
 
     /**

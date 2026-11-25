@@ -10,6 +10,7 @@ use App\Models\Submission;
 use App\Models\UserBadge;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
@@ -91,7 +92,7 @@ class DashboardController extends Controller
             'streak', 'badges', 'activeWorkspaces'
         );
 
-        return view('dashboard.student', $data);
+        return Inertia::render('Dashboard/Student', $data);
     }
 
     private function instructorDashboard($user)
@@ -139,6 +140,6 @@ class DashboardController extends Controller
             'lateSubmissions', 'activeWorkspaceCount', 'avgGrade', 'pendingPatches'
         );
 
-        return view('dashboard.instructor', $data);
+        return Inertia::render('Dashboard/Instructor', $data);
     }
 }

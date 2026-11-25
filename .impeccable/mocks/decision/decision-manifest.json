@@ -1,0 +1,10 @@
+{
+  "round": 2,
+  "date": "2026-11-24",
+  "buildPath": "code",
+  "pinnedByUser": true,
+  "selectedId": "luminous-atelier",
+  "selectedName": "Luminous Atelier (Obsidian Velvet Dark + Pearl Mist Light — fluid non-boxy surfaces, ocean-sapphire & teal silk gradients, Satoshi + JetBrains Mono)",
+  "interactivePreview": "C:/Users/ayans/.gemini/antigravity/brain/f7bb9259-d641-48e6-bcaf-00535fd68569/visionlab-luminous-preview.html",
+  "note": "Upgraded from Swiss Lab Monograph after user requested non-boxy, fluid, smooth, gradient-elevated ultra-premium UI. Image generator returned 503 MODEL_CAPACITY_EXHAUSTED on round 2 comps; interactive live HTML prototype carries the visual contract."
+}

@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Extension;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -49,7 +51,10 @@ class ExtensionControllerTest extends TestCase
 
     public function test_admin_can_store_new_extension(): void
     {
+        Storage::fake('local');
         $admin = User::factory()->admin()->create();
+        $emptyZipBinary = "PK\x05\x06" . str_repeat("\0", 18);
+        $artifact = UploadedFile::fake()->createWithContent('vscode-vim.zip', $emptyZipBinary);
 
         $response = $this->actingAs($admin)->post(route('admin.extensions.store'), [
             'name'               => 'Vim Keybindings',
@@ -57,6 +62,7 @@ class ExtensionControllerTest extends TestCase
             'version'            => '1.0.0',
             'description'        => 'Vim keybindings wrapper',
             'is_global'          => true,
+            'artifact'           => $artifact,
         ]);
 
         $response->assertRedirect(route('admin.extensions.index'))
@@ -68,6 +74,9 @@ class ExtensionControllerTest extends TestCase
             'is_builtin'         => false,
             'is_active'          => true,
         ]);
+
+        $created = Extension::where('package_identifier', 'vscode-vim')->firstOrFail();
+        $this->assertNotEmpty($created->checksum);
     }
 
     public function test_store_extension_validates_unique_identifier(): void

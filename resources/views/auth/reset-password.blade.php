@@ -1,61 +1,73 @@
-<x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center px-4 py-12">
-        <div class="w-full max-w-md">
+<x-guest-layout title="Choose New Password">
+    <div class="space-y-6">
+        <div class="space-y-1.5">
+            <h1 class="text-2xl font-bold tracking-tight text-vl-ink">Set a new password</h1>
+            <p class="text-sm text-vl-ink-secondary">
+                Choose a strong password to secure your VisionLab account.
+            </p>
+        </div>
 
-            {{-- Logo --}}
-            <div class="text-center mb-8" style="opacity:0;animation:fadeUp 0.6s 0.1s ease forwards">
-                <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5 group">
-                    <x-logo size="h-10 w-10" textSize="text-xl" />
-                </a>
-                <p class="mt-2 text-sm text-muted">Set a new password</p>
+        <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
+            @csrf
+            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-vl-ink mb-2">Institutional Email</label>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value="{{ old('email', $request->email) }}"
+                    required
+                    autofocus
+                    autocomplete="username"
+                    placeholder="you@university.edu"
+                    class="vl-input @error('email') !border-vl-danger @enderror"
+                >
+                @error('email')
+                    <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                @enderror
             </div>
 
-            {{-- Card --}}
-            <div class="glass p-8" style="opacity:0;animation:fadeUp 0.6s 0.2s ease forwards">
-                <h2 class="text-base font-bold text-white mb-1">Reset Password</h2>
-                <p class="text-xs text-muted mb-6">Choose a strong password for your account.</p>
-
-                <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
-                    @csrf
-                    <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-                    <div>
-                        <x-input-label for="email" :value="__('Email Address')" />
-                        <x-text-input id="email" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" placeholder="you@example.com" />
-                        <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
-                    </div>
-
-                    <div>
-                        <x-input-label for="password" :value="__('New Password')" />
-                        <x-text-input id="password" type="password" name="password" required autocomplete="new-password" placeholder="Min. 8 characters" />
-                        <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
-                    </div>
-
-                    <div>
-                        <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-                        <x-text-input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Repeat new password" />
-                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1.5" />
-                    </div>
-
-                    <x-primary-button class="w-full justify-center">
-                        Reset Password
-                    </x-primary-button>
-                </form>
-
-                <p class="mt-6 text-center text-xs text-muted">
-                    <a href="{{ route('login') }}" class="text-violet-400 hover:text-violet-300 transition-colors">Back to sign in</a>
-                </p>
+            <div>
+                <label for="password" class="block text-sm font-medium text-vl-ink mb-2">New Password</label>
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Minimum 8 characters"
+                    class="vl-input @error('password') !border-vl-danger @enderror"
+                >
+                @error('password')
+                    <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                @enderror
             </div>
 
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-vl-ink mb-2">Confirm Password</label>
+                <input
+                    id="password_confirmation"
+                    type="password"
+                    name="password_confirmation"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Repeat new password"
+                    class="vl-input @error('password_confirmation') !border-vl-danger @enderror"
+                >
+                @error('password_confirmation')
+                    <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <button type="submit" class="vl-btn-primary w-full !py-3">
+                Update Password
+            </button>
+        </form>
+
+        <div class="pt-4 border-t border-vl-border/10 text-center text-xs text-vl-ink-muted">
+            <a href="{{ route('login') }}" class="font-semibold text-vl-accent hover:underline">Back to Sign in</a>
         </div>
     </div>
-
-    <style>
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 </x-guest-layout>
-
-

@@ -40,7 +40,7 @@
                 <td class="px-4 py-3">
                     @if($log->actor)
                         <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-indigo-500">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-vl-ink bg-indigo-500">
                                 {{ $log->actor->avatar_initials }}
                             </div>
                             <span style="color:var(--vc-text-secondary);">{{ $log->actor->name }}</span>

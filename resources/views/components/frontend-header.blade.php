@@ -1,43 +1,101 @@
-<nav id="mainNav" class="fixed inset-x-0 top-0 z-50 transition-all duration-500 bg-[#040d21]/70 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
-    <!-- Top thin gradient line -->
-    <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#10B981]/50 to-transparent opacity-70"></div>
+<header
+    x-data="{ mobileOpen: false, scrolled: false }"
+    x-init="scrolled = window.scrollY > 12; window.addEventListener('scroll', () => { scrolled = window.scrollY > 12 }, { passive: true })"
+    :class="scrolled ? 'bg-vl-bg/88 backdrop-blur-xl shadow-[0_8px_32px_-16px_rgba(9,13,20,0.28)]' : 'bg-vl-bg/65 backdrop-blur-md'"
+    class="fixed inset-x-0 top-0 z-50 h-[60px] transition-[background-color,box-shadow] duration-200 ease-vl-out"
+>
+    {{-- Subtle specular hairline separator --}}
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-vl-border/10 to-transparent"></div>
 
-    <div class="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 lg:px-8">
-        <!-- Logo Section -->
-        <a href="{{ route('home') }}" class="group flex items-center gap-3 transition-transform hover:scale-105 duration-300">
-            <div class="relative flex items-center justify-center">
-                <!-- Subtle glow behind logo on hover -->
-                <div class="absolute inset-0 rounded-full bg-[#10B981]/0 group-hover:bg-[#10B981]/20 blur-md transition-all duration-500"></div>
-                <img src="{{ asset('icons/logo.svg') }}" alt="VisionLab Logo" class="relative h-8 w-8 object-contain">
-            </div>
-            <div class="flex items-baseline gap-1">
-                <span class="text-xl font-bold tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-[#7d8590] transition-all duration-300">Vision<span style="color:#7d8590;">Lab</span></span>
-                <span class="hidden md:inline-block font-mono text-[10px] uppercase tracking-widest text-[#10B981] ml-1 opacity-80 group-hover:opacity-100 transition-opacity">Kernel</span>
-            </div>
+    <div class="mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-8">
+        {{-- Brand mark --}}
+        <a href="{{ route('home') }}" class="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vl-accent rounded-lg py-1">
+            <x-logo size="h-7 w-7" textSize="text-[17px]" />
         </a>
 
-        <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center gap-8">
-            <a href="{{ route('about') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Product</a>
-            <a href="{{ route('features') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Features</a>
-            <a href="{{ route('docs') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Documentation</a>
-            <a href="{{ route('contact') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Contact</a>
-        </div>
+        {{-- Primary navigation --}}
+        <nav aria-label="Primary" class="hidden md:flex items-center gap-1">
+            @php
+                $navItems = [
+                    ['label' => 'Product', 'route' => 'about'],
+                    ['label' => 'Features', 'route' => 'features'],
+                    ['label' => 'Documentation', 'route' => 'docs'],
+                    ['label' => 'Contact', 'route' => 'contact'],
+                ];
+            @endphp
+            @foreach($navItems as $item)
+                @php $active = request()->routeIs($item['route']); @endphp
+                <a
+                    href="{{ route($item['route']) }}"
+                    class="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-150 ease-vl-out {{ $active ? 'text-vl-ink bg-vl-surface-raised/80' : 'text-vl-ink-secondary hover:text-vl-ink hover:bg-vl-surface-raised/50' }}"
+                >
+                    {{ $item['label'] }}
+                </a>
+            @endforeach
+        </nav>
 
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-5">
+        {{-- Right controls --}}
+        <div class="flex items-center gap-2.5">
+            <x-theme-toggle />
+
             @auth
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center px-4 py-1.5 text-sm font-semibold text-white transition-all duration-300 rounded-md border border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-                Dashboard
-            </a>
+                <a href="{{ route('dashboard') }}" class="vl-btn-primary !py-2 !px-4 !text-xs sm:!text-sm">
+                    Dashboard
+                </a>
             @else
-            <a href="{{ route('login') }}" class="hidden md:inline-block text-sm font-semibold text-[#8b949e] hover:text-white transition-colors duration-200">
-                Sign in
-            </a>
-            <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-5 py-2 text-sm font-bold text-white transition-all duration-300 rounded-md bg-[#238636] hover:bg-[#2ea043] border border-[rgba(240,246,252,0.1)] shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_15px_rgba(35,134,54,0.2)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_20px_rgba(35,134,54,0.4)] transform hover:-translate-y-0.5">
-                Get Started
-            </a>
+                <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-medium text-vl-ink-secondary hover:text-vl-ink transition-colors duration-150 ease-vl-out">
+                    Sign in
+                </a>
+                <a href="{{ route('contact') }}" class="vl-btn-primary !py-2 !px-4 !text-xs sm:!text-sm">
+                    Request Pilot
+                </a>
+            @endauth
+
+            {{-- Mobile menu toggle --}}
+            <button
+                type="button"
+                @click="mobileOpen = !mobileOpen"
+                :aria-expanded="mobileOpen.toString()"
+                aria-label="Toggle navigation menu"
+                class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-xl text-vl-ink-secondary hover:text-vl-ink hover:bg-vl-surface-raised/70 transition-colors duration-150"
+            >
+                <svg x-show="!mobileOpen" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+                <svg x-show="mobileOpen" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    {{-- Mobile drawer --}}
+    <div
+        x-show="mobileOpen"
+        x-cloak
+        x-transition:enter="transition ease-vl-drawer duration-200"
+        x-transition:enter-start="opacity-0 -translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-vl-out duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-2"
+        @click.outside="mobileOpen = false"
+        class="md:hidden bg-vl-surface/95 backdrop-blur-2xl shadow-vl-overlay px-5 pt-3 pb-5"
+    >
+        <nav aria-label="Mobile Navigation" class="flex flex-col gap-1">
+            <a href="{{ route('about') }}" @click="mobileOpen = false" class="px-3 py-2.5 rounded-xl text-sm font-medium {{ request()->routeIs('about') ? 'text-vl-ink bg-vl-surface-raised' : 'text-vl-ink-secondary hover:text-vl-ink' }}">Product</a>
+            <a href="{{ route('features') }}" @click="mobileOpen = false" class="px-3 py-2.5 rounded-xl text-sm font-medium {{ request()->routeIs('features') ? 'text-vl-ink bg-vl-surface-raised' : 'text-vl-ink-secondary hover:text-vl-ink' }}">Features</a>
+            <a href="{{ route('docs') }}" @click="mobileOpen = false" class="px-3 py-2.5 rounded-xl text-sm font-medium {{ request()->routeIs('docs') ? 'text-vl-ink bg-vl-surface-raised' : 'text-vl-ink-secondary hover:text-vl-ink' }}">Documentation</a>
+            <a href="{{ route('contact') }}" @click="mobileOpen = false" class="px-3 py-2.5 rounded-xl text-sm font-medium {{ request()->routeIs('contact') ? 'text-vl-ink bg-vl-surface-raised' : 'text-vl-ink-secondary hover:text-vl-ink' }}">Contact</a>
+        </nav>
+
+        <div class="mt-4 pt-4 border-t border-vl-border/10 flex flex-col gap-2">
+            @auth
+                <a href="{{ route('dashboard') }}" class="vl-btn-primary w-full">Open Dashboard</a>
+            @else
+                <a href="{{ route('login') }}" class="vl-btn-secondary w-full">Sign in to Portal</a>
+                <a href="{{ route('contact') }}" class="vl-btn-primary w-full">Request Campus Pilot</a>
             @endauth
         </div>
     </div>
-</nav>
+</header>

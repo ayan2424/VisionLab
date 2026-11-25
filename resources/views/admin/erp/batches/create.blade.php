@@ -4,12 +4,12 @@
 @section('content')
 <div class="max-w-4xl mx-auto">
     <div class="flex items-center gap-4 mb-8">
-        <a href="{{ route('admin.batches.index') }}" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors">
+        <a href="{{ route('admin.batches.index') }}" class="p-2 rounded-xl text-vl-ink-secondary hover:text-vl-ink hover:bg-vl-surface-raised transition-colors">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </a>
         <div>
-            <h1 class="text-2xl font-bold text-white mb-1">Add Course Batch</h1>
-            <p class="text-slate-400 text-sm">Schedule a new batch for a course.</p>
+            <h1 class="text-2xl font-bold text-vl-ink mb-1">Add Course Batch</h1>
+            <p class="text-vl-ink-secondary text-sm">Schedule a new batch for a course.</p>
         </div>
     </div>
 
@@ -18,7 +18,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Course</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Course</label>
                 <select name="course_id" class="vc-input w-full" required>
                     <option value="">Select Course...</option>
                     @foreach($courses as $course)
@@ -30,7 +30,7 @@
                 @error('course_id') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Department</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Department</label>
                 <select name="department_id" class="vc-input w-full" required>
                     <option value="">Select Department...</option>
                     @foreach($departments as $department)
@@ -45,7 +45,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Semester</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Semester</label>
                 <select name="semester_id" class="vc-input w-full" required>
                     <option value="">Select Semester...</option>
                     @foreach($semesters as $semester)
@@ -57,7 +57,7 @@
                 @error('semester_id') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Instructor</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Instructor</label>
                 <select name="instructor_id" class="vc-input w-full">
                     <option value="">Select Instructor...</option>
                     @foreach($instructors as $instructor)
@@ -72,27 +72,27 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div class="md:col-span-2">
-                <label class="block text-sm font-bold mb-2 text-slate-300">Batch Title</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Batch Title</label>
                 <input type="text" name="title" value="{{ old('title') }}" required class="vc-input w-full" placeholder="e.g. Fall 2026 Morning Batch">
                 @error('title') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Timing</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Timing</label>
                 <input type="text" name="timing" value="{{ old('timing') }}" class="vc-input w-full" placeholder="e.g. 09:00 AM - 12:00 PM">
                 @error('timing') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Start Date</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Start Date</label>
                 <input type="date" name="start_date" value="{{ old('start_date') }}" class="vc-input w-full">
                 @error('start_date') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Max Capacity</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Max Capacity</label>
                 <input type="number" name="max_capacity" value="{{ old('max_capacity') }}" class="vc-input w-full" placeholder="e.g. 30">
                 @error('max_capacity') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Room Number</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Room Number</label>
                 <input type="text" name="room_number" value="{{ old('room_number') }}" class="vc-input w-full" placeholder="e.g. Lab 3">
                 @error('room_number') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
@@ -100,8 +100,8 @@
 
         <div class="mb-8">
             <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-gray-800">
-                <span class="text-sm font-bold text-slate-300">Is Active</span>
+                <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-600 text-vl-accent focus:ring-indigo-500 bg-vl-surface-raised">
+                <span class="text-sm font-bold text-vl-ink-secondary">Is Active</span>
             </label>
         </div>
 

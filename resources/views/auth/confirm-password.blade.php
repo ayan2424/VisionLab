@@ -1,29 +1,35 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+<x-guest-layout title="Confirm Password">
+    <div class="space-y-6">
+        <div class="space-y-1.5">
+            <h1 class="text-2xl font-bold tracking-tight text-vl-ink">Confirm your password</h1>
+            <p class="text-sm text-vl-ink-secondary leading-relaxed">
+                This action accesses a protected area of VisionLab. Please re-enter your password to continue.
+            </p>
+        </div>
+
+        <form method="POST" action="{{ route('password.confirm') }}" class="space-y-5">
+            @csrf
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-vl-ink mb-2">Password</label>
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    required
+                    autofocus
+                    autocomplete="current-password"
+                    placeholder="Enter your password"
+                    class="vl-input @error('password') !border-vl-danger @enderror"
+                >
+                @error('password')
+                    <p class="mt-1.5 text-xs text-vl-danger">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <button type="submit" class="vl-btn-primary w-full !py-3">
+                Confirm &amp; Continue
+            </button>
+        </form>
     </div>
-
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
-
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
 </x-guest-layout>
-
-

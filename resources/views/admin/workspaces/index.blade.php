@@ -3,85 +3,77 @@
 @section('page-title', 'Workspaces')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-    <div>
-        <h1 class="text-2xl font-bold" style="color:var(--vc-text);">Workspaces</h1>
-        <p class="text-sm mt-1" style="color:var(--vc-text-secondary);">Monitor and manage student environments</p>
+<div class="space-y-6">
+    <div class="space-y-1">
+        <h2 class="text-2xl font-bold tracking-tight text-vl-ink">Student &amp; Faculty Workspaces</h2>
+        <p class="text-sm text-vl-ink-secondary">Inspect container states, stop runaway sandboxes, and manage workspace lifecycle across campus.</p>
     </div>
-</div>
 
-<div class="vc-card overflow-hidden">
-    <table class="w-full text-left text-sm">
-        <thead style="background:var(--vc-surface);border-bottom:1px solid var(--vc-border);">
+    <x-table>
+        <x-slot:head>
             <tr>
-                <th class="px-4 py-3 font-semibold" style="color:var(--vc-text-secondary);">Workspace</th>
-                <th class="px-4 py-3 font-semibold" style="color:var(--vc-text-secondary);">Course</th>
-                <th class="px-4 py-3 font-semibold" style="color:var(--vc-text-secondary);">Owner</th>
-                <th class="px-4 py-3 font-semibold" style="color:var(--vc-text-secondary);">Status</th>
-                <th class="px-4 py-3 font-semibold text-right" style="color:var(--vc-text-secondary);">Actions</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Workspace</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Course</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Owner</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Status</th>
+                <th class="px-5 py-3.5 text-right text-xs font-semibold text-vl-ink-secondary">Actions</th>
             </tr>
-        </thead>
-        <tbody class="divide-y" style="divide-color:var(--vc-border);">
-            @forelse($workspaces as $ws)
-            <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b" style="border-color:var(--vc-border);">
-                <td class="px-4 py-3">
-                    <div class="font-medium" style="color:var(--vc-text);">{{ $ws->slug }}</div>
-                    <div class="text-[11px]" style="color:var(--vc-muted);">Created {{ $ws->created_at->diffForHumans() }}</div>
+        </x-slot:head>
+
+        @forelse($workspaces as $ws)
+            <tr class="hover:bg-vl-surface-raised/50 transition-colors duration-150">
+                <td class="px-5 py-3.5">
+                    <p class="font-mono text-xs sm:text-sm font-semibold text-vl-ink">{{ $ws->slug }}</p>
+                    <p class="text-[11px] text-vl-ink-muted">Created {{ $ws->created_at->diffForHumans() }}</p>
                 </td>
-                <td class="px-4 py-3">
+                <td class="px-5 py-3.5 text-sm">
                     @if($ws->course)
-                        <a href="{{ route('courses.show', $ws->course->slug) }}" class="hover:underline" style="color:var(--vc-accent);">
+                        <a href="{{ route('courses.show', $ws->course->slug) }}" class="font-medium text-vl-accent hover:underline">
                             {{ $ws->course->title }}
                         </a>
                     @else
-                        <span style="color:var(--vc-muted);">-</span>
+                        <span class="text-vl-ink-muted">&mdash;</span>
                     @endif
                 </td>
-                <td class="px-4 py-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-indigo-500">
+                <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="h-7 w-7 rounded-lg bg-vl-accent/14 text-vl-accent text-[11px] font-bold flex items-center justify-center shrink-0">
                             {{ $ws->owner->avatar_initials }}
-                        </div>
-                        <span style="color:var(--vc-text-secondary);">{{ $ws->owner->name }}</span>
+                        </span>
+                        <span class="text-sm text-vl-ink-secondary truncate">{{ $ws->owner->name }}</span>
                     </div>
                 </td>
-                <td class="px-4 py-3">
-                    @if($ws->status === 'running')
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500">Running</span>
-                    @elseif($ws->status === 'stopped')
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-gray-500/10 text-gray-400">Stopped</span>
-                    @else
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500">{{ ucfirst($ws->status) }}</span>
-                    @endif
+                <td class="px-5 py-3.5">
+                    <x-badge :variant="$ws->status === 'running' ? 'success' : ($ws->status === 'stopped' ? 'neutral' : 'info')" dot>
+                        {{ ucfirst($ws->status) }}
+                    </x-badge>
                 </td>
-                <td class="px-4 py-3 text-right">
-                    <a href="{{ route('admin.workspaces.show', $ws->slug) }}" class="btn-ghost py-1 px-3 text-xs mr-2">Inspect</a>
-                    @if($ws->status === 'running')
-                        <form method="POST" action="{{ route('admin.workspaces.stop', $ws->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Force stop this workspace? Data not pushed may be lost.', () => this.submit())">
+                <td class="px-5 py-3.5 text-right">
+                    <div class="inline-flex items-center justify-end gap-2">
+                        <a href="{{ route('admin.workspaces.show', $ws->slug) }}" class="vl-btn-secondary !py-1 !px-3 !text-xs">Inspect</a>
+                        @if($ws->status === 'running')
+                            <form method="POST" action="{{ route('admin.workspaces.stop', $ws->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Force stop this container?', () => this.submit())">
+                                @csrf
+                                <button type="submit" class="rounded-xl px-2.5 py-1 text-xs font-semibold text-vl-gate bg-vl-gate/12 hover:bg-vl-gate/22 transition-colors cursor-pointer">Stop</button>
+                            </form>
+                        @endif
+                        <form method="POST" action="{{ route('admin.workspaces.destroy', $ws->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Permanently delete this workspace and wipe all container files?', () => this.submit())">
                             @csrf
-                            <button class="btn-ghost text-yellow-500 py-1 px-3 text-xs">Stop</button>
+                            @method('DELETE')
+                            <button type="submit" class="vl-btn-danger !py-1 !px-3 !text-xs">Delete</button>
                         </form>
-                    @endif
-                    <form method="POST" action="{{ route('admin.workspaces.destroy', $ws->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('WARNING: This will permanently delete the workspace and all its local physical files. This cannot be undone. Continue?', () => this.submit())">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-ghost text-red-500 py-1 px-3 text-xs">Delete</button>
-                    </form>
+                    </div>
                 </td>
             </tr>
-            @empty
+        @empty
             <tr>
-                <td colspan="5" class="px-4 py-8 text-center text-sm" style="color:var(--vc-muted);">No workspaces found.</td>
+                <td colspan="5" class="px-5 py-10 text-center text-sm text-vl-ink-muted">No workspaces provisioned yet.</td>
             </tr>
-            @endforelse
-        </tbody>
-    </table>
+        @endforelse
+    </x-table>
+
     @if($workspaces->hasPages())
-    <div class="px-4 py-3 border-t" style="border-color:var(--vc-border);">
-        {{ $workspaces->links() }}
-    </div>
+        <div>{{ $workspaces->links() }}</div>
     @endif
 </div>
 @endsection
-
-

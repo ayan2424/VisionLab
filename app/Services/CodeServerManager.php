@@ -34,10 +34,16 @@ class CodeServerManager
      * Start a workspace container.
      *
      * @param Workspace $workspace The workspace to start
-     * @return array{url: string, port: int, token: string, container_id: string|null}
+     * @return array{url: string, port: int, token: string, container_id: string|null}|null
      */
-    public function startWorkspace(Workspace $workspace): array
+    public function startWorkspace(Workspace $workspace): ?array
     {
+        // Development mode — Docker not available (check before invoking Docker CLI)
+        if (!$this->isDockerAvailable()) {
+            Log::info("CodeServerManager: Docker unavailable, using dev fallback for workspace {$workspace->name}");
+            return $this->devFallback($workspace);
+        }
+
         // 0. Ensure volume exists and root directory has correct permissions BEFORE anything else
         $volumeName = "vl_ws_{$workspace->id}_data";
         $basePath = "/home/coder/{$workspace->slug}";
@@ -53,11 +59,6 @@ class CodeServerManager
 
         // 1. Seed the default files and configs into the Docker volume (if not already seeded).
         $this->ensureWorkspaceDirectory($workspace);
-        // Development mode — Docker not available
-        if (!$this->isDockerAvailable()) {
-            Log::info("CodeServerManager: Docker unavailable, using dev fallback for workspace {$workspace->name}");
-            return $this->devFallback($workspace);
-        }
 
         // Check if container already running
         $existingStatus = $this->getStatus($workspace);
@@ -159,12 +160,14 @@ class CodeServerManager
 
         $process = new Process($cmd);
         $process->setTimeout(60);
-        $process->run();        if (!$process->isSuccessful()) {
+        $process->run();
+
+        if (!$process->isSuccessful()) {
             Log::error("CodeServerManager: Failed to start container", [
                 'workspace' => $workspace->id,
-                'error'     => $process->getErrorOutput()
+                'error'     => $process->getErrorOutput(),
             ]);
-            return false;
+            return null;
         }
 
         // Wait a brief moment for container to initialize before seeding
@@ -540,60 +543,224 @@ JS;
     }
 
     /**
+     * Validate and normalize a workspace-relative path.
+     * Rejects path traversal, absolute paths, null/control bytes, shell metacharacters,
+     * and sensitive directories/files (.env, .env.*, .git, .ssh, vendor, node_modules).
+     */
+    public function sanitizeWorkspaceRelativePath(string $relativePath, bool $allowEmpty = false): ?string
+    {
+        if (preg_match('/[\x00-\x1F\x7F]/', $relativePath) === 1) {
+            Log::warning('CodeServerManager: Blocked control byte in path', ['path' => $relativePath]);
+            return null;
+        }
+
+        // Reject shell command-injection metacharacters (defense-in-depth alongside positional args)
+        if (preg_match('/[;\|\&`<>]|\$\(/', $relativePath) === 1) {
+            Log::warning('CodeServerManager: Blocked shell metacharacter in path', ['path' => $relativePath]);
+            return null;
+        }
+
+        // Reject Windows drive letters
+        if (preg_match('/^[a-zA-Z]:/', $relativePath) === 1) {
+            return null;
+        }
+
+        $normalized = str_replace('\\', '/', trim($relativePath));
+
+        if ($normalized === '') {
+            return $allowEmpty ? '' : null;
+        }
+
+        // Reject absolute or home-relative paths
+        if (str_starts_with($normalized, '/') || str_starts_with($normalized, '~')) {
+            Log::warning('CodeServerManager: Blocked absolute/home path', ['path' => $relativePath]);
+            return null;
+        }
+
+        $segments = explode('/', $normalized);
+        $cleanSegments = [];
+        $blockedSegments = ['.env', '.git', '.ssh', 'vendor', 'node_modules'];
+
+        foreach ($segments as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+
+            if ($segment === '..' || $segment === '~') {
+                Log::warning('CodeServerManager: Blocked path traversal attempt', ['path' => $relativePath]);
+                return null;
+            }
+
+            $lower = strtolower($segment);
+            if (in_array($lower, $blockedSegments, true) || str_starts_with($lower, '.env.')) {
+                Log::warning('CodeServerManager: Blocked sensitive path access', ['path' => $relativePath]);
+                return null;
+            }
+
+            $cleanSegments[] = $segment;
+        }
+
+        if ($cleanSegments === []) {
+            return $allowEmpty ? '' : null;
+        }
+
+        return implode('/', $cleanSegments);
+    }
+
+    /**
+     * Build a validated container path inside /home/coder/{slug}.
+     */
+    private function buildWorkspaceContainerPath(Workspace $workspace, string $relativePath, bool $allowEmpty = false): ?string
+    {
+        $slug = (string) $workspace->slug;
+        if ($slug === '' || preg_match('/^[A-Za-z0-9._-]+$/', $slug) !== 1 || str_contains($slug, '..')) {
+            return null;
+        }
+
+        $clean = $this->sanitizeWorkspaceRelativePath($relativePath, $allowEmpty);
+        if ($clean === null) {
+            return null;
+        }
+
+        $base = '/home/coder/' . $slug;
+        return $clean === '' ? $base : $base . '/' . $clean;
+    }
+
+    /**
+     * Resolve a local fallback path only when Docker is unavailable and the workspace
+     * has a valid local directory (used in local dev / automated test environments).
+     */
+    private function resolveLocalFallbackBase(Workspace $workspace): ?string
+    {
+        if ($this->isDockerAvailable()) {
+            return null;
+        }
+
+        $base = $workspace->storage_path ?: storage_path('workspaces' . DIRECTORY_SEPARATOR . 'ws-' . $workspace->id);
+        if (!is_dir($base)) {
+            return null;
+        }
+
+        $realBase = realpath($base);
+        return $realBase !== false ? $realBase : null;
+    }
+
+    private function resolveLocalFallbackTarget(string $realBase, string $cleanRelative): ?string
+    {
+        $candidate = $cleanRelative === ''
+            ? $realBase
+            : $realBase . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $cleanRelative);
+
+        // If target exists, verify realpath containment directly
+        $realTarget = realpath($candidate);
+        if ($realTarget !== false) {
+            $prefix = rtrim($realBase, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            if ($realTarget !== $realBase && !str_starts_with($realTarget, $prefix)) {
+                return null;
+            }
+            return $realTarget;
+        }
+
+        // Otherwise verify the nearest existing ancestor resides within $realBase
+        $probe = dirname($candidate);
+        while ($probe !== '' && $probe !== dirname($probe) && !file_exists($probe)) {
+            $probe = dirname($probe);
+        }
+
+        $realAncestor = realpath($probe);
+        if ($realAncestor === false) {
+            return null;
+        }
+
+        $prefix = rtrim($realBase, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if ($realAncestor !== $realBase && !str_starts_with($realAncestor, $prefix)) {
+            return null;
+        }
+
+        return $candidate;
+    }
+
+    /**
      * List files in a workspace directory (recursive tree).
      */
     public function listFiles(Workspace $workspace, string $relativePath = ''): array
     {
-        $path = '/home/coder/' . $workspace->slug . ($relativePath ? '/' . ltrim($relativePath, '/') : '');
-        $process = $this->executeDockerFileCommand($workspace, ['sh', '-c', "cd '$path' 2>/dev/null && find . -mindepth 1 -printf '%P|%y\\n'"]);
+        $clean = $this->sanitizeWorkspaceRelativePath($relativePath, allowEmpty: true);
+        if ($clean === null) {
+            return [];
+        }
+
+        $localBase = $this->resolveLocalFallbackBase($workspace);
+        if ($localBase !== null) {
+            $targetDir = $this->resolveLocalFallbackTarget($localBase, $clean);
+            if ($targetDir === null || !is_dir($targetDir)) {
+                return [];
+            }
+
+            $tree = [];
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($targetDir, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($iterator as $item) {
+                $rel = ltrim(str_replace('\\', '/', substr($item->getPathname(), strlen($targetDir))), '/');
+                $basename = basename($rel);
+                if (str_starts_with($basename, '.') && $basename !== '.visioncode_memory.md') {
+                    continue;
+                }
+                $tree[] = [
+                    'name' => $basename,
+                    'path' => $rel,
+                    'type' => $item->isDir() ? 'directory' : 'file',
+                ];
+            }
+
+            return $tree;
+        }
+
+        $path = $this->buildWorkspaceContainerPath($workspace, $relativePath, allowEmpty: true);
+        if ($path === null) {
+            return [];
+        }
+
+        $process = $this->executeDockerFileCommand($workspace, [
+            'sh', '-c', 'cd -- "$1" 2>/dev/null && find . -mindepth 1 -printf "%P|%y\n"', '--', $path,
+        ]);
 
         if (!$process->isSuccessful()) {
             return [];
         }
 
         $output = trim($process->getOutput());
-        if (empty($output)) return [];
+        if ($output === '') {
+            return [];
+        }
 
         $lines = explode("\n", $output);
         $tree = [];
-        
+
         foreach ($lines as $line) {
             $parts = explode('|', $line);
-            if (count($parts) !== 2) continue;
-            
+            if (count($parts) !== 2) {
+                continue;
+            }
+
             $filePath = $parts[0];
             $type = $parts[1] === 'd' ? 'directory' : 'file';
-            
+
             // Skip hidden files except .visioncode_memory.md
             $basename = basename($filePath);
-            if (str_starts_with($basename, '.') && $basename !== '.visioncode_memory.md') continue;
-            
-            // Build tree (simplified flat structure for now or construct nested array)
-            // Note: The UI usually consumes a flat array or simple tree. We'll build a simplified flat structure with 'path' and 'name'.
+            if (str_starts_with($basename, '.') && $basename !== '.visioncode_memory.md') {
+                continue;
+            }
+
             $tree[] = [
-                'name' => basename($filePath),
+                'name' => $basename,
                 'path' => $filePath,
                 'type' => $type,
             ];
         }
-
-        // To properly build a nested tree from flat paths:
-        $nestedTree = [];
-        foreach ($tree as $item) {
-            $pathParts = explode('/', $item['path']);
-            if (count($pathParts) === 1) {
-                $nestedTree[] = $item;
-            } else {
-                // For deep nested trees, this would need a proper tree builder.
-                // Keeping it flat is often sufficient for basic Vercel deployments, which flatten it anyway.
-            }
-        }
-        
-        // Full nested tree builder:
-        $buildTree = function(array &$elements, $parentId = 0) {
-            // (Placeholder for complex nested tree if required by UI)
-            return $elements;
-        };
 
         return $tree;
     }
@@ -603,9 +770,28 @@ JS;
      */
     public function readFile(Workspace $workspace, string $relativePath): ?string
     {
-        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
-        $process = $this->executeDockerFileCommand($workspace, ['cat', $path]);
-        
+        $clean = $this->sanitizeWorkspaceRelativePath($relativePath);
+        if ($clean === null) {
+            return null;
+        }
+
+        $localBase = $this->resolveLocalFallbackBase($workspace);
+        if ($localBase !== null) {
+            $target = $this->resolveLocalFallbackTarget($localBase, $clean);
+            if ($target !== null && is_file($target)) {
+                $content = file_get_contents($target);
+                return $content !== false ? $content : null;
+            }
+            return null;
+        }
+
+        $path = $this->buildWorkspaceContainerPath($workspace, $relativePath);
+        if ($path === null) {
+            return null;
+        }
+
+        $process = $this->executeDockerFileCommand($workspace, ['cat', '--', $path]);
+
         if ($process->isSuccessful()) {
             return $process->getOutput();
         }
@@ -617,16 +803,42 @@ JS;
      */
     public function writeFile(Workspace $workspace, string $relativePath, string $content): bool
     {
-        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
+        $clean = $this->sanitizeWorkspaceRelativePath($relativePath);
+        if ($clean === null) {
+            return false;
+        }
+
+        $localBase = $this->resolveLocalFallbackBase($workspace);
+        if ($localBase !== null) {
+            $target = $this->resolveLocalFallbackTarget($localBase, $clean);
+            if ($target === null) {
+                return false;
+            }
+            $dir = dirname($target);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $written = file_put_contents($target, $content) !== false;
+            if ($written) {
+                Log::info('CodeServerManager: File written (local fallback)', ['workspace' => $workspace->id, 'path' => $clean]);
+            }
+            return $written;
+        }
+
+        $path = $this->buildWorkspaceContainerPath($workspace, $relativePath);
+        if ($path === null) {
+            return false;
+        }
+
         $dir = dirname($path);
-        
-        // Ensure directory exists
-        $this->executeDockerFileCommand($workspace, ['sh', '-c', "mkdir -p '$dir'"]);
-        
-        $process = $this->executeDockerFileCommand($workspace, ['sh', '-c', "cat > '$path'"], $content);
-        
+
+        // Ensure directory exists using argument separation (no shell interpolation)
+        $this->executeDockerFileCommand($workspace, ['mkdir', '-p', '--', $dir]);
+
+        $process = $this->executeDockerFileCommand($workspace, ['sh', '-c', 'cat > "$1"', '--', $path], $content);
+
         if ($process->isSuccessful()) {
-            Log::info("CodeServerManager: File written", ['workspace' => $workspace->id, 'path' => $relativePath]);
+            Log::info('CodeServerManager: File written', ['workspace' => $workspace->id, 'path' => $clean]);
             return true;
         }
         return false;
@@ -637,8 +849,30 @@ JS;
      */
     public function deleteFile(Workspace $workspace, string $relativePath): bool
     {
-        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
-        $process = $this->executeDockerFileCommand($workspace, ['rm', '-rf', $path]);
+        $clean = $this->sanitizeWorkspaceRelativePath($relativePath);
+        if ($clean === null) {
+            return false;
+        }
+
+        $localBase = $this->resolveLocalFallbackBase($workspace);
+        if ($localBase !== null) {
+            $target = $this->resolveLocalFallbackTarget($localBase, $clean);
+            if ($target === null || !file_exists($target)) {
+                return false;
+            }
+            if (is_dir($target)) {
+                $this->deleteDirectory($target);
+                return true;
+            }
+            return @unlink($target);
+        }
+
+        $path = $this->buildWorkspaceContainerPath($workspace, $relativePath);
+        if ($path === null) {
+            return false;
+        }
+
+        $process = $this->executeDockerFileCommand($workspace, ['rm', '-rf', '--', $path]);
         return $process->isSuccessful();
     }
 
@@ -647,13 +881,38 @@ JS;
      */
     public function createFile(Workspace $workspace, string $relativePath, bool $isDirectory = false): bool
     {
-        $path = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
+        $clean = $this->sanitizeWorkspaceRelativePath($relativePath);
+        if ($clean === null) {
+            return false;
+        }
+
+        $localBase = $this->resolveLocalFallbackBase($workspace);
+        if ($localBase !== null) {
+            $target = $this->resolveLocalFallbackTarget($localBase, $clean);
+            if ($target === null) {
+                return false;
+            }
+            if ($isDirectory) {
+                return is_dir($target) || mkdir($target, 0755, true);
+            }
+            $dir = dirname($target);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            return touch($target);
+        }
+
+        $path = $this->buildWorkspaceContainerPath($workspace, $relativePath);
+        if ($path === null) {
+            return false;
+        }
+
         if ($isDirectory) {
-            $process = $this->executeDockerFileCommand($workspace, ['mkdir', '-p', $path]);
+            $process = $this->executeDockerFileCommand($workspace, ['mkdir', '-p', '--', $path]);
         } else {
             $dir = dirname($path);
-            $this->executeDockerFileCommand($workspace, ['sh', '-c', "mkdir -p '$dir'"]);
-            $process = $this->executeDockerFileCommand($workspace, ['touch', $path]);
+            $this->executeDockerFileCommand($workspace, ['mkdir', '-p', '--', $dir]);
+            $process = $this->executeDockerFileCommand($workspace, ['touch', '--', $path]);
         }
         return $process->isSuccessful();
     }
@@ -663,9 +922,35 @@ JS;
      */
     public function renameFile(Workspace $workspace, string $oldPath, string $newPath): bool
     {
-        $oldP = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $oldPath), '/');
-        $newP = '/home/coder/' . $workspace->slug . '/' . ltrim(str_replace('\\', '/', $newPath), '/');
-        $process = $this->executeDockerFileCommand($workspace, ['mv', $oldP, $newP]);
+        $cleanOld = $this->sanitizeWorkspaceRelativePath($oldPath);
+        $cleanNew = $this->sanitizeWorkspaceRelativePath($newPath);
+        if ($cleanOld === null || $cleanNew === null) {
+            return false;
+        }
+
+        $localBase = $this->resolveLocalFallbackBase($workspace);
+        if ($localBase !== null) {
+            $oldTarget = $this->resolveLocalFallbackTarget($localBase, $cleanOld);
+            $newTarget = $this->resolveLocalFallbackTarget($localBase, $cleanNew);
+            if ($oldTarget === null || $newTarget === null || !file_exists($oldTarget)) {
+                return false;
+            }
+            $newDir = dirname($newTarget);
+            if (!is_dir($newDir)) {
+                mkdir($newDir, 0755, true);
+            }
+            return @rename($oldTarget, $newTarget);
+        }
+
+        $oldP = $this->buildWorkspaceContainerPath($workspace, $oldPath);
+        $newP = $this->buildWorkspaceContainerPath($workspace, $newPath);
+        if ($oldP === null || $newP === null) {
+            return false;
+        }
+
+        $newDir = dirname($newP);
+        $this->executeDockerFileCommand($workspace, ['mkdir', '-p', '--', $newDir]);
+        $process = $this->executeDockerFileCommand($workspace, ['mv', '--', $oldP, $newP]);
         return $process->isSuccessful();
     }
 
@@ -682,17 +967,24 @@ JS;
 
     public function resolveSecurePath(Workspace $workspace, string $relativePath): ?string
     {
-        // Deprecated: Kept for signature compatibility but should no longer be used for local file reads.
-        // We now use Docker Native Volumes.
-        return null;
+        return $this->buildWorkspaceContainerPath($workspace, $relativePath);
     }
 
     public function getSecureFilePath(Workspace $workspace, string $relativePath): ?string
     {
-        $path = $this->resolveSecurePath($workspace, $relativePath);
-        if ($path && is_file($path)) {
-            return $path;
+        $clean = $this->sanitizeWorkspaceRelativePath($relativePath);
+        if ($clean === null) {
+            return null;
         }
+
+        $localBase = $this->resolveLocalFallbackBase($workspace);
+        if ($localBase !== null) {
+            $target = $this->resolveLocalFallbackTarget($localBase, $clean);
+            if ($target !== null && is_file($target)) {
+                return $target;
+            }
+        }
+
         return null;
     }
 
@@ -888,10 +1180,13 @@ JS;
         }
 
         if (str_ends_with($identifierOrPath, '.vsix')) {
-            $extDirName = "built-in-" . pathinfo($fileName, PATHINFO_FILENAME);
-            $cmdStr = "mkdir -p /tmp/$extDirName && unzip -q /var/opt/extensions/$fileName -d /tmp/$extDirName && rm -rf /usr/lib/code-server/lib/vscode/extensions/$extDirName && mv /tmp/$extDirName/extension /usr/lib/code-server/lib/vscode/extensions/$extDirName && rm -rf /tmp/$extDirName";
-            
-            $process = new Process([$this->dockerCmd(), 'exec', '-u', '1000', $containerName, 'sh', '-c', $cmdStr]);
+            $extDirName = 'built-in-' . preg_replace('/[^A-Za-z0-9._-]/', '_', pathinfo($fileName, PATHINFO_FILENAME));
+            $cmdStr = 'mkdir -p -- "/tmp/$1" && unzip -q -- "/var/opt/extensions/$2" -d "/tmp/$1" && rm -rf -- "/usr/lib/code-server/lib/vscode/extensions/$1" && mv -- "/tmp/$1/extension" "/usr/lib/code-server/lib/vscode/extensions/$1" && rm -rf -- "/tmp/$1"';
+
+            $process = new Process([
+                $this->dockerCmd(), 'exec', '-u', '1000', $containerName,
+                'sh', '-c', $cmdStr, '--', $extDirName, $fileName,
+            ]);
         } else {
             $process = new Process([$this->dockerCmd(), 'exec', '-u', '1000', $containerName, 'code-server', '--install-extension', $identifierOrPath]);
         }

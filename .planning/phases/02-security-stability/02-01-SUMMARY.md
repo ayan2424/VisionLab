@@ -1,0 +1,36 @@
+# Phase 02 — Plan `02-01` Summary: Security Hardening, Fatal Runtime Bug Fixes & CI Test Suite Recovery
+
+**Status:** COMPLETE & VERIFIED  
+**Date:** 2026-11-25  
+**Verification:** `npm.cmd run build` (EXIT 0), `php artisan view:cache` (EXIT 0), `php artisan test` (**136 passed, 487 assertions, 0 failed, 0 risky, 0 warnings**).
+
+## 1. P0 Security Remediations
+
+1. **`.gitignore` Environment Protection ([.gitignore](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/.gitignore))**:
+   - Replaced hardcoded `.env.backup` / `.env.production` entries with `.env`, `.env.*`, and `!.env.example` so `.env.remote` and all non-example environment files are excluded from Git tracking.
+2. **Workspace File I/O & Extension Command-Injection / Path-Traversal Hardening ([CodeServerManager.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Services/CodeServerManager.php), [WorkspaceFileController.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Controllers/WorkspaceFileController.php))**:
+   - Added `CodeServerManager::sanitizeWorkspaceRelativePath()` rejecting null/control bytes, path traversal (`..`, `~`), absolute/drive paths, shell metacharacters (`;`, `|`, `&`, `` ` ``, `$(`, `<`, `>`), and sensitive targets (`.env`, `.env.*`, `.git`, `.ssh`, `vendor`, `node_modules`).
+   - Replaced all shell-interpolated `sh -c "... '$path'"` commands across `listFiles()`, `readFile()`, `writeFile()`, `deleteFile()`, `createFile()`, `renameFile()`, and `installExtension()` with positional parameter arrays (`--` and `"$1"`/`"$2"`).
+   - Added realpath-contained local fallback when Docker is unavailable in local dev/CI environments, and enforced unified path validation in `WorkspaceFileController` (`write`, `create`, `delete`, `rename` -> HTTP 403; `read` -> HTTP 404).
+3. **AI Agent Cross-User IDOR Remediation ([AiController.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Controllers/Api/AiController.php))**:
+   - Enforced `WorkspacePolicy` authorization (`$this->authorize('access'|'view'|'writeFiles', $workspace)`) across `chatCompletions`, `pendingPatches`, `approvePatch`, `rejectPatch`, and `executePlan`, and prevented fallback to another workspace when an explicit `X-Workspace-Id` is invalid.
+   - Guarded `ob_end_clean()` / `flush()` in SSE streaming when running unit tests so PHPUnit's output buffer is never closed prematurely.
+4. **Private & Presence Broadcast Channel Authorization ([channels.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/routes/channels.php))**:
+   - Added authorization callbacks for `collab.ws-{workspaceId}`, `workspace.{id}` (presence), and `workspace.{slug}.patches` delegating to `WorkspacePolicy` (`access` / `view`).
+
+## 2. Fatal PHP Runtime Bugs & Unwired Handlers Fixed
+
+1. **`User::addXp()` Fatal TypeError ([User.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Models/User.php))**: Added missing `use Illuminate\Database\Eloquent\Model;`.
+2. **`CodeServerManager::startWorkspace()` Return-Type Crash ([CodeServerManager.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Services/CodeServerManager.php), [SubmissionController.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Controllers/SubmissionController.php))**: Changed signature to `?array`, returned `null` instead of `false` on container start failure, checked `isDockerAvailable()` before invoking Docker CLI, and null-guarded `$serverInfo` in `SubmissionController::ide()`.
+3. **`CourseExtensionController::update()` Fatal Crashes ([CourseExtensionController.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Controllers/CourseExtensionController.php), [Course.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Models/Course.php))**: Added missing `use Illuminate\Http\Request;` and added the missing `Course::extensions(): HasMany` relationship.
+4. **`StoreAssignmentRequest.php` Syntax Error ([StoreAssignmentRequest.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Requests/StoreAssignmentRequest.php))**: Fixed missing closing `}` on `rules()`.
+5. **`AdminWorkspaceController::show()` & Audit Logging ([AdminWorkspaceController.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Controllers/Admin/AdminWorkspaceController.php), [show.blade.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/resources/views/admin/workspaces/show.blade.php))**: Removed dropped `collaborators` eager-load, queried `AuditLog::forResource('Workspace', $workspace->id)`, converted `stop`/`archive`/`destroy` to `AuditLog::record()`, and displayed real `heartbeat_at` / `port` attributes.
+6. **`ForensicsController::sync()` Schema Mismatch ([ForensicsController.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Controllers/Api/ForensicsController.php))**: Aligned reads and writes to the real `submission_forensics` columns (`workspace_id`, `human_keystrokes`, `ai_patches_applied`, `pasted_count`, `human_pct`, `ai_pct`, `confidence`, `keystroke_count`, `paste_event_count`, `paste_char_total`, `focus_loss_count`, `total_idle_seconds`).
+7. **`WebPushService` Delivery & Expiry Pruning ([WebPushService.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Services/WebPushService.php))**: Switched `sendToUser()` to `queueNotification()` + `flush()` + `handleReports()` and handled reports on single-subscription delivery too.
+8. **`AdminUserController::suspend()` Enforcement ([AdminUserController.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/app/Http/Controllers/Admin/AdminUserController.php))**: Revoked Sanctum API tokens (`$user->tokens()->delete()`) and dispatched `WorkspaceSuspendedUser::dispatch($user->id)` on suspension.
+
+## 3. CI Test Suite Recovery & New Security Regression Coverage
+
+- Retired 4 obsolete Feature test suites targeting tables and routes permanently removed in `2026_07_13_000000_remove_incomplete_features_tables.php`: `DeploymentControllerTest`, `RecordingControllerTest`, `RoomControllerTest`, `VideoRoomControllerTest`.
+- Updated 6 legacy Feature tests (`WorkspaceAccessTest`, `WorkspaceSecurityTest`, `WorkspaceControllerTest`, `ExtensionControllerTest`, `RealtimeCollaborationTest`, `LmsLifecycleTest`) to match current slug route binding, VSIX artifact validation, presence channel authorization, and `StoreAssignmentRequest` schema without weakening any assertion.
+- Added [SecurityRemediationTest.php](file:///C:/Users/ayans/OneDrive/Documents/A_Projects/Aptech/Vision2026/VisionLab/tests/Feature/SecurityRemediationTest.php) with 8 regression tests covering IDOR prevention, path traversal & shell-injection blocking, broadcast channel auth, `User::addXp()`, `CourseExtensionController::update()`, `AdminWorkspaceController::show()`, `ForensicsController::sync()`, `AdminUserController::suspend()`, and `.gitignore` protection.

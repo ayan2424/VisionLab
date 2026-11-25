@@ -1,65 +1,70 @@
-<footer class="relative z-10 py-16 bg-[#040d21] border-t border-white/5">
-    <div class="max-w-[1400px] mx-auto px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
-            <!-- Brand Column -->
-            <div class="col-span-2 lg:col-span-2">
-                <a href="{{ route('home') }}" class="flex items-center gap-3 mb-6">
-                    <img src="{{ asset('icons/logo.svg') }}" alt="VisionLab Logo" class="h-8 w-8">
-                    <span class="text-xl font-bold tracking-tight text-white">Vision<span style="color:#7d8590;">Lab</span></span>
+<footer class="relative vl-rail-surface text-vl-ink-secondary">
+    {{-- Top specular hairline --}}
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-vl-border/12 to-transparent"></div>
+
+    <div class="mx-auto max-w-7xl px-5 sm:px-8 py-16 lg:py-20">
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
+            {{-- Brand & Mission Column --}}
+            <div class="lg:col-span-4 space-y-5">
+                <a href="{{ route('home') }}" class="inline-flex items-center">
+                    <x-logo size="h-7 w-7" textSize="text-lg" />
                 </a>
-                <p class="text-sm text-[#7d8590] leading-relaxed max-w-xs mb-6">
-                    The collaborative IDE built for research universities. Fully sandboxed, real-time sync, and responsibly AI-assisted.
+                <p class="text-sm leading-relaxed text-vl-ink-secondary max-w-sm">
+                    Sovereign university coding laboratories powered by deterministic Nix workspaces, human-reviewed AI patch governance, and campus ERP operations.
                 </p>
-                <div class="flex gap-4">
-                    <a href="#" class="text-[#7d8590] hover:text-[#2f81f7] transition-colors">
-                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                    <a href="{{ route('contact') }}" class="vl-btn-primary !py-2 !px-4 !text-xs">
+                        Request Campus Pilot
                     </a>
-                    <a href="#" class="text-[#7d8590] hover:text-[#2f81f7] transition-colors">
-                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/></svg>
+                    <a href="{{ route('login') }}" class="vl-btn-secondary !py-2 !px-4 !text-xs">
+                        Sign in to Portal
                     </a>
                 </div>
             </div>
 
-            <!-- Product Column -->
-            <div>
-                <h3 class="text-sm font-semibold text-white mb-4">Product</h3>
-                <ul class="space-y-3">
-                    <li><a href="{{ route('features') }}" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Features</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Cloud Workspace</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Smart LMS</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Institute ERP</a></li>
+            {{-- Platform Links --}}
+            <div class="lg:col-span-2 lg:col-start-6">
+                <h2 class="text-xs font-semibold text-vl-ink mb-4">Platform</h2>
+                <ul class="space-y-2.5 text-sm">
+                    <li><a href="{{ route('home') }}" class="hover:text-vl-ink transition-colors duration-150">Overview</a></li>
+                    <li><a href="{{ route('about') }}" class="hover:text-vl-ink transition-colors duration-150">Product Philosophy</a></li>
+                    <li><a href="{{ route('features') }}" class="hover:text-vl-ink transition-colors duration-150">Capabilities</a></li>
+                    <li><a href="{{ route('docs') }}" class="hover:text-vl-ink transition-colors duration-150">Documentation</a></li>
                 </ul>
             </div>
 
-            <!-- Resources Column -->
-            <div>
-                <h3 class="text-sm font-semibold text-white mb-4">Resources</h3>
-                <ul class="space-y-3">
-                    <li><a href="{{ route('docs') }}" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Documentation</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">API Reference</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Community</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Blog</a></li>
+            {{-- Governance & Operations --}}
+            <div class="lg:col-span-3">
+                <h2 class="text-xs font-semibold text-vl-ink mb-4">Campus Operations</h2>
+                <ul class="space-y-2.5 text-sm">
+                    <li><a href="{{ route('docs') }}#workspaces" class="hover:text-vl-ink transition-colors duration-150">Nix &amp; Docker Sandboxes</a></li>
+                    <li><a href="{{ route('docs') }}#ai-governance" class="hover:text-vl-ink transition-colors duration-150">AI Patch Governance</a></li>
+                    <li><a href="{{ route('docs') }}#extensions" class="hover:text-vl-ink transition-colors duration-150">SHA256 Extension Supply Chain</a></li>
+                    <li><a href="{{ route('health') }}" class="hover:text-vl-ink transition-colors duration-150">System Health Endpoint</a></li>
                 </ul>
             </div>
 
-            <!-- Company Column -->
-            <div>
-                <h3 class="text-sm font-semibold text-white mb-4">Company</h3>
-                <ul class="space-y-3">
-                    <li><a href="{{ route('about') }}" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">About</a></li>
-                    <li><a href="{{ route('contact') }}" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Contact</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Privacy Policy</a></li>
-                    <li><a href="#" class="text-sm text-[#7d8590] hover:text-[#2f81f7] transition-colors">Terms of Service</a></li>
+            {{-- Access & Support --}}
+            <div class="lg:col-span-2">
+                <h2 class="text-xs font-semibold text-vl-ink mb-4">Access</h2>
+                <ul class="space-y-2.5 text-sm">
+                    @auth
+                        <li><a href="{{ route('dashboard') }}" class="hover:text-vl-ink transition-colors duration-150">Open Dashboard</a></li>
+                        <li><a href="{{ route('workspace.index') }}" class="hover:text-vl-ink transition-colors duration-150">My Workspaces</a></li>
+                    @else
+                        <li><a href="{{ route('login') }}" class="hover:text-vl-ink transition-colors duration-150">Institutional Sign In</a></li>
+                    @endauth
+                    <li><a href="{{ route('contact') }}" class="hover:text-vl-ink transition-colors duration-150">Department Inquiries</a></li>
                 </ul>
             </div>
         </div>
 
-        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p class="text-xs text-[#7d8590]">© {{ date('Y') }} VisionLab Inc. All rights reserved.</p>
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-[#238636] animate-pulse"></div>
-                <span class="text-xs text-[#7d8590]">All systems operational</span>
-            </div>
+        {{-- Bottom meta bar --}}
+        <div class="mt-14 pt-6 border-t border-vl-border/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-vl-ink-muted">
+            <p>&copy; {{ date('Y') }} VisionLab. Institutional coding infrastructure.</p>
+            <p class="leading-relaxed">
+                Sovereign Docker &amp; Nix workspaces &middot; Human-gated AI patch governance &middot; Institutional LMS &amp; ERP.
+            </p>
         </div>
     </div>
 </footer>

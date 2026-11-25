@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AiPendingPatch;
 use App\Models\Workspace;
 use App\Services\CodeServerManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class WorkspaceController extends Controller
 {
@@ -30,15 +32,20 @@ class WorkspaceController extends Controller
             
         $quota = \App\Models\WorkspaceQuota::resolveFor($user->id);
 
-        return view('workspaces.index', compact('workspaces', 'quota', 'user'));
+        return Inertia::render('Workspace/Index', [
+            'workspaces' => $workspaces,
+            'quota'      => $quota,
+        ]);
     }
 
     /** Show workspace creation form */
     public function create()
     {
-        $user = Auth::user();
         $templates = \App\Models\WorkspaceTemplate::where('is_active', true)->get();
-        return view('workspaces.create', compact('templates', 'user'));
+
+        return Inertia::render('Workspace/Create', [
+            'templates' => $templates,
+        ]);
     }
 
     /** Create personal workspace */
@@ -83,15 +90,14 @@ class WorkspaceController extends Controller
         $this->authorize('view', $workspace);
         $user = $request->user();
 
-        return view('workspace', [
-            'user'            => $user,
-            'workspace'       => $workspace->fresh(),
-            'workspaceName'   => $workspace->name,
-            'roomSlug'        => 'ws-' . $workspace->id,
-            'reverbConfig'    => self::reverbConfig(),
-            'vscodeUrl'       => $workspace->status === 'running' ? $workspace->proxy_url : null,
-            'needsBoot'       => $workspace->status !== 'running',
-            'isAssignmentLocked' => $workspace->assignment ? $workspace->assignment->is_locked : false,
+        return Inertia::render('Workspace/Ide', [
+            'workspace'          => $workspace->fresh(),
+            'workspaceName'      => $workspace->name,
+            'roomSlug'           => 'ws-' . $workspace->id,
+            'reverbConfig'       => self::reverbConfig(),
+            'vscodeUrl'          => $workspace->status === 'running' ? $workspace->proxy_url : null,
+            'needsBoot'          => $workspace->status !== 'running',
+            'isAssignmentLocked' => $workspace->assignment ? (bool) $workspace->assignment->is_locked : false,
         ]);
     }
 
@@ -228,12 +234,18 @@ class WorkspaceController extends Controller
         $status = $this->codeServerManager->getStatus($workspace);
         $stats  = $this->codeServerManager->getStats($workspace);
 
+        $pendingPatchesCount = AiPendingPatch::query()
+            ->where('workspace_id', $workspace->id)
+            ->where('status', 'pending')
+            ->count();
+
         return response()->json([
-            'status'    => $workspace->fresh()->status,
-            'running'   => $status['running'],
-            'url'       => $status['url'],
-            'stats'     => $stats,
-            'heartbeat' => $workspace->heartbeat_at?->diffForHumans(),
+            'status'                => $workspace->fresh()->status,
+            'running'               => $status['running'],
+            'url'                   => $status['url'],
+            'stats'                 => $stats,
+            'pending_patches_count' => $pendingPatchesCount,
+            'heartbeat'             => $workspace->heartbeat_at?->diffForHumans(),
         ]);
     }
 

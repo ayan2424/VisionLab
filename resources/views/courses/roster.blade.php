@@ -1,153 +1,129 @@
-@extends('layouts.app')
-@section('title', $course->title . ' - Roster')
+@extends('layouts.dashboard')
+@section('title', $course->title . ' — Roster')
+@section('page-title', 'Workspace Roster')
 
 @section('content')
-<div class="max-w-6xl mx-auto px-4 py-8">
-    <div class="mb-8">
-        <a href="{{ route('courses.show', $course->slug) }}" class="text-xs hover:underline flex items-center gap-1 w-fit" style="color:var(--vc-muted);">
-            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Back to Course
-        </a>
-        <div class="flex items-end justify-between mt-4">
-            <div>
-                <h1 class="text-2xl font-bold" style="color:var(--vc-text);">{{ $course->title }} — Roster</h1>
-                <p class="text-sm mt-1" style="color:var(--vc-text-secondary);">Manage students and inspect their workspaces.</p>
-            </div>
-            
-            <form action="{{ route('enrollments.add_by_id', $course->slug) }}" method="POST" class="flex gap-2 items-center">
-                @csrf
-                <div class="relative">
-                    <input list="students-list" name="student_id" class="vc-input text-sm py-2 px-3 w-64" placeholder="Search by Name or ID..." autocomplete="off" required>
-                    <datalist id="students-list">
-                        @foreach($availableStudents as $student)
-                            @if($student->student_id)
-                                <option value="{{ $student->student_id }}">{{ $student->name }} ({{ $student->student_id }})</option>
-                            @endif
-                        @endforeach
-                    </datalist>
-                </div>
-                <button type="submit" class="btn-primary py-2 px-4 text-sm whitespace-nowrap">
-                    Enroll Student
-                </button>
-            </form>
+<div class="space-y-6">
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div class="space-y-1.5">
+            <a href="{{ route('courses.show', $course->slug) }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-vl-ink-muted hover:text-vl-ink transition-colors">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Back to {{ $course->title }}
+            </a>
+            <h2 class="text-2xl font-bold tracking-tight text-vl-ink">{{ $course->title }} — Roster</h2>
+            <p class="text-sm text-vl-ink-secondary">Enroll students by ID, inspect container states, and synchronize course extensions.</p>
         </div>
+
+        <form action="{{ route('enrollments.add_by_id', $course->slug) }}" method="POST" class="flex flex-wrap sm:flex-nowrap gap-2 items-center">
+            @csrf
+            <input list="students-list" name="student_id" class="vl-input !py-2 w-full sm:w-64" placeholder="Search by Name or Student ID..." autocomplete="off" required>
+            <datalist id="students-list">
+                @foreach($availableStudents as $student)
+                    @if($student->student_id)
+                        <option value="{{ $student->student_id }}">{{ $student->name }} ({{ $student->student_id }})</option>
+                    @endif
+                @endforeach
+            </datalist>
+            <button type="submit" class="vl-btn-primary !py-2 !px-4 !text-xs shrink-0">Enroll Student</button>
+        </form>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-md text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
-    @if($errors->any())
-        <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-md text-sm">
-            {{ $errors->first() }}
-        </div>
-    @endif
+    <x-table>
+        <x-slot:head>
+            <tr>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Student</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Enrolled</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Workspace Status</th>
+                <th class="px-5 py-3.5 text-center text-xs font-semibold text-vl-ink-secondary">Install Extension</th>
+                <th class="px-5 py-3.5 text-right text-xs font-semibold text-vl-ink-secondary">Actions</th>
+            </tr>
+        </x-slot:head>
 
-    <div class="vc-card overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead style="background:var(--vc-surface);border-bottom:1px solid var(--vc-border);">
-                <tr>
-                    <th class="px-4 py-3 font-semibold" style="color:var(--vc-text-secondary);">Student</th>
-                    <th class="px-4 py-3 font-semibold" style="color:var(--vc-text-secondary);">Enrolled</th>
-                    <th class="px-4 py-3 font-semibold" style="color:var(--vc-text-secondary);">Workspace Status</th>
-                    <th class="px-4 py-3 font-semibold text-center" style="color:var(--vc-text-secondary);">Extensions</th>
-                    <th class="px-4 py-3 font-semibold text-right" style="color:var(--vc-text-secondary);">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y" style="divide-color:var(--vc-border);">
-                @forelse($enrollments as $enrollment)
-                @php
-                    $workspace = $enrollment->student->workspaces->first();
-                @endphp
-                <tr class="hover:bg-opacity-5 transition-colors" style="hover:background:var(--vc-border);">
-                    <td class="px-4 py-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white bg-indigo-500">
-                                {{ strtoupper(substr($enrollment->student->name, 0, 1)) }}
-                            </div>
-                            <div>
-                                <div class="font-medium flex items-center gap-2" style="color:var(--vc-text);">
-                                    {{ $enrollment->student->name }}
-                                    @if($enrollment->student->student_id)
-                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-mono border" style="color:var(--vc-accent);background:rgba(240,80,0,0.05);border-color:rgba(240,80,0,0.2);">{{ $enrollment->student->student_id }}</span>
-                                    <a href="{{ route('portfolio.show', $enrollment->student->student_id) }}" target="_blank" title="View Gamification Portfolio" class="text-blue-400 hover:text-blue-300 transition-colors">
-                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                    </a>
-                                    @endif
-                                </div>
-                                <div class="text-[11px]" style="color:var(--vc-muted);">{{ $enrollment->student->email }}</div>
-                            </div>
+        @forelse($enrollments as $enrollment)
+            @php $workspace = $enrollment->student->workspaces->first(); @endphp
+            <tr class="hover:bg-vl-surface-raised/50 transition-colors duration-150">
+                <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 rounded-xl bg-vl-accent/14 text-vl-accent flex items-center justify-center text-xs font-bold shrink-0">
+                            {{ strtoupper(substr($enrollment->student->name, 0, 1)) }}
                         </div>
-                    </td>
-                    <td class="px-4 py-3 text-xs" style="color:var(--vc-text-secondary);">
-                        {{ $enrollment->created_at->format('M d, Y') }}
-                    </td>
-                    <td class="px-4 py-3">
-                        @if($workspace)
-                            @if($workspace->status === 'running')
-                                <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500">Running</span>
-                            @elseif($workspace->status === 'stopped')
-                                <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-gray-500/10 text-gray-400">Stopped</span>
-                            @else
-                                <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500">{{ ucfirst($workspace->status) }}</span>
-                            @endif
-                        @else
-                            <span class="text-[10px]" style="color:var(--vc-muted);">No Workspace</span>
-                        @endif
-                    </td>
-                    <td class="px-4 py-3 text-center">
-                        @if($workspace)
-                            <div class="flex items-center justify-center gap-2">
-                                <form method="POST" action="{{ route('workspace.extensions.install', ['workspace' => $workspace->slug, 'extension' => 1]) }}" class="inline" id="form-install-{{$workspace->id}}">
-                                    @csrf
-                                    <select name="extension" class="vc-input py-1 px-2 text-[10px] w-32" onchange="this.form.action='/workspace/{{$workspace->slug}}/extensions/'+this.value+'/install';">
-                                        <option value="">Select Extension</option>
-                                        @foreach($extensions as $ext)
-                                            <option value="{{ $ext->id }}">{{ $ext->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <button type="submit" class="btn-ghost text-indigo-400 py-1 px-2 text-[10px]">Add</button>
-                                </form>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-vl-ink truncate">{{ $enrollment->student->name }}</span>
+                                @if($enrollment->student->student_id)
+                                    <span class="rounded-md bg-vl-surface-raised px-1.5 py-0.5 font-mono text-[10px] font-semibold text-vl-accent">{{ $enrollment->student->student_id }}</span>
+                                    <a href="{{ route('portfolio.show', $enrollment->student->student_id) }}" target="_blank" rel="noopener" title="View Public Portfolio" class="text-vl-ink-muted hover:text-vl-accent transition-colors">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                                    </a>
+                                @endif
                             </div>
-                        @else
-                            <span class="text-[10px]" style="color:var(--vc-muted);">-</span>
-                        @endif
-                    </td>
-                    <td class="px-4 py-3 text-right">
+                            <p class="text-xs text-vl-ink-muted truncate">{{ $enrollment->student->email }}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-5 py-3.5 text-xs text-vl-ink-secondary tabular-nums">
+                    {{ $enrollment->created_at->format('M d, Y') }}
+                </td>
+                <td class="px-5 py-3.5">
+                    @if($workspace)
+                        <x-badge :variant="$workspace->status === 'running' ? 'success' : ($workspace->status === 'stopped' ? 'neutral' : 'info')" dot>
+                            {{ ucfirst($workspace->status) }}
+                        </x-badge>
+                    @else
+                        <span class="text-xs text-vl-ink-muted">No workspace</span>
+                    @endif
+                </td>
+                <td class="px-5 py-3.5 text-center">
+                    @if($workspace)
+                        <form method="POST" action="{{ route('workspace.extensions.install', ['workspace' => $workspace->slug, 'extension' => 1]) }}" class="inline-flex items-center gap-2" id="form-install-{{ $workspace->id }}">
+                            @csrf
+                            <select name="extension" class="vl-input !py-1 !px-2.5 !text-xs w-36" onchange="this.form.action='/workspace/{{ $workspace->slug }}/extensions/' + this.value + '/install';">
+                                <option value="">Select VSIX</option>
+                                @foreach($extensions as $ext)
+                                    <option value="{{ $ext->id }}">{{ $ext->name }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="vl-btn-secondary !py-1 !px-2.5 !text-xs">Add</button>
+                        </form>
+                    @else
+                        <span class="text-xs text-vl-ink-muted">&mdash;</span>
+                    @endif
+                </td>
+                <td class="px-5 py-3.5 text-right">
+                    <div class="inline-flex items-center justify-end gap-2">
                         @if($workspace)
-                            <a href="{{ route('workspace.show', $workspace->slug) }}" target="_blank" class="btn-ghost py-1 px-3 text-xs mr-2 text-indigo-400">Open IDE</a>
+                            <a href="{{ route('workspace.show', $workspace->slug) }}" target="_blank" rel="noopener" class="vl-btn-secondary !py-1 !px-2.5 !text-xs">Open IDE</a>
                             @if($workspace->status === 'running')
-                                <form method="POST" action="{{ route('workspace.stop', $workspace->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Stop this workspace?', () => this.submit())">
+                                <form method="POST" action="{{ route('workspace.stop', $workspace->slug) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Stop this workspace container?', () => this.submit())">
                                     @csrf
-                                    <button class="btn-ghost py-1 px-2 text-[10px] text-yellow-500 hover:bg-yellow-500/10">Stop</button>
+                                    <button type="submit" class="rounded-lg px-2.5 py-1 text-xs font-semibold text-vl-gate bg-vl-gate/12 hover:bg-vl-gate/20 transition-colors cursor-pointer">Stop</button>
                                 </form>
                             @else
                                 <form method="POST" action="{{ route('workspace.start', $workspace->slug) }}" class="inline">
                                     @csrf
-                                    <button class="btn-ghost text-emerald-400 py-1 px-3 text-xs">Start</button>
+                                    <button type="submit" class="rounded-lg px-2.5 py-1 text-xs font-semibold text-vl-teal bg-vl-teal/12 hover:bg-vl-teal/20 transition-colors cursor-pointer">Start</button>
                                 </form>
                             @endif
                         @endif
-                        <form method="POST" action="{{ route('enrollments.remove', [$course->slug, $enrollment->student_id]) }}" class="inline ml-2" onsubmit="event.preventDefault(); vcConfirm('Remove student from course?', () => this.submit())">
+                        <form method="POST" action="{{ route('enrollments.remove', [$course->slug, $enrollment->student_id]) }}" class="inline" onsubmit="event.preventDefault(); vcConfirm('Remove student from course?', () => this.submit())">
                             @csrf
                             @method('DELETE')
-                            <button class="text-red-500 hover:text-red-400 text-xs py-1 px-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                            <button type="submit" title="Remove Student" class="p-1.5 rounded-lg text-vl-ink-muted hover:text-vl-danger hover:bg-vl-danger/10 transition-colors cursor-pointer">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                            </button>
                         </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="px-4 py-8 text-center text-sm" style="color:var(--vc-muted);">No students enrolled yet.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-        @if($enrollments->hasPages())
-        <div class="px-4 py-3 border-t" style="border-color:var(--vc-border);">
-            {{ $enrollments->links() }}
-        </div>
-        @endif
-    </div>
+                    </div>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="5" class="px-5 py-10 text-center text-sm text-vl-ink-muted">No students enrolled in this course yet.</td>
+            </tr>
+        @endforelse
+    </x-table>
+
+    @if($enrollments->hasPages())
+        <div>{{ $enrollments->links() }}</div>
+    @endif
 </div>
 @endsection

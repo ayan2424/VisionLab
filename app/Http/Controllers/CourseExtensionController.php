@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
 class CourseExtensionController extends Controller
 {
     public function update(Request $request, \App\Models\Course $course)

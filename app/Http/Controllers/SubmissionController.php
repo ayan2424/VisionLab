@@ -124,9 +124,9 @@ class SubmissionController extends Controller
         // Start workspace container
         $serverInfo = app(\App\Services\CodeServerManager::class)->startWorkspace($workspace);
 
-        if (isset($serverInfo['port'])) {
-            $cookiePath = str_starts_with($serverInfo['url'], '/ide/') 
-                ? '/ide/' . $serverInfo['port'] 
+        if (is_array($serverInfo) && isset($serverInfo['port'])) {
+            $cookiePath = str_starts_with($serverInfo['url'], '/ide/')
+                ? '/ide/' . $serverInfo['port']
                 : '/';
             cookie()->queue(
                 'key',
@@ -142,7 +142,8 @@ class SubmissionController extends Controller
             'workspaceName'   => $assignment->title,
             'roomSlug'        => 'assign-' . $assignment->id . '-' . $user->id,
             'reverbConfig'    => \App\Http\Controllers\WorkspaceController::reverbConfig(),
-            'vscodeUrl'       => $serverInfo['url'],
+            'vscodeUrl'       => $serverInfo['url'] ?? null,
+            'needsBoot'       => !is_array($serverInfo) || empty($serverInfo['url']),
             'assignment'      => $assignment,
             'submission'      => $submission,
         ]);

@@ -1,184 +1,215 @@
-<x-guest-layout>
-    <!-- Add SEO Meta Tags -->
-    <x-slot name="title">{{ $user->name }} - Student Portfolio | VisionLab</x-slot>
-    <x-slot name="meta_description">View the coding portfolio, stats, and achievements of {{ $user->name }} on VisionLab.</x-slot>
+@extends('layouts.landing')
 
-    <!-- Public Navigation (Simple) -->
-    <nav class="sticky top-0 z-50 border-b transition-colors duration-300" style="background:var(--vc-nav);backdrop-filter:blur(16px);border-color:var(--vc-border);">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-14 items-center">
-                <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
-                    <x-logo size="h-8 w-8" textSize="text-lg" />
-                </a>
-                <div class="flex items-center gap-4">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors">Go to Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm font-semibold text-[#8b949e] hover:text-white transition-colors">Sign In</a>
-                    @endauth
-                </div>
-            </div>
-        </div>
-    </nav>
+@section('title', $user->name . ' — VisionLab Student Portfolio')
+@section('meta_description', 'Verified coding portfolio, lab activity heatmap, runtime stack, and academic badges for ' . $user->name . ' on VisionLab.')
 
-    <!-- Portfolio Content -->
-    <div class="min-h-screen bg-[#010409] py-12">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row items-center md:items-start gap-8 bg-[#0d1117] rounded-2xl border border-[#30363d] p-8 shadow-2xl relative overflow-hidden mb-8">
-                <!-- Decorative Glow -->
-                <div class="absolute -top-32 -left-32 w-64 h-64 bg-emerald-500 opacity-10 blur-[100px] rounded-full pointer-events-none"></div>
+@section('content')
+    <section class="vl-atmosphere pt-12 pb-20 lg:pt-16 lg:pb-24">
+        <div class="mx-auto max-w-6xl px-5 sm:px-8 space-y-8">
+            {{-- Top Institutional Profile Banner --}}
+            <div class="vl-panel p-7 sm:p-9 relative overflow-hidden">
+                <div aria-hidden="true" class="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-vl-accent/12 blur-[80px]"></div>
 
-                <div class="relative w-32 h-32 flex-shrink-0">
-                    @if($user->avatar_url)
-                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-full h-full rounded-full border-4 border-[#30363d] object-cover">
-                    @else
-                        <div class="w-full h-full rounded-full border-4 border-[#30363d] bg-emerald-600 flex items-center justify-center text-4xl font-bold text-white shadow-inner">
-                            {{ $user->avatar_initials }}
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="flex items-center gap-5">
+                        @if($user->avatar_url)
+                            <img
+                                src="{{ $user->avatar_url }}"
+                                alt="{{ $user->name }}"
+                                class="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover shadow-vl-panel"
+                            >
+                        @else
+                            <div class="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl bg-gradient-to-br from-vl-accent to-vl-teal text-white font-bold text-2xl sm:text-3xl flex items-center justify-center shadow-vl-panel">
+                                {{ $user->avatar_initials }}
+                            </div>
+                        @endif
+
+                        <div class="space-y-1.5">
+                            <div class="flex flex-wrap items-center gap-2.5">
+                                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-vl-ink">{{ $user->name }}</h1>
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-vl-accent/12 px-3 py-0.5 font-mono text-xs font-semibold text-vl-accent tabular-nums">
+                                    Level {{ $user->level ?? 1 }}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-vl-ink-secondary">
+                                <span class="font-mono text-xs text-vl-ink-muted">{{ $user->student_id }}</span>
+                                <span aria-hidden="true" class="text-vl-border/30">&middot;</span>
+                                <span>{{ $user->rank_title }}</span>
+                            </div>
                         </div>
-                    @endif
-                    <!-- Level Badge -->
-                    <div class="absolute -bottom-2 -right-2 bg-[#238636] text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-[#0d1117] shadow-lg">
-                        Lvl {{ $user->level }}
-                    </div>
-                </div>
-
-                <div class="flex-1 text-center md:text-left space-y-4 z-10">
-                    <div>
-                        <h1 class="text-3xl font-extrabold text-white">{{ $user->name }}</h1>
-                        <p class="text-[#8b949e] font-mono mt-1 flex items-center justify-center md:justify-start gap-2">
-                            <span>ID: {{ $user->student_id }}</span>
-                            <span>•</span>
-                            <span class="text-emerald-400">{{ $user->rank_title }}</span>
-                        </p>
                     </div>
 
-                    <div class="flex flex-wrap justify-center md:justify-start gap-4">
-                        <div class="bg-[#161b22] px-4 py-2 rounded-lg border border-[#30363d]">
-                            <div class="text-xs text-[#8b949e] uppercase font-bold tracking-wider mb-1">Total XP</div>
-                            <div class="text-xl font-bold text-white">{{ number_format($user->xp) }}</div>
+                    {{-- Key Verified Stats --}}
+                    <div class="grid grid-cols-3 gap-3 sm:gap-4 w-full md:w-auto">
+                        <div class="rounded-2xl bg-vl-surface-raised/85 px-4 py-3 text-center">
+                            <p class="font-mono text-lg sm:text-xl font-bold text-vl-ink tabular-nums">{{ number_format($user->xp ?? 0) }}</p>
+                            <p class="text-[11px] font-medium text-vl-ink-muted mt-0.5">Total XP</p>
                         </div>
-                        <div class="bg-[#161b22] px-4 py-2 rounded-lg border border-[#30363d]">
-                            <div class="text-xs text-[#8b949e] uppercase font-bold tracking-wider mb-1">Workspaces</div>
-                            <div class="text-xl font-bold text-white">{{ number_format($totalWorkspaces) }}</div>
+                        <div class="rounded-2xl bg-vl-surface-raised/85 px-4 py-3 text-center">
+                            <p class="font-mono text-lg sm:text-xl font-bold text-vl-ink tabular-nums">{{ number_format($totalWorkspaces) }}</p>
+                            <p class="text-[11px] font-medium text-vl-ink-muted mt-0.5">Workspaces</p>
                         </div>
-                        <div class="bg-[#161b22] px-4 py-2 rounded-lg border border-[#30363d]">
-                            <div class="text-xs text-[#8b949e] uppercase font-bold tracking-wider mb-1">Longest Streak</div>
-                            <div class="text-xl font-bold text-orange-400">{{ $user->longest_streak }} Days 🔥</div>
+                        <div class="rounded-2xl bg-vl-surface-raised/85 px-4 py-3 text-center">
+                            <p class="font-mono text-lg sm:text-xl font-bold text-vl-teal tabular-nums inline-flex items-center justify-center gap-1">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                                </svg>
+                                {{ $user->longest_streak ?? 0 }}d
+                            </p>
+                            <p class="text-[11px] font-medium text-vl-ink-muted mt-0.5">Best Streak</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Detailed Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                
-                <!-- Tech Stack Breakdown -->
-                <div class="bg-[#0d1117] rounded-xl border border-[#30363d] p-6 shadow-sm">
-                    <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                        Tech Stack Mastery
-                    </h3>
-                    
-                    @if($techStack->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($techStack as $tech)
-                                <div>
-                                    <div class="flex justify-between text-sm mb-1">
-                                        <span class="font-semibold text-white capitalize">{{ $tech->language }}</span>
-                                        <span class="text-[#8b949e]">{{ $tech->count }} projects</span>
+            {{-- Middle Grid: Runtime Stack & Coding Rhythm --}}
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {{-- Verified Tech Stack --}}
+                <div class="lg:col-span-5 vl-panel p-7 space-y-5">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-base font-bold text-vl-ink">Workspace Runtime Stack</h2>
+                        <span class="font-mono text-xs text-vl-ink-muted tabular-nums">{{ count($techStack) }} runtimes</span>
+                    </div>
+
+                    @if(count($techStack) > 0)
+                        @php $maxCount = max(1, collect($techStack)->max('count')); @endphp
+                        <div class="space-y-3.5">
+                            @foreach($techStack as $stack)
+                                @php
+                                    $pct = min(100, (int) round(($stack->count / $maxCount) * 100));
+                                @endphp
+                                <div class="space-y-1.5">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="font-medium text-vl-ink">{{ ucfirst($stack->language) }}</span>
+                                        <span class="font-mono text-xs text-vl-ink-muted tabular-nums">{{ $stack->count }} {{ \Illuminate\Support\Str::plural('lab', $stack->count) }}</span>
                                     </div>
-                                    <div class="w-full bg-[#161b22] rounded-full h-2">
-                                        <!-- Calculate percentage based on total workspaces -->
-                                        @php $pct = min(100, round(($tech->count / max(1, $totalWorkspaces)) * 100)); @endphp
-                                        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ $pct }}%"></div>
+                                    <div class="h-2 w-full rounded-full bg-vl-surface-raised overflow-hidden">
+                                        <div class="h-full rounded-full bg-gradient-to-r from-vl-accent to-vl-teal" style="width: {{ $pct }}%"></div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                     @else
-                        <div class="text-center py-8 text-[#8b949e] text-sm">No tech stack data available yet.</div>
+                        <p class="text-sm text-vl-ink-secondary">No public workspace runtimes recorded yet.</p>
                     @endif
                 </div>
 
-                <!-- Coding Habits -->
-                <div class="bg-[#0d1117] rounded-xl border border-[#30363d] p-6 shadow-sm relative overflow-hidden">
-                    <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Coding Habits
-                    </h3>
-                    
-                    <div class="mb-6">
-                        <div class="text-sm text-[#8b949e] mb-1">Dominant Persona</div>
-                        <div class="text-2xl font-bold text-white">{{ $dominantTime }}</div>
+                {{-- Coding Schedule / Rhythm --}}
+                <div class="lg:col-span-7 vl-panel p-7 space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-base font-bold text-vl-ink">Laboratory Activity Rhythm</h2>
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-vl-teal/12 px-3 py-0.5 text-xs font-semibold text-vl-teal">
+                            Peak focus: {{ $dominantTime }}
+                        </span>
                     </div>
 
-                    <div class="space-y-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
                         @foreach($schedulePercentages as $period => $pct)
-                            <div class="flex items-center gap-3">
-                                <div class="w-32 text-xs text-[#8b949e] font-medium truncate">{{ $period }}</div>
-                                <div class="flex-1 bg-[#161b22] rounded-full h-1.5">
-                                    <div class="bg-purple-500 h-1.5 rounded-full" style="width: {{ $pct }}%"></div>
+                            <div class="rounded-2xl bg-vl-surface-raised/80 p-4 space-y-2">
+                                <p class="text-xs font-medium text-vl-ink-secondary">{{ $period }}</p>
+                                <p class="font-mono text-2xl font-bold text-vl-ink tabular-nums">{{ $pct }}%</p>
+                                <div class="h-1.5 w-full rounded-full bg-vl-border/10 overflow-hidden">
+                                    <div class="h-full rounded-full bg-vl-accent" style="width: {{ min(100, max(0, (int) $pct)) }}%"></div>
                                 </div>
-                                <div class="w-8 text-right text-xs font-bold text-white">{{ $pct }}%</div>
                             </div>
                         @endforeach
                     </div>
                 </div>
-
             </div>
 
-            <!-- Activity Heatmap -->
-            <div class="bg-[#0d1117] rounded-xl border border-[#30363d] p-6 shadow-sm mb-8">
-                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    Activity Log (Last 60 Days)
-                </h3>
-                
-                <div class="flex flex-wrap gap-1">
-                    @for($i = 60; $i >= 0; $i--)
-                        @php
-                            $dateStr = now()->subDays($i)->format('Y-m-d');
-                            $count = $heatmapData[$dateStr] ?? 0;
-                            $colorClass = 'bg-[#161b22] border-[#30363d]'; // Empty
-                            
-                            if ($count > 0) {
-                                if ($count < 3) $colorClass = 'bg-[#0e4429] border-[#0e4429]';
-                                elseif ($count < 6) $colorClass = 'bg-[#006d32] border-[#006d32]';
-                                elseif ($count < 10) $colorClass = 'bg-[#26a641] border-[#26a641]';
-                                else $colorClass = 'bg-[#39d353] border-[#39d353]';
-                            }
-                        @endphp
-                        <div class="w-3.5 h-3.5 rounded-sm border {{ $colorClass }}" title="{{ $dateStr }}: {{ $count }} activities"></div>
-                    @endfor
+            {{-- Contribution Activity Heatmap --}}
+            <div class="vl-panel p-7 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-base font-bold text-vl-ink">Contribution Activity</h2>
+                        <p class="text-xs text-vl-ink-muted mt-0.5">Verified container commits and assignment snapshots over the past year</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] text-vl-ink-muted">
+                        <span>Less</span>
+                        <span class="h-3 w-3 rounded-[3px] bg-vl-surface-raised"></span>
+                        <span class="h-3 w-3 rounded-[3px] bg-vl-teal/30"></span>
+                        <span class="h-3 w-3 rounded-[3px] bg-vl-teal/60"></span>
+                        <span class="h-3 w-3 rounded-[3px] bg-vl-teal"></span>
+                        <span>More</span>
+                    </div>
+                </div>
+
+                @php
+                    $today = \Carbon\Carbon::today();
+                    $start = $today->copy()->subDays(363)->startOfWeek(\Carbon\Carbon::SUNDAY);
+                    $weeks = [];
+                    $cursor = $start->copy();
+                    while ($cursor->lte($today)) {
+                        $week = [];
+                        for ($d = 0; $d < 7; $d++) {
+                            $dateKey = $cursor->format('Y-m-d');
+                            $count = (int) ($heatmapData[$dateKey] ?? 0);
+                            $week[] = [
+                                'date' => $dateKey,
+                                'count' => $count,
+                                'future' => $cursor->gt($today),
+                            ];
+                            $cursor->addDay();
+                        }
+                        $weeks[] = $week;
+                    }
+                @endphp
+
+                <div class="overflow-x-auto pb-1">
+                    <div class="inline-flex gap-1">
+                        @foreach($weeks as $week)
+                            <div class="flex flex-col gap-1">
+                                @foreach($week as $day)
+                                    @php
+                                        if ($day['future']) {
+                                            $cellClass = 'bg-transparent';
+                                        } elseif ($day['count'] >= 6) {
+                                            $cellClass = 'bg-vl-teal';
+                                        } elseif ($day['count'] >= 3) {
+                                            $cellClass = 'bg-vl-teal/65';
+                                        } elseif ($day['count'] >= 1) {
+                                            $cellClass = 'bg-vl-teal/30';
+                                        } else {
+                                            $cellClass = 'bg-vl-surface-raised';
+                                        }
+                                    @endphp
+                                    <span
+                                        title="{{ $day['date'] }}: {{ $day['count'] }} {{ \Illuminate\Support\Str::plural('contribution', $day['count']) }}"
+                                        class="h-3 w-3 rounded-[3px] {{ $cellClass }}"
+                                    ></span>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 
-            <!-- Earned Badges Showcase -->
-            <div class="bg-[#0d1117] rounded-xl border border-[#30363d] p-6 shadow-sm">
-                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                    Earned Badges ({{ $badges->count() }})
-                </h3>
-                
-                @if($badges->count() > 0)
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            {{-- Verified Badges & Achievements (Zero Emoji Icons — Uses <x-badge-icon />) --}}
+            <div class="vl-panel p-7 space-y-5">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-base font-bold text-vl-ink">Verified Academic Badges</h2>
+                    <span class="font-mono text-xs text-vl-ink-muted tabular-nums">{{ count($badges) }} earned</span>
+                </div>
+
+                @if(count($badges) > 0)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($badges as $badge)
-                            <div class="flex flex-col items-center p-4 bg-[#161b22] border border-[#30363d] rounded-lg hover:border-[#8b949e] transition-colors group cursor-default">
-                                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">{{ $badge->icon }}</div>
-                                <div class="text-sm font-semibold text-white text-center">{{ $badge->name }}</div>
-                                <div class="text-xs text-[#8b949e] text-center mt-1">{{ $badge->description }}</div>
+                            <div class="rounded-2xl bg-vl-surface-raised/75 p-4 flex items-start gap-3.5">
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-vl-accent/12 text-vl-accent">
+                                    <x-badge-icon :icon="$badge->icon ?? 'trophy'" class="h-5 w-5" />
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-vl-ink truncate">{{ $badge->name }}</p>
+                                    <p class="text-xs leading-relaxed text-vl-ink-secondary mt-0.5">{{ $badge->description }}</p>
+                                </div>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="text-center py-8 text-[#8b949e] text-sm">
-                        This student hasn't earned any badges yet.
-                    </div>
+                    <p class="text-sm text-vl-ink-secondary">No achievement badges unlocked yet.</p>
                 @endif
             </div>
-
         </div>
-    </div>
-</x-guest-layout>
+    </section>
+@endsection

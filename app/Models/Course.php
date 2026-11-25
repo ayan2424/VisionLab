@@ -92,6 +92,11 @@ class Course extends Model
         return $this->hasMany(Workspace::class);
     }
 
+    public function extensions(): HasMany
+    {
+        return $this->hasMany(CourseExtension::class);
+    }
+
     public function getCoverGradientAttribute(): string
     {
         $gradients = [

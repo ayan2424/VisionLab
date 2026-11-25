@@ -1,60 +1,63 @@
 @extends('layouts.admin')
 @section('title', 'Edit Extension')
+@section('page-title', 'Edit Extension')
 
 @section('content')
-<div class="max-w-xl">
-    <div class="flex items-center gap-3 mb-8">
-        <a href="{{ route('admin.extensions.index') }}" class="text-slate-500 hover:text-white transition-colors">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+<div class="max-w-xl space-y-6">
+    <div class="space-y-1.5">
+        <a href="{{ route('admin.extensions.index') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-vl-ink-muted hover:text-vl-ink transition-colors">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Back to Extensions
         </a>
-        <h1 class="text-xl font-bold text-white">Edit Extension</h1>
+        <h2 class="text-2xl font-bold tracking-tight text-vl-ink">Edit Extension</h2>
     </div>
 
-    <form method="POST" action="{{ route('admin.extensions.update', $extension->id) }}" enctype="multipart/form-data"
-          class="rounded-2xl border border-white/[0.07] p-6 space-y-5" style="background:#111111;">
-        @csrf @method('PUT')
+    <x-card :padding="true">
+        <form method="POST" action="{{ route('admin.extensions.update', $extension->id) }}" enctype="multipart/form-data" class="space-y-5">
+            @csrf
+            @method('PUT')
 
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Extension Name</label>
-            <input type="text" name="name" value="{{ old('name', $extension->name) }}" required
-                   class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Package Identifier <span class="text-slate-500 font-normal">(read-only)</span></label>
-            <input type="text" value="{{ $extension->package_identifier }}" readonly
-                   class="w-full px-4 py-3 rounded-xl border border-white/[0.06] bg-white/[0.02] text-slate-500 text-sm font-mono cursor-not-allowed">
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Version</label>
-            <input type="text" name="version" value="{{ old('version', $extension->version) }}" required
-                   class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Description</label>
-            <textarea name="description" rows="3"
-                      class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm resize-none focus:outline-none focus:border-violet-500/60 transition-all">{{ old('description', $extension->description) }}</textarea>
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Extension File (.vsix) <span class="text-slate-500 font-normal">(Leave empty to keep current file)</span></label>
-            <input type="file" name="artifact" accept=".vsix"
-                   class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-slate-400 text-sm focus:outline-none focus:border-violet-500/60 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-500/10 file:text-violet-400 hover:file:bg-violet-500/20">
-            @if($extension->artifact_path)
-                <p class="mt-2 text-xs text-green-400/80">Current file is uploaded.</p>
-            @else
-                <p class="mt-2 text-xs text-amber-500/80">No file uploaded yet.</p>
-            @endif
-        </div>
-        <div class="flex items-center gap-3">
-            <input type="checkbox" id="is_global" name="is_global" value="1" {{ old('is_global', $extension->is_global) ? 'checked' : '' }} class="rounded accent-violet-500">
-            <label for="is_global" class="text-sm text-slate-300">Enable globally by default</label>
-        </div>
+            <div>
+                <label for="ext-name" class="block text-sm font-medium text-vl-ink mb-2">Extension Name</label>
+                <input id="ext-name" type="text" name="name" value="{{ old('name', $extension->name) }}" required class="vl-input">
+            </div>
 
-        <div class="flex items-center justify-end gap-3 pt-2">
-            <a href="{{ route('admin.extensions.index') }}" class="px-5 py-2.5 rounded-xl text-sm text-slate-400 border border-white/[0.08] hover:text-white transition-all">Cancel</a>
-            <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">Save Changes</button>
-        </div>
-    </form>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="ext-pkg" class="block text-sm font-medium text-vl-ink mb-2">Package Identifier <span class="font-normal text-vl-ink-muted">(read-only)</span></label>
+                    <input id="ext-pkg" type="text" value="{{ $extension->package_identifier }}" readonly class="vl-input font-mono opacity-65 cursor-not-allowed">
+                </div>
+                <div>
+                    <label for="ext-version" class="block text-sm font-medium text-vl-ink mb-2">Version</label>
+                    <input id="ext-version" type="text" name="version" value="{{ old('version', $extension->version) }}" required class="vl-input font-mono">
+                </div>
+            </div>
+
+            <div>
+                <label for="ext-desc" class="block text-sm font-medium text-vl-ink mb-2">Description</label>
+                <textarea id="ext-desc" name="description" rows="3" class="vl-input resize-none">{{ old('description', $extension->description) }}</textarea>
+            </div>
+
+            <div>
+                <label for="ext-artifact" class="block text-sm font-medium text-vl-ink mb-2">Extension Artifact (.vsix) <span class="font-normal text-vl-ink-muted">(leave empty to keep current)</span></label>
+                <input id="ext-artifact" type="file" name="artifact" accept=".vsix" class="block w-full text-xs text-vl-ink-secondary file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-vl-surface-raised file:text-vl-ink hover:file:bg-vl-accent/15">
+                @if($extension->artifact_path)
+                    <p class="mt-1.5 text-xs text-vl-teal">Current verified artifact is uploaded.</p>
+                @else
+                    <p class="mt-1.5 text-xs text-vl-gate">No VSIX artifact uploaded yet.</p>
+                @endif
+            </div>
+
+            <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="is_global" name="is_global" value="1" {{ old('is_global', $extension->is_global) ? 'checked' : '' }} class="h-4 w-4 rounded border-vl-border/25 text-vl-accent-cta focus:ring-vl-accent bg-vl-surface">
+                <span class="text-sm text-vl-ink-secondary">Enable globally by default</span>
+            </label>
+
+            <div class="pt-4 border-t border-vl-border/10 flex items-center justify-end gap-3">
+                <a href="{{ route('admin.extensions.index') }}" class="vl-btn-secondary">Cancel</a>
+                <button type="submit" class="vl-btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </x-card>
 </div>
 @endsection
-
-

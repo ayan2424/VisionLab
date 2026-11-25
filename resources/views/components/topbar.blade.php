@@ -1,42 +1,71 @@
-<header class="vc-card h-16 flex-shrink-0 flex items-center justify-between px-8 !rounded-full transition-colors duration-300 z-30 relative">
+@php
+    $user = Auth::user();
+    $unreadCount = (int) ($unreadGlobalAnnouncementsCount ?? 0);
+@endphp
 
-    <div class="flex items-center gap-3">
-        {{-- Mobile sidebar toggle --}}
-        <button onclick="document.getElementById('dash-sidebar').classList.toggle('-translate-x-full')"
-                class="md:hidden w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                style="color:var(--vc-text-secondary);border:1px solid var(--vc-border);">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+<header class="h-[52px] shrink-0 px-4 sm:px-6 bg-vl-surface/85 backdrop-blur-md border-b border-vl-border/10 flex items-center justify-between gap-4 z-30">
+    {{-- Left: Mobile Drawer Trigger + Page Title --}}
+    <div class="flex items-center gap-3 min-w-0">
+        <button
+            type="button"
+            @click="sidebarOpen = !sidebarOpen"
+            aria-label="Open navigation menu"
+            class="md:hidden inline-flex h-8 w-8 items-center justify-center rounded-xl text-vl-ink-secondary hover:text-vl-ink hover:bg-vl-surface-raised transition-colors duration-150"
+        >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
         </button>
-        <h1 class="text-sm font-bold" style="color:var(--vc-text);">@yield('page-title', 'Dashboard')</h1>
+
+        <h1 class="text-sm font-semibold text-vl-ink truncate">
+            @yield('page-title', 'Dashboard')
+        </h1>
     </div>
 
+    {{-- Right: Instant Cmd+K Trigger, Real Global Announcements Bell, Theme Toggle, Role Pill --}}
     <div class="flex items-center gap-2">
-        {{-- Search --}}
-        <div class="hidden md:flex items-center relative">
-            <svg class="absolute left-3 w-3.5 h-3.5" style="color:var(--vc-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input type="text" placeholder="Search..." class="pl-9 pr-3 py-1.5 rounded-lg text-xs w-52 transition-all duration-200 focus:w-60 focus:outline-none focus:ring-1"
-                   style="background:var(--vc-elevated);border:1px solid var(--vc-border);color:var(--vc-text);--tw-ring-color:var(--vc-accent);">
-        </div>
+        {{-- Working 0ms Command Palette Trigger --}}
+        <button
+            type="button"
+            @click="$dispatch('vl:open-cmdk')"
+            class="hidden sm:inline-flex items-center justify-between gap-4 h-8 w-52 lg:w-60 px-3 rounded-xl bg-vl-surface-raised/85 hover:bg-vl-surface-raised text-xs text-vl-ink-muted hover:text-vl-ink transition-colors duration-150 cursor-pointer"
+            aria-label="Open command palette"
+        >
+            <span class="inline-flex items-center gap-2 truncate">
+                <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+                <span>Jump to route...</span>
+            </span>
+            <kbd class="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded bg-vl-surface text-vl-ink-secondary">⌘K</kbd>
+        </button>
 
-        
-        
+        {{-- Real Global Announcements Bell (All Authenticated Roles) --}}
+        <a
+            href="{{ route('announcements.index') }}"
+            class="relative inline-flex h-8 w-8 items-center justify-center rounded-xl text-vl-ink-secondary hover:text-vl-ink hover:bg-vl-surface-raised transition-colors duration-150"
+            title="{{ $unreadCount > 0 ? $unreadCount . ' unread campus announcements' : 'Campus Announcements' }}"
+            aria-label="{{ $unreadCount > 0 ? $unreadCount . ' unread announcements' : 'Announcements' }}"
+        >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+            @if($unreadCount > 0)
+                <span
+                    data-unread-announcements="{{ $unreadCount }}"
+                    class="absolute -top-0.5 -right-0.5 inline-flex min-w-[16px] h-4 px-1 items-center justify-center rounded-full bg-vl-accent-cta text-white font-mono text-[10px] font-bold leading-none tabular-nums"
+                >
+                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                </span>
+            @endif
+        </a>
 
-        {{-- Notification bell --}}
-        @if(Auth::user()->isStudent())
-        
+        <x-theme-toggle />
+
+        @if($user)
+            <span class="hidden sm:inline-flex items-center rounded-lg px-2 py-1 font-mono text-[10px] font-semibold tracking-wide uppercase {{ $user->isAdmin() ? 'bg-vl-danger/12 text-vl-danger' : ($user->isInstructor() ? 'bg-vl-accent/12 text-vl-accent' : 'bg-vl-teal/12 text-vl-teal') }}">
+                {{ $user->role }}
+            </span>
         @endif
-
-        {{-- Role badge --}}
-        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border"
-              style="
-              @if(Auth::user()->isAdmin()) color:#EF4444;background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.15);
-              @elseif(Auth::user()->isInstructor()) color:var(--vc-accent);background:rgba(240,80,0,0.08);border-color:rgba(240,80,0,0.15);
-              @else color:#16A34A;background:rgba(22,163,74,0.08);border-color:rgba(22,163,74,0.15);
-              @endif
-              ">
-            {{ strtoupper(Auth::user()->role) }}
-        </span>
     </div>
 </header>
-
-

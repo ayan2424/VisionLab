@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Announcement;
 use App\Models\Course;
 use App\Policies\CoursePolicy;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -38,6 +41,26 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Gate::policy(Course::class, CoursePolicy::class);
+
+        View::composer('components.topbar', static function ($view): void {
+            $unreadCount = 0;
+
+            if (Auth::check()) {
+                try {
+                    $userId = Auth::id();
+                    $unreadCount = Announcement::query()
+                        ->whereNull('course_id')
+                        ->whereDoesntHave('reads', static function ($query) use ($userId): void {
+                            $query->where('user_id', $userId);
+                        })
+                        ->count();
+                } catch (\Throwable) {
+                    $unreadCount = 0;
+                }
+            }
+
+            $view->with('unreadGlobalAnnouncementsCount', $unreadCount);
+        });
 
         \App\Models\Submission::observe(\App\Observers\AnalyticsObserver::class);
         \App\Models\User::observe(\App\Observers\AnalyticsObserver::class);

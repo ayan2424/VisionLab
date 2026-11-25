@@ -11,7 +11,8 @@ use App\Models\Extension;
 use App\Models\Submission;
 use App\Models\User;
 use App\Models\Workspace;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Inertia\Inertia;
 
 class AdminController extends Controller
 {
@@ -29,7 +30,7 @@ class AdminController extends Controller
             'total_submissions' => Submission::count(),
             'pending_grading'   => Submission::whereIn('status', ['submitted', 'late'])->count(),
             'graded_today'      => Submission::where('status', 'graded')
-                                    ->whereDate('updated_at', today())->count(),
+                ->whereDate('updated_at', today())->count(),
         ];
 
         // ── AI Telemetry ────────────────────────────────────────────────
@@ -50,17 +51,48 @@ class AdminController extends Controller
         $recentCourses   = Course::with('instructor')->withCount('students')->latest()->take(5)->get();
         $recentAuditLogs = AuditLog::with('actor')->latest()->take(10)->get();
 
-        // ── Weekly Signup Trend (last 7 days) ───────────────────────────
-        $signupTrend = User::selectRaw("DATE(created_at) as day, COUNT(*) as count")
-            ->where('created_at', '>=', now()->subDays(7))
-            ->groupBy('day')
-            ->orderBy('day')
-            ->pluck('count', 'day')
-            ->toArray();
+        // ── Weekly Signup Trend (last 7 days, SQLite & MySQL compatible) ─
+        $weekStart = now()->subDays(6)->startOfDay();
+        $rawSignups = User::where('created_at', '>=', $weekStart)
+            ->get(['created_at'])
+            ->groupBy(fn (User $u) => Carbon::parse($u->created_at)->format('Y-m-d'))
+            ->map->count();
 
-        return view('admin.dashboard', compact(
-            'stats', 'recentUsers', 'recentAiActions', 'recentCourses',
-            'recentAuditLogs', 'signupTrend'
+        $signupTrend = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $dayKey = now()->subDays($i)->format('Y-m-d');
+            $signupTrend[$dayKey] = (int) ($rawSignups[$dayKey] ?? 0);
+        }
+
+        // ── 6-Month AI Operations Trend (SQLite & MySQL compatible) ─────
+        $sixMonthsStart = now()->subMonths(5)->startOfMonth();
+        $rawAiActions = AiActionsLog::where('created_at', '>=', $sixMonthsStart)
+            ->get(['created_at'])
+            ->groupBy(fn (AiActionsLog $log) => Carbon::parse($log->created_at)->format('Y-m'))
+            ->map->count();
+
+        $aiLabels = [];
+        $aiCounts = [];
+        for ($m = 5; $m >= 0; $m--) {
+            $cursor = now()->subMonths($m);
+            $key = $cursor->format('Y-m');
+            $aiLabels[] = $cursor->format('M Y');
+            $aiCounts[] = (int) ($rawAiActions[$key] ?? 0);
+        }
+
+        $aiActionsTrend = [
+            'labels' => $aiLabels,
+            'counts' => $aiCounts,
+        ];
+
+        return Inertia::render('Admin/Dashboard', compact(
+            'stats',
+            'recentUsers',
+            'recentAiActions',
+            'recentCourses',
+            'recentAuditLogs',
+            'signupTrend',
+            'aiActionsTrend'
         ));
     }
 }

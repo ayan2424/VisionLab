@@ -17,8 +17,8 @@
             @foreach($quotas as $i => $quota)
             <div class="p-4 rounded-xl" style="background:var(--vc-surface); border:1px solid var(--vc-border);">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-xs" 
-                         style="background:{{ $quota->scope === 'student' ? '#16A34A' : ($quota->scope === 'instructor' ? '#7c3aed' : '#3B82F6') }}">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-vl-ink text-xs" 
+                         style="background:{{ $quota->scope === 'student' ? '#16A34A' : ($quota->scope === 'instructor' ? 'rgb(var(--vl-accent-cta))' : '#3B82F6') }}">
                         {{ strtoupper(substr($quota->scope, 0, 1)) }}
                     </div>
                     <h3 class="font-bold uppercase tracking-wider text-sm" style="color:var(--vc-text);">

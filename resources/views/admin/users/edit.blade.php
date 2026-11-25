@@ -1,68 +1,71 @@
 @extends('layouts.admin')
 @section('title', 'Edit User')
+@section('page-title', 'Edit User')
 
 @section('content')
-<div class="max-w-xl">
-    <div class="flex items-center gap-3 mb-8">
-        <a href="{{ route('admin.users.index') }}" class="text-slate-500 hover:text-white transition-colors">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+<div class="max-w-xl space-y-6">
+    <div class="space-y-1.5">
+        <a href="{{ route('admin.users.index') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-vl-ink-muted hover:text-vl-ink transition-colors">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Back to Users
         </a>
-        <h1 class="text-xl font-bold text-white">Edit User</h1>
+        <h2 class="text-2xl font-bold tracking-tight text-vl-ink">Edit User</h2>
     </div>
 
-    <div class="flex items-center gap-4 p-5 rounded-2xl border border-white/[0.07] mb-6" style="background:#111111;">
-        <div class="w-14 h-14 rounded-full flex items-center justify-center text-xl font-black text-white
-            {{ $user->role === 'admin' ? 'bg-red-600' : ($user->role === 'instructor' ? 'bg-violet-600' : 'bg-cyan-600') }}">
+    <div class="vl-panel p-5 flex items-center gap-4">
+        <div class="h-12 w-12 rounded-2xl shrink-0 flex items-center justify-center text-lg font-bold text-white {{ $user->role === 'admin' ? 'bg-vl-danger' : ($user->role === 'instructor' ? 'bg-vl-accent-cta' : 'bg-vl-teal') }}">
             {{ strtoupper(substr($user->name, 0, 1)) }}
         </div>
-        <div>
-            <div class="text-base font-bold text-white">{{ $user->name }}</div>
-            <div class="text-sm text-slate-500">{{ $user->email }}</div>
-            <div class="text-xs text-slate-600 mt-0.5">Joined {{ $user->created_at->format('M d, Y') }}</div>
+        <div class="min-w-0">
+            <p class="text-base font-bold text-vl-ink truncate">{{ $user->name }}</p>
+            <p class="text-xs text-vl-ink-secondary truncate">{{ $user->email }}</p>
+            <p class="text-[11px] text-vl-ink-muted mt-0.5">Joined {{ $user->created_at->format('M d, Y') }}</p>
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.users.update', $user->id) }}"
-          class="rounded-2xl border border-white/[0.07] p-6 space-y-5" style="background:#111111;">
-        @csrf @method('PUT')
+    <x-card :padding="true">
+        <form method="POST" action="{{ route('admin.users.update', $user->id) }}" class="space-y-5">
+            @csrf
+            @method('PUT')
 
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Name</label>
-            <input type="text" name="name" value="{{ old('name', $user->name) }}" required
-                   class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Email</label>
-            <input type="email" name="email" value="{{ old('email', $user->email) }}" required
-                   class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Role</label>
-            <select name="role" class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
-                <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="instructor" {{ old('role', $user->role) === 'instructor' ? 'selected' : '' }}>Instructor</option>
-                <option value="student" {{ old('role', $user->role) === 'student' ? 'selected' : '' }}>Student</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Student ID <span class="text-xs text-slate-500 font-normal">(if student)</span></label>
-            <input type="text" name="student_id" value="{{ old('student_id', $user->student_id) }}"
-                   class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
-        </div>
-        <div>
-            <label class="block text-sm font-semibold text-slate-300 mb-2">Status</label>
-            <select name="status" class="w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white text-sm focus:outline-none focus:border-violet-500/60 transition-all">
-                <option value="active" {{ old('status', $user->status) === 'active' ? 'selected' : '' }}>Active</option>
-                <option value="suspended" {{ old('status', $user->status) === 'suspended' ? 'selected' : '' }}>Suspended</option>
-            </select>
-        </div>
+            <div>
+                <label for="edit-name" class="block text-sm font-medium text-vl-ink mb-2">Full Name</label>
+                <input id="edit-name" type="text" name="name" value="{{ old('name', $user->name) }}" required class="vl-input">
+            </div>
 
-        <div class="flex items-center justify-end gap-3 pt-2">
-            <a href="{{ route('admin.users.index') }}" class="px-5 py-2.5 rounded-xl text-sm text-slate-400 border border-white/[0.08] hover:text-white transition-all">Cancel</a>
-            <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">Save Changes</button>
-        </div>
-    </form>
+            <div>
+                <label for="edit-email" class="block text-sm font-medium text-vl-ink mb-2">Email</label>
+                <input id="edit-email" type="email" name="email" value="{{ old('email', $user->email) }}" required class="vl-input">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="edit-role" class="block text-sm font-medium text-vl-ink mb-2">Role</label>
+                    <select id="edit-role" name="role" class="vl-input">
+                        <option value="admin" @selected(old('role', $user->role) === 'admin')>Admin</option>
+                        <option value="instructor" @selected(old('role', $user->role) === 'instructor')>Instructor</option>
+                        <option value="student" @selected(old('role', $user->role) === 'student')>Student</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-status" class="block text-sm font-medium text-vl-ink mb-2">Status</label>
+                    <select id="edit-status" name="status" class="vl-input">
+                        <option value="active" @selected(old('status', $user->status) === 'active')>Active</option>
+                        <option value="suspended" @selected(old('status', $user->status) === 'suspended')>Suspended</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="edit-student-id" class="block text-sm font-medium text-vl-ink mb-2">Student ID <span class="font-normal text-vl-ink-muted">(if student)</span></label>
+                <input id="edit-student-id" type="text" name="student_id" value="{{ old('student_id', $user->student_id) }}" class="vl-input font-mono">
+            </div>
+
+            <div class="pt-4 border-t border-vl-border/10 flex items-center justify-end gap-3">
+                <a href="{{ route('admin.users.index') }}" class="vl-btn-secondary">Cancel</a>
+                <button type="submit" class="vl-btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </x-card>
 </div>
 @endsection
-
-

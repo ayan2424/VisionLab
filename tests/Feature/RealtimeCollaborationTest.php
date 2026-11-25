@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,14 +20,23 @@ class RealtimeCollaborationTest extends TestCase
             'broadcasting.connections.pusher.app_id' => '12345',
         ]);
 
-        $user = User::factory()->create();
+        $owner = User::factory()->student()->create();
+        $intruder = User::factory()->student()->create();
+        $workspace = Workspace::factory()->create(['student_id' => $owner->id]);
 
-        $response = $this->actingAs($user)->postJson('/broadcasting/auth', [
-            'channel_name' => 'presence-workspace.1',
-            'socket_id' => '12345.67890'
+        $response = $this->actingAs($owner)->postJson('/broadcasting/auth', [
+            'channel_name' => 'presence-workspace.' . $workspace->id,
+            'socket_id' => '12345.67890',
         ]);
 
         $response->assertStatus(200)
                  ->assertJsonStructure(['auth', 'channel_data']);
+
+        $denied = $this->actingAs($intruder)->postJson('/broadcasting/auth', [
+            'channel_name' => 'presence-workspace.' . $workspace->id,
+            'socket_id' => '12345.67890',
+        ]);
+
+        $denied->assertStatus(403);
     }
 }

@@ -3,125 +3,88 @@
 @section('page-title', 'Create Course')
 
 @section('content')
-<div class="max-w-2xl mx-auto py-8">
-    <div class="mb-8" style="opacity:0;animation:fadeSlideUp .4s .05s ease forwards">
-        <a href="{{ route('courses.index') }}" class="flex items-center gap-2 text-sm transition-colors mb-6" style="color:var(--vc-muted);">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+<div class="max-w-2xl mx-auto space-y-6">
+    <div class="space-y-1.5">
+        <a href="{{ route('courses.index') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-vl-ink-muted hover:text-vl-ink transition-colors">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
             Back to Courses
         </a>
-        <h1 class="text-2xl font-bold" style="color:var(--vc-text);">Create New Course</h1>
-        <p class="text-sm mt-1" style="color:var(--vc-text-secondary);">Set up your course details. An enrollment code will be generated automatically.</p>
+        <h2 class="text-2xl font-bold tracking-tight text-vl-ink">Create New Course</h2>
+        <p class="text-sm text-vl-ink-secondary">Configure course details and IDE extension rules. An enrollment code is generated automatically.</p>
     </div>
 
-    <form method="POST" action="{{ route('courses.store') }}" enctype="multipart/form-data"
-          class="vc-card p-8" style="opacity:0;animation:fadeSlideUp .4s .15s ease forwards">
-        @csrf
+    <x-card :padding="true">
+        <form method="POST" action="{{ route('courses.store') }}" enctype="multipart/form-data" class="space-y-5">
+            @csrf
 
-        @if($errors->any())
-        <div class="mb-6 px-4 py-3 rounded-xl text-sm" style="background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.2);color:var(--vc-danger);">
-            <ul class="list-disc list-inside space-y-1">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
-        </div>
-        @endif
-
-        <div class="space-y-6">
-            <div class="relative">
-                <input type="text" id="title" name="title" value="{{ old('title') }}" required
-                       class="vc-input peer w-full placeholder-transparent pt-6 pb-2"
-                       placeholder="Course Title">
-                <label for="title" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Course Title <span style="color:var(--vc-danger);">*</span></label>
+            <div>
+                <label for="title" class="block text-sm font-medium text-vl-ink mb-2">Course Title <span class="text-vl-danger">*</span></label>
+                <input type="text" id="title" name="title" value="{{ old('title') }}" required placeholder="e.g., CS-301 Systems Programming" class="vl-input">
             </div>
 
-            <div class="relative">
-                <textarea id="description" name="description" rows="4" required
-                          class="vc-input peer w-full placeholder-transparent pt-8 pb-2 resize-none"
-                          placeholder="Description">{{ old('description') }}</textarea>
-                <label for="description" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Description <span style="color:var(--vc-danger);">*</span></label>
+            <div>
+                <label for="description" class="block text-sm font-medium text-vl-ink mb-2">Description <span class="text-vl-danger">*</span></label>
+                <textarea id="description" name="description" rows="4" required placeholder="Outline course objectives, lab expectations, and toolchain..." class="vl-input resize-none">{{ old('description') }}</textarea>
             </div>
 
-            <div class="relative">
-                <input type="text" id="duration" name="duration" value="{{ old('duration') }}"
-                       class="vc-input peer w-full placeholder-transparent pt-6 pb-2"
-                       placeholder="e.g., 6 Months, 12 Weeks">
-                <label for="duration" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Course Duration</label>
-            </div>
-
-            <!-- Scheduling Fields -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="relative">
-                    <input type="date" id="start_date" name="start_date" value="{{ old('start_date') }}"
-                           class="vc-input peer w-full placeholder-transparent pt-6 pb-2">
-                    <label for="start_date" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all" style="color:var(--vc-accent);">Start Date</label>
-                </div>
-                <div class="relative">
-                    <input type="date" id="end_date" name="end_date" value="{{ old('end_date') }}"
-                           class="vc-input peer w-full placeholder-transparent pt-6 pb-2">
-                    <label for="end_date" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all" style="color:var(--vc-accent);">End Date</label>
-                </div>
-            </div>
-
-            <div class="relative">
-                <input type="text" id="schedule_time" name="schedule_time" value="{{ old('schedule_time') }}"
-                       class="vc-input peer w-full placeholder-transparent pt-6 pb-2"
-                       placeholder="e.g., Mon/Wed/Fri 10:00 AM - 12:00 PM">
-                <label for="schedule_time" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Schedule / Timings</label>
-            </div>
-
-            <div class="relative">
-                <textarea id="notes" name="notes" rows="3"
-                          class="vc-input peer w-full placeholder-transparent pt-8 pb-2 resize-none"
-                          placeholder="General notes, syllabus link, or meeting info">{{ old('notes') }}</textarea>
-                <label for="notes" class="absolute left-4 top-2 text-xs font-bold text-brand transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand" style="color:var(--vc-accent);">Instructor Notes</label>
-            </div>
-
-            <!-- Is Active Toggle -->
-            <div class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-bold text-white mb-1">Make Course Active</label>
-                    <p class="text-xs text-gray-400">If inactive, students won't be able to join or see this course yet.</p>
+                    <label for="duration" class="block text-sm font-medium text-vl-ink mb-2">Course Duration</label>
+                    <input type="text" id="duration" name="duration" value="{{ old('duration') }}" placeholder="e.g., 16 Weeks" class="vl-input">
                 </div>
-                <label class="relative inline-flex items-center cursor-pointer">
+                <div>
+                    <label for="schedule_time" class="block text-sm font-medium text-vl-ink mb-2">Schedule / Timings</label>
+                    <input type="text" id="schedule_time" name="schedule_time" value="{{ old('schedule_time') }}" placeholder="e.g., Mon/Wed 10:00 – 11:30" class="vl-input">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="start_date" class="block text-sm font-medium text-vl-ink mb-2">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" value="{{ old('start_date') }}" class="vl-input">
+                </div>
+                <div>
+                    <label for="end_date" class="block text-sm font-medium text-vl-ink mb-2">End Date</label>
+                    <input type="date" id="end_date" name="end_date" value="{{ old('end_date') }}" class="vl-input">
+                </div>
+            </div>
+
+            <div>
+                <label for="notes" class="block text-sm font-medium text-vl-ink mb-2">Instructor Notes</label>
+                <textarea id="notes" name="notes" rows="3" placeholder="Office hours, syllabus reference, or lab environment notes..." class="vl-input resize-none">{{ old('notes') }}</textarea>
+            </div>
+
+            <div class="space-y-3 pt-1">
+                <label class="flex items-center justify-between gap-4 rounded-xl p-4 bg-vl-surface-raised/70 cursor-pointer">
+                    <div>
+                        <p class="text-sm font-semibold text-vl-ink">Make Course Active</p>
+                        <p class="text-xs text-vl-ink-secondary mt-0.5">Students can enroll and access labs only while active.</p>
+                    </div>
                     <input type="hidden" name="is_active" value="0">
-                    <input type="checkbox" name="is_active" value="1" class="sr-only peer" {{ old('is_active', true) ? 'checked' : '' }}>
-                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand" style="peer-checked:background-color: var(--vc-brand);"></div>
+                    <input type="checkbox" name="is_active" value="1" class="h-4 w-4 rounded border-vl-border/25 text-vl-accent-cta focus:ring-vl-accent bg-vl-surface" {{ old('is_active', true) ? 'checked' : '' }}>
                 </label>
-            </div>
 
-            <!-- Allow Marketplace Toggle -->
-            <div class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
-                <div>
-                    <label class="block text-sm font-bold text-white mb-1">Allow Extensions Marketplace</label>
-                    <p class="text-xs text-gray-400">If disabled, students cannot access the VS Code Extension Marketplace in their governed workspaces.</p>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
+                <label class="flex items-center justify-between gap-4 rounded-xl p-4 bg-vl-surface-raised/70 cursor-pointer">
+                    <div>
+                        <p class="text-sm font-semibold text-vl-ink">Allow Extensions Marketplace</p>
+                        <p class="text-xs text-vl-ink-secondary mt-0.5">Disable to restrict workspaces strictly to SHA256-verified course allowlists.</p>
+                    </div>
                     <input type="hidden" name="allow_marketplace" value="0">
-                    <input type="checkbox" name="allow_marketplace" value="1" class="sr-only peer" {{ old('allow_marketplace', true) ? 'checked' : '' }}>
-                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand" style="peer-checked:background-color: var(--vc-brand);"></div>
+                    <input type="checkbox" name="allow_marketplace" value="1" class="h-4 w-4 rounded border-vl-border/25 text-vl-accent-cta focus:ring-vl-accent bg-vl-surface" {{ old('allow_marketplace', true) ? 'checked' : '' }}>
                 </label>
             </div>
 
             <div>
-                <label class="block text-sm font-bold mb-2 text-white/80">Cover Image <span class="text-gray-500 font-normal">(optional)</span></label>
-                <div class="border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer"
-                     style="border-color:var(--vc-border);"
-                     onmouseover="this.style.borderColor='var(--vc-accent)'"
-                     onmouseout="this.style.borderColor='var(--vc-border)'"
-                     onclick="document.getElementById('cover_image').click()">
-                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <p class="text-sm text-gray-400">Click to upload or drag & drop</p>
-                    <p class="text-xs mt-1 text-gray-500">PNG, JPG up to 2MB</p>
-                </div>
-                <input type="file" id="cover_image" name="cover_image" accept="image/*" class="hidden">
+                <label for="cover_image" class="block text-sm font-medium text-vl-ink mb-2">Cover Image <span class="text-vl-ink-muted font-normal">(optional)</span></label>
+                <input type="file" id="cover_image" name="cover_image" accept="image/*" class="block w-full text-xs text-vl-ink-secondary file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-vl-surface-raised file:text-vl-ink hover:file:bg-vl-accent/15">
+                <p class="mt-1.5 text-xs text-vl-ink-muted">PNG or JPG up to 2 MB.</p>
             </div>
-        </div>
 
-        <div class="mt-8 flex items-center justify-end gap-3" style="border-top:1px solid var(--vc-border);padding-top:20px;">
-            <a href="{{ route('courses.index') }}" class="btn-ghost py-2.5 px-5 text-sm">Cancel</a>
-            <button type="submit" class="btn-primary py-2.5 px-6 text-sm">
-                Create Course
-            </button>
-        </div>
-    </form>
+            <div class="pt-5 border-t border-vl-border/10 flex items-center justify-end gap-3">
+                <a href="{{ route('courses.index') }}" class="vl-btn-secondary">Cancel</a>
+                <button type="submit" class="vl-btn-primary">Create Course</button>
+            </div>
+        </form>
+    </x-card>
 </div>
 @endsection
-
-

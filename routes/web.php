@@ -13,25 +13,27 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ExtensionController;
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
 | Public Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', fn () => Inertia::render('Public/Home'))->name('home');
 
 Route::get('/healthz', [\App\Http\Controllers\HealthController::class, 'check'])->name('health');
 
-Route::get('/offline', fn () => view('offline'))->name('offline');
+Route::view('/offline', 'errors.offline')->name('offline');
 
 // ── SEO Public Pages ──────────────────────────────────────────────────
-Route::get('/about', fn () => view('pages.about'))->name('about');
-Route::get('/features', fn () => view('pages.features'))->name('features');
-Route::get('/contact', fn () => view('pages.contact'))->name('contact');
-Route::get('/docs', fn () => view('pages.docs'))->name('docs');
+Route::get('/about', fn () => Inertia::render('Public/About'))->name('about');
+Route::get('/features', fn () => Inertia::render('Public/Features'))->name('features');
+Route::get('/contact', fn () => Inertia::render('Public/Contact'))->name('contact');
+Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submit'])
+    ->middleware('throttle:5,1')
+    ->name('contact.submit');
+Route::get('/docs', fn () => Inertia::render('Public/Docs'))->name('docs');
 
 // ── Student Portfolio ─────────────────────────────────────────────────
 Route::middleware('cache.headers:public;max_age=300;etag')->group(function () {
@@ -47,9 +49,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-
-    // Phase 10: PWA Offline Fallback
-    Route::view('/offline', 'errors.offline')->name('offline');
 
     // ── Workspace ──────────────────────────────────────────────────────
     Route::get('/workspace', [\App\Http\Controllers\WorkspaceController::class, 'index'])->name('workspace.index');

@@ -1,0 +1,73 @@
+{
+  "schema": "impeccable:design-system@1",
+  "name": "Luminous Atelier",
+  "product": "VisionLab",
+  "modes": {
+    "light": {
+      "label": "Pearl Mist Light",
+      "selector": ":root",
+      "tokens": {
+        "bg": "#F6F9FC",
+        "surface": "#FFFFFF",
+        "surfaceRaised": "#F1F5FA",
+        "rail": "#EEF3F9",
+        "ink": "#0B1220",
+        "inkSecondary": "#475569",
+        "inkMuted": "#64748B",
+        "accent": "#0284C7",
+        "accentCta": "#2563EB",
+        "teal": "#0D9488",
+        "gate": "#B45309",
+        "danger": "#E11D48"
+      }
+    },
+    "dark": {
+      "label": "Obsidian Velvet Dark",
+      "selector": ".dark",
+      "tokens": {
+        "bg": "#090D14",
+        "surface": "#111824",
+        "surfaceRaised": "#172030",
+        "rail": "#0D131D",
+        "ink": "#F8FAFC",
+        "inkSecondary": "#A8B5C8",
+        "inkMuted": "#76869C",
+        "accent": "#38BDF8",
+        "accentCta": "#2563EB",
+        "teal": "#2DD4BF",
+        "gate": "#FBBF24",
+        "danger": "#FB7185"
+      }
+    }
+  },
+  "typography": {
+    "display": "Satoshi",
+    "sans": "Satoshi",
+    "mono": "JetBrains Mono",
+    "tabularNumbers": true
+  },
+  "motion": {
+    "easeOut": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "easeInOut": "cubic-bezier(0.77, 0, 0.175, 1)",
+    "easeDrawer": "cubic-bezier(0.32, 0.72, 0, 1)",
+    "commandPaletteDurationMs": 0,
+    "activeScale": 0.97
+  },
+  "surfaces": [
+    "persuade-public",
+    "read-docs",
+    "auth-folio",
+    "operate-lms-ide",
+    "operate-admin"
+  ],
+  "assets": {
+    "hero3dModule": "public/js/hero-3d.js",
+    "bespokeImages": [
+      "public/images/redesign/campus-glass-lab.jpg",
+      "public/images/redesign/cs-research-lab.jpg",
+      "public/images/redesign/workstation-night-lab.jpg",
+      "public/images/redesign/students-collaborating.jpg",
+      "public/images/redesign/university-atrium-study.jpg"
+    ]
+  }
+}

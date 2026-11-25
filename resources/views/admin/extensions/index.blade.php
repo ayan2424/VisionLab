@@ -3,106 +3,116 @@
 @section('page-title', 'Extensions')
 
 @section('content')
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6" style="opacity:0;animation:fadeSlideUp .5s .05s ease forwards">
-    <h1 class="text-xl font-bold" style="color:var(--vc-text);">Extension Management</h1>
-    <a href="{{ route('admin.extensions.create') }}" class="btn-primary py-2 px-4 text-sm">
-        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        Add Extension
-    </a>
-</div>
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-bold tracking-tight text-vl-ink">SHA256 Extension Registry</h2>
+            <p class="text-sm text-vl-ink-secondary">Approve verified VSIX packages and toggle global availability across campus containers.</p>
+        </div>
+        <a href="{{ route('admin.extensions.create') }}" class="vl-btn-primary !py-2 !px-4 !text-xs sm:!text-sm shrink-0">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add Extension
+        </a>
+    </div>
 
-<form method="GET" class="flex gap-3 mb-6" style="opacity:0;animation:fadeSlideUp .5s .1s ease forwards">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search extensions…"
-           class="vc-input flex-1">
-    <button type="submit" class="btn-primary py-2.5 px-5 text-sm">Filter</button>
-</form>
+    <form method="GET" class="vl-panel p-4 flex flex-wrap sm:flex-nowrap gap-3">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or package identifier..." class="vl-input flex-1 !py-2">
+        <button type="submit" class="vl-btn-primary !py-2 !px-4 !text-xs">Filter</button>
+    </form>
 
-<div class="vc-card overflow-x-auto" style="opacity:0;animation:fadeSlideUp .5s .15s ease forwards">
-    <table class="w-full text-left border-collapse">
-        <thead>
-            <tr style="border-bottom:1px solid var(--vc-border);background:rgba(0,0,0,0.02);" class="dark:bg-[#0d1117]">
-                <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">Extension</th>
-                <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">Version</th>
-                <th class="px-5 py-3 text-xs font-semibold" style="color:var(--vc-muted);">Type</th>
-                <th class="px-5 py-3 text-xs font-semibold text-center" style="color:var(--vc-muted);">Global</th>
-                <th class="px-5 py-3 text-xs font-semibold text-right" style="color:var(--vc-muted);">Actions</th>
+    <x-table>
+        <x-slot:head>
+            <tr>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Extension</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Version</th>
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-vl-ink-secondary">Type</th>
+                <th class="px-5 py-3.5 text-center text-xs font-semibold text-vl-ink-secondary">Active</th>
+                <th class="px-5 py-3.5 text-right text-xs font-semibold text-vl-ink-secondary">Actions</th>
             </tr>
-        </thead>
-        <tbody>
-            @forelse($extensions as $ext)
-            <tr class="transition-colors hover:bg-black/5 dark:hover:bg-white/5" style="border-bottom:1px solid var(--vc-border);">
-                <td class="px-5 py-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(240,80,0,0.1);">
-                            <svg class="w-4 h-4" style="color:var(--vc-accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+        </x-slot:head>
+
+        @forelse($extensions as $ext)
+            <tr class="hover:bg-vl-surface-raised/50 transition-colors duration-150">
+                <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="h-8 w-8 rounded-xl shrink-0 bg-vl-accent/14 text-vl-accent flex items-center justify-center">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
                         </div>
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold truncate" style="color:var(--vc-text);">{{ $ext->name }}</div>
-                            <div class="text-xs font-mono truncate" style="color:var(--vc-text-secondary);">{{ $ext->package_identifier }}</div>
+                            <p class="text-sm font-semibold text-vl-ink truncate">{{ $ext->name }}</p>
+                            <p class="font-mono text-xs text-vl-ink-muted truncate">{{ $ext->package_identifier }}</p>
                         </div>
                     </div>
                 </td>
-                <td class="px-5 py-4 text-xs font-mono" style="color:var(--vc-text-secondary);">v{{ $ext->version }}</td>
-                <td class="px-5 py-4">
-                    <span class="px-2 py-0.5 rounded-md text-xs font-semibold border"
-                          style="{{ $ext->is_builtin ? 'color:var(--vc-accent);background:rgba(240,80,0,0.1);border-color:rgba(240,80,0,0.2)' : 'color:var(--vc-text-secondary);background:var(--vc-surface);border-color:var(--vc-border)' }}">
+                <td class="px-5 py-3.5 font-mono text-xs text-vl-ink-secondary">v{{ $ext->version }}</td>
+                <td class="px-5 py-3.5">
+                    <x-badge :variant="$ext->is_builtin ? 'info' : 'neutral'">
                         {{ $ext->is_builtin ? 'Built-in' : 'Custom' }}
-                    </span>
+                    </x-badge>
                 </td>
-                <td class="px-5 py-4 text-center">
-                    <button type="button"
-                            onclick="toggleExtension({{ $ext->id }}, this)"
-                            data-active="{{ $ext->is_active ? '1' : '0' }}"
-                            class="relative inline-flex items-center w-10 h-5 rounded-full transition-all"
-                            style="background:{{ $ext->is_active ? 'var(--vc-accent)' : 'var(--vc-border)' }}">
-                        <span class="inline-block w-4 h-4 rounded-full bg-white transition-transform shadow {{ $ext->is_active ? 'translate-x-5' : 'translate-x-0.5' }}"></span>
+                <td class="px-5 py-3.5 text-center">
+                    <button
+                        type="button"
+                        onclick="toggleExtension({{ $ext->id }}, this)"
+                        data-active="{{ $ext->is_active ? '1' : '0' }}"
+                        class="relative inline-flex items-center w-10 h-5 rounded-full transition-colors cursor-pointer {{ $ext->is_active ? 'bg-vl-accent-cta' : 'bg-vl-border/25' }}"
+                        aria-label="Toggle {{ $ext->name }}"
+                    >
+                        <span class="inline-block w-4 h-4 rounded-full bg-white shadow transition-transform {{ $ext->is_active ? 'translate-x-5' : 'translate-x-0.5' }}"></span>
                     </button>
                 </td>
-                <td class="px-5 py-4">
-                    <div class="flex items-center justify-end gap-2">
-                        <a href="{{ route('admin.extensions.edit', $ext->id) }}" class="btn-ghost py-1 px-3 text-xs">Edit</a>
+                <td class="px-5 py-3.5 text-right">
+                    <div class="inline-flex items-center justify-end gap-2">
+                        <a href="{{ route('admin.extensions.edit', $ext->id) }}" class="vl-btn-secondary !py-1 !px-3 !text-xs">Edit</a>
                         @if(!$ext->is_builtin)
-                        <form method="POST" action="{{ route('admin.extensions.destroy', $ext->id) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this extension?', () => this.submit())">
-                            @csrf @method('DELETE')
-                            <button class="btn-ghost py-1 px-3 text-xs" style="color:#EF4444;border-color:rgba(239,68,68,0.3);" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">Delete</button>
-                        </form>
+                            <form method="POST" action="{{ route('admin.extensions.destroy', $ext->id) }}" onsubmit="event.preventDefault(); vcConfirm('Delete this extension from the registry?', () => this.submit())">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="vl-btn-danger !py-1 !px-3 !text-xs">Delete</button>
+                            </form>
                         @endif
                     </div>
                 </td>
             </tr>
-            @empty
-            <tr><td colspan="5" class="px-5 py-12 text-center text-sm" style="color:var(--vc-muted);">No extensions found.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+        @empty
+            <tr>
+                <td colspan="5" class="px-5 py-10 text-center text-sm text-vl-ink-muted">No extensions registered yet.</td>
+            </tr>
+        @endforelse
+    </x-table>
+
+    <div>{{ $extensions->withQueryString()->links() }}</div>
 </div>
+@endsection
 
-<div class="mt-5">{{ $extensions->withQueryString()->links() }}</div>
-
+@push('scripts')
 <script>
 function toggleExtension(id, btn) {
-    const isActive = btn.dataset.active === '1';
     fetch(`/admin/extensions/${id}/toggle`, {
         method: 'PATCH',
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+        },
+    })
+    .then((r) => r.json())
+    .then((data) => {
+        if (!data.success) return;
+        const nowActive = Boolean(data.is_active);
+        btn.dataset.active = nowActive ? '1' : '0';
+        btn.classList.toggle('bg-vl-accent-cta', nowActive);
+        btn.classList.toggle('bg-vl-border/25', !nowActive);
+        const knob = btn.querySelector('span');
+        if (knob) {
+            knob.classList.toggle('translate-x-5', nowActive);
+            knob.classList.toggle('translate-x-0.5', !nowActive);
         }
     })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            const nowActive = data.is_active;
-            btn.dataset.active = nowActive ? '1' : '0';
-            btn.style.background = nowActive ? 'var(--vc-accent)' : 'var(--vc-border)';
-            const knob = btn.querySelector('span');
-            knob.className = `inline-block w-4 h-4 rounded-full bg-white transition-transform shadow ${nowActive ? 'translate-x-5' : 'translate-x-0.5'}`;
-        }
-    })
-    .catch(() => alert('Failed to update extension.'));
+    .catch(() => {
+        if (window.vcToast) window.vcToast('Failed to toggle extension.', 'error');
+    });
 }
 </script>
-@endsection
-
-
+@endpush

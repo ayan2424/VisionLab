@@ -1,168 +1,171 @@
 @extends('layouts.dashboard')
-
 @section('title', $assignment->title)
 @section('page-title', 'Assignment Details')
 
 @section('content')
 <div class="max-w-5xl mx-auto space-y-6">
     {{-- Header --}}
-    <div class="vc-card p-6 border-l-4" style="border-left-color:var(--vc-accent);">
-        <div class="flex items-start justify-between">
-            <div>
-                <div class="flex items-center gap-2 text-xs mb-2" style="color:var(--vc-text-secondary);">
-                    <a href="{{ route('courses.index') }}" class="hover:text-current transition-colors">Courses</a>
-                    <span>/</span>
-                    <a href="{{ route('courses.show', $course->slug) }}" class="hover:text-current transition-colors">{{ $course->title }}</a>
-                    <span>/</span>
-                    <span style="color:var(--vc-muted);">{{ $assignment->title }}</span>
-                </div>
-                <h1 class="text-2xl font-bold" style="color:var(--vc-text);">{{ $assignment->title }}</h1>
-                <div class="flex items-center gap-4 mt-2 text-sm" style="color:var(--vc-text-secondary);">
-                    @if($assignment->due_date)
-                    <span class="{{ $assignment->isOverdue() ? 'font-bold' : '' }}" style="{{ $assignment->isOverdue() ? 'color:var(--vc-danger);' : '' }}">
-                        Due: {{ $assignment->due_date->format('M d, Y H:i') }}
-                        @if(!$assignment->isOverdue()) ({{ $assignment->time_remaining }}) @endif
+    <div class="vl-panel p-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div class="space-y-2 min-w-0">
+            <nav class="flex flex-wrap items-center gap-2 text-xs text-vl-ink-muted" aria-label="Breadcrumb">
+                <a href="{{ route('courses.index') }}" class="hover:text-vl-ink transition-colors">Courses</a>
+                <span>/</span>
+                <a href="{{ route('courses.show', $course->slug) }}" class="hover:text-vl-ink transition-colors">{{ $course->title }}</a>
+                <span>/</span>
+                <span class="text-vl-ink-secondary">{{ $assignment->title }}</span>
+            </nav>
+
+            <h2 class="text-2xl font-bold tracking-tight text-vl-ink">{{ $assignment->title }}</h2>
+
+            <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-vl-ink-secondary tabular-nums">
+                @if($assignment->due_date)
+                    <span class="{{ $assignment->isOverdue() ? 'font-semibold text-vl-danger' : '' }}">
+                        Due {{ $assignment->due_date->format('M d, Y · H:i') }}
+                        @if(!$assignment->isOverdue())
+                            ({{ $assignment->time_remaining }})
+                        @endif
                     </span>
-                    @endif
-                    <span>{{ $assignment->max_points }} points</span>
-                    <span class="badge">{{ ucfirst($assignment->starter_language) }}</span>
-                </div>
+                @endif
+                <span>{{ $assignment->max_points }} points</span>
+                <x-badge variant="info">{{ ucfirst($assignment->starter_language) }}</x-badge>
             </div>
-            @if($isInstructor)
-            <a href="{{ route('assignments.edit', $assignment->id) }}" class="btn-secondary text-xs py-2 px-4">Edit</a>
-            @endif
         </div>
+
+        @if($isInstructor)
+            <a href="{{ route('assignments.edit', $assignment->id) }}" class="vl-btn-secondary !py-2 !px-4 !text-xs shrink-0">Edit Assignment</a>
+        @endif
     </div>
 
-    @if(session('success'))
-    <div class="px-4 py-3 rounded-xl text-sm" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);color:var(--vc-success);">
-        {{ session('success') }}
-    </div>
-    @endif
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-6">
-            {{-- Description --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="lg:col-span-8 space-y-6">
             @if($assignment->description)
-            <div class="vc-card p-5">
-                <h3 class="text-sm font-bold mb-3" style="color:var(--vc-text);">Instructions</h3>
-                <div class="text-sm whitespace-pre-wrap" style="color:var(--vc-text-secondary);">{{ $assignment->description }}</div>
-            </div>
+                <x-card title="Instructions" :padding="true">
+                    <div class="text-sm leading-relaxed text-vl-ink-secondary whitespace-pre-wrap">{{ $assignment->description }}</div>
+                </x-card>
             @endif
 
-            {{-- Starter Code --}}
             @if($assignment->starter_code)
-            <div class="vc-card p-5">
-                <h3 class="text-sm font-bold mb-3" style="color:var(--vc-text);">Starter Code</h3>
-                <pre class="text-xs overflow-x-auto rounded-xl p-4" style="background:var(--vc-bg);color:var(--vc-text);font-family:'JetBrains Mono',monospace;border:1px solid var(--vc-border);">{{ $assignment->starter_code }}</pre>
-            </div>
+                <x-card title="Starter Code" :padding="true">
+                    <pre class="vl-code-stage p-4 font-mono text-xs leading-6 overflow-x-auto text-slate-200">{{ $assignment->starter_code }}</pre>
+                </x-card>
             @endif
 
-            {{-- Instructor: submissions table --}}
             @if($isInstructor)
-            <div class="vc-card p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-bold" style="color:var(--vc-text);">Submissions ({{ $submissions->count() }})</h3>
-                    @php $pending = $submissions->whereIn('status', ['submitted','late'])->count(); @endphp
+                <x-card :title="'Submissions (' . $submissions->count() . ')'" :padding="true">
+                    @php $pending = $submissions->whereIn('status', ['submitted', 'late'])->count(); @endphp
                     @if($pending > 0)
-                    <span class="px-2 py-0.5 rounded-md text-xs font-semibold" style="background:rgba(245,158,11,0.1);color:var(--vc-warning);border:1px solid rgba(245,158,11,0.2);">{{ $pending }} to grade</span>
+                        <x-slot:actions>
+                            <x-badge variant="warning" class="tabular-nums">{{ $pending }} to grade</x-badge>
+                        </x-slot:actions>
                     @endif
-                </div>
-                @forelse($submissions as $sub)
-                <div class="flex items-center justify-between py-3 border-b last:border-0" style="border-color:var(--vc-border);">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style="background:var(--vc-accent);">
-                            {{ strtoupper(substr($sub->student->name, 0, 1)) }}
-                        </div>
-                        <div>
-                            <div class="text-sm" style="color:var(--vc-text);">{{ $sub->student->name }}</div>
-                            <div class="text-xs" style="color:var(--vc-muted);">
-                                {{ $sub->submitted_at ? $sub->submitted_at->diffForHumans() : 'Not submitted' }}
-                                @if($sub->isLate()) <span style="color:var(--vc-danger);">&middot; Late</span> @endif
-                                @if($sub->status === 'graded') <span style="color:var(--vc-success);">&middot; {{ $sub->grade }}/{{ $assignment->max_points }} pts</span> @endif
+
+                    <div class="divide-y divide-vl-border/10">
+                        @forelse($submissions as $sub)
+                            <div class="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="h-8 w-8 rounded-xl shrink-0 bg-vl-accent/14 text-vl-accent flex items-center justify-center text-xs font-bold">
+                                        {{ strtoupper(substr($sub->student->name, 0, 1)) }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-medium text-vl-ink truncate">{{ $sub->student->name }}</p>
+                                        <p class="text-xs text-vl-ink-muted tabular-nums">
+                                            {{ $sub->submitted_at ? $sub->submitted_at->diffForHumans() : 'Not submitted' }}
+                                            @if($sub->isLate())
+                                                <span class="text-vl-danger font-medium">&middot; Late</span>
+                                            @endif
+                                            @if($sub->status === 'graded')
+                                                <span class="text-vl-teal font-medium">&middot; {{ $sub->grade }}/{{ $assignment->max_points }} pts</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <x-badge :variant="$sub->status === 'graded' ? 'success' : ($sub->status === 'late' ? 'danger' : 'info')">
+                                        {{ ucfirst($sub->status) }}
+                                    </x-badge>
+                                    @if(in_array($sub->status, ['submitted', 'late', 'graded']))
+                                        <a href="{{ route('submissions.show', $sub->id) }}" class="vl-btn-secondary !py-1.5 !px-3 !text-xs">
+                                            {{ $sub->status === 'graded' ? 'Review' : 'Grade' }}
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
+                        @empty
+                            <p class="text-sm text-vl-ink-muted py-6 text-center">No student submissions yet.</p>
+                        @endforelse
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded-md text-xs font-semibold border {{ $sub->status_badge_class }}">{{ ucfirst($sub->status) }}</span>
-                        @if(in_array($sub->status, ['submitted','late','graded']))
-                        <a href="{{ route('submissions.show', $sub->id) }}" class="btn-secondary text-xs py-1.5 px-3">
-                            {{ $sub->status === 'graded' ? 'Review' : 'Grade' }}
-                        </a>
+                </x-card>
+            @endif
+
+            @if(!$isInstructor && $submission)
+                <x-card title="My Submission" :padding="true">
+                    <div class="flex items-center justify-between gap-4 mb-4">
+                        <x-badge :variant="$submission->status === 'graded' ? 'success' : 'info'">{{ ucfirst($submission->status) }}</x-badge>
+                        @if($submission->status === 'graded')
+                            <span class="font-mono text-lg font-bold text-vl-teal tabular-nums">{{ $submission->grade }} / {{ $assignment->max_points }}</span>
                         @endif
                     </div>
-                </div>
-                @empty
-                <div class="text-center py-8 text-sm" style="color:var(--vc-muted);">No submissions yet.</div>
-                @endforelse
-            </div>
-            @endif
 
-            {{-- Student: my submission --}}
-            @if(!$isInstructor && $submission)
-            <div class="vc-card p-5">
-                <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">My Submission</h3>
-                <div class="flex items-center justify-between mb-4">
-                    <span class="px-3 py-1 rounded-lg text-xs font-semibold border {{ $submission->status_badge_class }}">{{ ucfirst($submission->status) }}</span>
-                    @if($submission->status === 'graded')
-                    <span class="text-lg font-bold" style="color:var(--vc-success);">{{ $submission->grade }}/{{ $assignment->max_points }}</span>
+                    @if($submission->feedback)
+                        <div class="rounded-xl bg-vl-surface-raised/75 p-4 space-y-1">
+                            <p class="text-xs font-semibold text-vl-ink">Instructor Feedback</p>
+                            <p class="text-sm leading-relaxed text-vl-ink-secondary whitespace-pre-wrap">{{ $submission->feedback }}</p>
+                        </div>
                     @endif
-                </div>
-                @if($submission->feedback)
-                <div class="px-4 py-3 rounded-xl" style="background:var(--vc-elevated);border:1px solid var(--vc-border);">
-                    <div class="text-xs font-semibold mb-1" style="color:var(--vc-muted);">Feedback</div>
-                    <div class="text-sm" style="color:var(--vc-text-secondary);">{{ $submission->feedback }}</div>
-                </div>
-                @endif
-            </div>
+                </x-card>
             @endif
         </div>
 
-        {{-- Sidebar --}}
-        <div class="space-y-6">
+        <div class="lg:col-span-4 space-y-5">
             @if(!$isInstructor)
-            <div class="vc-card p-5">
-                <h3 class="text-sm font-bold mb-4" style="color:var(--vc-text);">Your Status</h3>
-                @if(!$submission || $submission->status === 'not_started')
-                <form method="POST" action="{{ route('submissions.start', $assignment->id) }}">
-                    @csrf
-                    <button type="submit" class="btn-primary w-full justify-center">Start Assignment</button>
-                </form>
-                @elseif($submission->status === 'in_progress')
-                <a href="{{ route('submissions.ide', $assignment->id) }}" class="btn-primary w-full justify-center mb-3">Open in IDE</a>
-                <form method="POST" action="{{ route('submissions.submit', $assignment->id) }}">
-                    @csrf
-                    <button type="button" onclick="vcConfirm('Submit this assignment?', () => this.form.submit())" class="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all" style="background:var(--vc-success);">
-                        Submit Assignment
-                    </button>
-                </form>
-                @else
-                <div class="text-center py-2">
-                    <span class="px-4 py-2 rounded-xl text-sm font-semibold border {{ $submission->status_badge_class }}">{{ ucfirst($submission->status) }}</span>
-                </div>
-                @endif
-            </div>
+                <x-card title="Your Lab Status" :padding="true">
+                    @if(!$submission || $submission->status === 'not_started')
+                        <form method="POST" action="{{ route('submissions.start', $assignment->id) }}">
+                            @csrf
+                            <button type="submit" class="vl-btn-primary w-full">Start Assignment</button>
+                        </form>
+                    @elseif($submission->status === 'in_progress')
+                        <div class="space-y-3">
+                            <a href="{{ route('submissions.ide', $assignment->id) }}" class="vl-btn-primary w-full">Open in IDE</a>
+                            <form method="POST" action="{{ route('submissions.submit', $assignment->id) }}">
+                                @csrf
+                                <button type="button" onclick="vcConfirm('Submit your current workspace snapshot for grading?', () => this.form.submit())" class="vl-btn-secondary w-full !text-vl-teal">
+                                    Submit Assignment
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="text-center py-2">
+                            <x-badge :variant="$submission->status === 'graded' ? 'success' : 'info'" class="!px-3.5 !py-1.5 !text-xs">
+                                {{ ucfirst($submission->status) }}
+                            </x-badge>
+                        </div>
+                    @endif
+                </x-card>
             @endif
 
-            <div class="vc-card p-5">
-                <h3 class="text-sm font-bold mb-3" style="color:var(--vc-text);">Details</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between" style="color:var(--vc-text-secondary);">
-                        <span>Points</span><span class="font-bold" style="color:var(--vc-text);">{{ $assignment->max_points }}</span>
+            <x-card title="Specifications" :padding="true">
+                <dl class="space-y-3 text-sm">
+                    <div class="flex items-center justify-between">
+                        <dt class="text-vl-ink-secondary">Max Points</dt>
+                        <dd class="font-mono font-bold text-vl-ink tabular-nums">{{ $assignment->max_points }}</dd>
                     </div>
                     @if($assignment->due_date)
-                    <div class="flex justify-between" style="color:var(--vc-text-secondary);">
-                        <span>Due</span><span class="{{ $assignment->isOverdue() ? 'font-bold' : '' }}" style="{{ $assignment->isOverdue() ? 'color:var(--vc-danger);' : 'color:var(--vc-text);' }}">{{ $assignment->due_date->format('M d') }}</span>
-                    </div>
+                        <div class="flex items-center justify-between">
+                            <dt class="text-vl-ink-secondary">Due Date</dt>
+                            <dd class="font-mono text-xs font-semibold {{ $assignment->isOverdue() ? 'text-vl-danger' : 'text-vl-ink' }}">
+                                {{ $assignment->due_date->format('M d, Y') }}
+                            </dd>
+                        </div>
                     @endif
-                    <div class="flex justify-between" style="color:var(--vc-text-secondary);">
-                        <span>Language</span><span style="color:var(--vc-text);">{{ ucfirst($assignment->starter_language) }}</span>
+                    <div class="flex items-center justify-between">
+                        <dt class="text-vl-ink-secondary">Runtime</dt>
+                        <dd class="font-medium text-vl-ink">{{ ucfirst($assignment->starter_language) }}</dd>
                     </div>
-                </div>
-            </div>
+                </dl>
+            </x-card>
         </div>
     </div>
 </div>
 @endsection
-
-

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminUserController extends Controller
 {
@@ -29,7 +30,10 @@ class AdminUserController extends Controller
 
         $users = $query->latest()->paginate(20)->withQueryString();
 
-        return view('admin.users.index', compact('users'));
+        return Inertia::render('Admin/Users/Index', [
+            'users'   => $users,
+            'filters' => $request->only(['search', 'role', 'status']),
+        ]);
     }
 
     public function create()
@@ -121,7 +125,10 @@ class AdminUserController extends Controller
             return back()->withErrors(['error' => 'You cannot suspend yourself.']);
         }
         $user->update(['status' => 'suspended']);
-        return back()->with('success', "{$user->name} has been suspended.");
+        $user->tokens()->delete();
+        \App\Jobs\WorkspaceSuspendedUser::dispatch($user->id);
+
+        return back()->with('success', "{$user->name} has been suspended, API tokens revoked, and running workspaces scheduled to stop.");
     }
 
     public function activate(User $user)

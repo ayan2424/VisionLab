@@ -1,0 +1,10 @@
+{
+  "id": "dir-1-monograph",
+  "name": "Swiss Lab Monograph",
+  "mode": "persuade",
+  "compImagePath": "C:/Users/ayans/.gemini/antigravity/brain/f7bb9259-d641-48e6-bcaf-00535fd68569/dir_1_monograph_1795506928247.jpg",
+  "approved": true,
+  "delegated": true,
+  "approvedAt": "2026-11-24",
+  "notes": "North-star Persuade landing comp for VisionLab. Correct synthetic label CS-381 -> CS-301 during semantic HTML/Blade build; do not rasterize UI text or controls."
+}

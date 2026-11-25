@@ -29,17 +29,18 @@
                                     <td class="px-5 py-4 text-sm" style="color:var(--vc-muted);">${{ number_format($challan->amount, 2) }}</td>
                                     <td class="px-5 py-4 text-sm" style="color:var(--vc-muted);">{{ \Carbon\Carbon::parse($challan->due_date)->format('M d, Y') }}</td>
                                     <td class="px-5 py-4 text-sm" style="color:var(--vc-muted);">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $challan->status === 'paid' ? 'green' : ($challan->status === 'overdue' ? 'red' : 'yellow') }}-100 text-{{ $challan->status === 'paid' ? 'green' : ($challan->status === 'overdue' ? 'red' : 'yellow') }}-800">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $challan->status === 'paid' ? 'bg-vl-teal/15 text-vl-teal' : ($challan->status === 'overdue' ? 'bg-vl-danger/15 text-vl-danger' : 'bg-vl-gate/15 text-vl-gate') }}">
                                             {{ ucfirst($challan->status) }}
                                         </span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No fee challans found.</td>
+                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-vl-ink-muted text-center">No fee challans found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+</div>
 @endsection

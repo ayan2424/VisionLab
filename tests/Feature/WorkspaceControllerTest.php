@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Models\Course;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Models\WorkspaceTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
@@ -20,10 +20,10 @@ class WorkspaceControllerTest extends TestCase
 
     private function createWorkspaceForStudent(): array
     {
-        $student   = User::factory()->student()->create();
+        $student    = User::factory()->student()->create();
         $instructor = User::factory()->instructor()->create();
-        $course    = Course::factory()->create(['instructor_id' => $instructor->id]);
-        
+        $course     = Course::factory()->create(['instructor_id' => $instructor->id]);
+
         $workspace = Workspace::factory()->create([
             'student_id' => $student->id,
             'course_id'  => $course->id,
@@ -36,23 +36,34 @@ class WorkspaceControllerTest extends TestCase
 
     // ── Provisioning & Access ─────────────────────────────────────────────
 
-    public function test_student_can_auto_provision_personal_workspace(): void
+    public function test_student_can_provision_personal_workspace(): void
     {
         $student = User::factory()->student()->create();
+        $template = WorkspaceTemplate::create([
+            'name'        => 'Python 3.12 Lab',
+            'slug'        => 'python-312-lab',
+            'description' => 'Standard Python environment',
+            'language'    => 'python',
+            'image'       => 'visionlab/workspace:latest',
+            'is_active'   => true,
+        ]);
 
-        $response = $this->actingAs($student)->get(route('workspace.index'));
+        $indexResponse = $this->actingAs($student)->get(route('workspace.index'));
+        $indexResponse->assertOk();
 
-        $response->assertOk()
-                 ->assertViewIs('workspace')
-                 ->assertViewHas('workspaceName', 'My Workspace');
+        $storeResponse = $this->actingAs($student)->post(route('workspace.store'), [
+            'name'        => 'My Workspace',
+            'template_id' => $template->id,
+        ]);
 
-        $isDockerAvailable = app(\App\Services\CodeServerManager::class)->isDockerAvailable();
-        $expectedStatus    = $isDockerAvailable ? 'running' : 'pending';
+        $workspace = Workspace::where('student_id', $student->id)->firstOrFail();
+        $storeResponse->assertRedirect(route('workspace.show', $workspace->slug));
 
         $this->assertDatabaseHas('workspaces', [
             'student_id' => $student->id,
             'course_id'  => null,
-            'status'     => $expectedStatus,
+            'name'       => 'My Workspace',
+            'status'     => 'pending',
         ]);
     }
 
@@ -61,7 +72,7 @@ class WorkspaceControllerTest extends TestCase
         $data = $this->createWorkspaceForStudent();
 
         $response = $this->actingAs($data['student'])
-                         ->get(route('workspace.show', $data['workspace']->id));
+                         ->get(route('workspace.show', $data['workspace']));
 
         $response->assertOk();
     }
@@ -72,7 +83,7 @@ class WorkspaceControllerTest extends TestCase
         $otherStudent = User::factory()->student()->create();
 
         $response = $this->actingAs($otherStudent)
-                         ->get(route('workspace.show', $data['workspace']->id));
+                         ->get(route('workspace.show', $data['workspace']));
 
         $response->assertForbidden();
     }
@@ -82,7 +93,7 @@ class WorkspaceControllerTest extends TestCase
         $data = $this->createWorkspaceForStudent();
 
         $response = $this->actingAs($data['instructor'])
-                         ->get(route('workspace.show', $data['workspace']->id));
+                         ->get(route('workspace.show', $data['workspace']));
 
         $response->assertOk();
     }
@@ -93,7 +104,7 @@ class WorkspaceControllerTest extends TestCase
         $otherInstructor = User::factory()->instructor()->create();
 
         $response = $this->actingAs($otherInstructor)
-                         ->get(route('workspace.show', $data['workspace']->id));
+                         ->get(route('workspace.show', $data['workspace']));
 
         $response->assertForbidden();
     }
@@ -106,25 +117,29 @@ class WorkspaceControllerTest extends TestCase
 
         // Start
         $response = $this->actingAs($data['student'])
-                         ->post(route('workspace.start', $data['workspace']->id));
+                         ->post(route('workspace.start', $data['workspace']));
         $response->assertOk()
                  ->assertJsonPath('status', 'running');
 
         // Status
         $response = $this->actingAs($data['student'])
-                         ->get(route('workspace.status', $data['workspace']->id));
+                         ->get(route('workspace.status', $data['workspace']));
         $response->assertOk()
                  ->assertJsonStructure(['status', 'running', 'url']);
 
-        // Restart
+        // Restart preloader view & process endpoint
+        $this->actingAs($data['student'])
+             ->get(route('workspace.restart', $data['workspace']))
+             ->assertOk();
+
         $response = $this->actingAs($data['student'])
-                         ->post(route('workspace.restart', $data['workspace']->id));
+                         ->post(route('workspace.process_restart', $data['workspace']));
         $response->assertOk()
-                 ->assertJsonPath('status', 'restarted');
+                 ->assertJsonPath('status', 'restarting');
 
         // Stop
         $response = $this->actingAs($data['student'])
-                         ->post(route('workspace.stop', $data['workspace']->id));
+                         ->post(route('workspace.stop', $data['workspace']));
         $response->assertOk()
                  ->assertJsonPath('status', 'stopped');
     }
@@ -135,7 +150,6 @@ class WorkspaceControllerTest extends TestCase
     {
         $data = $this->createWorkspaceForStudent();
 
-        // Let's configure storage path mock for workspace directory
         $wsDir = storage_path('workspaces/ws-' . $data['workspace']->id);
         if (!is_dir($wsDir)) {
             mkdir($wsDir, 0755, true);
@@ -144,7 +158,7 @@ class WorkspaceControllerTest extends TestCase
 
         // Create File
         $response = $this->actingAs($data['student'])
-                         ->post(route('workspace.createFile', $data['workspace']->id), [
+                         ->post(route('workspace.createFile', $data['workspace']), [
                              'path'         => 'index.py',
                              'is_directory' => false,
                          ]);
@@ -154,7 +168,7 @@ class WorkspaceControllerTest extends TestCase
 
         // Write File
         $response = $this->actingAs($data['student'])
-                         ->post(route('workspace.writeFile', $data['workspace']->id), [
+                         ->post(route('workspace.writeFile', $data['workspace']), [
                              'path'    => 'index.py',
                              'content' => 'print("Hello VisionLab")',
                          ]);
@@ -164,13 +178,13 @@ class WorkspaceControllerTest extends TestCase
 
         // Read File
         $response = $this->actingAs($data['student'])
-                         ->get(route('workspace.readFile', $data['workspace']->id) . '?path=index.py');
+                         ->get(route('workspace.readFile', $data['workspace']) . '?path=index.py');
         $response->assertOk()
                  ->assertJsonPath('content', 'print("Hello VisionLab")');
 
         // Rename File
         $response = $this->actingAs($data['student'])
-                         ->post(route('workspace.renameFile', $data['workspace']->id), [
+                         ->post(route('workspace.renameFile', $data['workspace']), [
                              'old_path' => 'index.py',
                              'new_path' => 'main.py',
                          ]);
@@ -180,20 +194,19 @@ class WorkspaceControllerTest extends TestCase
 
         // List Files
         $response = $this->actingAs($data['student'])
-                         ->get(route('workspace.files', $data['workspace']->id));
+                         ->get(route('workspace.files', $data['workspace']));
         $response->assertOk()
                  ->assertJsonIsArray();
 
         // Delete File
         $response = $this->actingAs($data['student'])
-                         ->delete(route('workspace.deleteFile', $data['workspace']->id), [
+                         ->delete(route('workspace.deleteFile', $data['workspace']), [
                              'path' => 'main.py',
                          ]);
         $response->assertOk()
                  ->assertJsonPath('status', 'deleted');
         $this->assertFileDoesNotExist($wsDir . '/main.py');
 
-        // Clean up directory
         File::deleteDirectory($wsDir);
     }
 
@@ -202,7 +215,7 @@ class WorkspaceControllerTest extends TestCase
     public function test_workspace_file_operations_deny_path_traversal(): void
     {
         $data = $this->createWorkspaceForStudent();
-        
+
         $wsDir = storage_path('workspaces/ws-' . $data['workspace']->id);
         if (!is_dir($wsDir)) {
             mkdir($wsDir, 0755, true);
@@ -211,14 +224,12 @@ class WorkspaceControllerTest extends TestCase
 
         // Attempting to read outside workspace root using parent traversal
         $response = $this->actingAs($data['student'])
-                         ->get(route('workspace.readFile', $data['workspace']->id) . '?path=../../.env');
-        
-        // CodeServerManager returns null/fails, which triggers a 404 response
+                         ->get(route('workspace.readFile', $data['workspace']) . '?path=../../.env');
         $response->assertStatus(404);
 
         // Attempting to write outside workspace root
         $response = $this->actingAs($data['student'])
-                         ->post(route('workspace.writeFile', $data['workspace']->id), [
+                         ->post(route('workspace.writeFile', $data['workspace']), [
                              'path'    => '../../hack.php',
                              'content' => '<?php system($_GET["cmd"]);',
                          ]);

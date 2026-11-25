@@ -4,12 +4,12 @@
 @section('content')
 <div class="max-w-3xl mx-auto">
     <div class="flex items-center gap-4 mb-8">
-        <a href="{{ route('admin.campuses.index') }}" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors">
+        <a href="{{ route('admin.campuses.index') }}" class="p-2 rounded-xl text-vl-ink-secondary hover:text-vl-ink hover:bg-vl-surface-raised transition-colors">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </a>
         <div>
-            <h1 class="text-2xl font-bold text-white mb-1">Add Campus</h1>
-            <p class="text-slate-400 text-sm">Register a new physical or virtual campus.</p>
+            <h1 class="text-2xl font-bold text-vl-ink mb-1">Add Campus</h1>
+            <p class="text-vl-ink-secondary text-sm">Register a new physical or virtual campus.</p>
         </div>
     </div>
 
@@ -18,12 +18,12 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Name</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Name</label>
                 <input type="text" name="name" value="{{ old('name') }}" required class="vc-input w-full" placeholder="e.g. Main Campus">
                 @error('name') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Code</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Code</label>
                 <input type="text" name="code" value="{{ old('code') }}" class="vc-input w-full" placeholder="e.g. MAIN">
                 @error('code') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
@@ -31,12 +31,12 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">City</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">City</label>
                 <input type="text" name="city" value="{{ old('city') }}" class="vc-input w-full" placeholder="e.g. New York">
                 @error('city') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Address</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Address</label>
                 <input type="text" name="address" value="{{ old('address') }}" class="vc-input w-full" placeholder="Full address">
                 @error('address') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
@@ -44,12 +44,12 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Email</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Email</label>
                 <input type="email" name="email" value="{{ old('email') }}" class="vc-input w-full" placeholder="contact@campus.edu">
                 @error('email') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
             <div>
-                <label class="block text-sm font-bold mb-2 text-slate-300">Phone</label>
+                <label class="block text-sm font-bold mb-2 text-vl-ink-secondary">Phone</label>
                 <input type="text" name="phone" value="{{ old('phone') }}" class="vc-input w-full" placeholder="+1 234 567 890">
                 @error('phone') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
             </div>
@@ -57,8 +57,8 @@
 
         <div class="mb-8">
             <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-gray-800">
-                <span class="text-sm font-bold text-slate-300">Is Active</span>
+                <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-600 text-vl-accent focus:ring-indigo-500 bg-vl-surface-raised">
+                <span class="text-sm font-bold text-vl-ink-secondary">Is Active</span>
             </label>
         </div>
 
